@@ -1,0 +1,12 @@
+<!--option value="">---------</option-->
+{% for member in members %}
+<tr>
+<td>{{ member.user }}</td>
+<td>{{ member.user_team }}</td>
+<td></td>
+</tr>
+{% empty %}
+<tr>
+    <td colspan="5">No members currently. <a href="{% url 'addUserToTeam' %}">Add Members to Team</a>.</td>
+</tr>
+{% endfor %}

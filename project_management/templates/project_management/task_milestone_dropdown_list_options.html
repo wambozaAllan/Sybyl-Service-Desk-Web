@@ -1,0 +1,6 @@
+<!--option value="">---------</option-->
+{% for milestone in milestones %}
+<option value="{{ milestone.pk }}">{{ milestone.name }}</option>
+{% empty %}
+<option value="" selected>No Milesstones to show</option-->
+{% endfor %}

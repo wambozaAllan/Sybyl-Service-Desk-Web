@@ -1,0 +1,12 @@
+<!--option value="">---------</option-->
+{% for member in members %}
+<tr>
+<td>{{ member.privilege }}</td>
+<td>{{ member.usergroup }}</td>
+<td></td>
+</tr>
+{% empty %}
+<tr>
+    <td colspan="5">No Priveleges currently. <a href="{% url 'addUserToTeam' %}">Add Privileges to Team</a>.</td>
+</tr>
+{% endfor %}

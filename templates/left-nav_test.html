@@ -1,0 +1,39 @@
+<!-- Left Sidebar  -->
+<div class="left-sidebar">
+  <!-- Sidebar scroll-->
+  <div class="scroll-sidebar">
+    <!-- Sidebar navigation-->
+    <nav class="sidebar-nav">
+      <ul id="sidebarnav">
+        
+      </ul>
+      <script>
+        //alert('hello');
+        //$('.dater').addClass('example')
+        $(document).ready(function () {
+
+            //alert("hello")
+            var url = "{% url 'load_selected_menus' %}";
+            //var projectId = '@Request.RequestContext.HttpContext.Session["usrgrpid"]';
+            var projectId2 = '{{ request.session.usrgrpid }}';
+            //alert(projectId2)
+
+            $.ajax({
+                    url: url,
+                    data: {
+                     'project': projectId2
+                    },
+                    success: function (data) {
+                     $("#sidebarnav").html(data);
+                    }
+                });
+
+        });
+        
+    </script>
+    </nav>
+    <!-- End Sidebar navigation -->
+  </div>
+  <!-- End Sidebar scroll-->
+</div>
+<!-- End Left Sidebar  -->

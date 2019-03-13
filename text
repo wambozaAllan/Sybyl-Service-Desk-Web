@@ -1,0 +1,43 @@
+git --version // show git version
+git config --global user.name name // set the username
+git config --global user.email email // set the email
+git config user.name // show the saved username
+git config user.email // show the saved email
+git init // intializes a git repository
+git status // show whether there are changed files
+git add name_of_file //adds a given file to the staging area 
+git add . // add all changed files to the staging area
+git rm --cached name_of_file // removes a given file from the staging area
+git commit -m "message" // commits all the files in the staging area and add a descriptive message to the commit / snapshot
+git log // shows the commit history
+git log --oneline // condenses down the commit history output with one line per commit
+git checkout id_of_commit // undoes all commits upto the given commit id
+git checkout master // redoes all the commits
+git revert id_of_commit // reverts a particular commit and creates another commit that reverted that given commit (press ctrl :wq)
+git reset id_of_commit //reset back to a particular commit and all the commits above it are left hanging in memory
+git reset id_of_commit --hard //reset back to a particular commit and all the commits above it are cleared.. and this can not be undone
+
+----------------------------------------------------------BRANCHING-------------------------------------------------------------
+git branch branch_name // creates a new branch with a given branch name
+git branch -a // lists all the created branches and shows the current branch are using
+git checkout branch_name // changes / switches the branch to the given branch_name
+git branch -D branch_name // deletes a given branch that is not fully merged with the master branch
+git branch -d branch_name // deletes a given branch that is fully merged with the master branch
+git checkout -b branch_name // creates new branch with branch_name and switches to it
+git merge branch_name // used to merge the a given branch to the current branch u are using
+git pull repository_address // fetches a given repo
+git push repository_address branch_name // pushes all the changes to the given repo and to a specific branch
+
+
+-----------------------------------------------------------------------------------------------------------------------------------
+git pull origin master will pull changes from the origin remote, master branch and merge them to the local checked-out branch.
+
+git pull origin/master will pull changes from the locally stored branch origin/master and merge that to the local checked-out branch. The origin/master branch is essentially a "cached copy" of what was last pulled from origin, which is why it's called a remote branch in git parlance. This might be somewhat confusing.
+
+You can see what branches are available with git branch and git branch -r to see the "remote branches".
+
+
+
+
+
+pip install -r requirements.txt

@@ -1,0 +1,84 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block content %}
+<!-- Main wrapper  -->
+<div id="main-wrapper">
+	{% include 'header.html' %}
+	{% include 'left-nav.html' %}
+	<!-- Page wrapper  -->
+	<div class="page-wrapper">
+		<!-- Bread crumb -->
+		<div class="row page-titles">
+			<div class="col-md-5 align-self-center">
+				<h3 class="text-primary">Dashboard</h3>
+			</div>
+			<div class="col-md-7 align-self-center">
+				<ol class="breadcrumb">
+					<li class="breadcrumb-item"><a href="javascript:void(0)">Home</a></li>
+					<li class="breadcrumb-item active">List of Companies</li>
+				</ol>
+			</div>
+		</div>
+		<!-- End Bread crumb -->
+		<!-- Container fluid  -->
+		<div class="container-fluid">
+			<!-- Start Page Content -->
+			<div class="row">
+				<div class="col-12">
+					<div class="card">
+						<div class="card-title">
+							<h4>Company Details</h4>
+						</div>
+						<div class="card-body">
+							<div class="basic-form">
+								<div class="row">
+									<div class="col-sm-6">
+										<p class="text-muted m-b-15 f-s-12">Company Name</p>
+										<input type="text" class="form-control input-flat"
+											value="{{ company.name }}" disabled>
+									</div>
+									<div class="col-sm">
+										<p class="text-muted m-b-15 f-s-12">Category</p>
+										<input type="text" class="form-control input-flat"
+											value="{{ company.category }}" disabled>
+									</div>
+									<div class="col-sm">
+										<p class="text-muted m-b-15 f-s-12">Created Time</p>
+										<input type="text" class="form-control input-flat"
+											value="{{ company.created_time }}" disabled>
+									</div>
+								</div>
+								<br />
+								<!-- Add functionality to display Branches and Departments for the Company -->
+								<!-- <div class="row">
+									<div class="col-sm">
+										<p class="text-muted m-b-15 f-s-12">Branches</p>
+										<div class="form-group">
+											<input type="text" class="form-control input-flat"
+												placeholder="Branch Name" required />
+										</div>
+									</div>
+									<div class="col-sm">
+										<p class="text-muted m-b-15 f-s-12">Departments</p>
+										<div class="form-group">
+											<input type="text" class="form-control input-flat"
+												placeholder="Created By" disabled>
+										</div>
+									</div>
+								</div> -->
+								<br />
+								<div class="row">
+									<div class="col-1"><a href="{% url 'listCompanies' %}" class="btn btn-inverse">Back</a></div>
+                                </div>
+							</div>
+						</div>
+					</div>
+					{% include 'footer.html' %}
+					<!-- End Page Content -->
+				</div>
+				<!-- End Container fluid  -->
+
+			</div>
+			<!-- End Page wrapper  -->
+		</div>
+		{% endblock %}

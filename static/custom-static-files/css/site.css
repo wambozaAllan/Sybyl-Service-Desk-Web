@@ -1,0 +1,58 @@
+html {
+  height: 100%;
+  box-sizing: border-box;
+}
+
+*, *:before, *:after {
+  box-sizing: inherit;
+}
+
+body {
+  margin: 0;
+  padding-bottom: 6rem;
+  min-height: 100vh;
+  position: relative;
+  font-family: 'Ubuntu';
+}
+
+.login-page-header {
+  margin-right: auto;
+  margin-left: auto;
+  margin-top: 70px;
+}
+
+#super-container {
+  overflow: auto;
+}
+
+#login-form-container {
+  width: 40%;
+  margin: 50px auto 0px auto;
+}
+
+#login-form-caption {
+  margin-bottom: 30px;
+}
+
+#login-form-caption h5 {
+  font-weight: bold;
+}
+
+#footer-content {
+  padding: 20px;
+}
+.form-group .form-control {
+  padding-left: 2.375rem;
+}
+
+.form-group .form-control-icon {
+  position: absolute;
+  z-index: 2;
+  display: block;
+  width: 2.375rem;
+  height: 2.375rem;
+  line-height: 2.375rem;
+  text-align: center;
+  pointer-events: none;
+  color: #aaa;
+}

@@ -1,0 +1,67 @@
+{% load static %}
+</div>
+
+<!-- //////// START OF JAVASCRIPT SECTION //////// -->
+
+  <!-- jquery -->
+  <script type="text/javascript" src="{% static 'custom-static-files/javascript/jquery-3.3.1.min.js' %}"></script>
+  <!-- Bootstrap tether Core JavaScript -->
+  <script src="{% static 'template-static-files/javascript/lib/bootstrap/js/popper.min.js' %}"></script>
+  <!-- bootstrap 4 javascript -->
+  <script type="text/javascript" src="{% static 'custom-static-files/javascript/bootstrap.min.js' %}"></script>
+  <!-- site javascript -->
+  <script type="text/javascript" src="{% static 'custom-static-files/javascript/site.js' %}"></script>
+  <!-- slimscrollbar scrollbar JavaScript -->
+  <script src="{% static 'template-static-files/javascript/jquery.slimscroll.js' %}"></script>
+  <!--Menu sidebar -->
+  <script src="{% static 'template-static-files/javascript/sidebarmenu.js' %}"></script>
+  <!--stickey kit -->
+  <script src="{% static 'template-static-files/javascript/lib/sticky-kit-master/dist/sticky-kit.min.js' %}"></script>
+
+  <!--  Plugin for Switches, full documentation here: http://www.jque.re/plugins/version3/bootstrap.switch/ -->
+  <script type="text/javascript" src="{% static 'custom-static-files/javascript/plugins/bootstrap-switch.js' %}"></script>
+
+  <!-- Amchart -->
+  <script src="{% static 'template-static-files/javascript/lib/morris-chart/raphael-min.js' %}"></script>
+  <!--script src="{% static 'template-static-files/javascript/lib/morris-chart/morris.js' %}"></script>
+  <script src="{% static 'template-static-files/javascript/lib/morris-chart/dashboard1-init.js' %}"></script-->
+
+  <script src="{% static 'template-static-files/javascript/lib/calendar-2/moment.latest.min.js' %}"></script>
+  <!-- scripit init-->
+  <script src="{% static 'template-static-files/javascript/lib/calendar-2/semantic.ui.min.js' %}"></script>
+  <!-- scripit init-->
+  <script src="{% static 'template-static-files/javascript/lib/calendar-2/prism.min.js' %}"></script>
+  <!-- scripit init-->
+  <script src="{% static 'template-static-files/javascript/lib/calendar-2/pignose.calendar.min.js' %}"></script>
+  <!-- scripit init-->
+  <script src="{% static 'template-static-files/javascript/lib/calendar-2/pignose.init.js' %}"></script>
+
+  <script src="{% static 'template-static-files/javascript/lib/owl-carousel/owl.carousel.min.js' %}"></script>
+  <script src="{% static 'template-static-files/javascript/lib/owl-carousel/owl.carousel-init.js' %}"></script>
+
+  <!-- sweetalert js -->
+  <script src="{% static 'template-static-files/javascript/lib/sweetalert/sweetalert.min.js' %}"></script>
+  <!-- scripit init-->
+  <script src="{% static 'template-static-files/javascript/lib/sweetalert/sweetalert.init.js' %}"></script>
+
+  <!-- script init-->
+  <script src="{% static 'template-static-files/javascript/scripts.js' %}"></script>
+
+  <!-- additional javascript for the different pages -->
+    <!--  Google Maps Plugin    -->
+<script type="text/javascript" src="https://maps.googleapis.com/maps/api/js?key=YOUR_KEY_HERE"></script>
+<!--  Chartist Plugin  -->
+<script type="text/javascript" src="{% static 'custom-static-files/javascript/plugins/chartist.min.js' %}"></script>
+<!--  Notifications Plugin    -->
+<script type="text/javascript" src="{% static 'custom-static-files/javascript/plugins/bootstrap-notify.js' %}"></script>
+<!-- Control Center for Light Bootstrap Dashboard: scripts for the example pages etc -->
+<script type="text/javascript" src="{% static 'custom-static-files/javascript/light-bootstrap-dashboard.js?v=2.0.1' %}"></script>
+
+
+
+
+  {% block additional_javascript %}{% endblock %}
+<!-- //////// END OF JAVASCRIPT SECTION //////// -->
+</body>
+
+</html>

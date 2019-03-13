@@ -1,0 +1,16 @@
+<!--option value="">---------</option-->
+{% for milestone in milestones %}
+<tr>
+    <td><a href="{% url 'update_milestone' milestone.pk %}">{{ milestone.name }}</a></td>
+    <td>{{ milestone.startdate }}</td>
+    <td>{{ milestone.project.name }}</td>
+    <td></td>
+</tr>
+{% empty %}
+<tr>
+    <td colspan="5">No milestones currently. <a href="{% url 'new_milestone' %}">Add the first milestone</a>.</td>
+  </tr>
+{% endfor %}
+
+
+

@@ -1,0 +1,63 @@
+{% extends 'base.html' %}
+{% load static %}
+{% load crispy_forms_tags %}
+{% block content %}
+<!-- Main wrapper  -->
+<div id="main-wrapper">
+    {% include 'header.html' %}
+    {% include 'left-nav.html' %}
+    <!-- Page wrapper  -->
+    <div class="page-wrapper">
+        <!-- Bread crumb -->
+        <div class="row page-titles">
+            <div class="col-md-5 align-self-center">
+                <h3 class="text-primary">Dashboard</h3> </div>
+            <div class="col-md-7 align-self-center">
+                <ol class="breadcrumb">
+                    <li class="breadcrumb-item"><a href="javascript:void(0)">Home</a></li>
+                    <li class="breadcrumb-item active">Update Company</li>
+                </ol>
+            </div>
+        </div>
+        <!-- End Bread crumb -->
+        <!-- Container fluid  -->
+        <div class="container-fluid">
+            <!-- Start Page Content -->
+            <div class="row">
+                <div class="col-12">
+                  <div class="card">
+                      <div class="card-title">
+                          <h4>Update Company</h4>
+                      </div>
+                      <div class="card-body">
+                          <div class="basic-form">
+                              <form method="post">
+									{% csrf_token %}
+									<div class="row">
+									    <div class="col-8">
+									        {{ form.name|as_crispy_field }}
+									    </div>
+									    <div class="col-4">
+									        {{ form.category|as_crispy_field }}
+									    </div>
+									</div>
+								<div class="row">
+									<div class="col-5"></div>
+									<div class="col-1"><a href="{% url 'listCompanies' %}" class="btn btn-inverse">Cancel</a></div>
+									<div class="col-1"><button type="submit" value="Update" class="btn btn-success">Update</button></div>	
+                                </div>
+                              </form>
+                          </div>
+                      </div>
+                  </div>
+                </div>
+              </div>
+            {% include 'footer.html' %}
+            <!-- End PAge Content -->
+        </div>
+        <!-- End Container fluid  -->
+
+    </div>
+    <!-- End Page wrapper  -->
+</div>
+{% endblock %}

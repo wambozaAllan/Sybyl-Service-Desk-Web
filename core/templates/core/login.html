@@ -1,0 +1,60 @@
+{% extends 'base.html' %}
+
+{% load static %}
+
+{% block title %} Login {% endblock %}
+
+{% block content %}
+  <div class="container">
+    <div class="navbar-header login-page-header">
+        <h3 class="navbar-brand" href="index.html">
+            <!-- Logo icon -->
+            <b><img src="{% static 'template-static-files/images/logo.png' %}" alt="homepage" class="dark-logo" /></b>
+            <!--End Logo icon -->
+            <!-- Logo text -->
+            <span>Service Desk</span>
+        </h3>
+    </div>
+  </div>
+  <div id="login-form-container" class="shadow-sm border p-4">
+    <div id="login-form-caption">
+      <h5 class="text-center">Login</h5>
+    </div>
+    <!-- START OF LOGIN FORM -->
+      <form method="post">
+        {% csrf_token %}
+
+        {% for field in form %}
+          <div class="form-group">
+            <p class="text-muted m-b-15 f-s-12">{{ field.label }}</p>
+            {{ field }}
+          </div>
+        {% endfor %}
+        <div class="form-group">
+          <input id="login-btn" class="btn btn-primary form-control" type="submit" name="login_btn" value="Login"/>
+        </div>
+
+        <hr class="my-2">
+
+        <div class="form-group">
+          <div class="row">
+            <div class="col-sm text-center">
+              <a id="forgot-password-link" class="login-form-links sweet-success-cancel" href="#" data-toggle="modal" data-target="#forgotPasswordModal">Forgot Password</a>
+            </div>
+            <div class="col-sm-2 text-center">
+              - or -
+            </div>
+            <div class="col-sm text-center">
+              <a class="login-form-links" href="{% url 'signup' %}">Self Register</a>
+            </div>
+          </div>
+        </div>
+        <input type="hidden" name="next" value="{{ next }}" />
+      </form>
+    <!-- END OF LOGIN FORM -->
+    {% if form.errors %}
+      <p class="text-center text-warning">Your username and password didn't match. Please try again.</p>
+    {% endif %}
+  </div>
+
+{% endblock %}

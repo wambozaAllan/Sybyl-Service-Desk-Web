@@ -1,0 +1,105 @@
+{% extends 'base.html' %}
+
+{% load static %}
+
+{% block content %}
+
+<div id="main-wrapper">
+    {% include 'header.html' %}
+    
+    <script type="text/javascript" src="{% static 'fusioncharts/fusioncharts.js' %}"></script>
+    <script type="text/javascript" src="{% static 'fusioncharts/themes/fusioncharts.theme.fint.js' %}"></script>
+    
+    <!-- <script type="text/javascript" src="https://cdn.fusioncharts.com/fusioncharts/latest/fusioncharts.js"></script>
+    <script type="text/javascript" src="https://cdn.fusioncharts.com/fusioncharts/latest/themes/fusioncharts.theme.fusion.js"></script>
+     -->
+    {% include 'left-nav.html' %}
+
+    <div class="page-wrapper">
+
+        <div class="row page-titles">
+            <div class="col-md-7 align-self-center">
+                <h3 class="text-primary">Projects Summary</h3> </div>
+            <!-- <div class="col-md-7 align-self-center">
+                <ol class="breadcrumb">
+                    <li class="breadcrumb-item"><a href="javascript:void(0)">Home</a></li>
+                    <li class="breadcrumb-item active">Dashboard</li>
+                </ol>
+            </div> -->
+        </div>
+
+        <div class="container-fluid">
+            <!-- Start Page Content -->
+            <div class="row">
+                <div class="col-md-3">
+                    <div class="card p-30">
+                        <div class="media">
+                            <div class="media-left meida media-middle">
+                                <span><i class="fa fa-suitcase f-s-40 color-primary"></i></span>
+                            </div>
+                            <div class="media-body media-text-right">
+                                <h2><a href="{% url 'full_project_list' %}">{{ total_projects }}</a></h2> 
+                                <p class="m-b-0"><a href="{% url 'full_project_list' %}">Projects</a></p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-md-3">
+                    <div class="card p-30">
+                        <div class="media">
+                            <div class="media-left meida media-middle">
+                                <span><i class="fa fa-tasks f-s-60 color-warning"></i></span>
+                            </div>
+                            <div class="media-body media-text-right">
+                                <h2><a href="{% url 'milestone_list' %}">{{ total_milestones }}</a></h2>
+                                <p class="m-b-0"><a href="{% url 'milestone_list' %}">Milestones</a></p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-md-3">
+                    <div class="card p-30">
+                        <div class="media">
+                            <div class="media-left meida media-middle">
+                                <span><i class="fa fa-tasks f-s-40 color-warning"></i></span>
+                            </div>
+                            <div class="media-body media-text-right">
+                                <h2><a href="{% url 'task_list' %}">{{ total_tasks }}</a></h2>
+                                <p class="m-b-0"><a href="{% url 'task_list' %}">Tasks</a></p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-md-3">
+                    <div class="card p-30">
+                        <div class="media">
+                            <div class="media-left meida media-middle">
+                                <span><i class="fa fa-warning f-s-40 color-danger"></i></span>
+                            </div>
+
+                            <div class="media-body media-text-right">
+                                <h2><a href="{% url 'listIncidents' %}">{{ total_incidents }}</a></h2>
+                                <p class="m-b-0"><a href="{% url 'listIncidents' %}">Incidents</a></p>
+                            </div>
+                            
+                        </div>
+                    </div>
+                </div> <hr /> 
+
+                <div class="col-md-3" style="width:200px; margin:-100 auto; ">
+                    <div id="projects-chart">{{ output|safe }}</div>
+                </div>
+                
+            </div>
+            <div>{% include 'footer.html' %}</div>
+            <!-- End PAge Content -->
+        </div>
+        <!-- End Container fluid  -->
+
+    </div>
+    <!-- End Page wrapper  -->
+</div>
+{% endblock %}

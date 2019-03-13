@@ -1,0 +1,109 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block content %}
+<!-- Main wrapper  -->
+<div id="main-wrapper">
+	{% include 'header.html' %}
+	{% include 'left-nav.html' %}
+	<!-- Page wrapper  -->
+	<div class="page-wrapper">
+		<!-- Bread crumb -->
+		<div class="row page-titles">
+			<div class="col-md-5 align-self-center">
+				<h3 class="text-primary">Dashboard</h3>
+			</div>
+			<div class="col-md-7 align-self-center">
+				<ol class="breadcrumb">
+					<li class="breadcrumb-item"><a href="javascript:void(0)">Home</a></li>
+					<li class="breadcrumb-item active">List of Users</li>
+				</ol>
+			</div>
+		</div>
+		<!-- End Bread crumb -->
+		<!-- Container fluid  -->
+		<div class="container-fluid">
+			<!-- Start Page Content -->
+			<div class="row">
+				<div class="col-12">
+					<div class="card">
+						<div class="card-title">
+							<h4>User Details</h4>
+						</div>
+						<div class="card-body">
+							<div class="basic-form">
+								<div class="row">
+									<div class="col-sm-5">
+										<p class="text-muted m-b-15 f-s-12">First Name</p>
+										<input type="text" class="form-control input-flat"
+											value="{{ user.first_name }}" disabled>
+									</div>
+									<div class="col-sm-5">
+										<p class="text-muted m-b-15 f-s-12">Last Name</p>
+										<input type="text" class="form-control input-flat"
+											value="{{ user.last_name }}" disabled>
+									</div>
+									<div class="col-sm">
+										<p class="text-muted m-b-15 f-s-12">Gender</p>
+										<input type="text" class="form-control input-flat"
+											value="{{ user.gender }}" disabled>
+									</div>
+								</div>
+								<div class="row">
+									<div class="col-4">
+										<p class="text-muted m-b-15 f-s-12">Company</p>
+										<input type="text" class="form-control input-flat"
+											value="{{ user.company }}" disabled>
+									</div>
+									<div class="col-4">
+										<p class="text-muted m-b-15 f-s-12">Branch</p>
+										<input type="text" class="form-control input-flat"
+											value="{{ user.branch }}" disabled>
+									</div>
+									<div class="col-4">
+										<p class="text-muted m-b-15 f-s-12">Department</p>
+										<input type="text" class="form-control input-flat"
+											value="{{ user.department }}" disabled>
+									</div>
+								</div>
+								<div class="row">
+									<div class="col-4">
+										<p class="text-muted m-b-15 f-s-12">User Group</p>
+										<input type="text" class="form-control input-flat"
+											value="{{ user.usergroup }}" disabled>
+									</div>
+									<div class="col-4">
+										<p class="text-muted m-b-15 f-s-12">User Category</p>
+										<input type="text" class="form-control input-flat"
+											value="{{ user.category }}" disabled>
+									</div>
+								</div>
+								<div class="row">
+									<div class="col-4">
+										<p class="text-muted m-b-15 f-s-12">Username</p>
+										<input type="text" class="form-control input-flat"
+											value="{{ user.username }}" disabled>
+									</div>
+									<div class="col-4">
+										<p class="text-muted m-b-15 f-s-12">Password</p>
+										<input type="password" class="form-control input-flat"
+											value="{{ user.password }}" disabled>
+									</div>
+								</div>
+								<br />
+								<div class="row">
+									<div class="col-1">
+										<a href="{% url 'listUsers' %}" class="btn btn-inverse">Back</a>
+									</div>
+								</div>
+							</div>
+						</div>
+					</div>
+					{% include 'footer.html' %}
+					<!-- End Page Content -->
+				</div>
+				<!-- End Container fluid  -->
+
+			</div>
+			<!-- End Page wrapper  -->
+		</div>
+		{% endblock %}

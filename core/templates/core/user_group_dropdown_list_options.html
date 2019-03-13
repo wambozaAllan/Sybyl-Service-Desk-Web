@@ -1,0 +1,35 @@
+<!--option value="">---------</option-->
+{% load static %}
+
+
+<li class="nav-devider"></li>
+<li class="nav-label">Home</li>
+<li>
+    <a href="{% url 'home' %}"><i class="fa fa-tachometer"></i><span class="hide-menu">Dashboard</span></a>
+</li>
+
+{% for section in sections %}
+<li class="nav-label">{{ section.name }}</li>
+{% for menu in menus %}
+{% if menu.section.id == section.id %}
+<li>
+    <a class="has-arrow  " href="#" aria-expanded="false"><i class="fa fa-envelope"></i><span class="hide-menu">
+            {{ menu.name }}
+            <!--span class="label label-rouded label-warning pull-right">12</span></span--></a>
+    <ul aria-expanded="false" class="collapse">
+        {% for submenu in submenus %}
+        {% if submenu.menu.id == menu.id %}
+        <li><a href="{% url submenu.link %}"> {{ submenu.name }}
+                <!--span class="label label-rouded label-warning pull-right">6</span--></a></li>
+        {% endif %}
+        {% empty %}
+        {% endfor %}
+    </ul>
+</li>
+{% endif %}
+{% empty %}
+{% endfor %}
+
+{% empty %}
+<li class="nav-label">Test Default Menu</li>
+{% endfor %}
