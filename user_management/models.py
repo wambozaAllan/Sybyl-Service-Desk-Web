@@ -28,7 +28,7 @@ class User(AbstractUser):
     user_group      = models.ForeignKey(UserGroup, default=1, on_delete=models.CASCADE, related_name='initialgroup')
     company         = models.ForeignKey(Company, default=1, on_delete=models.CASCADE)
     branch          = models.ForeignKey(Branch, default=1, on_delete=models.CASCADE)
-    department      = models.ForeignKey(Department, default=2 ,on_delete=models.CASCADE)
+    department      = models.ForeignKey(Department, default=1 ,on_delete=models.CASCADE)
     first_name      = models.CharField(max_length=100)
     last_name       = models.CharField(max_length=100)
     email           = models.EmailField(blank=True)

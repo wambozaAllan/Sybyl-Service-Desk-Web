@@ -12,7 +12,7 @@ from django.urls import reverse_lazy
 from django.views import generic
 from django.contrib.auth.decorators import login_required
 from django.http import HttpResponseRedirect
-
+ 
 from .models import UsrGrpPermissions
 from .forms import LoginForm
 from user_management.forms import CustomUserCreationForm
@@ -67,7 +67,7 @@ class Login(auth_views.LoginView):
                 login(request, user)
                 return redirect("/home/")
         return render(request, self.template_name, {'form': form})
-
+ 
 @login_required()
 def logout_view(request):
     logout(request)
@@ -78,9 +78,9 @@ def home(request):
     permission_list = list(request.user.get_all_permissions())
     #permission_list2 =
     print(permission_list[0])
-    request.session['usrgrpid'] = request.user.usergroup_id
-    usrgrpid = request.user.usergroup_id
-    print(request.user.usergroup_id)
+    request.session['usrgrpid'] = request.user.user_group_id
+    usrgrpid = request.user.user_group_id
+    print(request.user.user_group_id)
 
     total_projects      = Project.objects.all().count()
     total_clients       = Company.objects.filter(category_id=2).count()

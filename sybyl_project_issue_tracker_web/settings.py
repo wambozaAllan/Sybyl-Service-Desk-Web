@@ -155,4 +155,4 @@ EMAIL_USE_TLS = True
 EMAIL_HOST = 'smtp.gmail.com'
 EMAIL_HOST_USER = 'softdev.sybyl@gmail.com'
 EMAIL_HOST_PASSWORD = 'Admin@123'
-EMAIL_PORT = 587
+EMAIL_PORT = 587 
