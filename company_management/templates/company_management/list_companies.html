@@ -1,0 +1,83 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block content %}
+    <!-- Main wrapper  -->
+    <div id="main-wrapper">
+        {% include 'header.html' %}
+        {% include 'left-nav.html' %}
+        <!-- Page wrapper  -->
+        <div class="page-wrapper">
+            <!-- Bread crumb -->
+            <div class="row page-titles">
+                <div class="col-md-5 align-self-center">
+                    <h3 class="text-primary">Dashboard</h3>
+                </div>
+                <div class="col-md-7 align-self-center">
+                    <ol class="breadcrumb">
+                        <li class="breadcrumb-item"><a href="javascript:void(0)">Home</a></li>
+                        <li class="breadcrumb-item active">List of Companies</li>
+                    </ol>
+                </div>
+            </div>
+            <!-- End Bread crumb -->
+            <!-- Container fluid  -->
+            <div id="" class="container-fluid">
+                <!-- Start Page Content -->
+                <div class="row">
+                    <div class="col-12">
+                        <div class="card">
+                            <div class="card-body">
+                                <h4 class="card-title">Companies</h4>
+                                <div class="row">
+                                    <div class="col-md-12">
+                                        <button id="" class="btn btn-info pull-right" onclick="functAddCompany();">
+                                            <i class="fa fa-fw fa-lg fa-plus"></i>Add Company
+                                        </button>
+                                    </div>
+                                </div>
+                                <div class="table-responsive">
+                                    <table class="display nowrap table table-hover" cellspacing="0" width="100%">
+                                        <thead>
+                                        <tr>
+                                            <th>Company Name</th>
+                                            <th>Category</th>
+                                            <th>Domain</th>
+                                            <th class="text-center">Branches</th>
+                                            <th class="text-center">Action</th>
+                                        </tr>
+                                        </thead>
+                                        <tbody>
+                                        {% for company in all_companies %}
+                                            <tr>
+                                                <td>{{ company.name }}</td>
+                                                <td>{{ company.category }}</td>
+                                                <td>{{ company.domain }}</td>
+                                                <td class="text-center"><span class="badge badge-pill badge-success">
+                                                    <a href="#" style="color: #fff" onclick="functionViewCompaniesBranches({{ company.id }}, '{{ company.name }}')">{{ company.get_branch_count }}</a></span>
+                                                </td>
+                                                <td class="text-center">
+                                                    <button onclick="functionManageCompany({{ company.id }}, '{{ company.name }}')"  id="" class="btn btn-outline-success btn-sm" type="button">
+                                                        <i title="Manage Company" class="fa fa-dedent"></i>
+                                                    </button>
+                                                    <button onclick="functionEditCompany({{ company.id }}, '{{ company.name }}')"  id="" class="btn btn-outline-success btn-sm" type="button">
+                                                        <i title="Edit Company" class="fa fa-edit"></i>
+                                                    </button>
+                                                </td>
+                                            </tr>
+                                        {% endfor %}
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                        {% include 'footer.html' %}
+                        <!-- End Page Content -->
+                    </div>
+                    <!-- End Container fluid  -->
+
+                </div>
+                <!-- End Page wrapper  -->
+            </div>
+        </div>
+    </div>
+{% endblock %}

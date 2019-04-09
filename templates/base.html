@@ -2,25 +2,556 @@
 
 <html lang="en">
 
-  <head>
+<head>
 
     <title>{% block title %}Sybyl Service Desk{% endblock %}</title>
 
-      {% include 'head.html' %}
-        <div id=content>
-          {% block content %}
-          
-          {% endblock %}
-        </div>
-        {% block additional_javascript %}{% endblock %}
-      {% include 'bottom.html' %}
+    {% include 'head.html' %}
+    <div id=content>
+        {% block content %}
+            <div id="bodydd">
 
-<script>
-    $('#id_phone_number').usPhoneFormat({
-        format: '(xxx) xxx-xxxx'
-    });
-    $('#id_secondary_number').usPhoneFormat({
-        format: '(xxx) xxx-xxxx'
-    });
-    
-</script>
+            </div>
+        {% endblock %}
+    </div>
+    {% block additional_javascript %}{% endblock %}
+    {% include 'bottom.html' %}
+
+    <script>
+        function functAddDomain() {
+            urldata = "{% url 'addDomain'%}";
+            $.ajax({
+                type: "GET",
+                cache: false,
+                data: {},
+                url: urldata,
+                success: function (resp) {
+                    $.confirm({
+                        title: '<h3>Add New Domain</h3>',
+                        content: '' + resp,
+                        type: 'blue',
+                        typeAnimated: true,
+                        boxWidth: '50%',
+                        useBootstrap: false,
+                        closeIcon: true,
+                        buttons: {
+                            close: {
+                                text: 'Cancel',
+                                btnClass: 'btn-gray',
+                                action: function () {
+                                }
+                            }
+                        }
+                    });
+                }
+            });
+        }
+        function functionEditDomain(domainid, domainname) {
+            urldata = "{% url 'updateDomain' 999%}".replace(999, domainid);
+            $.ajax({
+                type: "GET",
+                cache: false,
+                data: {
+                    domainid: domainid
+                },
+                url: urldata,
+                success: function (resp) {
+                    $.confirm({
+                        title: '<h3><strong class="text-info">' + domainname + ' </strong> Domain</h3>',
+                        content: '' + resp,
+                        type: 'blue',
+                        typeAnimated: true,
+                        boxWidth: '40%',
+                        useBootstrap: false,
+                        closeIcon: true,
+                        buttons: {
+                            close: {
+                                text: 'Close',
+                                btnClass: 'btn-gray',
+                                action: function () {
+                                }
+                            }
+                        }
+                    });
+                }
+            });
+        }
+        function functionDeleteDomain(domainid, domainname, companycount) {
+            urldata = "{% url 'deleteDomain' 999%}".replace(999, domainid);
+            if (companycount > 0) {
+                $.confirm({
+                    title: 'Error!',
+                    content: 'Can not Delete Domain with attached Companies.',
+                    type: 'red',
+                    boxWidth: '30%',
+                    useBootstrap: false,
+                    typeAnimated: true,
+                    buttons: {
+                        close: function () {
+                        }
+                    }
+                });
+            } else {
+                $.confirm({
+                    title: '<h4>Delete Domain: <strong class="text-danger">' + domainname + ' </strong>!</h4>',
+                    content: '',
+                    type: 'red',
+                    typeAnimated: true,
+                    boxWidth: '40%',
+                    useBootstrap: false,
+                    theme: 'modern',
+                    icon: 'fa fa-exclamation-circle',
+                    buttons: {
+                        formSubmit: {
+                            text: 'OK',
+                            btnClass: 'btn-blue',
+                            action: function () {
+                                location.href = urldata;
+                            }
+                        },
+                        close: {
+                            text: 'Cancel',
+                            btnClass: 'btn-gray',
+                            action: function () {
+                            }
+                        }
+                    }
+                });
+            }
+        }
+        function functionViewDomainCompanies(domainid, domainname) {
+            urldata = "{% url 'companies' 999%}".replace(999, domainid);
+            $.ajax({
+                type: "GET",
+                cache: false,
+                data: {
+                    domainid: domainid
+                },
+                url: urldata,
+                success: function (resp) {
+                    $.confirm({
+                        title: '<h3>Companies under <strong class="text-info">' + domainname + ' </strong> Domain.</h3>',
+                        content: '' + resp,
+                        type: 'blue',
+                        typeAnimated: true,
+                        boxWidth: '40%',
+                        useBootstrap: false,
+                        closeIcon: true,
+                        buttons: {
+                            close: {
+                                text: 'Close',
+                                btnClass: 'btn-gray',
+                                action: function () {
+                                }
+                            }
+                        }
+                    });
+                }
+            });
+        }
+        function functAddCategory() {
+            urldata = "{% url 'addCategory'%}";
+            $.ajax({
+                type: "GET",
+                cache: false,
+                data: {},
+                url: urldata,
+                success: function (resp) {
+                    $.confirm({
+                        title: '<h3>Add New Category</h3>',
+                        content: '' + resp,
+                        type: 'blue',
+                        typeAnimated: true,
+                        boxWidth: '50%',
+                        useBootstrap: false,
+                        closeIcon: true,
+                        buttons: {
+                            close: {
+                                text: 'Cancel',
+                                btnClass: 'btn-gray',
+                                action: function () {
+                                }
+                            }
+                        }
+                    });
+                }
+            });
+        }
+        function functionEditCategory(categoryid, categoryname) {
+            urldata = "{% url 'updateCategory' 999%}".replace(999, categoryid);
+            $.ajax({
+                type: "GET",
+                cache: false,
+                data: {
+                    categoryid: categoryid
+                },
+                url: urldata,
+                success: function (resp) {
+                    $.confirm({
+                        title: '<h3><strong class="text-info">' + categoryname + ' </strong> Category</h3>',
+                        content: '' + resp,
+                        type: 'blue',
+                        typeAnimated: true,
+                        boxWidth: '40%',
+                        useBootstrap: false,
+                        closeIcon: true,
+                        buttons: {
+                            close: {
+                                text: 'Close',
+                                btnClass: 'btn-gray',
+                                action: function () {
+                                }
+                            }
+                        }
+                    });
+                }
+            });
+        }
+        function functionDeleteCategory(categoryid, categoryname, companycount) {
+            urldata = "{% url 'deleteCategory' 999%}".replace(999, categoryid);
+            if (companycount > 0) {
+                $.confirm({
+                    title: 'Error!',
+                    content: 'Can not Delete Category with attached Companies.',
+                    type: 'red',
+                    boxWidth: '30%',
+                    useBootstrap: false,
+                    typeAnimated: true,
+                    buttons: {
+                        close: function () {
+                        }
+                    }
+                });
+            } else {
+                $.confirm({
+                    title: '<h4>Delete Category: <strong class="text-danger">' + categoryname + ' </strong>!</h4>',
+                    content: '',
+                    type: 'red',
+                    typeAnimated: true,
+                    boxWidth: '50%',
+                    useBootstrap: false,
+                    theme: 'modern',
+                    icon: 'fa fa-exclamation-circle',
+                    buttons: {
+                        formSubmit: {
+                            text: 'OK',
+                            btnClass: 'btn-blue',
+                            action: function () {
+                                location.href = urldata;
+                            }
+                        },
+                        close: {
+                            text: 'Cancel',
+                            btnClass: 'btn-gray',
+                            action: function () {
+                            }
+                        }
+                    }
+                });
+            }
+        }
+        function functionViewCategoryCompanies(categoryid, categoryname) {
+            urldata = "{% url 'categoryCompany' 999%}".replace(999, categoryid);
+            $.ajax({
+                type: "GET",
+                cache: false,
+                data: {
+                    categoryid: categoryid
+                },
+                url: urldata,
+                success: function (resp) {
+                    $.confirm({
+                        title: '<h3>Companies under <strong class="text-info">' + categoryname + ' </strong> Category.</h3>',
+                        content: '' + resp,
+                        type: 'blue',
+                        typeAnimated: true,
+                        boxWidth: '40%',
+                        useBootstrap: false,
+                        closeIcon: true,
+                        buttons: {
+                            close: {
+                                text: 'Close',
+                                btnClass: 'btn-gray',
+                                action: function () {
+                                }
+                            }
+                        }
+                    });
+                }
+            });
+        }
+        function functAddCompany() {
+            urldata = "{% url 'addCompany'%}";
+            $.ajax({
+                type: "GET",
+                cache: false,
+                data: {},
+                url: urldata,
+                success: function (resp) {
+                    $.confirm({
+                        title: '<h3>Add New Company</h3>',
+                        content: '' + resp,
+                        type: 'blue',
+                        typeAnimated: true,
+                        boxWidth: '50%',
+                        useBootstrap: false,
+                        closeIcon: true,
+                        buttons: {
+                            close: {
+                                text: 'Cancel',
+                                btnClass: 'btn-gray',
+                                action: function () {
+                                }
+                            }
+                        }
+                    });
+                }
+            });
+        }
+        function functionEditCompany(companyid, companyname) {
+            urldata = "{% url 'updateCompany' 999%}".replace(999, companyid);
+            $.ajax({
+                type: "GET",
+                cache: false,
+                data: {
+                    companyid: companyid
+                },
+                url: urldata,
+                success: function (resp) {
+                    $.confirm({
+                        title: '<h3>Update Company: <strong class="text-info">' + companyname + ' </strong></h3>',
+                        content: '' + resp,
+                        type: 'blue',
+                        typeAnimated: true,
+                        boxWidth: '50%',
+                        useBootstrap: false,
+                        closeIcon: true,
+                        buttons: {
+                            close: {
+                                text: 'Close',
+                                btnClass: 'btn-gray',
+                                action: function () {
+                                }
+                            }
+                        }
+                    });
+                }
+            });
+        }
+        function functionViewCompaniesBranches(companyid, companyname) {
+            urldata = "{% url 'companyBranchList' 999%}".replace(999, companyid);
+            $.ajax({
+                type: "GET",
+                cache: false,
+                data: {
+                    companyid: companyid
+                },
+                url: urldata,
+                success: function (resp) {
+                    $.confirm({
+                        title: '<h3>Branches under <strong class="text-info">' + companyname + ' </strong>Company.</h3>',
+                        content: '' + resp,
+                        type: 'blue',
+                        typeAnimated: true,
+                        boxWidth: '40%',
+                        useBootstrap: false,
+                        closeIcon: true,
+                        buttons: {
+                            close: {
+                                text: 'Close',
+                                btnClass: 'btn-gray',
+                                action: function () {
+                                }
+                            }
+                        }
+                    });
+                }
+            });
+        }
+        function functionManageCompany(companyid, companyname) {
+            urldata = "{% url 'listCompanyBranches' 999%}".replace(999, companyid);
+            $.ajax({
+                type: "GET",
+                cache: false,
+                data: {
+                    companyid: companyid
+                },
+                url: urldata,
+                success: function (resp) {
+                    $('.page-wrapper').html(resp);
+                }
+            });
+        }
+        function functAddPriority() {
+            urldata = "{% url 'addPriority'%}";
+            $.ajax({
+                type: "GET",
+                cache: false,
+                data: {},
+                url: urldata,
+                success: function (resp) {
+                    $.confirm({
+                        title: '<h3>Add New Priority</h3>',
+                        content: '' + resp,
+                        type: 'blue',
+                        typeAnimated: true,
+                        boxWidth: '50%',
+                        useBootstrap: false,
+                        closeIcon: true,
+                        buttons: {
+                            close: {
+                                text: 'Cancel',
+                                btnClass: 'btn-gray',
+                                action: function () {
+                                }
+                            }
+                        }
+                    });
+                }
+            });
+        }
+        function functionEditPriority(pid, pname) {
+            urldata = "{% url 'updatePriority' 999%}".replace(999, pid);
+            $.ajax({
+                type: "GET",
+                cache: false,
+                data: {
+                    priorityid: pid
+                },
+                url: urldata,
+                success: function (resp) {
+                    $.confirm({
+                        title: '<h3>Priority: <strong class="text-info">' + pname + ' </strong>.</h3>',
+                        content: '' + resp,
+                        type: 'blue',
+                        typeAnimated: true,
+                        boxWidth: '40%',
+                        useBootstrap: false,
+                        closeIcon: true,
+                        buttons: {
+                            close: {
+                                text: 'Close',
+                                btnClass: 'btn-gray',
+                                action: function () {
+                                }
+                            }
+                        }
+                    });
+                }
+            });
+        }
+        function functionDeletePriority(pid, pname) {
+            urldata = "{% url 'deletePriority' 999%}".replace(999, pid);
+            $.confirm({
+                title: '<h4>Delete Priority: <strong class="text-danger">' + pname + ' </strong>!</h4>',
+                content: '',
+                type: 'red',
+                typeAnimated: true,
+                boxWidth: '40%',
+                useBootstrap: false,
+                theme: 'modern',
+                icon: 'fa fa-exclamation-circle',
+                buttons: {
+                    formSubmit: {
+                        text: 'OK',
+                        btnClass: 'btn-blue',
+                        action: function () {
+                            location.href = urldata;
+                        }
+                    },
+                    close: {
+                        text: 'Cancel',
+                        btnClass: 'btn-gray',
+                        action: function () {
+                        }
+                    }
+                }
+            });
+        }
+        function functAddStatus() {
+            urldata = "{% url 'addStatus'%}";
+            $.ajax({
+                type: "GET",
+                cache: false,
+                data: {},
+                url: urldata,
+                success: function (resp) {
+                    $.confirm({
+                        title: '<h3>Add New Status</h3>',
+                        content: '' + resp,
+                        type: 'blue',
+                        typeAnimated: true,
+                        boxWidth: '50%',
+                        useBootstrap: false,
+                        closeIcon: true,
+                        buttons: {
+                            close: {
+                                text: 'Cancel',
+                                btnClass: 'btn-gray',
+                                action: function () {
+                                }
+                            }
+                        }
+                    });
+                }
+            });
+        }
+        function functionEditStatus(sid, sname) {
+            urldata = "{% url 'updateStatus' 999%}".replace(999, sid);
+            $.ajax({
+                type: "GET",
+                cache: false,
+                data: {
+                    statusid: sid
+                },
+                url: urldata,
+                success: function (resp) {
+                    $.confirm({
+                        title: '<h3>Status: <strong class="text-info">' + sname + ' </strong>.</h3>',
+                        content: '' + resp,
+                        type: 'blue',
+                        typeAnimated: true,
+                        boxWidth: '40%',
+                        useBootstrap: false,
+                        closeIcon: true,
+                        buttons: {
+                            close: {
+                                text: 'Close',
+                                btnClass: 'btn-gray',
+                                action: function () {
+                                }
+                            }
+                        }
+                    });
+                }
+            });
+        }
+        function functionDeleteStatus(sid, sname) {
+            urldata = "{% url 'deleteStatus' 999%}".replace(999, sid);
+            $.confirm({
+                title: '<h4>Delete Status: <strong class="text-danger">' + sname + ' </strong>!</h4>',
+                content: '',
+                type: 'red',
+                typeAnimated: true,
+                boxWidth: '40%',
+                useBootstrap: false,
+                theme: 'modern',
+                icon: 'fa fa-exclamation-circle',
+                buttons: {
+                    formSubmit: {
+                        text: 'OK',
+                        btnClass: 'btn-blue',
+                        action: function () {
+                            location.href = urldata;
+                        }
+                    },
+                    close: {
+                        text: 'Cancel',
+                        btnClass: 'btn-gray',
+                        action: function () {
+                        }
+                    }
+                }
+            });
+        }
+    </script>

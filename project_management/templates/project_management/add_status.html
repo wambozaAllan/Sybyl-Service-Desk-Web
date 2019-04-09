@@ -1,0 +1,54 @@
+{% load crispy_forms_tags %}
+<div class="card-body">
+    <div class="basic-form">
+        <form class="form-horizontal" action="{% url 'addStatus' %}" method="post" enctype="multipart/form-data">
+            {% csrf_token %}
+            <div class="row col-12">
+                <div class="col-6">
+                    {{ form.name|as_crispy_field }}
+                    <medium id="validate_status_name" class="text-muted hidden">
+                        <font color="red">
+                            Status Already Exits!
+                        </font>
+                    </medium>
+                </div>
+                <div class="col-6">{{ form.description|as_crispy_field }}</div>
+            </div>
+            <div class="">
+                <div class="col-md-12">
+                    <button id="btnAddStatus" class="btn btn-success pull-right">
+                        <i class="fa fa-fw fa-lg fa-save"></i>Save
+                    </button>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+
+<script>
+    $("#id_name").attr("placeholder", "Enter Priority Name");
+    $("#id_description").attr("placeholder", "Enter Description");
+
+    $('#id_name').on('input', function () {
+        var status_name = $(this).val();
+
+        $.ajax({
+            url: '{% url 'validateStatusName' %}',
+            data: {
+                'statusname': status_name
+            },
+            dataType: 'json',
+            success: function (data) {
+                if (data.is_taken) {
+                    $("#validate_status_name").show();
+                    document.getElementById('id_name').style.borderColor = "red";
+                    document.getElementById("btnAddStatus").disabled = true;
+                } else {
+                    $("#validate_status_name").hide();
+                    document.getElementById('id_name').style.borderColor = "#e7e7e7";
+                    document.getElementById("btnAddStatus").disabled = false;
+                }
+            }
+        });
+    });
+</script>

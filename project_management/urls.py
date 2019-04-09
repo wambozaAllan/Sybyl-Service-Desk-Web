@@ -1,7 +1,7 @@
 from django.urls import path, re_path
 from . import views
 
-#app_name = 'project_management'
+# app_name = 'project_management'
 urlpatterns = [
     path('projects/', views.load_all_projects, name='full_project_list'),
     path('ongoing/', views.ProjectListView.as_view(), name='project_list'),
@@ -12,24 +12,25 @@ urlpatterns = [
     path('complete/', views.CompleteProjectListView.as_view(), name='complete_project_list'),
     path('terminated/', views.TerminatedProjectListView.as_view(), name='terminated_project_list'),
     path('new/', views.ProjectCreateView.as_view(), name='new_project'),
-    path('update/<int:pk>/', views.ProjectUpdateView.as_view(), name='update_project'), 
+    path('update/<int:pk>/', views.ProjectUpdateView.as_view(), name='update_project'),
     path('download-project-csv/', views.projects_download, name='download_projects_csv'),
     path('download-project-excel/', views.export_projects_xls, name='export_projects_xls'),
-    
+
     path('milestones/', views.MilestoneListView.as_view(), name='milestone_list'),
     path('milestone/<int:pk>/', views.MilestoneDetailView.as_view(), name='milestone_details'),
-    re_path(r'^project-milestones/(?P<project_id>\d+)/$',views.milestone_list_by_project, name='project_milestone_list'),
-    #path('project-milestones/(?P<project_id>\w+)', views.milestone_list_by_project, name='project_milestone_list'),
-    #path('milestones/', views.load_milestones, name='milestone_list'),
+    re_path(r'^project-milestones/(?P<project_id>\d+)/$', views.milestone_list_by_project,
+            name='project_milestone_list'),
+    # path('project-milestones/(?P<project_id>\w+)', views.milestone_list_by_project, name='project_milestone_list'),
+    # path('milestones/', views.load_milestones, name='milestone_list'),
     path('ajax/load_task_milestoneI_list/', views.load_task_milestoneI_list, name='load_task_milestoneI_list'),
     path('milestones/new/', views.MilestoneCreateView.as_view(), name='new_milestone'),
     path('milestone/update/<int:pk>/', views.MilestoneUpdateView.as_view(), name='update_milestone'),
     path('ajax/load-task-milestones/', views.load_task_milestones, name='load-task-milestones'),
-    
+
     path('tasks/', views.TaskListView.as_view(), name='task_list'),
     path('task/<int:pk>/', views.TaskDetailView.as_view(), name='task_details'),
-    re_path(r'^tasks-project/(?P<project_id>\d+)/$',views.task_list_by_project, name='project_task_list'),
-    re_path(r'^tasks-milestone/(?P<milestone_id>\d+)/$',views.task_list_by_milestone, name='milestone_task_list'),
+    re_path(r'^tasks-project/(?P<project_id>\d+)/$', views.task_list_by_project, name='project_task_list'),
+    re_path(r'^tasks-milestone/(?P<milestone_id>\d+)/$', views.task_list_by_milestone, name='milestone_task_list'),
     path('tasks/new/', views.TaskCreateView.as_view(), name='new_task'),
     path('task-update/<int:pk>/', views.TaskUpdateView.as_view(), name='update_task'),
 
@@ -37,4 +38,16 @@ urlpatterns = [
     path('listIncidents/', views.ListIncidents.as_view(), name='listIncidents'),
     path('detailsIncident/<int:pk>/', views.DetailsIncident.as_view(), name='detailsIncident'),
     path('updateIncident/<int:pk>/', views.UpdateIncident.as_view(), name='updateIncident'),
+
+    path('listAllPriorities/', views.ListAllPriorities.as_view(), name='listAllPriorities'),
+    path('addPriority/', views.AddPriority.as_view(), name='addPriority'),
+    path('updatePriority/<int:pk>/', views.UpdatePriority.as_view(), name='updatePriority'),
+    path('deletePriority/<int:pk>', views.DeletePriority.as_view(), name="deletePriority"),
+    path('validatePriorityName/', views.validatePriorityName, name='validatePriorityName'),
+
+    path('listAllStatuses/', views.ListAllStatuses.as_view(), name='listAllStatuses'),
+    path('addStatus/', views.AddStatus.as_view(), name='addStatus'),
+    path('updateStatus/<int:pk>/', views.UpdateStatus.as_view(), name='updateStatus'),
+    path('deleteStatus/<int:pk>/', views.DeleteStatus.as_view(), name="deleteStatus"),
+    path('validateStatusName/', views.ValidateStatusName, name='validateStatusName'),
 ]

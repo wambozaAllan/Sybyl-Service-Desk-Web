@@ -1,6 +1,6 @@
 from django import forms
 from django.db import models
-from .models import Project, Milestone, Task, ProjectDocument
+from .models import Project, Milestone, Task, ProjectDocument, Priority, Status
 from company_management.models import Company
 from crispy_forms.helper import FormHelper
 from crispy_forms.layout import Submit
@@ -121,3 +121,15 @@ class DocumentForm(forms.ModelForm):
         self.helper = FormHelper()
         self.helper.form_method = 'post'
         self.helper.add_input(Submit('submit', 'Save Document'))
+
+class PriorityForm(forms.ModelForm):
+    class Meta:
+        model = Priority
+        fields = ('name', 'description',)
+        widgets = {'name': forms.TextInput(attrs={'class': 'form-control input-flat'})}
+
+class StatusForm(forms.ModelForm):
+    class Meta:
+        model = Status
+        fields = ('name', 'description',)
+        widgets = {'name': forms.TextInput(attrs={'class': 'form-control input-flat'})}
