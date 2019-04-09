@@ -43,7 +43,11 @@
 										{% for department in all_departments %}
 										<tr>
 											<td>{{ department.name }}</td>
-											<td>{{ department.company }}</td>
+											<td>
+												{% for value in department.company.all %}
+													{{ value.name}}
+												{% endfor %}
+											</td>
 											<td>
 												<a href="{% url 'detailsDepartment' department.id %}">View</a> &nbsp;
 												<a href="{% url 'updateDepartment' department.id %}">Update</a> &nbsp;
