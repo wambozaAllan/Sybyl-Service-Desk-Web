@@ -162,8 +162,17 @@
           <a class="has-arrow" href="#" aria-expanded="false"><i class="fa fa-bar-chart"></i><span class="hide-menu">Company
               Branches</span></a>
           <ul aria-expanded="false" class="collapse">
-            <li><a href="{% url 'listBranches' %}">List of Branches</a></li>
-            <li><a href="{% url 'addBranch' %}">Add Company Branch</a></li>
+            <li><a href="{% url 'list-branches' %}">List of Branches</a></li>
+            <li><a href="{% url 'add-branch' %}">Add Company Branch</a></li>
+          </ul>
+        </li>
+
+        <li>
+          <a class="has-arrow" href="#" aria-expanded="false"><i class="fa fa-bar-chart"></i><span class="hide-menu">Branch
+              Contacts</span></a>
+          <ul aria-expanded="false" class="collapse">
+            <li><a href="{% url 'list-branch-contacts' %}">List of Branch Contacts</a></li>
+            <li><a href="{% url 'add-branch-contact' %}">Add Branch Contacts</a></li>
           </ul>
         </li>
         
@@ -171,8 +180,8 @@
           <a class="has-arrow" href="#" aria-expanded="false"><i class="fa fa-bar-chart"></i><span class="hide-menu">Departments
               Master</span></a>
           <ul aria-expanded="false" class="collapse">
-            <li><a href="{% url 'listDepartments' %}">List of Departments</a></li>
-            <li><a href="{% url 'addDepartment' %}">Add Department</a></li>
+            <li><a href="{% url 'list-departments' %}">List of Departments</a></li>
+            <li><a href="{% url 'add-department' %}">Add Department</a></li>
           </ul>
         </li>
 

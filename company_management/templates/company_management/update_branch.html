@@ -16,7 +16,7 @@
 			<div class="col-md-7 align-self-center">
 				<ol class="breadcrumb">
 					<li class="breadcrumb-item"><a href="javascript:void(0)">Home</a></li>
-					<li class="breadcrumb-item active">Add Department</li>
+					<li class="breadcrumb-item active">Update Branch</li>
 				</ol>
 			</div>
 		</div>
@@ -28,7 +28,7 @@
 				<div class="col-12">
 					<div class="card">
 						<div class="card-title">
-							<h4>Add Department</h4>
+							<h4>Update Branch</h4>
 						</div>
 						<div class="card-body">
 							<div class="basic-form">
@@ -37,14 +37,15 @@
 									<div class="row">
 										<div class="col-4">{{ form.name|as_crispy_field }}</div>
 										<div class="col-4">{{ form.company|as_crispy_field }}</div>
+										<div class="col-4">{{ form.location|as_crispy_field }}</div>
 									</div>
 									<div class="row">
 										<div class="col-4"></div>
 										<div class="col-1">
-											<a href="{% url 'listDepartments' %}" class="btn btn-inverse">Cancel</a>
+											<a href="{% url 'list-branches' %}" class="btn btn-inverse">Cancel</a>
 										</div>
 										<div class="col-1">
-											<button type="submit" class="btn btn-success">Add Department</button>
+											<button type="submit" value="Update" class="btn btn-success">Update Branch</button>
 										</div>
 									</div>
 								</form>

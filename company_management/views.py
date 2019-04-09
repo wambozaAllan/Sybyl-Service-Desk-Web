@@ -242,4 +242,4 @@ class UpdateBranch(UpdateView):
     model = Branch
     fields = ['name', 'company', 'location']
     template_name = 'company_management/updateBranch.html'
-    success_url = reverse_lazy('listBranches')
+success_url = reverse_lazy('listBranches')

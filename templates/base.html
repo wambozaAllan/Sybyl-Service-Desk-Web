@@ -39,7 +39,6 @@
                                 text: 'Cancel',
                                 btnClass: 'btn-gray',
                                 action: function () {
-
                                 }
                             }
                         }
@@ -47,7 +46,6 @@
                 }
             });
         }
-
         function functionEditDomain(domainid, domainname) {
             urldata = "{% url 'updateDomain' 999%}".replace(999, domainid);
             $.ajax({
@@ -71,7 +69,6 @@
                                 text: 'Close',
                                 btnClass: 'btn-gray',
                                 action: function () {
-
                                 }
                             }
                         }
@@ -79,10 +76,8 @@
                 }
             });
         }
-
         function functionDeleteDomain(domainid, domainname, companycount) {
             urldata = "{% url 'deleteDomain' 999%}".replace(999, domainid);
-
             if (companycount > 0) {
                 $.confirm({
                     title: 'Error!',
@@ -118,15 +113,12 @@
                             text: 'Cancel',
                             btnClass: 'btn-gray',
                             action: function () {
-
                             }
                         }
                     }
                 });
             }
-
         }
-
         function functionViewDomainCompanies(domainid, domainname) {
             urldata = "{% url 'companies' 999%}".replace(999, domainid);
             $.ajax({
@@ -150,7 +142,6 @@
                                 text: 'Close',
                                 btnClass: 'btn-gray',
                                 action: function () {
-
                                 }
                             }
                         }
@@ -158,7 +149,6 @@
                 }
             });
         }
-
         function functAddCategory() {
             urldata = "{% url 'addCategory'%}";
             $.ajax({
@@ -180,7 +170,6 @@
                                 text: 'Cancel',
                                 btnClass: 'btn-gray',
                                 action: function () {
-
                                 }
                             }
                         }
@@ -188,7 +177,6 @@
                 }
             });
         }
-
         function functionEditCategory(categoryid, categoryname) {
             urldata = "{% url 'updateCategory' 999%}".replace(999, categoryid);
             $.ajax({
@@ -212,7 +200,6 @@
                                 text: 'Close',
                                 btnClass: 'btn-gray',
                                 action: function () {
-
                                 }
                             }
                         }
@@ -220,7 +207,6 @@
                 }
             });
         }
-
         function functionDeleteCategory(categoryid, categoryname, companycount) {
             urldata = "{% url 'deleteCategory' 999%}".replace(999, categoryid);
             if (companycount > 0) {
@@ -258,14 +244,12 @@
                             text: 'Cancel',
                             btnClass: 'btn-gray',
                             action: function () {
-
                             }
                         }
                     }
                 });
             }
         }
-
         function functionViewCategoryCompanies(categoryid, categoryname) {
             urldata = "{% url 'categoryCompany' 999%}".replace(999, categoryid);
             $.ajax({
@@ -289,7 +273,6 @@
                                 text: 'Close',
                                 btnClass: 'btn-gray',
                                 action: function () {
-
                                 }
                             }
                         }
@@ -297,7 +280,6 @@
                 }
             });
         }
-
         function functAddCompany() {
             urldata = "{% url 'addCompany'%}";
             $.ajax({
@@ -319,7 +301,6 @@
                                 text: 'Cancel',
                                 btnClass: 'btn-gray',
                                 action: function () {
-
                                 }
                             }
                         }
@@ -327,7 +308,6 @@
                 }
             });
         }
-
         function functionEditCompany(companyid, companyname) {
             urldata = "{% url 'updateCompany' 999%}".replace(999, companyid);
             $.ajax({
@@ -351,7 +331,6 @@
                                 text: 'Close',
                                 btnClass: 'btn-gray',
                                 action: function () {
-
                                 }
                             }
                         }
@@ -359,7 +338,6 @@
                 }
             });
         }
-
         function functionViewCompaniesBranches(companyid, companyname) {
             urldata = "{% url 'companyBranchList' 999%}".replace(999, companyid);
             $.ajax({
@@ -383,7 +361,6 @@
                                 text: 'Close',
                                 btnClass: 'btn-gray',
                                 action: function () {
-
                                 }
                             }
                         }
@@ -391,7 +368,6 @@
                 }
             });
         }
-
         function functionManageCompany(companyid, companyname) {
             urldata = "{% url 'listCompanyBranches' 999%}".replace(999, companyid);
             $.ajax({
@@ -406,7 +382,6 @@
                 }
             });
         }
-
         function functAddPriority() {
             urldata = "{% url 'addPriority'%}";
             $.ajax({
@@ -428,7 +403,6 @@
                                 text: 'Cancel',
                                 btnClass: 'btn-gray',
                                 action: function () {
-
                                 }
                             }
                         }
@@ -436,7 +410,6 @@
                 }
             });
         }
-
         function functionEditPriority(pid, pname) {
             urldata = "{% url 'updatePriority' 999%}".replace(999, pid);
             $.ajax({
@@ -460,7 +433,6 @@
                                 text: 'Close',
                                 btnClass: 'btn-gray',
                                 action: function () {
-
                                 }
                             }
                         }
@@ -468,10 +440,8 @@
                 }
             });
         }
-
         function functionDeletePriority(pid, pname) {
             urldata = "{% url 'deletePriority' 999%}".replace(999, pid);
-
             $.confirm({
                 title: '<h4>Delete Priority: <strong class="text-danger">' + pname + ' </strong>!</h4>',
                 content: '',
@@ -493,13 +463,11 @@
                         text: 'Cancel',
                         btnClass: 'btn-gray',
                         action: function () {
-
                         }
                     }
                 }
             });
         }
-
         function functAddStatus() {
             urldata = "{% url 'addStatus'%}";
             $.ajax({
@@ -521,7 +489,6 @@
                                 text: 'Cancel',
                                 btnClass: 'btn-gray',
                                 action: function () {
-
                                 }
                             }
                         }
@@ -529,7 +496,6 @@
                 }
             });
         }
-
         function functionEditStatus(sid, sname) {
             urldata = "{% url 'updateStatus' 999%}".replace(999, sid);
             $.ajax({
@@ -553,7 +519,6 @@
                                 text: 'Close',
                                 btnClass: 'btn-gray',
                                 action: function () {
-
                                 }
                             }
                         }
@@ -561,10 +526,8 @@
                 }
             });
         }
-
         function functionDeleteStatus(sid, sname) {
             urldata = "{% url 'deleteStatus' 999%}".replace(999, sid);
-
             $.confirm({
                 title: '<h4>Delete Status: <strong class="text-danger">' + sname + ' </strong>!</h4>',
                 content: '',
@@ -586,7 +549,6 @@
                         text: 'Cancel',
                         btnClass: 'btn-gray',
                         action: function () {
-
                         }
                     }
                 }

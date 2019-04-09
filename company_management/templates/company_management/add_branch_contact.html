@@ -16,7 +16,7 @@
 			<div class="col-md-7 align-self-center">
 				<ol class="breadcrumb">
 					<li class="breadcrumb-item"><a href="javascript:void(0)">Home</a></li>
-					<li class="breadcrumb-item active">Update Branch</li>
+					<li class="breadcrumb-item active">Add Branch Contact</li>
 				</ol>
 			</div>
 		</div>
@@ -28,24 +28,25 @@
 				<div class="col-12">
 					<div class="card">
 						<div class="card-title">
-							<h4>Update Branch</h4>
+							<h4>Add Branch Contact</h4>
 						</div>
 						<div class="card-body">
 							<div class="basic-form">
 								<form method="post">
 									{% csrf_token %}
 									<div class="row">
-										<div class="col-4">{{ form.name|as_crispy_field }}</div>
-										<div class="col-4">{{ form.company|as_crispy_field }}</div>
-										<div class="col-4">{{ form.location|as_crispy_field }}</div>
+										<div class="col-4">{{ form.phone_number|as_crispy_field }}</div>
+										<div class="col-4">{{ form.secondary_number|as_crispy_field }}</div>
+										<div class="col-4">{{ form.branch|as_crispy_field }}</div>
 									</div>
 									<div class="row">
 										<div class="col-4"></div>
 										<div class="col-1">
-											<a href="{% url 'listBranches' %}" class="btn btn-inverse">Cancel</a>
+											<a href="{% url 'list-branch-contacts' %}"
+												class="btn btn-inverse">Cancel</a>
 										</div>
 										<div class="col-1">
-											<button type="submit" value="Update" class="btn btn-success">Update Branch</button>
+											<button type="submit" class="btn btn-success">Add Branch Phone Contact</button>
 										</div>
 									</div>
 								</form>
@@ -63,3 +64,4 @@
 	<!-- End Page wrapper  -->
 </div>
 {% endblock %}
+

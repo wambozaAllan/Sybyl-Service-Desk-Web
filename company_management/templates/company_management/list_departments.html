@@ -43,10 +43,14 @@
 										{% for department in all_departments %}
 										<tr>
 											<td>{{ department.name }}</td>
-											<td>{{ department.company }}</td>
 											<td>
-												<a href="{% url 'detailsDepartment' department.id %}">View</a> &nbsp;
-												<a href="{% url 'updateDepartment' department.id %}">Update</a> &nbsp;
+												{% for value in department.company.all %}
+													{{ value.name}}
+												{% endfor %}
+											</td>
+											<td>
+												<a href="{% url 'details-department' department.id %}">View</a> &nbsp;
+												<a href="{% url 'update-department' department.id %}">Update</a> &nbsp;
 												<a href="#"><i class="mdi mdi-delete font-30 align-middle mr-2"></i></a></td>
 										</tr>
 										{% endfor %}
@@ -56,7 +60,7 @@
 							<br />
 							<div class="row">
 								<div class="col-1">
-									<a href="{% url 'addDepartment' %}" class="btn btn-success">Add Department</a>
+									<a href="{% url 'add-department' %}" class="btn btn-success">Add Department</a>
 								</div>
 							</div>
 						</div>
