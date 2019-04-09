@@ -1,0 +1,24 @@
+{% if company_list %}
+
+<table class="table">
+    <thead>
+        <tr>
+            <th>#</th>
+            <th>Name</th>
+            <th>Description</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for comp in company_list %}
+        <tr>
+            <td>{{forloop.counter}}</td>
+            <td>{{comp.name}}</td>
+            <td>{{comp.description}}</td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+{% else %}
+<hr>
+<h4>No Registered Companies.</h4>
+{% endif %}

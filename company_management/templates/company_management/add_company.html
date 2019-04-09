@@ -1,0 +1,60 @@
+{% load crispy_forms_tags %}
+
+<div class="card-body">
+    <div class="basic-form">
+        <form class="form-horizontal" action="{% url 'addCompany' %}" method="post" enctype="multipart/form-data">
+            {% csrf_token %}
+            <div class="row col-12">
+                <div class="col-6">
+                    {{ form.domain|as_crispy_field }}
+
+                    {{ form.category|as_crispy_field }}
+                    {{ form.name|as_crispy_field }}
+                    <medium id="validate_campany_name" class="text-muted hidden"><font color="red">Company Name Already
+                        Exits!</font></medium>
+                </div>
+                <div class="col-6">
+                    {{ form.owner|as_crispy_field }}
+                    {{ form.description|as_crispy_field }}
+                    <div style="margin-top: 21%;">
+                        <button col-6 id="btnAddCompany" class="btn btn-success pull-right">
+                            <i class="fa fa-fw fa-lg fa-save"></i>Save
+                        </button>
+                    </div>
+                </div>
+
+            </div>
+        </form>
+    </div>
+</div>
+
+<script>
+
+    $("#id_category_value").attr("placeholder", "Enter Company Category");
+    $("#id_description").attr("placeholder", "Enter Description");
+    $("#id_owner").attr("placeholder", "Enter Company Owner");
+    $("#id_name").attr("placeholder", "Enter Company Name");
+
+    $('#id_name').on('input', function () {
+        var company_name = $(this).val();
+
+        $.ajax({
+            url: '{% url 'validateCompanyName' %}',
+            data: {
+                'companyname': company_name
+            },
+            dataType: 'json',
+            success: function (data) {
+                if (data.is_taken) {
+                    $("#validate_campany_name").show();
+                    document.getElementById('id_name').style.borderColor = "red";
+                    document.getElementById("btnAddCompany").disabled = true;
+                } else {
+                    $("#validate_campany_name").hide();
+                    document.getElementById('id_name').style.borderColor = "#e7e7e7";
+                    document.getElementById("btnAddCompany").disabled = false;
+                }
+            }
+        });
+    });
+</script>

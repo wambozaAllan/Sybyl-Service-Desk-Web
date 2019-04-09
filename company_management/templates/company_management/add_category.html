@@ -1,0 +1,23 @@
+{% load crispy_forms_tags %}
+<div class="card-body">
+    <div class="basic-form">
+        <form class="form-horizontal" action="{% url 'addCategory' %}" method="post" enctype="multipart/form-data">
+            {% csrf_token %}
+            <div class="row col-12">
+                <div class="col-6">{{ form.category_value|as_crispy_field }}</div>
+                <div class="col-6">{{ form.description|as_crispy_field }}</div>
+            </div>
+            <div class="">
+                <div class="col-md-12">
+                    <button id="" class="btn btn-success pull-right">
+                        <i class="fa fa-fw fa-lg fa-save"></i>Add Category
+                    </button>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+<script>
+    $("#id_category_value").attr("placeholder", "Enter New Company Category");
+    $("#id_description").attr("placeholder", "Enter Description");
+</script>

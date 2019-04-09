@@ -1,0 +1,19 @@
+{% load crispy_forms_tags %}
+<div class="card-body">
+    <div class="basic-form">
+        <form class="form-horizontal" action="{% url 'updateDomain' domainid %}" method="post" enctype="multipart/form-data">
+            {% csrf_token %}
+            <div class="row col-12">
+                <div class="col-6">{{ form.name|as_crispy_field }}</div>
+                <div class="col-6">{{ form.description|as_crispy_field }}</div>
+            </div>
+            <div class="">
+                <div class="col-md-12 ">
+                    <button id="btnAddCompany" class="btn btn-success pull-right">
+                        <i class="fa fa-fw fa-lg fa-save"></i>Update Domain
+                    </button>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>

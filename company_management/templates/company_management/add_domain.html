@@ -1,0 +1,24 @@
+{% load crispy_forms_tags %}
+<div class="card-body">
+    <div class="basic-form">
+        <form class="form-horizontal" action="{% url 'addDomain' %}" method="post" enctype="multipart/form-data">
+            {% csrf_token %}
+            <div class="row col-12">
+                <div class="col-6">{{ form.name|as_crispy_field }}</div>
+                <div class="col-6">{{ form.description|as_crispy_field }}</div>
+            </div>
+            <div class="">
+                <div class="col-md-12  ">
+                    <button id="btnAddDomain" class="btn btn-success pull-right">
+                        <i class="fa fa-fw fa-lg fa-save"></i>Add Domain
+                    </button>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+
+<script>
+    $("#id_name").attr("placeholder", "Enter Domain Name");
+    $("#id_description").attr("placeholder", "Enter Description");
+</script>
