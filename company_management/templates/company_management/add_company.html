@@ -10,8 +10,11 @@
 
                     {{ form.category|as_crispy_field }}
                     {{ form.name|as_crispy_field }}
-                    <medium id="validate_campany_name" class="text-muted hidden"><font color="red">Company Name Already
-                        Exits!</font></medium>
+                    <medium id="validate_campany_name" class="text-muted hidden">
+                        <font color="red">
+                            Company Name Already Exits!
+                        </font>
+                    </medium>
                 </div>
                 <div class="col-6">
                     {{ form.owner|as_crispy_field }}

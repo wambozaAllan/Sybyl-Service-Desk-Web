@@ -8,12 +8,17 @@
                     {{ form.domain|as_crispy_field }}
                     {{ form.category|as_crispy_field }}
                     {{ form.name|as_crispy_field }}
+                    <small id="validate_campany_name2" class="text-muted hidden">
+                        <font color="red">
+                           Can't Update. Company Name Already Exits!
+                        </font>
+                    </small>
                 </div>
                 <div class="col-6">
                     {{ form.owner|as_crispy_field }}
                     {{ form.description|as_crispy_field }}
                     <div style="margin-top: 21%;">
-                        <button col-6 id="btnAddDomain" class="btn btn-success pull-right">
+                        <button col-6 id="btnUpdateDomain" class="btn btn-success pull-right">
                         <i class="fa fa-fw fa-lg fa-save"></i>Update
                     </button>
                     </div>
@@ -24,3 +29,27 @@
     </div>
 </div>
 
+<script>
+    $('#id_name').on('input', function () {
+        var company_name = $(this).val();
+
+        $.ajax({
+            url: '{% url 'validateCompanyName' %}',
+            data: {
+                'companyname': company_name
+            },
+            dataType: 'json',
+            success: function (data) {
+                if (data.is_taken) {
+                    $("#validate_campany_name2").show();
+                    document.getElementById('id_name').style.borderColor = "red";
+                    document.getElementById("btnUpdateDomain").disabled = true;
+                } else {
+                    $("#validate_campany_name2").hide();
+                    document.getElementById('id_name').style.borderColor = "#e7e7e7";
+                    document.getElementById("btnUpdateDomain").disabled = false;
+                }
+            }
+        });
+    });
+</script>

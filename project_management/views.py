@@ -15,11 +15,12 @@ from static.fusioncharts import FusionCharts
 
 from django.contrib.auth.decorators import user_passes_test, permission_required
 
-from .models import Project, Milestone, Task, ProjectDocument, Incident
+from .models import Project, Milestone, Task, ProjectDocument, Incident, Priority, Status
 from user_management.models import User
 from company_management.models import Company
 from .forms import CreateProjectForm, MilestoneForm, TaskForm, DocumentForm, ProjectUpdateForm, MilestoneUpdateForm
 from django.contrib.auth.mixins import PermissionRequiredMixin
+from django.http import JsonResponse
 
 # Custom Views
 class ProjectCreateView(PermissionRequiredMixin, CreateView):
@@ -324,4 +325,87 @@ def previousProjects(request):
 
 def newProject(request):
     return render(request, 'project_management/newproject.html')
+
+class ListAllPriorities(ListView):
+    template_name = 'project_management/list_all_priorities.html'
+    context_object_name = 'list_priorities'
+
+    def get_queryset(self):
+        return Priority.objects.all()
+
+class AddPriority(CreateView):
+    model = Priority
+    fields = ['name', 'description']
+    template_name = 'project_management/add_priority.html'
+    success_url = reverse_lazy('listAllPriorities')
+
+class UpdatePriority(UpdateView):
+    model = Priority
+    fields = ['name', 'description']
+    template_name = 'project_management/update_priority.html'
+    success_url = reverse_lazy('listAllPriorities')
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        priorityid = int(self.request.GET['priorityid'])
+        context['priorityid'] = priorityid
+        return context
+
+class DeletePriority(DeleteView):
+    model = Priority
+    success_url = reverse_lazy('listAllPriorities')
+
+    def get(self, request, *args, **kwargs):
+        return self.post(request, *args, **kwargs)
+
+def validatePriorityName(request):
+    priority_name = request.GET.get('priorityname', None)
+    data = {
+        'is_taken': Priority.objects.filter(name=priority_name).exists()
+    }
+    return JsonResponse(data)
+
+
+class ListAllStatuses(ListView):
+    template_name = 'project_management/list_all_statuses.html'
+    context_object_name = 'list_status'
+
+    def get_queryset(self):
+        return Status.objects.all()
+
+
+class AddStatus(CreateView):
+    model = Status
+    fields = ['name', 'description']
+    template_name = 'project_management/add_status.html'
+    success_url = reverse_lazy('listAllStatuses')
+
+
+class UpdateStatus(UpdateView):
+    model = Status
+    fields = ['name', 'description']
+    template_name = 'project_management/update_status.html'
+    success_url = reverse_lazy('listAllStatuses')
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        statusid = int(self.request.GET['statusid'])
+        context['statusid'] = statusid
+        return context
+
+
+class DeleteStatus(DeleteView):
+    model = Status
+    success_url = reverse_lazy('listAllStatuses')
+
+    def get(self, request, *args, **kwargs):
+        return self.post(request, *args, **kwargs)
+
+
+def ValidateStatusName(request):
+    status_name = request.GET.get('statusname', None)
+    data = {
+        'is_taken': Status.objects.filter(name=status_name).exists()
+    }
+    return JsonResponse(data)
 

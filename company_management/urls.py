@@ -19,15 +19,18 @@ urlpatterns = [
     path('listBranches/', views.ListBranches.as_view(), name='listBranches'),
     path('detailsBranch/<int:pk>/', views.DetailsBranch.as_view(), name='detailsBranch'),
     path('updateBranch/<int:pk>/', views.UpdateBranch.as_view(), name='updateBranch'),
+
     path('listDomains/', views.ListCompanyDomains.as_view(), name='listDomains'),
     path('addDomain/', views.AddCompanyDomain.as_view(), name='addDomain'),
     path('updateDomain/<int:pk>/', views.UpdateDomain.as_view(), name='updateDomain'),
     path('deleteDomain/<int:pk>', views.DeleteDomain.as_view(), name="deleteDomain"),
     path('companies/<int:pk>', views.DomainCompanyList.as_view(), name="companies"),
+    path('validateDomainName', views.validateDomainName, name='validateDomainName'),
 
     path('listCategories/', views.ListCompanyCategories.as_view(), name='listCategories'),
     path('addCategory/', views.AddCompanyCategory.as_view(), name='addCategory'),
     path('updateCategory/<int:pk>/', views.UpdateCategory.as_view(), name='updateCategory'),
     path('deleteCategory/<int:pk>', views.DeleteCategory.as_view(), name="deleteCategory"),
     path('categoryCompany/<int:pk>', views.CompanyCategoryList.as_view(), name="categoryCompany"),
+    path('validateCategoryName', views.validateCategoryName, name='validateCategoryName'),
 ]

@@ -4,12 +4,19 @@
         <form class="form-horizontal" action="{% url 'addCategory' %}" method="post" enctype="multipart/form-data">
             {% csrf_token %}
             <div class="row col-12">
-                <div class="col-6">{{ form.category_value|as_crispy_field }}</div>
+                <div class="col-6">
+                    {{ form.category_value|as_crispy_field }}
+                    <medium id="validate_category_name" class="text-muted hidden">
+                        <font color="red">
+                            Category Already Exits!
+                        </font>
+                    </medium>
+                </div>
                 <div class="col-6">{{ form.description|as_crispy_field }}</div>
             </div>
             <div class="">
                 <div class="col-md-12">
-                    <button id="" class="btn btn-success pull-right">
+                    <button id="btnAddCategory" class="btn btn-success pull-right">
                         <i class="fa fa-fw fa-lg fa-save"></i>Add Category
                     </button>
                 </div>
@@ -20,4 +27,27 @@
 <script>
     $("#id_category_value").attr("placeholder", "Enter New Company Category");
     $("#id_description").attr("placeholder", "Enter Description");
+
+    $('#id_category_value').on('input', function () {
+        var category__name = $(this).val();
+
+        $.ajax({
+            url: '{% url 'validateCategoryName' %}',
+            data: {
+                'categoryname': category__name
+            },
+            dataType: 'json',
+            success: function (data) {
+                if (data.is_taken) {
+                    $("#validate_category_name").show();
+                    document.getElementById('id_category_value').style.borderColor = "red";
+                    document.getElementById("btnAddCategory").disabled = true;
+                } else {
+                    $("#validate_category_name").hide();
+                    document.getElementById('id_category_value').style.borderColor = "#e7e7e7";
+                    document.getElementById("btnAddCategory").disabled = false;
+                }
+            }
+        });
+    });
 </script>

@@ -1,23 +1,24 @@
 {% load crispy_forms_tags %}
 <div class="card-body">
     <div class="basic-form">
-        <form class="form-horizontal" action="{% url 'addDomain' %}" method="post" enctype="multipart/form-data">
+        <form class="form-horizontal" action="{% url 'updatePriority'  priorityid %}" method="post"
+              enctype="multipart/form-data">
             {% csrf_token %}
             <div class="row col-12">
                 <div class="col-6">
                     {{ form.name|as_crispy_field }}
-                    <medium id="validate_domain_name" class="text-muted hidden">
+                    <small id="validate_priority_name2" class="text-muted hidden">
                         <font color="red">
-                            Domain Already Exits!
+                            Can't Update. Priority Already Exits!
                         </font>
-                    </medium>
+                    </small>
                 </div>
                 <div class="col-6">{{ form.description|as_crispy_field }}</div>
             </div>
             <div class="">
-                <div class="col-md-12  ">
-                    <button id="btnAddDomain" class="btn btn-success pull-right">
-                        <i class="fa fa-fw fa-lg fa-save"></i>Add Domain
+                <div class="col-md-12">
+                    <button id="btnUpdatePriority" class="btn btn-success pull-right">
+                        <i class="fa fa-fw fa-lg fa-save"></i>Update
                     </button>
                 </div>
             </div>
@@ -26,27 +27,24 @@
 </div>
 
 <script>
-    $("#id_name").attr("placeholder", "Enter Domain Name");
-    $("#id_description").attr("placeholder", "Enter Description");
-
     $('#id_name').on('input', function () {
-        var domain_name = $(this).val();
+        var priority_name = $(this).val();
 
         $.ajax({
-            url: '{% url 'validateDomainName' %}',
+            url: '{% url 'validatePriorityName' %}',
             data: {
-                'domainname': domain_name
+                'priorityname': priority_name
             },
             dataType: 'json',
             success: function (data) {
                 if (data.is_taken) {
-                    $("#validate_domain_name").show();
+                    $("#validate_priority_name2").show();
                     document.getElementById('id_name').style.borderColor = "red";
-                    document.getElementById("btnAddDomain").disabled = true;
+                    document.getElementById("btnUpdatePriority").disabled = true;
                 } else {
-                    $("#validate_domain_name").hide();
+                    $("#validate_domain_name2").hide();
                     document.getElementById('id_name').style.borderColor = "#e7e7e7";
-                    document.getElementById("btnAddDomain").disabled = false;
+                    document.getElementById("btnUpdatePriority").disabled = false;
                 }
             }
         });

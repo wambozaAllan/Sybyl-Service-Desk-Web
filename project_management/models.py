@@ -375,3 +375,24 @@ class ProjectForumMessageReplyAttachments(models.Model):
 
     class Meta():
         db_table = 'project_forum_message_reply_attachments'
+
+
+# PRIORITIES
+class Priority(models.Model):
+    name = models.CharField(max_length=250)
+    description = models.CharField(max_length=255, blank=True)
+    created_time = models.DateTimeField(auto_now_add=True)
+    modified_time = models.DateTimeField(auto_now=True)
+
+    def __str__(self):
+        return self.name
+
+# STATUS
+class Status(models.Model):
+    name = models.CharField(max_length=250)
+    description = models.CharField(max_length=255, blank=True)
+    created_time = models.DateTimeField(auto_now_add=True)
+    modified_time = models.DateTimeField(auto_now=True)
+
+    def __str__(self):
+        return self.name
