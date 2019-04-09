@@ -41,6 +41,7 @@ class Branch(models.Model):
     class Meta:
         db_table = 'branch'
 
+
 # branch_contact
 class BranchContact(models.Model):
     contact_type = models.CharField(max_length=45)
@@ -52,6 +53,19 @@ class BranchContact(models.Model):
     class Meta:
         db_table = 'branch_contact'
 
+
+# branch_phone_ contact
+class BranchPhoneContact(models.Model):
+    phone_number = models.CharField(max_length=45)
+    secondary_number = models.CharField(max_length=45, blank=True)
+    branch = models.ForeignKey(Branch, on_delete=models.CASCADE)
+    created_time = models.DateTimeField(auto_now_add=True)
+    modified_time = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        db_table = 'branch_phone_contact'
+
+
 # Department
 class Department(models.Model):
     name = models.CharField(max_length=100)
@@ -61,7 +75,7 @@ class Department(models.Model):
     modified_time = models.DateTimeField(auto_now=True)
 
     def get_absolute_url(self):
-        return reverse('company_management:detailsDepartment', kwargs={'pk': self.pk})
+        return reverse('company_management:details_department', kwargs={'pk': self.pk})
 
     def __str__(self):
         return self.name
