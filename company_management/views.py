@@ -14,6 +14,7 @@ class AddCompany(CreateView):
     template_name = 'company_management/addCompany.html'
     success_url = reverse_lazy('listCompanies')
 
+
 # All companies list view
 class ListCompanies(generic.ListView):
     template_name = 'company_management/listCompanies.html'
@@ -22,24 +23,28 @@ class ListCompanies(generic.ListView):
     def get_queryset(self):
         return Company.objects.all()
 
+
 # Detailed view of a specific company
 class DetailsCompany(generic.DetailView):
     model = Company
     context_object_name = 'company'
     template_name = 'company_management/detailsCompany.html'
-    
+
+
 class UpdateCompany(UpdateView):
     model = Company
     fields = ['name', 'category']
     template_name = 'company_management/updateCompany.html'
     success_url = reverse_lazy('listCompanies')
-    
+
+
 # Adding departments view
 class AddDepartment(CreateView):
     model = Department
     template_name = 'company_management/addDepartment.html'
     fields = ['name', 'company']
     success_url = reverse_lazy('listDepartments')
+
 
 # All departments list view
 class ListDepartments(generic.ListView):
@@ -49,11 +54,13 @@ class ListDepartments(generic.ListView):
     def get_queryset(self):
         return Department.objects.all()
 
+
 # Detailed view of a specific department
 class DetailsDepartment(generic.DetailView):
     model = Department
     context_object_name = 'department'
     template_name = 'company_management/detailsDepartment.html'
+
 
 class UpdateDepartment(UpdateView):
     model = Department
@@ -61,11 +68,13 @@ class UpdateDepartment(UpdateView):
     template_name = 'company_management/updateDepartment.html'
     success_url = reverse_lazy('listDepartments')
 
+
 class AddBranch(CreateView):
     model = Branch
     fields = ['name', 'company', 'location']
     template_name = 'company_management/addBranch.html'
     success_url = reverse_lazy('listBranches')
+
 
 # All Branch list view
 class ListBranches(generic.ListView):
@@ -75,11 +84,13 @@ class ListBranches(generic.ListView):
     def get_queryset(self):
         return Branch.objects.all()
 
+
 # Detailed view of a specific branch
 class DetailsBranch(generic.DetailView):
     model = Branch
     context_object_name = 'branch'
     template_name = 'company_management/detailsBranch.html'
+
 
 class UpdateBranch(UpdateView):
     model = Branch
