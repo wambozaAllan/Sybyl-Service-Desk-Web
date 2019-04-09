@@ -27,33 +27,7 @@ class Company(models.Model):
     class Meta():
         db_table = 'company'
 
-# Department
-class Department(models.Model):
-    name = models.CharField(max_length=100)
-    company = models.ForeignKey(Company, on_delete=models.CASCADE, default=1)
-    created_time = models.DateTimeField(auto_now_add=True)
-    modified_time = models.DateTimeField(auto_now=True)
 
-    def get_absolute_url(self):
-        return reverse('company_management:detailsDepartment', kwargs={'pk': self.pk})
-
-    def __str__(self):
-        return self.name
-
-    class Meta():
-        db_table = 'department'
-
-# CompanyDepartment
-class CompanyDepartment(models.Model):
-    company = models.ForeignKey(Company, on_delete=models.CASCADE)
-    department = models.ForeignKey(Department, on_delete=models.CASCADE)
-    created_time = models.DateTimeField(auto_now_add=True)
-    modified_time = models.DateTimeField(auto_now=True)
-
-    class Meta():
-        db_table = 'company_department'
-
-# Branch
 class Branch(models.Model):
     name = models.CharField(max_length=100)
     company = models.ForeignKey(Company, on_delete=models.CASCADE)
@@ -64,25 +38,47 @@ class Branch(models.Model):
     def __str__(self):
         return self.name
 
-    class Meta():
+    class Meta:
         db_table = 'branch'
 
-# BranchPhoneContacts
-class BranchPhoneContacts(models.Model):
-    phone_contact = models.CharField(max_length=13)
+
+# branch_contact
+class BranchContact(models.Model):
+    contact_type = models.CharField(max_length=45)
+    contact_value = models.CharField(max_length=45)
     branch = models.ForeignKey(Branch, on_delete=models.CASCADE)
     created_time = models.DateTimeField(auto_now_add=True)
     modified_time = models.DateTimeField(auto_now=True)
 
-    class Meta():
-        db_table = 'branch_phone_contacts'
+    class Meta:
+        db_table = 'branch_contact'
 
-# BranchEmailAddresses
-class BranchEmailAddresses(models.Model):
-    email_address = models.CharField(max_length=45)
+
+# branch_phone_ contact
+class BranchPhoneContact(models.Model):
+    phone_number = models.CharField(max_length=45)
+    secondary_number = models.CharField(max_length=45, blank=True)
     branch = models.ForeignKey(Branch, on_delete=models.CASCADE)
     created_time = models.DateTimeField(auto_now_add=True)
     modified_time = models.DateTimeField(auto_now=True)
 
-    class Meta():
-        db_table = 'branch_email_addresses'
+    class Meta:
+        db_table = 'branch_phone_contact'
+
+
+# Department
+class Department(models.Model):
+    name = models.CharField(max_length=100)
+    branch = models.ManyToManyField(Branch)
+    company = models.ManyToManyField(Company)
+    created_time = models.DateTimeField(auto_now_add=True)
+    modified_time = models.DateTimeField(auto_now=True)
+
+    def get_absolute_url(self):
+        return reverse('company_management:details_department', kwargs={'pk': self.pk})
+
+    def __str__(self):
+        return self.name
+
+    class Meta:
+        db_table = 'department'
