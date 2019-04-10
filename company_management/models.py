@@ -61,18 +61,6 @@ class Branch(models.Model):
         db_table = 'branch'
 
 
-# branch_contact
-class BranchContact(models.Model):
-    contact_type = models.CharField(max_length=45)
-    contact_value = models.CharField(max_length=45)
-    branch = models.ForeignKey(Branch, on_delete=models.CASCADE)
-    created_time = models.DateTimeField(auto_now_add=True)
-    modified_time = models.DateTimeField(auto_now=True)
-
-    class Meta:
-        db_table = 'branch_contact'
-
-
 # branch_phone_ contact
 class BranchPhoneContact(models.Model):
     phone_number = models.CharField(max_length=45)
