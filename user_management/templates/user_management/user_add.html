@@ -1,0 +1,218 @@
+{% extends 'base.html' %}
+{% load static %}
+{% load crispy_forms_tags %}
+{% block content %}
+<!-- Main wrapper  -->
+<div id="main-wrapper">
+    <!-- header header  -->
+    {% include 'header.html' %}
+    <!-- End header header -->
+    {% include 'left-nav.html' %}
+    <!-- Page wrapper  -->
+    <div class="page-wrapper">
+        <!-- Bread crumb -->
+        <div class="row page-titles">
+            <div class="col-md-5 align-self-center">
+                <h3 class="text-primary">Dashboard</h3> </div>
+            <div class="col-md-7 align-self-center">
+                <ol class="breadcrumb">
+                    <li class="breadcrumb-item"><a href="javascript:void(0)">Home</a></li>
+                    <li class="breadcrumb-item active">Add User</li>
+                </ol>
+            </div>
+        </div>
+        <!-- End Bread crumb -->
+        <!-- Container fluid  -->
+        <div class="container-fluid">
+            <!-- Start Page Content -->
+            <div class="row">
+                <div class="col-12">
+                  <div class="card">
+                      <div class="card-title">
+                          <h4>Add User</h4>
+                      </div>
+                      <div class="card-body">
+                          <div class="basic-form">
+                              <form method="post">
+									             {% csrf_token %}
+
+                                 <div class="row">
+                                    <div class="col-4">
+                                        {{ form.first_name|as_crispy_field }}
+                                    </div>
+                                    <div class="col-4">
+                                        {{ form.last_name|as_crispy_field }}
+                                    </div>
+                                    <div class="col-4">
+                                        {{ form.gender|as_crispy_field }}
+                                    </div>
+                                  </div>
+              									
+              									<div class="row">
+              									    <div class="col-4">
+              									        {{ form.company|as_crispy_field }}
+              									    </div>
+              									    <div class="col-4">
+              									        {{ form.branch|as_crispy_field }}
+              									    </div>
+                                    <div class="col-4">
+                                      {{ form.department|as_crispy_field }}
+                                    </div>
+              									</div>
+
+              									<div class="row">
+              									  <div class="col-4">
+              									    {{ form.category|as_crispy_field }}
+              									  </div>
+                                  <div class="col-4">
+                                    {{ form.username|as_crispy_field }}
+                                  </div>
+                                  <div class="col-4">
+                                    {{ form.user_group|as_crispy_field }}
+                                  </div>
+              									</div>
+
+									              <div class="row">
+            									     <div class="col-12">
+                                    {{ form.password|as_crispy_field }}
+                                  </div> 
+                                </div>
+
+
+                                    <div class="row">                                        
+                                        <div class="col-4">
+                                            {{ form.is_superuser|as_crispy_field }}
+                                        </div>                                       
+                                        <div class="col-4">
+                                            {{ form.is_active|as_crispy_field }}
+                                        </div>
+                                    </div>
+
+                                    <div class="row">                                        
+                                        <div class="form-group col-10">
+                                            <label for="exampleFormControlSelect2">Permissions</label>
+                                            <select multiple class="form-control" id="exampleFormControlSelect2" style="height: 300px; background-color: rgba(255,255,0,0.1);">
+                                                {% for permission1 in all_permissions %}
+                                                    <option>{{permission1}}</option>
+                                                {% endfor %}
+                                            </select>
+                                        </div>
+                                        
+                                        <div>
+                                            <select class="selectpicker" multiple data-live-search="true">
+                                                <option>Mustard</option>
+                                                <option>Ketchup</option>
+                                                <option>Relish</option>
+                                            </select>
+                                        </div>
+                                    </div>
+
+
+								<div class="row">
+									<div class="col-5"></div>
+									<div class="col-1"><a href="{% url 'listUsers' %}" class="btn btn-inverse">Cancel</a></div>
+									<div class="col-1"><button type="submit" class="btn btn-success">Add User</button></div>	
+                                </div>
+                              </form>
+                              <!-- <form>
+                                  <div class="row">
+                                    <div class="col-sm">
+                                      <p class="text-muted m-b-15 f-s-12">First Name</p>
+                                      <div class="form-group">
+                                          <input type="text" class="form-control input-flat" placeholder="First Name" required/>
+                                      </div>
+                                    </div>
+                                    <div class="col-sm">
+                                      <p class="text-muted m-b-15 f-s-12">Last Name</p>
+                                      <div class="form-group">
+                                          <input type="text" class="form-control input-flat" placeholder="Last Name" required/>
+                                      </div>
+                                    </div>
+                                  </div>
+
+                                  <div class="row">
+                                    <div class="col-sm">
+                                      <p class="text-muted m-b-15 f-s-12">Username</p>
+                                      <div class="form-group">
+                                          <input type="text" class="form-control input-flat" placeholder="Username" required/>
+                                      </div>
+                                    </div>
+                                    <div class="col-sm">
+                                      <p class="text-muted m-b-15 f-s-12">User Group</p>
+                                      <div class="form-group">
+                                          <input type="text" class="form-control input-flat user-group-search" placeholder="Search User Group" required/>
+                                      </div>
+                                    </div>
+                                  </div>
+
+                                  <div class="row">
+                                    <div class="col-sm">
+                                      <p class="text-muted m-b-15 f-s-12">Company Name</p>
+                                      <div class="form-group">
+                                          <input type="text" class="form-control input-flat" placeholder="Company Name" required/>
+                                      </div>
+                                    </div>
+                                    <div class="col-sm">
+                                      <p class="text-muted m-b-15 f-s-12">Branch Name</p>
+                                      <div class="form-group">
+                                          <input type="text" class="form-control input-flat" placeholder="Branch Name" required/>
+                                      </div>
+                                    </div>
+                                  </div>
+
+                                  <div class="row">
+                                    <div class="col-sm">
+                                      <p class="text-muted m-b-15 f-s-12">Department Name</p>
+                                      <div class="form-group">
+                                          <input type="text" class="form-control input-flat" placeholder="Department Name" required/>
+                                      </div>
+                                    </div>
+                                    <div class="col-sm">
+                                      <p class="text-muted m-b-15 f-s-12">Gender</p>
+                                      <div class="form-group">
+                                          <input type="text" class="form-control input-flat" placeholder="Gender" required/>
+                                      </div>
+                                    </div>
+                                  </div>
+
+                                  <div class="row">
+                                    <div class="col-sm">
+                                      <p class="text-muted m-b-15 f-s-12">Password</p>
+                                      <div class="form-group">
+                                          <input type="password" class="form-control input-flat" placeholder="Password">
+                                      </div>
+                                    </div>
+                                    <div class="col-sm">
+                                      <p class="text-muted m-b-15 f-s-12">Verify Password</p>
+                                      <div class="form-group">
+                                          <input type="password" class="form-control input-flat" placeholder="Verify Password">
+                                      </div>
+                                    </div>
+                                  </div>
+
+                                  <div class="form-group">
+                                    <div class="row">
+                                      <div class="col-sm">
+                                        <input class="btn btn-primary form-control new-btns" id="new-user-btn" type="submit" name="new-user-btn" value="Add User"/>
+                                      </div>
+                                      <div class="col-sm">
+                                        <input class="btn btn-warning form-control cancel-btns" id="new-user-cancel-btn" type="submit" name="new-user-cancel-btn" value="Cancel"/>
+                                      </div>
+                                    </div>
+                                  </div>
+                              </form> -->
+                          </div>
+                      </div>
+                  </div>
+                </div>
+              </div>
+            {% include 'footer.html' %}
+            <!-- End PAge Content -->
+        </div>
+        <!-- End Container fluid  -->
+
+    </div>
+    <!-- End Page wrapper  -->
+</div>
+{% endblock %}
+

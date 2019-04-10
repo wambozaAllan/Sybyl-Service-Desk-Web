@@ -10,7 +10,7 @@
         <li>
           <a href="{% url 'home' %}"><i class="fa fa-tachometer"></i><span class="hide-menu">Dashboard</span></a>
         </li>
-        
+
         {% for section in sections %}
           <li class="nav-label">{{ section.name }}</li>
           {% for menu in menus %}
@@ -41,21 +41,21 @@
         <li>
           <a class="has-arrow  " href="#" aria-expanded="false"><i class="fa fa-envelope"></i><span class="hide-menu">Projects
               <!--span class="label label-rouded label-warning pull-right">12</span></span--></a>
-        {% endif %}  
-         
-          <ul aria-expanded="false" class="collapse"> 
+        {% endif %}
+
+          <ul aria-expanded="false" class="collapse">
           {% if perms.project_management.view_project %}
             <li><a href="{% url 'full_project_list' %}">Projects List</a></li>
           {% endif %}
-          
-          {% if perms.project_management.add_project %}      
+
+          {% if perms.project_management.add_project %}
             <li><a href="{% url 'new_project' %}">New</a></li>
           {% endif %}
           </ul>
         </li>
 
         {% if perms.project_management.add_milestone or perms.project_management.view_milestone or perms.project_management.delete_milestone or perms.project_management.change_milestone %}
-        <li> 
+        <li>
           <a class="has-arrow" href="#" aria-expanded="false"><i class="fa fa-suitcase"></i><span class="hide-menu">Milestones</span></a>
         {% endif %}
 
@@ -64,7 +64,7 @@
             <li><a href="{% url 'milestone_list' %}">Project Milestones</a></li>
         {% endif %}
         {% if perms.project_management.add_milestone %}
-            <li><a href="{% url 'new_milestone' %}">New</a></li> 
+            <li><a href="{% url 'new_milestone' %}">New</a></li>
         {% endif %}
           </ul>
         </li>
@@ -73,12 +73,12 @@
         <li>
           <a class="has-arrow  " href="#" aria-expanded="false"><i class="fa fa-suitcase"></i><span class="hide-menu">Tasks</span></a>
           {% endif %}
-          <ul aria-expanded="false" class="collapse"> 
+          <ul aria-expanded="false" class="collapse">
             {% if perms.project_management.view_task %}
-            <li><a href="{% url 'task_list' %}">Task List</a></li> 
-            {% endif %}            
+            <li><a href="{% url 'task_list' %}">Task List</a></li>
+            {% endif %}
             {% if perms.project_management.add_task %}
-            <li><a href="{% url 'new_task' %}">New</a></li> 
+            <li><a href="{% url 'new_task' %}">New</a></li>
             {% endif %}
           </ul>
         </li>
@@ -90,13 +90,13 @@
           <ul aria-expanded="false" class="collapse">
         {% if perms.project_management.view_incident %}
             <li><a href="{% url 'listIncidents' %}">List of Incidents</a></li>
-        {% endif %} 
+        {% endif %}
         {% if perms.project_management.add_incident %}
             <li><a href="{% url 'addIncident' %}">Add New Incident</a></li>
         {% endif %}
           </ul>
         </li>
-        
+
         {% if user.is_superuser %}
         <li>
           <a class="has-arrow  " href="#" aria-expanded="false"><i class="fa fa-bar-chart"></i><span class="hide-menu">Reports</span></a>
@@ -111,21 +111,21 @@
 
         {% if perms.user_management.add_user or perms.user_management.view_user or perms.user_management.delete_user or perms.user_management.change_user %}
         <li class="nav-label">User Management</li>
-        
+
         <li>
           <a class="has-arrow  " href="#" aria-expanded="false"><i class="fa fa-suitcase"></i><span class="hide-menu">Users</span></a>
           {% endif %}
           <ul aria-expanded="false" class="collapse">
 
           {% if perms.user_management.view_user %}
-            <li><a href="{% url 'listUsers' %}">List of Users</a></li> 
+            <li><a href="{% url 'listUsers' %}">List of Users</a></li>
           {% endif %}
           {% if perms.user_management.add_user %}
             <li><a href="{% url 'addUser' %}">Add User</a></li>
           {% endif %}
           </ul>
         </li>
-        
+
       {% if user.is_superuser %}
         <li>
           <a class="has-arrow  " href="#" aria-expanded="false"><i class="fa fa-bar-chart"></i><span class="hide-menu">User
@@ -148,7 +148,7 @@
             <li><a href="{% url 'teams' %}">View Team Members</a></li>
           </ul>
         </li>
-        
+
         <li class="nav-label">Company Management</li>
         <li>
           <a class="has-arrow  " href="#" aria-expanded="false"><i class="fa fa-suitcase"></i><span class="hide-menu">Companies</span></a>
@@ -162,8 +162,8 @@
           <a class="has-arrow" href="#" aria-expanded="false"><i class="fa fa-bar-chart"></i><span class="hide-menu">Company
               Branches</span></a>
           <ul aria-expanded="false" class="collapse">
-            <li><a href="{% url 'list-branches' %}">List of Branches</a></li>
-            <li><a href="{% url 'add-branch' %}">Add Company Branch</a></li>
+            <li><a href="{% url 'listBranches' %}">List of Branches</a></li>
+            <li><a href="{% url 'addBranch' %}">Add Company Branch</a></li>
           </ul>
         </li>
 
@@ -171,17 +171,17 @@
           <a class="has-arrow" href="#" aria-expanded="false"><i class="fa fa-bar-chart"></i><span class="hide-menu">Branch
               Contacts</span></a>
           <ul aria-expanded="false" class="collapse">
-            <li><a href="{% url 'list-branch-contacts' %}">List of Branch Contacts</a></li>
-            <li><a href="{% url 'add-branch-contact' %}">Add Branch Contacts</a></li>
+            <li><a href="">List of Branch Contacts</a></li>
+            <li><a href="">Add Branch Contacts</a></li>
           </ul>
         </li>
-        
+
         <li>
           <a class="has-arrow" href="#" aria-expanded="false"><i class="fa fa-bar-chart"></i><span class="hide-menu">Departments
               Master</span></a>
           <ul aria-expanded="false" class="collapse">
-            <li><a href="{% url 'list-departments' %}">List of Departments</a></li>
-            <li><a href="{% url 'add-department' %}">Add Department</a></li>
+            <li><a href="{% url 'listDepartments' %}">List of Departments</a></li>
+            <li><a href="{% url 'addDepartment' %}">Add Department</a></li>
           </ul>
         </li>
 
@@ -195,7 +195,7 @@
               </ul>
          </li>
       {% endif %}
-        
+
       </ul>
     </nav>
     <!-- End Sidebar navigation -->
