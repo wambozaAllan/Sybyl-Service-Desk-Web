@@ -45,8 +45,8 @@
                                               <td>{{ branch.company }}</td>
                                               <td>{{ branch.location }}</td>
                                               <td>
-                                                <a href="{% url 'details-branch' branch.id %}">View</a> &nbsp;
-                                                <a href="{% url 'update-branch' branch.id %}">Update</a> &nbsp;
+                                                <a href="{% url 'detailsBranch' branch.id %}">View</a> &nbsp;
+                                                <a href="{% url 'updateBranch' branch.id %}">Update</a> &nbsp;
                                                 <a href="#"><i class="mdi mdi-delete font-30 align-middle mr-2"></i></a>
                                               </td>
                                           </tr>
@@ -57,7 +57,7 @@
                             <br />
 							<div class="row">
 								<div class="col-1">
-									<a href="{% url 'add-branch' %}" class="btn btn-success">Add Branch</a>
+									<a href="{% url 'addBranch' %}" class="btn btn-success">Add Branch</a>
 								</div>
 							</div>
                         </div>
