@@ -187,14 +187,14 @@ class UpdateCompany(UpdateView):
 # Adding departments view
 class AddDepartment(CreateView):
     model = Department
-    template_name = 'company_management/addDepartment.html'
+    template_name = 'company_management/add_department.html'
     fields = ['name', 'company']
     success_url = reverse_lazy('listDepartments')
 
 
 # All departments list view
 class ListDepartments(generic.ListView):
-    template_name = 'company_management/listDepartments.html'
+    template_name = 'company_management/list_departments.html'
     context_object_name = 'all_departments'
 
     def get_queryset(self):
@@ -205,26 +205,26 @@ class ListDepartments(generic.ListView):
 class DetailsDepartment(generic.DetailView):
     model = Department
     context_object_name = 'department'
-    template_name = 'company_management/detailsDepartment.html'
+    template_name = 'company_management/details_department.html'
 
 
 class UpdateDepartment(UpdateView):
     model = Department
     fields = ['name', 'company']
-    template_name = 'company_management/updateDepartment.html'
+    template_name = 'company_management/update_department.html'
     success_url = reverse_lazy('listDepartments')
 
 
 class AddBranch(CreateView):
     model = Branch
     fields = ['name', 'company', 'location']
-    template_name = 'company_management/addBranch.html'
+    template_name = 'company_management/add_branch.html'
     success_url = reverse_lazy('listBranches')
 
 
 # All Branch list view
 class ListBranches(generic.ListView):
-    template_name = 'company_management/listBranches.html'
+    template_name = 'company_management/list_branches.html'
     context_object_name = 'all_branches'
 
     def get_queryset(self):
@@ -235,11 +235,11 @@ class ListBranches(generic.ListView):
 class DetailsBranch(generic.DetailView):
     model = Branch
     context_object_name = 'branch'
-    template_name = 'company_management/detailsBranch.html'
+    template_name = 'company_management/details_branch.html'
 
 
 class UpdateBranch(UpdateView):
     model = Branch
     fields = ['name', 'company', 'location']
-    template_name = 'company_management/updateBranch.html'
-success_url = reverse_lazy('listBranches')
+    template_name = 'company_management/update_branch.html'
+    success_url = reverse_lazy('listBranches')
