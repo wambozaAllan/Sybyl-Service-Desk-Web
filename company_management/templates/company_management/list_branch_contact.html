@@ -29,6 +29,7 @@
                             <h4 class="card-title">Branch Phone Contacts</h4>
                             <h6 class="card-subtitle">Export data to Copy, CSV, Excel, PDF & Print</h6>
                             <div class="table-responsive">
+                                {% if branch_phone_contacts %}
                                 <table class="display nowrap table table-hover" cellspacing="0" width="100%">
                                     <thead>
                                         <tr>
@@ -47,19 +48,24 @@
                                               <td>{{ branch.branch }}</td>
                                               <td>{{ branch.branch.company }}</td>
                                               <td>
-                                                <a href="{% url 'details-branch-contact' branch.id %}">View</a> &nbsp;
-                                                <a href="{% url 'update-branch-contact' branch.id %}">Update</a> &nbsp;
+                                                <a href="{% url 'detailBranchContacts' branch.id %}">View</a> &nbsp;
+                                                <a href="{% url 'updateBranchContacts' branch.id %}">Update</a> &nbsp;
                                                 <a href="#"><i class="mdi mdi-delete font-30 align-middle mr-2"></i></a>
                                               </td>
                                           </tr>
 										{% endfor %}
                                     </tbody>
                                 </table>
+                                {% else %}
+                                    <h5><span class="text-muted text-center"
+                                        style="padding: 24%; font-size: 107%;"><strong>No Registered Categories.</strong></span>
+                                    </h5>
+                                {% endif %}
                             </div>
                             <br />
 							<div class="row">
 								<div class="col-1">
-									<a href="{% url 'add-branch-contact' %}" class="btn btn-success">Add Branch Contact</a>
+									<a href="{% url 'addBranchContacts' %}" class="btn btn-success">Add Branch Contact</a>
 								</div>
 							</div>
                         </div>

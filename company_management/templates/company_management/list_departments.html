@@ -34,6 +34,7 @@
 									cellspacing="0" width="100%">
 									<thead>
 										<tr>
+											<th>No.</th>
 											<th>Department Name</th>
 											<th>Company</th>
 											<th>Action</th>
@@ -42,6 +43,7 @@
 									<tbody>
 										{% for department in all_departments %}
 										<tr>
+											<td>{{forloop.counter}}</td>
 											<td>{{ department.name }}</td>
 											<td>
 												{% for value in department.company.all %}
