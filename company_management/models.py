@@ -1,4 +1,6 @@
 from django.db import models
+from django.core.validators import RegexValidator
+from phonenumber_field.modelfields import PhoneNumberField
 
 #CompanyDomain
 class CompanyDomain(models.Model):
@@ -63,8 +65,8 @@ class Branch(models.Model):
 
 # branch_phone_ contact
 class BranchPhoneContact(models.Model):
-    phone_number = models.CharField(max_length=45)
-    secondary_number = models.CharField(max_length=45, blank=True)
+    phone_number = PhoneNumberField()
+    secondary_number = PhoneNumberField(blank=True)
     branch = models.ForeignKey(Branch, on_delete=models.CASCADE)
     created_time = models.DateTimeField(auto_now_add=True)
     modified_time = models.DateTimeField(auto_now=True)
