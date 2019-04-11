@@ -248,7 +248,7 @@ class UpdateBranch(UpdateView):
 # BRANCH PHONE CONTACTS
 class AddBranchContacts(CreateView):
     model = BranchPhoneContact
-    fields = ['phone_number', 'secondary_number']
+    fields = ['phone_number', 'secondary_number', 'branch']
     template_name = 'company_management/add_branch_contact.html'
     success_url = reverse_lazy('listBranchContacts')
 
@@ -271,6 +271,6 @@ class DetailBranchContacts(generic.DetailView):
 
 class UpdateBranchContacts(UpdateView):
     model = BranchPhoneContact
-    fields = ['phone_number', 'secondary_number']
+    fields = ['phone_number', 'secondary_number', 'branch']
     template_name = 'company_management/update_branch_contact.html'
     success_url = reverse_lazy('listBranchContacts')
