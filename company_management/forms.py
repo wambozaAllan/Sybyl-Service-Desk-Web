@@ -1,7 +1,6 @@
 from django import forms
-
-from .models import Company, Department, Branch, CompanyCategory, CompanyDomain
-
+from phonenumber_field.formfields import PhoneNumberField
+from .models import Company, Department, Branch, CompanyCategory, CompanyDomain, BranchPhoneContact
 
 class CompanyDomainForm(forms.ModelForm):
     class Meta:
@@ -38,4 +37,16 @@ class BranchForm(forms.ModelForm):
         widgets = {
             'name': forms.TextInput(attrs={'class': 'form-control input-flat'}),
             'location': forms.TextInput(attrs={'class': 'form-control input-flat'}),
+        }
+
+class BranchContactForm(forms.ModelForm):
+    phonenumber = PhoneNumberField(required=False)
+
+
+    class Meta:
+        model = BranchPhoneContact
+        fields = ('phone_number', 'secondary_number')
+        widgets = {
+            'phone_number': forms.TextInput(attrs={'class': 'form-control input-flat'}),
+            'secondary_number': forms.TextInput(attrs={'class': 'form-control input-flat'}),
         }
