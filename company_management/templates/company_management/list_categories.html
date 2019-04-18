@@ -17,7 +17,7 @@
                     <div class="col-md-7 align-self-center">
                         <ol class="breadcrumb">
                             <li class="breadcrumb-item"><a href="javascript:void(0)">Home</a></li>
-                            <li class="breadcrumb-item active">Add Category</li>
+                            <li class="breadcrumb-item active">Category List</li>
                         </ol>
                     </div>
                 </div>
@@ -38,42 +38,40 @@
                                         </div>
                                     </div>
                                     <div class="table-responsive">
-                                        {% if list_categories %}
-                                            <table id="table_category" class="display nowrap table table-hover" cellspacing="0" width="100%">
-                                                <thead>
-                                                <tr>
-                                                    <th>#</th>
-                                                    <th>Category Name</th>
-                                                    <th class="text-center">Companies</th>
-                                                    <th class="text-center">Action</th>
-                                                </tr>
-                                                </thead>
-                                                <tbody>
+                                        <table id="table_category" class="display nowrap table table-hover"
+                                               cellspacing="0" width="100%">
+                                            <thead>
+                                            <tr>
+                                                <th>#</th>
+                                                <th>Category Name</th>
+                                                <th class="text-center">Companies</th>
+                                                <th class="text-center">Action</th>
+                                            </tr>
+                                            </thead>
+                                            <tbody>
 
-                                                {% for cat in list_categories %}
-                                                    <tr>
-                                                        <td>{{forloop.counter}}</td>
-                                                        <td>{{ cat.category_value }}</td>
-                                                        <td class="text-center"><span class="badge badge-pill badge-success">
-                                                            <a href="#" style="color: #fff" onclick="functionViewCategoryCompanies({{ cat.id }}, '{{ cat.category_value }}')">{{ cat.get_companies_count }}</a></span>
-                                                        </td>
-                                                        <td class="text-center">
-                                                            <button onclick="functionEditCategory({{ cat.id }}, '{{ cat.category_value }}')"id="" class="btn btn-outline-success btn-sm" type="button">
-                                                                <i title="Edit Category"class="fa fa-edit"></i>
-                                                            </button>&nbsp;
-                                                            <button onclick="functionDeleteCategory({{ cat.id }}, '{{ cat.category_value }}', {{ cat.get_companies_count }})" class="btn btn-outline-danger btn-sm" type="button">
-                                                                <i title="Delete Category" class="fa fa-remove"></i>
-                                                            </button>
-                                                        </td>
-                                                    </tr>
-                                                {% endfor %}
-                                                </tbody>
-                                            </table>
-                                        {% else %}
-                                            <h5><span class="text-muted text-center"
-                                                      style="padding: 24%; font-size: 107%;"><strong>No Registered Categories.</strong></span>
-                                            </h5>
-                                        {% endif %}
+                                            {% for cat in list_categories %}
+                                                <tr>
+                                                    <td>{{ forloop.counter }}</td>
+                                                    <td>{{ cat.category_value }}</td>
+                                                    <td class="text-center"><span class="badge badge-pill badge-success">
+                                                        <a href="#" style="color: #fff" onclick="functionViewCategoryCompanies({{ cat.id }}, '{{ cat.category_value }}')">{{ cat.get_companies_count }}</a></span>
+                                                    </td>
+                                                    <td class="text-center">
+                                                        <button onclick="functionEditCategory({{ cat.id }}, '{{ cat.category_value }}')"
+                                                                id="" class="btn btn-outline-success btn-sm"
+                                                                type="button">
+                                                            <i title="Edit Category" class="fa fa-edit"></i>
+                                                        </button>&nbsp;
+                                                        <button onclick="functionDeleteCategory({{ cat.id }}, '{{ cat.category_value }}', {{ cat.get_companies_count }})"
+                                                                class="btn btn-outline-danger btn-sm" type="button">
+                                                            <i title="Delete Category" class="fa fa-remove"></i>
+                                                        </button>
+                                                    </td>
+                                                </tr>
+                                            {% endfor %}
+                                            </tbody>
+                                        </table>
                                     </div>
                                 </div>
                             </div>

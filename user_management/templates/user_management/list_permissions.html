@@ -1,0 +1,42 @@
+<div class="row page-titles">
+    <div class="col-md-5 align-self-center">
+        <h3 class="text-primary">Dashboard</h3>
+    </div>
+    <div class="col-md-7 align-self-center">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a href="javascript:void(0)">Home</a></li>
+            <li class="breadcrumb-item"><a href="{% url 'listModules' %}">Modules</a></li>
+            <li class="breadcrumb-item active">Permissions</li>
+        </ol>
+    </div>
+</div>
+
+<div id="" class="container-fluid">
+    <div class="row">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-body">
+                    <h4 class="card-title"><strong><font color="#007bff">{{ modulename }}</font></strong> Permissions</h4>
+                    <div class="table-responsive">
+                        <table class="display nowrap table table-hover" cellspacing="0" width="100%">
+                            <thead>
+                            <tr>
+                                <th>Permission Name</th>
+                                <th>Code Name</th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            {% for per in permissions_list %}
+                                <tr>
+                                    <td>{{ per.name }}</td>
+                                    <td>{{ per.codename }}</td>
+                                </tr>
+                            {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

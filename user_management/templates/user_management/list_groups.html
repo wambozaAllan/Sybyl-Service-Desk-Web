@@ -1,0 +1,29 @@
+<div class="table-responsive">
+    <table id="groupList" class="display nowrap table table-hover" cellspacing="0"
+           width="100%">
+        <thead>
+        <tr>
+            <th>Group</th>
+            <th>Company</th>
+            <th>Description</th>
+            <th class="text-center">Users</th>
+            <th class="text-center">Action</th>
+        </tr>
+        </thead>
+        <tbody>
+        {% for userGroup in all_userGroups %}
+            <tr>
+                <td>{{ userGroup.group }}</td>
+                <td>{{ userGroup.company }}</td>
+                <td>{{ userGroup.description }}</td>
+                <td class="text-center">{{ userGroup.get_users_count }}</td>
+                <td class="text-center">
+                    <button  onclick="functionEditUserGroup('{{ userGroup.group }}', {{ userGroup.id }})" class="btn btn-outline-success btn-sm" type="button">
+                        <i title="Edit Group" class="fa fa-edit"></i>
+                    </button>
+                </td>
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+</div>

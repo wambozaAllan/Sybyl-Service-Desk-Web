@@ -12,8 +12,7 @@ from django.urls import reverse_lazy
 from django.views import generic
 from django.contrib.auth.decorators import login_required
 from django.http import HttpResponseRedirect
- 
-from .models import UsrGrpPermissions
+
 from .forms import LoginForm
 from user_management.forms import CustomUserCreationForm
 from project_management.models import Project, Milestone, Incident, Company, Task
@@ -76,11 +75,8 @@ def logout_view(request):
 #@login_required()
 def home(request):
     permission_list = list(request.user.get_all_permissions())
-    #permission_list2 =
-    print(permission_list[0])
-    request.session['usrgrpid'] = request.user.user_group_id
-    usrgrpid = request.user.user_group_id
-    print(request.user.user_group_id)
+    request.session['usrgrpid'] = request.user.group_id
+    usrgrpid = request.user.group_id
 
     total_projects      = Project.objects.all().count()
     total_clients       = Company.objects.filter(category_id=2).count()
@@ -124,12 +120,3 @@ def home(request):
                                             'total_milestones':total_milestones,
                                             'output' : colchart.render()})
 
-def load_user_group_menus(request):
-    usrgrpid = request.GET.get('project')
-    #usrgrpid = request.session.usrgrpid
-    print(usrgrpid)
-    grp_privileges = UsrGrpPermissions.objects.filter(usergroup_id=usrgrpid).values("privilege_id")
-    #privileges = Privilege.objects.filter(id__in=grp_privileges).values("submenu_id")
-
-    #privileges = Privilege.objects.values("submenu_id")
-    return render(request, 'core/user_group_dropdown_list_options.html', {})

@@ -1,0 +1,49 @@
+{% load crispy_forms_tags %}
+<form id="post-group-form">
+    {% csrf_token %}
+    <div class="">
+
+        <div class="col-10">
+            <div class="form-group">
+                <label class="col-form-label  requiredField">Group Name<span class="asteriskField">*</span></label>
+                <div class="">
+                    <input id="id_name" type="text" name="" class="textinput textInput form-control" required="">
+                </div>
+            </div>
+        </div>
+        <div class="col-10">{{ form.company|as_crispy_field }}</div>
+        <div class="col-10">{{ form.description|as_crispy_field }}</div>
+    </div>
+    <div class="">
+        <div class="col-1">
+            <button id="btnSaveGroup" type="submit" class="btn btn-success">Submit</button>
+        </div>
+    </div>
+</form>
+<script>
+    $('#post-group-form').on('submit', function (event) {
+        event.preventDefault();
+        var name = $('#id_name').val();
+        var company = $('#id_company').val();
+        var description = $('#id_description').val();
+        urldata = "{% url 'saveUserGroup'%}";
+
+        $.ajax({
+            type: "GET",
+            cache: false,
+            data: {
+                name: name,
+                company: company,
+                desc: description
+            },
+            url: urldata,
+            success: function (resp) {
+                $('.close-dialog').click();
+                $('.table-responsive').html(resp);
+            }
+        });
+
+    });
+
+
+</script>

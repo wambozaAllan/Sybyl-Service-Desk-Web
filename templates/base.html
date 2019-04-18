@@ -9,15 +9,50 @@
     {% include 'head.html' %}
     <div id=content>
         {% block content %}
-            <div id="bodydd">
 
-            </div>
         {% endblock %}
     </div>
     {% block additional_javascript %}{% endblock %}
     {% include 'bottom.html' %}
 
     <script>
+        $('#table_status').DataTable();
+        $('#table_priorities').DataTable();
+        $('#table_category').DataTable();
+        $('#table_conpanies').DataTable();
+        $('#table_domains').DataTable();
+        $('#table_branch_list').DataTable();
+        $('#table_system_modules').DataTable();
+        $('#table_users').DataTable();
+        $('#groupList2').DataTable();
+        $('#groupList').DataTable();
+
+        var modelList = [];
+        $('.model_row_class').each(function () {
+            var mid = $(this).data('modelid');
+            modelList.push({id: mid});
+        });
+
+        for (var i = 0; i < modelList.length; i++) {
+            modelid = modelList[i].id;
+            functionPermissions(modelid);
+        }
+
+        function functionPermissions(modelid) {
+            urldata = "{% url 'permissionCount'%}";
+            $.ajax({
+                type: "GET",
+                cache: false,
+                data: {
+                    modelid: modelid
+                },
+                url: urldata,
+                success: function (data) {
+                    $('#model_id' + modelid).text(data.pcount);
+                }
+            });
+        }
+
         function functAddDomain() {
             urldata = "{% url 'addDomain'%}";
             $.ajax({
@@ -46,6 +81,7 @@
                 }
             });
         }
+
         function functionEditDomain(domainid, domainname) {
             urldata = "{% url 'updateDomain' 999%}".replace(999, domainid);
             $.ajax({
@@ -76,6 +112,7 @@
                 }
             });
         }
+
         function functionDeleteDomain(domainid, domainname, companycount) {
             urldata = "{% url 'deleteDomain' 999%}".replace(999, domainid);
             if (companycount > 0) {
@@ -119,6 +156,7 @@
                 });
             }
         }
+
         function functionViewDomainCompanies(domainid, domainname) {
             urldata = "{% url 'companies' 999%}".replace(999, domainid);
             $.ajax({
@@ -149,6 +187,7 @@
                 }
             });
         }
+
         function functAddCategory() {
             urldata = "{% url 'addCategory'%}";
             $.ajax({
@@ -177,6 +216,7 @@
                 }
             });
         }
+
         function functionEditCategory(categoryid, categoryname) {
             urldata = "{% url 'updateCategory' 999%}".replace(999, categoryid);
             $.ajax({
@@ -207,6 +247,7 @@
                 }
             });
         }
+
         function functionDeleteCategory(categoryid, categoryname, companycount) {
             urldata = "{% url 'deleteCategory' 999%}".replace(999, categoryid);
             if (companycount > 0) {
@@ -250,6 +291,7 @@
                 });
             }
         }
+
         function functionViewCategoryCompanies(categoryid, categoryname) {
             urldata = "{% url 'categoryCompany' 999%}".replace(999, categoryid);
             $.ajax({
@@ -280,6 +322,7 @@
                 }
             });
         }
+
         function functAddCompany() {
             urldata = "{% url 'addCompany'%}";
             $.ajax({
@@ -308,6 +351,7 @@
                 }
             });
         }
+
         function functionEditCompany(companyid, companyname) {
             urldata = "{% url 'updateCompany' 999%}".replace(999, companyid);
             $.ajax({
@@ -338,6 +382,7 @@
                 }
             });
         }
+
         function functionViewCompaniesBranches(companyid, companyname) {
             urldata = "{% url 'companyBranchList' 999%}".replace(999, companyid);
             $.ajax({
@@ -368,6 +413,7 @@
                 }
             });
         }
+
         function functionManageCompany(companyid, companyname) {
             urldata = "{% url 'listCompanyBranches' 999%}".replace(999, companyid);
             $.ajax({
@@ -382,6 +428,7 @@
                 }
             });
         }
+
         function functAddPriority() {
             urldata = "{% url 'addPriority'%}";
             $.ajax({
@@ -410,6 +457,7 @@
                 }
             });
         }
+
         function functionEditPriority(pid, pname) {
             urldata = "{% url 'updatePriority' 999%}".replace(999, pid);
             $.ajax({
@@ -440,6 +488,7 @@
                 }
             });
         }
+
         function functionDeletePriority(pid, pname) {
             urldata = "{% url 'deletePriority' 999%}".replace(999, pid);
             $.confirm({
@@ -468,6 +517,7 @@
                 }
             });
         }
+
         function functAddStatus() {
             urldata = "{% url 'addStatus'%}";
             $.ajax({
@@ -496,6 +546,7 @@
                 }
             });
         }
+
         function functionEditStatus(sid, sname) {
             urldata = "{% url 'updateStatus' 999%}".replace(999, sid);
             $.ajax({
@@ -526,6 +577,7 @@
                 }
             });
         }
+
         function functionDeleteStatus(sid, sname) {
             urldata = "{% url 'deleteStatus' 999%}".replace(999, sid);
             $.confirm({
@@ -554,4 +606,123 @@
                 }
             });
         }
+
+        function functionManageSystemModule(mid, mname) {
+            urldata = "{% url 'listModulePermissions' 999%}".replace(999, mid);
+            $.ajax({
+                type: "GET",
+                cache: false,
+                data: {
+                    moduleid: mid, modulename: mname
+                },
+                url: urldata,
+                success: function (resp) {
+                    $('.page-wrapper').html(resp);
+                }
+            });
+        }
+
+        function funtFilterByApp() {
+            var appname = document.getElementById("app_label_select_id").value;
+            urldata = "{% url 'filterSystemModules'%}";
+            $.ajax({
+                type: "GET",
+                cache: false,
+                data: {
+                    appname: appname
+                },
+                url: urldata,
+                success: function (resp) {
+                    $('.module_data_class').html(resp);
+
+                    var modelList2 = [];
+                    $('.model_row_class').each(function () {
+                        var mid = $(this).data('modelid');
+                        modelList2.push({id: mid});
+                    });
+
+                    for (var i = 0; i < modelList2.length; i++) {
+                        modelid = modelList2[i].id;
+                        functionPermissions(modelid);
+                    }
+                }
+            });
+        }
+
+        function functAddNewUser() {
+            urldata = "{% url 'addUser'%}";
+            $.ajax({
+                type: "GET",
+                cache: false,
+                data: {},
+                url: urldata,
+                success: function (resp) {
+                    $('#dialog_user_reg').html(resp);
+
+                    window.location = '#userFormModalDialog';
+                    initDialog('modalDialog');
+                }
+            });
+        }
+
+        function functAddUserGroup() {
+            urldata = "{% url 'addUserGroup'%}";
+            $.ajax({
+                type: "GET",
+                cache: false,
+                data: {},
+                url: urldata,
+                success: function (resp) {
+                    $.confirm({
+                        title: '<h3>Add User Group</h3>',
+                        content: '' + resp,
+                        type: 'blue',
+                        typeAnimated: true,
+                        boxWidth: '40%',
+                        useBootstrap: false,
+                        closeIcon: true,
+                        buttons: {
+                            close: {
+                                text: 'Cancel',
+                                btnClass: 'btn-gray close-dialog',
+                                action: function () {
+                                }
+                            }
+                        }
+                    });
+                }
+            });
+        }
+
+        function functionEditUserGroup(grp, grpextid) {
+            urldata = "{% url 'updateUserGroup' 999%}".replace(999, grpextid);
+            $.ajax({
+                type: "GET",
+                cache: false,
+                data: {
+                    grpextid: grpextid
+                },
+                url: urldata,
+                success: function (resp) {
+                    $.confirm({
+                        title: '<h3>Edit Group: <strong class="text-info">' + grp + ' </strong>.</h3>',
+                        content: '' + resp,
+                        type: 'blue',
+                        typeAnimated: true,
+                        boxWidth: '50%',
+                        useBootstrap: false,
+                        closeIcon: true,
+                        buttons: {
+                            close: {
+                                text: 'Close',
+                                btnClass: 'btn-gray close-dialog',
+                                action: function () {
+                                }
+                            }
+                        }
+                    });
+                }
+            });
+        }
+
     </script>

@@ -1,0 +1,66 @@
+{% load crispy_forms_tags %}
+<form class="form-horizontal" action="{% url 'saveUser' %}" method="post" enctype="multipart/form-data">
+    {% csrf_token %}
+    <div class="row col-12">
+        <div class="col-6">
+            {{ form.first_name|as_crispy_field }}
+            {{ form.last_name|as_crispy_field }}
+            {{ form.company|as_crispy_field }}
+            {{ form.branch|as_crispy_field }}
+            {{ form.department|as_crispy_field }}
+            {{ form.group|as_crispy_field }}
+        </div>
+        <div class="col-6">
+
+            {{ form.gender|as_crispy_field }}
+            {{ form.email|as_crispy_field }}
+            {{ form.category|as_crispy_field }}
+            <div class="divider">
+                <hr class="left"/>
+                Default Login Credentials
+                <hr class="right"/>
+            </div>
+            <br>
+            {{ form.username|as_crispy_field }}
+            <medium id="validate_user_name" class="text-muted hidden">
+                <font color="red">
+                    User Name Already Exits!
+                </font>
+            </medium>
+            {{ form.password|as_crispy_field }}
+            <div class="">
+                <div class="col-md-12  ">
+                    <button id="btnAddUser" class="btn btn-success pull-right">
+                        <i class="fa fa-fw fa-lg fa-save"></i>Submit
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+</form>
+<script>
+    document.getElementById('id_password').type = 'password';
+
+    $('#id_username').on('input', function () {
+        var id_user_name = $(this).val();
+
+        $.ajax({
+            url: '{% url 'validateUserName' %}',
+            data: {
+                'username': id_user_name
+            },
+            dataType: 'json',
+            success: function (data) {
+                if (data.is_taken) {
+                    $("#validate_user_name").show();
+                    document.getElementById('id_username').style.borderColor = "red";
+                    document.getElementById("btnAddUser").disabled = true;
+                } else {
+                    $("#validate_user_name").hide();
+                    document.getElementById('id_username').style.borderColor = "#e7e7e7";
+                    document.getElementById("btnAddUser").disabled = false;
+                }
+            }
+        });
+    });
+</script>
