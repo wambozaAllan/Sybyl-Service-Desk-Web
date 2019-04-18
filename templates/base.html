@@ -18,6 +18,8 @@
     {% include 'bottom.html' %}
 
     <script>
+        $('#listBranches').DataTable( {});
+
         function functAddDomain() {
             urldata = "{% url 'addDomain'%}";
             $.ajax({
