@@ -36,6 +36,7 @@ $(document).ready(function () {
       if (iti.isValidNumber()) {
         $('#phoneMsg').text('');
         $('#phoneMsg').text('Valid');
+        $("#phoneMsg").css("color", "green");
 
         phoneFinalVar = iti.getNumber();
         phoneCode = iti.getSelectedCountryData();
