@@ -47,6 +47,7 @@ $(document).ready(function () {
         var errorCode = iti.getValidationError();
         $('#phoneMsg').text('');
         $('#phoneMsg').text(errorMap[errorCode]);
+        $("#phoneMsg").css("color", "red");
         document.getElementById("btn-submit").disabled = true;    
       }
     }
