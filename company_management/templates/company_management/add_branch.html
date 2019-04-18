@@ -37,6 +37,12 @@
 										<div class="col-4">{{ form.company|as_crispy_field }}</div>
 										<div class="col-4">{{ form.name|as_crispy_field }}</div>
 										<div class="col-4">{{ form.location|as_crispy_field }}</div>
+										<div class="col-4">
+											{{ form.phone_number|as_crispy_field }}
+											<small ><strong><font id="phoneMsg" color="red"></font></strong></small>
+
+										</div>
+										<div class="col-4">{{ form.email|as_crispy_field }}</div>
 									</div>
 									<div class="row">
 										<div class="col-5"></div>
