@@ -8,4 +8,7 @@ static/__pycache__/
 sybyl_project_issue_tracker_web/__pycache__/
 sybyl_project_issue_tracker_web/static/__pycache__/
 user_management/__pycache__/
+company_management/migrations/
 user_management/migrations/__pycache__/
+user_management/migrations/
+project_management/migrations/
