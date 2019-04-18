@@ -21,10 +21,10 @@ urlpatterns = [
     path('detailsBranch/<int:pk>/', views.DetailsBranch.as_view(), name='detailsBranch'),
     path('updateBranch/<int:pk>/', views.UpdateBranch.as_view(), name='updateBranch'),
 
-    path('addBranchContacts/', views.AddBranchContacts.as_view(), name='addBranchContacts'),
-    path('listBranchContacts/', views.ListBranchContacts.as_view(), name='listBranchContacts'),
-    path('detailBranchContacts/<int:pk>/', views.DetailBranchContacts.as_view(), name='detailBranchContacts'),
-    path('updateBranchContacts/<int:pk>/', views.UpdateBranchContacts.as_view(), name='updateBranchContacts'),
+    # path('addBranchContacts/', views.AddBranchContacts.as_view(), name='addBranchContacts'),
+    # path('listBranchContacts/', views.ListBranchContacts.as_view(), name='listBranchContacts'),
+    # path('detailBranchContacts/<int:pk>/', views.DetailBranchContacts.as_view(), name='detailBranchContacts'),
+    # path('updateBranchContacts/<int:pk>/', views.UpdateBranchContacts.as_view(), name='updateBranchContacts'),
 
     path('listDomains/', views.ListCompanyDomains.as_view(), name='listDomains'),
     path('addDomain/', views.AddCompanyDomain.as_view(), name='addDomain'),
