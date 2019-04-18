@@ -7,7 +7,7 @@ from django.http import JsonResponse
 
 from .forms import CompanyForm, DepartmentForm
 
-from .models import Company, Department, Branch, CompanyDomain, CompanyCategory, BranchPhoneContact
+from .models import Company, Department, Branch, CompanyDomain, CompanyCategory
 
 
 class AddCompanyDomain(CreateView):
@@ -217,7 +217,7 @@ class UpdateDepartment(UpdateView):
 
 class AddBranch(CreateView):
     model = Branch
-    fields = ['name', 'company', 'location']
+    fields = ['name', 'company', 'location', 'phone_number', 'email']
     template_name = 'company_management/add_branch.html'
     success_url = reverse_lazy('listBranches')
 
@@ -240,37 +240,37 @@ class DetailsBranch(generic.DetailView):
 
 class UpdateBranch(UpdateView):
     model = Branch
-    fields = ['name', 'company', 'location']
+    fields = ['name', 'company', 'location', 'phone_number', 'email']
     template_name = 'company_management/update_branch.html'
     success_url = reverse_lazy('listBranches')
 
 
 # BRANCH PHONE CONTACTS
-class AddBranchContacts(CreateView):
-    model = BranchPhoneContact
-    fields = ['phone_number', 'secondary_number', 'branch']
-    template_name = 'company_management/add_branch_contact.html'
-    success_url = reverse_lazy('listBranchContacts')
+# class AddBranchContacts(CreateView):
+#     model = BranchPhoneContact
+#     fields = ['phone_number', 'secondary_number', 'branch']
+#     template_name = 'company_management/add_branch_contact.html'
+#     success_url = reverse_lazy('listBranchContacts')
 
 
-# All Branch list view
-class ListBranchContacts(generic.ListView):
-    template_name = 'company_management/list_branch_contact.html'
-    context_object_name = 'branch_phone_contacts'
+# # All Branch list view
+# class ListBranchContacts(generic.ListView):
+#     template_name = 'company_management/list_branch_contact.html'
+#     context_object_name = 'branch_phone_contacts'
 
-    def get_queryset(self):
-        return BranchPhoneContact.objects.all()
-
-
-# Detailed view of a specific branch
-class DetailBranchContacts(generic.DetailView):
-    model = BranchPhoneContact
-    context_object_name = 'branch_phone_contacts'
-    template_name = 'company_management/details_branch_contact.html'
+#     def get_queryset(self):
+#         return BranchPhoneContact.objects.all()
 
 
-class UpdateBranchContacts(UpdateView):
-    model = BranchPhoneContact
-    fields = ['phone_number', 'secondary_number', 'branch']
-    template_name = 'company_management/update_branch_contact.html'
-    success_url = reverse_lazy('listBranchContacts')
+# # Detailed view of a specific branch
+# class DetailBranchContacts(generic.DetailView):
+#     model = BranchPhoneContact
+#     context_object_name = 'branch_phone_contacts'
+#     template_name = 'company_management/details_branch_contact.html'
+
+
+# class UpdateBranchContacts(UpdateView):
+#     model = BranchPhoneContact
+#     fields = ['phone_number', 'secondary_number', 'branch']
+#     template_name = 'company_management/update_branch_contact.html'
+#     success_url = reverse_lazy('listBranchContacts')
