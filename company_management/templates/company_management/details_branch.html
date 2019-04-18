@@ -32,7 +32,7 @@
 						<div class="card-body">
 							<div class="basic-form">
 								<div class="row">
-									<div class="col-sm-4">
+									<div class="col-sm-2">
 										<p class="text-muted m-b-15 f-s-12">Branch Name</p>
 										<input type="text" class="form-control input-flat"
 											value="{{ branch.name }}" disabled>
@@ -48,9 +48,14 @@
 											value="{{ branch.location }}" disabled>
 									</div>
 									<div class="col-sm">
-										<p class="text-muted m-b-15 f-s-12">Created Time</p>
+										<p class="text-muted m-b-15 f-s-12">PhoneNo.</p>
 										<input type="text" class="form-control input-flat"
-											value="{{ branch.created_time }}" disabled>
+											value="{{ branch.phone_number }}" disabled>
+									</div>
+									<div class="col-sm-3">
+										<p class="text-muted m-b-15 f-s-12">Email</p>
+										<input type="text" class="form-control input-flat"
+											value="{{ branch.email }}" disabled>
 									</div>
 								</div>
 								<br />
