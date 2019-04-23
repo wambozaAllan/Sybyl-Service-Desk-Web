@@ -1,0 +1,120 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block content %}
+    <!-- Main wrapper  -->
+    <div id="main-wrapper">
+        <!-- header header  -->
+        {% include 'header.html' %}
+        <!-- End header header -->
+        {% include 'left-nav.html' %}
+        <!-- Page wrapper  -->
+        <div class="page-wrapper">
+            <!-- Bread crumb -->
+            <div class="row page-titles">
+                <div class="col-md-5 align-self-center">
+                    <h3 class="text-primary">System Users</h3>
+                </div>
+                <div class="col-md-7 align-self-center">
+                    <ol class="breadcrumb">
+                        <li class="breadcrumb-item"><a href="javascript:void(0)">Home</a></li>
+                        <li class="breadcrumb-item active">List of Users</li>
+                    </ol>
+                </div>
+            </div>
+            <!-- End Bread crumb -->
+            <!-- Container fluid  -->
+            <div class="container-fluid">
+                <!-- Start Page Content -->
+                <div class="row">
+                    <div class="col-12">
+                        <div class="card">
+                            <div class="card-body">
+                                <h4 class="card-title">Users</h4>
+
+                                <div class="row">
+                                    <div class="col-md-12">
+                                        <button id="" class="btn btn-info pull-right" onclick="functAddNewUser();">
+                                            <i class="fa fa-fw fa-lg fa-plus"></i>Add User
+                                        </button>
+                                    </div>
+                                </div>
+                                <div class="table-responsive">
+                                    <table id="table_users" class="table table-hover">
+                                        <thead>
+                                        <tr>
+                                            <th>Name</th>
+                                            <th>Company</th>
+                                            <th>Branch</th>
+                                            <th>Department</th>
+                                            <th class="text-center">Status</th>
+                                            <th class="text-center">User Type</th>
+                                            <th>Action</th>
+                                        </tr>
+                                        </thead>
+                                        <tbody>
+                                        {% for user in all_users %}
+                                            <tr>
+                                                <td>{{ user.first_name }} {{ user.last_name }}</td>
+                                                <td>{{ user.company }}</td>
+                                                <td>{{ user.branch }}</td>
+                                                <td>{{ user.department }}</td>
+                                                {% if user.is_active %}
+                                                    <td class="text-center"><span class="badge badge-success"><strong>Active</strong></span></td>
+                                                {% else %}
+                                                    <td class="text-center"><span class="badge badge-danger"><strong>Inactive</strong></span></td>
+                                                {% endif %}
+
+                                                {% if user.is_superuser %}
+                                                    <td class="text-center"><span class="badge badge-success"><strong>Super User</strong></span></td>
+                                                {% else %}
+                                                    <td class="text-center"><span class="badge badge-secondary"><strong>Normal User</strong></span></td>
+                                                {% endif %}
+
+                                                <td>
+                                                    <a href="{% url 'detailsUser' user.id %}">View</a> &nbsp;
+                                                    <a href="{% url 'updateUser' user.id %}">Update</a> &nbsp;
+                                                    <a href="#"><i class="mdi mdi-delete font-30 align-middle mr-2"></i></a>
+                                                </td>
+                                            </tr>
+                                        {% endfor %}
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                        {% include 'footer.html' %}
+                        <!-- End Page Content -->
+                    </div>
+                    <!-- End Container fluid  -->
+
+                </div>
+                <!-- End Page wrapper  -->
+            </div>
+        </div>
+    </div>
+
+
+    <!-- The Modal -->
+    <div class="">
+        <div id="userFormModalDialog" class="modalDialog">
+            <div>
+                <div id="head">
+                    <a href="#close" title="Close" class="close2">X</a>
+                    <h5 class="modalDialog-title">Add User</h5>
+                </div>
+                <hr>
+
+                <div class="modal-body">
+
+                    <div class="scrollbar-modal1">
+                        <div id="dialog_user_reg">
+
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+    <!-- END The Modal -->
+{% endblock %}

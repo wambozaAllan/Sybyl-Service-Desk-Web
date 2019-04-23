@@ -38,42 +38,38 @@
                                         </div>
                                     </div>
                                     <div class="table-responsive">
-                                        {% if list_priorities %}
-                                            <table id="table_category" class="display nowrap table table-hover" cellspacing="0" width="100%">
-                                                <thead>
-                                                <tr>
-                                                    <th>#</th>
-                                                    <th>Priority Name</th>
-                                                    <th>Description</th>
-                                                    <th class="text-center">Action</th>
-                                                </tr>
-                                                </thead>
-                                                <tbody>
+                                        <table id="table_priorities" class="display nowrap table table-hover"
+                                               cellspacing="0" width="100%">
+                                            <thead>
+                                            <tr>
+                                                <th>#</th>
+                                                <th>Priority Name</th>
+                                                <th>Description</th>
+                                                <th class="text-center">Action</th>
+                                            </tr>
+                                            </thead>
+                                            <tbody>
 
-                                                {% for pri in list_priorities %}
-                                                    <tr>
-                                                        <td>{{forloop.counter}}</td>
-                                                        <td>{{ pri.name }}</td>
-                                                        <td>{{ pri.description }}</td>
-                                                        <td class="text-center">
-                                                            <button onclick="functionEditPriority({{ pri.id }}, '{{ pri.name }}')"id="" class="btn btn-outline-success btn-sm" type="button">
-                                                                <i title="Edit Priority"class="fa fa-edit"></i>
-                                                            </button>&nbsp;
-                                                            <button onclick="functionDeletePriority({{ pri.id }}, '{{ pri.name }}')" class="btn btn-outline-danger btn-sm" type="button">
-                                                                <i title="Delete Priority" class="fa fa-remove"></i>
-                                                            </button>
-                                                        </td>
-                                                    </tr>
-                                                {% endfor %}
-                                                </tbody>
-                                            </table>
-                                        {% else %}
-                                            <h5>
-                                                <span class="text-muted text-center" style="padding: 24%; font-size: 107%;">
-                                                    <strong>No Registered Priorities.</strong>
-                                                </span>
-                                            </h5>
-                                        {% endif %}
+                                            {% for pri in list_priorities %}
+                                                <tr>
+                                                    <td>{{ forloop.counter }}</td>
+                                                    <td>{{ pri.name }}</td>
+                                                    <td>{{ pri.description }}</td>
+                                                    <td class="text-center">
+                                                        <button onclick="functionEditPriority({{ pri.id }}, '{{ pri.name }}')"
+                                                                id="" class="btn btn-outline-success btn-sm"
+                                                                type="button">
+                                                            <i title="Edit Priority" class="fa fa-edit"></i>
+                                                        </button>&nbsp;
+                                                        <button onclick="functionDeletePriority({{ pri.id }}, '{{ pri.name }}')"
+                                                                class="btn btn-outline-danger btn-sm" type="button">
+                                                            <i title="Delete Priority" class="fa fa-remove"></i>
+                                                        </button>
+                                                    </td>
+                                                </tr>
+                                            {% endfor %}
+                                            </tbody>
+                                        </table>
                                     </div>
                                 </div>
                             </div>

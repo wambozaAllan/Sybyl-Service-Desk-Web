@@ -1,0 +1,66 @@
+{% load crispy_forms_tags %}
+
+<div class="card-body">
+    <div class="basic-form">
+        <form id="update-user-group">
+            {% csrf_token %}
+            <div class="row col-12">
+                <div class="col-6">
+
+                    <div class="form-group">
+                        <label class="col-form-label  requiredField">Group Name<span
+                                class="asteriskField">*</span></label>
+                        <div class="">
+                            <input value="{{ groupextend.group }}" id="id_name2" type="text" name=""
+                                   class="textinput textInput form-control">
+                        </div>
+                    </div>
+                </div>
+                <div class="col-6">
+                    {{ form.description|as_crispy_field }}
+                </div>
+                <input value="{{ groupextend.id }}" type="hidden" id="grp_ext_id">
+                <input value="{{ groupextend.group_id }}" type="hidden" id="grp_id">
+            </div>
+
+            <div class="row col-12">
+                <div class="col-6">
+                    {{ form.company|as_crispy_field }}
+                </div>
+                <div class="col-6" style="margin-top: 6%">
+                    <button type="submit" value="Update" class="col-4 btn btn-success pull-right">Update</button>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+
+<script>
+    $('#update-user-group').on('submit', function (event) {
+        event.preventDefault();
+        var name = $('#id_name2').val();
+        var company = $('#id_company').val();
+        var description = $('#id_description').val();
+        var grp_ext_id = $('#grp_ext_id').val();
+        var grp_id = $('#grp_id').val();
+        urldata = "{% url 'updateGroup'%}";
+
+        $.ajax({
+            type: "GET",
+            cache: false,
+            data: {
+                name: name,
+                company: company,
+                grpextid: grp_ext_id,
+                grpid: grp_id,
+                desc: description
+            },
+            url: urldata,
+            success: function (resp) {
+                $('.close-dialog').click();
+                $('.table-responsive').html(resp);
+            }
+        });
+
+    });
+</script>

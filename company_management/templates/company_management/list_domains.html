@@ -38,44 +38,43 @@
                                         </div>
                                     </div>
                                     <div class="table-responsive">
-                                        {% if list_domains %}
-                                            <table id="table_domains" class="display nowrap table table-hover"
-                                                   cellspacing="0"
-                                                   width="100%">
-                                                <thead>
-                                                <tr>
-                                                    <th>#</th>
-                                                    <th>Domain Name</th>
-                                                    <th class="text-center">Companies</th>
-                                                    <th class="text-center">Action</th>
-                                                </tr>
-                                                </thead>
-                                                <tbody>
+                                        <table id="table_domains" class="display nowrap table table-hover"
+                                               cellspacing="0"
+                                               width="100%">
+                                            <thead>
+                                            <tr>
+                                                <th>#</th>
+                                                <th>Domain Name</th>
+                                                <th class="text-center">Companies</th>
+                                                <th class="text-center">Action</th>
+                                            </tr>
+                                            </thead>
+                                            <tbody>
 
-                                                {% for domain in list_domains %}
-                                                    <tr>
-                                                        <td>{{forloop.counter}}</td>
-                                                        <td>{{ domain.name }}</td>
-                                                        <td class="text-center"><span class="badge badge-pill badge-success">
-                                                            <a href="#" style="color: #fff" onclick="functionViewDomainCompanies({{ domain.id }}, '{{ domain.name }}')">{{ domain.get_companies_count }}</a></span>
-                                                        </td>
-                                                        <td class="text-center">
-                                                            <button onclick="functionEditDomain({{ domain.id }}, '{{ domain.name }}')"id="" class="btn btn-outline-success btn-sm" type="button">
-                                                                <i title="Edit Domain"class="fa fa-edit"></i>
-                                                            </button>&nbsp;
-                                                            <button onclick="functionDeleteDomain({{ domain.id }}, '{{ domain.name }}', {{ domain.get_companies_count }})" class="btn btn-outline-danger btn-sm" type="button">
-                                                                <i title="Delete Domain" class="fa fa-remove"></i>
-                                                            </button>
-                                                        </td>
-                                                    </tr>
-                                                {% endfor %}
-                                                </tbody>
-                                            </table>
-                                        {% else %}
-                                            <h5><span class="text-muted text-center"
-                                                      style="padding: 24%; font-size: 107%;"><strong>No Registered Domains.</strong></span>
-                                            </h5>
-                                        {% endif %}
+                                            {% for domain in list_domains %}
+                                                <tr>
+                                                    <td>{{ forloop.counter }}</td>
+                                                    <td>{{ domain.name }}</td>
+                                                    <td class="text-center"><span
+                                                            class="badge badge-pill badge-success">
+                                                            <a href="#" style="color: #fff"
+                                                               onclick="functionViewDomainCompanies({{ domain.id }}, '{{ domain.name }}')">{{ domain.get_companies_count }}</a></span>
+                                                    </td>
+                                                    <td class="text-center">
+                                                        <button onclick="functionEditDomain({{ domain.id }}, '{{ domain.name }}')"
+                                                                id="" class="btn btn-outline-success btn-sm"
+                                                                type="button">
+                                                            <i title="Edit Domain" class="fa fa-edit"></i>
+                                                        </button>&nbsp;
+                                                        <button onclick="functionDeleteDomain({{ domain.id }}, '{{ domain.name }}', {{ domain.get_companies_count }})"
+                                                                class="btn btn-outline-danger btn-sm" type="button">
+                                                            <i title="Delete Domain" class="fa fa-remove"></i>
+                                                        </button>
+                                                    </td>
+                                                </tr>
+                                            {% endfor %}
+                                            </tbody>
+                                        </table>
                                     </div>
                                 </div>
                             </div>

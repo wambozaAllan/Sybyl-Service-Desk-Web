@@ -1,0 +1,81 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block content %}
+    <!-- Main wrapper  -->
+    <div id="main-wrapper">
+        <!-- header header  -->
+        {% include 'header.html' %}
+        <!-- End header header -->
+        {% include 'left-nav.html' %}
+        <!-- Page wrapper  -->
+        <div class="page-wrapper">
+            <!-- Bread crumb -->
+            <div class="row page-titles">
+                <div class="col-md-5 align-self-center">
+                    <h3 class="text-primary">User Groups</h3>
+                </div>
+                <div class="col-md-7 align-self-center">
+                    <ol class="breadcrumb">
+                        <li class="breadcrumb-item"><a href="javascript:void(0)">Home</a></li>
+                        <li class="breadcrumb-item active">User Groups</li>
+                    </ol>
+                </div>
+            </div>
+            <!-- End Bread crumb -->
+            <!-- Container fluid  -->
+            <div class="container-fluid">
+                <!-- Start Page Content -->
+                <div class="row">
+                    <div class="col-12">
+                        <div class="card">
+                            <div class="card-body">
+                                <h4 class="card-title">User Groups</h4>
+
+                                <div class="row">
+                                    <div class="col-md-12">
+                                        <button id="" class="btn btn-info pull-right" onclick="functAddUserGroup();">
+                                            <i class="fa fa-fw fa-lg fa-plus"></i>Add Group
+                                        </button>
+                                    </div>
+                                </div>
+
+                                <div class="table-responsive">
+                                    <table id="groupList2" class="display nowrap table table-hover" cellspacing="0"
+                                           width="100%">
+                                        <thead>
+                                        <tr>
+                                            <th>Group</th>
+                                            <th>Company</th>
+                                            <th>Description</th>
+                                            <th class="text-center">Users</th>
+                                            <th class="text-center">Action</th>
+                                        </tr>
+                                        </thead>
+                                        <tbody>
+                                        {% for userGroup in all_userGroups %}
+                                            <tr>
+                                                <td>{{ userGroup.group }}</td>
+                                                <td>{{ userGroup.company }}</td>
+                                                <td>{{ userGroup.description }}</td>
+                                                <td class="text-center"><span class="badge badge-pill badge-success">
+                                                        <a href="#" style="color: #fff" onclick="">{{ userGroup.get_users_count }}</a></span>
+                                                </td>
+                                                <td class="text-center">
+                                                    <button onclick="functionEditUserGroup('{{ userGroup.group }}', {{ userGroup.id }})" class="btn btn-outline-success btn-sm" type="button">
+                                                        <i title="Edit Group" class="fa fa-edit"></i>
+                                                    </button>
+                                                </td>
+                                            </tr>
+                                        {% endfor %}
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                        {% include 'footer.html' %}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}
