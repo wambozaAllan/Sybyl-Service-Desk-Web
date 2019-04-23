@@ -15,7 +15,8 @@
 			<div class="col-md-7 align-self-center">
 				<ol class="breadcrumb">
 					<li class="breadcrumb-item"><a href="javascript:void(0)">Home</a></li>
-					<li class="breadcrumb-item active">List of Users</li>
+					<li class="breadcrumb-item">Users List</li>
+                    <li class="breadcrumb-item active"><a href="{% url 'listUsers' %}">User</a></li>
 				</ol>
 			</div>
 		</div>
@@ -69,7 +70,7 @@
 									<div class="col-4">
 										<p class="text-muted m-b-15 f-s-12">User Group</p>
 										<input type="text" class="form-control input-flat"
-											value="{{ user.usergroup }}" disabled>
+											value="{{ user.group }}" disabled>
 									</div>
 									<div class="col-4">
 										<p class="text-muted m-b-15 f-s-12">User Category</p>
@@ -87,12 +88,6 @@
 										<p class="text-muted m-b-15 f-s-12">Password</p>
 										<input type="password" class="form-control input-flat"
 											value="{{ user.password }}" disabled>
-									</div>
-								</div>
-								<br />
-								<div class="row">
-									<div class="col-1">
-										<a href="{% url 'listUsers' %}" class="btn btn-inverse">Back</a>
 									</div>
 								</div>
 							</div>

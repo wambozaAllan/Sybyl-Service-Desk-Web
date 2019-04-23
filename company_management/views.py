@@ -156,12 +156,14 @@ def validatCompanyName(request):
     }
     return JsonResponse(data)
 
+
 def validateDomainName(request):
     domain_name = request.GET.get('domainname', None)
     data = {
         'is_taken': CompanyDomain.objects.filter(name=domain_name).exists()
     }
     return JsonResponse(data)
+
 
 def validateCategoryName(request):
     category_name = request.GET.get('categoryname', None)

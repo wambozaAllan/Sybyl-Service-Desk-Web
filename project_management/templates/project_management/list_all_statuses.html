@@ -38,42 +38,38 @@
                                         </div>
                                     </div>
                                     <div class="table-responsive">
-                                        {% if list_status %}
-                                            <table id="table_status" class="display nowrap table table-hover" cellspacing="0" width="100%">
-                                                <thead>
-                                                <tr>
-                                                    <th>#</th>
-                                                    <th>Status Name</th>
-                                                    <th>Description</th>
-                                                    <th class="text-center">Action</th>
-                                                </tr>
-                                                </thead>
-                                                <tbody>
+                                        <table id="table_status" class="display nowrap table table-hover"
+                                               cellspacing="0" width="100%">
+                                            <thead>
+                                            <tr>
+                                                <th>#</th>
+                                                <th>Status Name</th>
+                                                <th>Description</th>
+                                                <th class="text-center">Action</th>
+                                            </tr>
+                                            </thead>
+                                            <tbody>
 
-                                                {% for sta in list_status %}
-                                                    <tr>
-                                                        <td>{{forloop.counter}}</td>
-                                                        <td>{{ sta.name }}</td>
-                                                        <td>{{ sta.description }}</td>
-                                                        <td class="text-center">
-                                                            <button onclick="functionEditStatus({{ sta.id }}, '{{ sta.name }}')" id="" class="btn btn-outline-success btn-sm" type="button">
-                                                                <i title="Edit Status"class="fa fa-edit"></i>
-                                                            </button>&nbsp;
-                                                            <button onclick="functionDeleteStatus({{ sta.id }}, '{{ sta.name }}')" class="btn btn-outline-danger btn-sm" type="button">
-                                                                <i title="Delete Status" class="fa fa-remove"></i>
-                                                            </button>
-                                                        </td>
-                                                    </tr>
-                                                {% endfor %}
-                                                </tbody>
-                                            </table>
-                                        {% else %}
-                                            <h5>
-                                                <span class="text-muted text-center" style="padding: 24%; font-size: 107%;">
-                                                    <strong>No Registered Status.</strong>
-                                                </span>
-                                            </h5>
-                                        {% endif %}
+                                            {% for sta in list_status %}
+                                                <tr>
+                                                    <td>{{ forloop.counter }}</td>
+                                                    <td>{{ sta.name }}</td>
+                                                    <td>{{ sta.description }}</td>
+                                                    <td class="text-center">
+                                                        <button onclick="functionEditStatus({{ sta.id }}, '{{ sta.name }}')"
+                                                                id="" class="btn btn-outline-success btn-sm"
+                                                                type="button">
+                                                            <i title="Edit Status" class="fa fa-edit"></i>
+                                                        </button>&nbsp;
+                                                        <button onclick="functionDeleteStatus({{ sta.id }}, '{{ sta.name }}')"
+                                                                class="btn btn-outline-danger btn-sm" type="button">
+                                                            <i title="Delete Status" class="fa fa-remove"></i>
+                                                        </button>
+                                                    </td>
+                                                </tr>
+                                            {% endfor %}
+                                            </tbody>
+                                        </table>
                                     </div>
                                 </div>
                             </div>
@@ -88,9 +84,4 @@
         </div>
     </div>
 {% endblock %}
-<script>
-   $(document).ready(function() {
-        $('#table_status').DataTable();
-    });
-</script>
 

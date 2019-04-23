@@ -1,40 +1,42 @@
-from .models import User, UserGroup, UserTeamMember
+from .models import User, UserTeamMember, GroupExtend
 from django import forms
 from django.contrib.auth.forms import UserCreationForm, UserChangeForm
+from django.contrib.auth.models import Group
+from extra_views import InlineFormSet
+from django.forms.models import modelformset_factory
 
 class CustomUserCreationForm(UserCreationForm):
-
     class Meta(UserCreationForm):
         model = User
         fields = ['first_name', 'last_name', 'gender', 'company'
-              , 'branch', 'department', 'user_group', 'category'
-              , 'username', 'email']
+            , 'branch', 'department', 'group', 'category'
+            , 'username', 'email']
 
-class CreateUserForm(forms.ModelForm):
+
+class UserForm(forms.ModelForm):
     class Meta:
         model = User
-        fields = ['first_name', 'last_name', 'gender', 'company'
-              , 'branch', 'department', 'user_group', 'category'
-              , 'username', 'password', 'email','is_superuser','is_staff', 'is_active',]
-        widgets = {
-            'password': forms.PasswordInput()
-        }
+        fields = ('first_name', 'last_name', 'gender', 'company'
+                  , 'branch', 'department', 'group', 'category'
+                  , 'username', 'password', 'email', 'is_superuser', 'is_staff', 'is_active',)
+        widgets = {'password': forms.PasswordInput()}
+
 
 class CustomUserChangeForm(UserChangeForm):
     class Meta:
         model = User
         fields = ['first_name', 'last_name', 'gender', 'company'
-              , 'branch', 'department', 'user_group', 'category'
-              , 'username', 'password', 'email','is_superuser','is_staff', 'is_active',]
+            , 'branch', 'department', 'group', 'category'
+            , 'username', 'password', 'email', 'is_superuser', 'is_staff', 'is_active', ]
 
-class UserGroupForm(forms.ModelForm):
 
+class GroupExtendForm(forms.ModelForm):
     class Meta:
-        model = UserGroup
-        fields = ('name',)
+        model = GroupExtend
+        fields = ('company', 'description')
+
 
 class UserTeamMeamberForm(forms.ModelForm):
-
     class Meta:
         model = UserTeamMember
-        fields = ('user','user_team')
+        fields = ('user', 'user_team')

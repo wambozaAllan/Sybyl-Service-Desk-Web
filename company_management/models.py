@@ -91,3 +91,4 @@ class Department(models.Model):
 
     class Meta:
         db_table = 'department'
+
