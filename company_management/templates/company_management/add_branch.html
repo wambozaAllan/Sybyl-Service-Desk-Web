@@ -37,14 +37,20 @@
 										<div class="col-4">{{ form.company|as_crispy_field }}</div>
 										<div class="col-4">{{ form.name|as_crispy_field }}</div>
 										<div class="col-4">{{ form.location|as_crispy_field }}</div>
+										<div class="col-4">
+											{{ form.phone_number|as_crispy_field }}
+											<small ><strong><font id="phoneMsg" color="red"></font></strong></small>
+
+										</div>
+										<div class="col-4">{{ form.email|as_crispy_field }}</div>
 									</div>
 									<div class="row">
 										<div class="col-5"></div>
 										<div class="col-1">
-											<a href="{% url 'list-branches' %}" class="btn btn-inverse">Cancel</a>
+											<a href="{% url 'listBranches' %}" class="btn btn-inverse">Cancel</a>
 										</div>
 										<div class="col-1">
-											<button type="submit" class="btn btn-success">Add Branch</button>
+											<button type="submit" id="btn-submit" class="btn btn-success">Add Branch</button>
 										</div>
 									</div>
 								</form>

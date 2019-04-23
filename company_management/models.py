@@ -51,6 +51,8 @@ class Branch(models.Model):
     name = models.CharField(max_length=100)
     company = models.ForeignKey(Company, on_delete=models.CASCADE)
     location = models.CharField(max_length=100)
+    phone_number = models.CharField(max_length=45)
+    email = models.EmailField(max_length=254)
     created_time = models.DateTimeField(auto_now_add=True)
     modified_time = models.DateTimeField(auto_now=True)
 
@@ -61,28 +63,16 @@ class Branch(models.Model):
         db_table = 'branch'
 
 
-# branch_contact
-class BranchContact(models.Model):
-    contact_type = models.CharField(max_length=45)
-    contact_value = models.CharField(max_length=45)
-    branch = models.ForeignKey(Branch, on_delete=models.CASCADE)
-    created_time = models.DateTimeField(auto_now_add=True)
-    modified_time = models.DateTimeField(auto_now=True)
+# # branch_phone_ contact
+# class BranchPhoneContact(models.Model):
+#     phone_number = PhoneNumberField()
+#     secondary_number = PhoneNumberField(blank=True)
+#     branch = models.ForeignKey(Branch, on_delete=models.CASCADE)
+#     created_time = models.DateTimeField(auto_now_add=True)
+#     modified_time = models.DateTimeField(auto_now=True)
 
-    class Meta:
-        db_table = 'branch_contact'
-
-
-# branch_phone_ contact
-class BranchPhoneContact(models.Model):
-    phone_number = models.CharField(max_length=45)
-    secondary_number = models.CharField(max_length=45, blank=True)
-    branch = models.ForeignKey(Branch, on_delete=models.CASCADE)
-    created_time = models.DateTimeField(auto_now_add=True)
-    modified_time = models.DateTimeField(auto_now=True)
-
-    class Meta:
-        db_table = 'branch_phone_contact'
+#     class Meta:
+#         db_table = 'branch_phone_contact'
 
 
 # Department
