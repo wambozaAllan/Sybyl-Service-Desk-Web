@@ -41,7 +41,6 @@ INSTALLED_APPS = [
     'project_management',
     'crispy_forms',
     'ckeditor',
-    'extra_views',
 ]
 
 LOGIN_REDIRECT_URL = 'home'

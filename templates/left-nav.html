@@ -37,157 +37,161 @@
 
                 {% empty %}
                 {% endfor %}
-              </ul>
-            </li>
-          {% endif %}
-          {% empty %}
-          {% endfor %}
 
-        {% empty %}
-        {% endfor %}
+                <li class="nav-label">Main Menu</li>
+                {% if perms.project_management.add_project or perms.project_management.view_project or perms.project_management.delete_project or perms.project_management.change_project %}
+                    <li>
+                    <a class="has-arrow  " href="#" aria-expanded="false"><i class="fa fa-envelope"></i><span
+                            class="hide-menu">Projects
+                        <!--span class="label label-rouded label-warning pull-right">12</span></span--></a>
+                {% endif %}
 
-        <li class="nav-label">Main Menu</li>
-        {% if perms.project_management.add_project or perms.project_management.view_project or perms.project_management.delete_project or perms.project_management.change_project %}
-        <li>
-          <a class="has-arrow  " href="#" aria-expanded="false"><i class="fa fa-envelope"></i><span class="hide-menu">Projects
-              <!--span class="label label-rouded label-warning pull-right">12</span></span--></a>
-        {% endif %}
+                <ul aria-expanded="false" class="collapse">
+                    {% if perms.project_management.view_project %}
+                        <li><a href="{% url 'full_project_list' %}">Projects List</a></li>
+                    {% endif %}
 
-          <ul aria-expanded="false" class="collapse">
-          {% if perms.project_management.view_project %}
-            <li><a href="{% url 'full_project_list' %}">Projects List</a></li>
-          {% endif %}
+                    {% if perms.project_management.add_project %}
+                        <li><a href="{% url 'new_project' %}">New</a></li>
+                    {% endif %}
+                </ul>
+                </li>
 
-          {% if perms.project_management.add_project %}
-            <li><a href="{% url 'new_project' %}">New</a></li>
-          {% endif %}
-          </ul>
-        </li>
+                {% if perms.project_management.add_milestone or perms.project_management.view_milestone or perms.project_management.delete_milestone or perms.project_management.change_milestone %}
+                    <li>
+                    <a class="has-arrow" href="#" aria-expanded="false"><i class="fa fa-suitcase"></i><span
+                            class="hide-menu">Milestones</span></a>
+                {% endif %}
 
-        {% if perms.project_management.add_milestone or perms.project_management.view_milestone or perms.project_management.delete_milestone or perms.project_management.change_milestone %}
-        <li>
-          <a class="has-arrow" href="#" aria-expanded="false"><i class="fa fa-suitcase"></i><span class="hide-menu">Milestones</span></a>
-        {% endif %}
+                <ul aria-expanded="false" class="collapse">
+                    {% if perms.project_management.view_milestone %}
+                        <li><a href="{% url 'milestone_list' %}">Project Milestones</a></li>
+                    {% endif %}
+                    {% if perms.project_management.add_milestone %}
+                        <li><a href="{% url 'new_milestone' %}">New</a></li>
+                    {% endif %}
+                </ul>
+                </li>
 
-          <ul aria-expanded="false" class="collapse">
-        {% if perms.project_management.view_milestone %}
-            <li><a href="{% url 'milestone_list' %}">Project Milestones</a></li>
-        {% endif %}
-        {% if perms.project_management.add_milestone %}
-            <li><a href="{% url 'new_milestone' %}">New</a></li>
-        {% endif %}
-          </ul>
-        </li>
+                {% if perms.project_management.add_task or perms.project_management.view_task or perms.project_management.delete_task or perms.project_management.change_task %}
+                    <li>
+                    <a class="has-arrow  " href="#" aria-expanded="false"><i class="fa fa-suitcase"></i><span
+                            class="hide-menu">Tasks</span></a>
+                {% endif %}
+                <ul aria-expanded="false" class="collapse">
+                    {% if perms.project_management.view_task %}
+                        <li><a href="{% url 'task_list' %}">Task List</a></li>
+                    {% endif %}
+                    {% if perms.project_management.add_task %}
+                        <li><a href="{% url 'new_task' %}">New</a></li>
+                    {% endif %}
+                </ul>
+                </li>
 
-        {% if perms.project_management.add_task or perms.project_management.view_task or perms.project_management.delete_task or perms.project_management.change_task %}
-        <li>
-          <a class="has-arrow  " href="#" aria-expanded="false"><i class="fa fa-suitcase"></i><span class="hide-menu">Tasks</span></a>
-          {% endif %}
-          <ul aria-expanded="false" class="collapse">
-            {% if perms.project_management.view_task %}
-            <li><a href="{% url 'task_list' %}">Task List</a></li>
-            {% endif %}
-            {% if perms.project_management.add_task %}
-            <li><a href="{% url 'new_task' %}">New</a></li>
-            {% endif %}
-          </ul>
-        </li>
+                {% if perms.project_management.add_incident or perms.project_management.view_incident or perms.project_management.delete_incident or perms.project_management.change_incident %}
+                    <li>
+                    <a class="has-arrow  " href="#" aria-expanded="false"><i class="fa fa-suitcase"></i><span
+                            class="hide-menu">Incidents</span></a>
+                {% endif %}
+                <ul aria-expanded="false" class="collapse">
+                    {% if perms.project_management.view_incident %}
+                        <li><a href="{% url 'listIncidents' %}">List of Incidents</a></li>
+                    {% endif %}
+                    {% if perms.project_management.add_incident %}
+                        <li><a href="{% url 'addIncident' %}">Add New Incident</a></li>
+                    {% endif %}
+                </ul>
+                </li>
 
-        {% if perms.project_management.add_incident or perms.project_management.view_incident or perms.project_management.delete_incident or perms.project_management.change_incident %}
-        <li>
-          <a class="has-arrow  " href="#" aria-expanded="false"><i class="fa fa-suitcase"></i><span class="hide-menu">Incidents</span></a>
-        {% endif %}
-          <ul aria-expanded="false" class="collapse">
-        {% if perms.project_management.view_incident %}
-            <li><a href="{% url 'listIncidents' %}">List of Incidents</a></li>
-        {% endif %}
-        {% if perms.project_management.add_incident %}
-            <li><a href="{% url 'addIncident' %}">Add New Incident</a></li>
-        {% endif %}
-          </ul>
-        </li>
+                {% if user.is_superuser %}
+                    <li>
+                        <a class="has-arrow  " href="#" aria-expanded="false"><i class="fa fa-bar-chart"></i><span
+                                class="hide-menu">Reports</span></a>
+                        <ul aria-expanded="false" class="collapse">
+                            <li><a href="#">Project Status</a></li>
+                            <li><a href="#">Milestones</a></li>
+                            <li><a href="#">Tasks</a></li>
+                            <li><a href="#">Incidents</a></li>
+                        </ul>
+                    </li>
+                {% endif %}
 
-        {% if user.is_superuser %}
-        <li>
-          <a class="has-arrow  " href="#" aria-expanded="false"><i class="fa fa-bar-chart"></i><span class="hide-menu">Reports</span></a>
-          <ul aria-expanded="false" class="collapse">
-            <li><a href="#">Project Status</a></li>
-            <li><a href="#">Milestones</a></li>
-            <li><a href="#">Tasks</a></li>
-            <li><a href="#">Incidents</a></li>
-          </ul>
-        </li>
-        {% endif %}
+                {% if perms.user_management.add_user or perms.user_management.view_user or perms.user_management.delete_user or perms.user_management.change_user %}
+                    <li class="nav-label">User Management</li>
 
-        {% if perms.user_management.add_user or perms.user_management.view_user or perms.user_management.delete_user or perms.user_management.change_user %}
-        <li class="nav-label">User Management</li>
+                    <li>
+                    <a class="has-arrow  " href="#" aria-expanded="false"><i class="fa fa-suitcase"></i><span
+                            class="hide-menu">Users</span></a>
+                {% endif %}
+                <ul aria-expanded="false" class="collapse">
 
-        <li>
-          <a class="has-arrow  " href="#" aria-expanded="false"><i class="fa fa-suitcase"></i><span class="hide-menu">Users</span></a>
-          {% endif %}
-          <ul aria-expanded="false" class="collapse">
+                    {% if perms.user_management.view_user %}
+                        <li><a href="{% url 'listUsers' %}">List of Users</a></li>
+                    {% endif %}
+                    {% if perms.user_management.add_user %}
+                        <li><a href="{% url 'addUser' %}">Add User</a></li>
+                    {% endif %}
+                </ul>
+                </li>
 
-          {% if perms.user_management.view_user %}
-            <li><a href="{% url 'listUsers' %}">List of Users</a></li>
-          {% endif %}
-          {% if perms.user_management.add_user %}
-            <li><a href="{% url 'addUser' %}">Add User</a></li>
-          {% endif %}
-          </ul>
-        </li>
-
-      {% if user.is_superuser %}
-        <li>
-          <a class="has-arrow  " href="#" aria-expanded="false"><i class="fa fa-bar-chart"></i><span class="hide-menu">User
+                {% if user.is_superuser %}
+                    <li>
+                        <a class="has-arrow  " href="#" aria-expanded="false"><i class="fa fa-bar-chart"></i><span
+                                class="hide-menu">User
               Groups</span></a>
-          <ul aria-expanded="false" class="collapse">
-            <li><a href="{% url 'listUserGroups' %}">List of User Groups</a></li>
-            <li><a href="{% url 'addUserGroup' %}">Add User Group</a></li>
-            <li><a href="{% url 'listUserGroupMenus' %}">User Group Menus</a></li>
-            <li><a href="{% url 'addMenuToGroup' %}">Add Menu to User Menu</a></li>
-          </ul>
-        </li>
+                        <ul aria-expanded="false" class="collapse">
+                            <li><a href="{% url 'listUserGroups' %}">List of User Groups</a></li>
+                            <li><a href="{% url 'addUserGroup' %}">Add User Group</a></li>
+                            <li><a href="#">User Group Menus</a></li>
+                            <li><a href="#">Add Menu to User Menu</a></li>
+                        </ul>
+                    </li>
 
-        <li>
-          <a class="has-arrow  " href="#" aria-expanded="false"><i class="fa fa-bar-chart"></i><span class="hide-menu">User
+                    <li>
+                        <a class="has-arrow  " href="#" aria-expanded="false"><i class="fa fa-bar-chart"></i><span
+                                class="hide-menu">User
               Teams</span></a>
-          <ul aria-expanded="false" class="collapse">
-            <li><a href="{% url 'listTeams' %}">List of User Teams</a></li>
-            <li><a href="{% url 'addTeam' %}">Add User Team</a></li>
-            <li><a href="{% url 'addUserToTeam' %}">Add User to Team</a></li>
-            <li><a href="{% url 'teams' %}">View Team Members</a></li>
-          </ul>
-        </li>
+                        <ul aria-expanded="false" class="collapse">
+                            <li><a href="{% url 'listTeams' %}">List of User Teams</a></li>
+                            <li><a href="{% url 'addTeam' %}">Add User Team</a></li>
+                            <li><a href="{% url 'addUserToTeam' %}">Add User to Team</a></li>
+                            <li><a href="{% url 'teams' %}">View Team Members</a></li>
+                        </ul>
+                    </li>
 
-        <li class="nav-label">Company Management</li>
-        <li>
-          <a class="has-arrow  " href="#" aria-expanded="false"><i class="fa fa-suitcase"></i><span class="hide-menu">Companies</span></a>
-          <ul aria-expanded="false" class="collapse">
-            <li><a href="{% url 'listCompanies' %}">List of Companies</a></li>
-            <li><a href="{% url 'addCompany' %}">Add Company</a></li>
-          </ul>
-        </li>
+                    <li class="nav-label">Company Management</li>
+                    <li>
+                        <a class="has-arrow  " href="#" aria-expanded="false"><i class="fa fa-suitcase"></i><span
+                                class="hide-menu">Companies</span></a>
+                        <ul aria-expanded="false" class="collapse">
+                            <li><a href="{% url 'listCompanies' %}">List of Companies</a></li>
+                            <li><a href="{% url 'addCompany' %}">Add Company</a></li>
+                        </ul>
+                    </li>
 
-        <li>
-          <a class="has-arrow" href="#" aria-expanded="false"><i class="fa fa-bar-chart"></i><span class="hide-menu">Company
+                    <li>
+                        <a class="has-arrow" href="#" aria-expanded="false"><i class="fa fa-bar-chart"></i><span
+                                class="hide-menu">Company
               Branches</span></a>
-          <ul aria-expanded="false" class="collapse">
-            <li><a href="{% url 'listBranches' %}">List of Branches</a></li>
-            <li><a href="{% url 'addBranch' %}">Add Company Branch</a></li>
-          </ul>
-        </li>
+                        <ul aria-expanded="false" class="collapse">
+                            <li><a href="{% url 'listBranches' %}">List of Branches</a></li>
+                            <li><a href="{% url 'addBranch' %}">Add Company Branch</a></li>
+                        </ul>
+                    </li>
 
-        <li>
-          <a class="has-arrow" href="#" aria-expanded="false"><i class="fa fa-bar-chart"></i><span class="hide-menu">Branch
+                    <li>
+                        <a class="has-arrow" href="#" aria-expanded="false"><i class="fa fa-bar-chart"></i><span
+                                class="hide-menu">Branch
               Contacts</span></a>
-          <ul aria-expanded="false" class="collapse">
-            <li><a href="#">List of Branch Contacts</a></li>
-            <li><a href="#">Add Branch Contacts</a></li>
-          </ul>
-        </li>
+                        <ul aria-expanded="false" class="collapse">
+                            <li><a href="#">List of Branch Contacts</a></li>
+                            <li><a href="#">Add Branch Contacts</a></li>
+                        </ul>
+                    </li>
 
-        <li>
-          <a class="has-arrow" href="#" aria-expanded="false"><i class="fa fa-bar-chart"></i><span class="hide-menu">Departments
+                    <li>
+                        <a class="has-arrow" href="#" aria-expanded="false"><i class="fa fa-bar-chart"></i><span
+                                class="hide-menu">Departments
 
               Master</span></a>
                         <ul aria-expanded="false" class="collapse">
@@ -197,10 +201,12 @@
                     </li>
 
                     <li class="">
-                        <a class="has-arrow" href="#" aria-expanded="false"><i class="fa fa-cogs"></i><span class="hide-menu">SETTINGS</span></a>
+                        <a class="has-arrow" href="#" aria-expanded="false"><i class="fa fa-cogs"></i><span
+                                class="hide-menu">SETTINGS</span></a>
                         <ul aria-expanded="false" class="collapse">
                             <li><a href="{% url 'listDomains' %}"><i class="fa fa-tasks"></i> Company Domains</a></li>
-                            <li><a href="{% url 'listCategories' %}"><i class="fa fa-list-alt"></i> Company Categories</a></li>
+                            <li><a href="{% url 'listCategories' %}"><i class="fa fa-list-alt"></i> Company
+                                Categories</a></li>
                             <li><a href="{% url 'listAllPriorities' %}"><i class="fa fa-list"></i> Priorities</a></li>
                             <li><a href="{% url 'listAllStatuses' %}"><i class="fa fa-list"></i> Statuses</a></li>
                         </ul>
