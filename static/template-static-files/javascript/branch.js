@@ -1,18 +1,11 @@
 $(document).ready(function () {
 
-  $('#phoneMsg').text('');
-
   $('validMsg').text('');
-
-  $('#secondaryMsg').text('');
 
   $("#id_phone_number").keypress(function(event) {
     return /\d/.test(String.fromCharCode(event.keyCode));
   });
 
-$("#id_secondary_number").keypress(function(event) {
-    return /\d/.test(String.fromCharCode(event.keyCode));
- });
 
   $("#id_location").keypress(function(event) {
     return /\D/.test(String.fromCharCode(event.keyCode));
@@ -25,6 +18,7 @@ $("#id_secondary_number").keypress(function(event) {
 
   var phoneFinalVar;
   var input = document.querySelector("#id_phone_number");
+  var emailInput = document.querySelector("#id_email_address");
 
   var iti = window.intlTelInput(input, {
     autoPlaceholder: "polite",
@@ -61,12 +55,55 @@ $("#id_secondary_number").keypress(function(event) {
       }
     }
 
-  });d
+  });
 
+  function emailIsValid (email) {
+      return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)
+  }
+
+  function IsEmail(email) {
+      var regex = /^([a-zA-Z0-9_\.\-\+])+\@(([a-zA-Z0-9\-])+\.)+([a-zA-Z0-9]{2,4})+$/;
+      if(!regex.test(email)) {
+        return false;
+      }else{
+        return true;
+      }
+}
+
+    function EmailValidate() {
+     var numericExpression = /^w.+@[a-zA-Z_-]+?.[a-zA-Z]{2,3}$/;
+     var elem = $("#id_email_address").val();
+     if (elem.match(numericExpression))
+     return true;
+     else
+     return false;
+     }
+
+
+
+   $('#id_email_address').on('change', function(){
+
+        if(IsEmail(emailInput) === false){
+//           $('#id_email_address').val("false");
+            console.log("fdsadfsdf")
+        }
+        else{
+            console.log("truee")
+        }
+
+   })
 
   $('#btn-submit').on('click', function () {
         $("#id_phone_number").val(phoneFinalVar);
+//        if (!IsEmail()) {
+//            alert("Email validaiton failed");
+//            console.log("fail")
+//        }
+//        else{
+//            alert("Email passed")
+//        }
   });
+
 
 
 
