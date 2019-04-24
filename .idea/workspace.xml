@@ -2,22 +2,7 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="5b39e269-faf1-4041-a9e1-91ce60eb0e26" name="Default Changelist" comment="">
-      <change afterPath="$PROJECT_DIR$/user_management/templates/user_management/list_group_users.html" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/user_management/templates/user_management/unassigned_users_search_results.html" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/static/custom-static-files/css/bootstrap.min.css" beforeDir="false" afterPath="$PROJECT_DIR$/static/custom-static-files/css/bootstrap.min.css" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/static/template-static-files/css/style.css" beforeDir="false" afterPath="$PROJECT_DIR$/static/template-static-files/css/style.css" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/templates/base.html" beforeDir="false" afterPath="$PROJECT_DIR$/templates/base.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/templates/left-nav.html" beforeDir="false" afterPath="$PROJECT_DIR$/templates/left-nav.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/user_management/forms.py" beforeDir="false" afterPath="$PROJECT_DIR$/user_management/forms.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/user_management/models.py" beforeDir="false" afterPath="$PROJECT_DIR$/user_management/models.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/user_management/templates/user_management/add_user.html" beforeDir="false" afterPath="$PROJECT_DIR$/user_management/templates/user_management/add_user.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/user_management/templates/user_management/list_groups.html" beforeDir="false" afterPath="$PROJECT_DIR$/user_management/templates/user_management/list_groups.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/user_management/templates/user_management/list_user_groups.html" beforeDir="false" afterPath="$PROJECT_DIR$/user_management/templates/user_management/list_user_groups.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/user_management/templates/user_management/list_users.html" beforeDir="false" afterPath="$PROJECT_DIR$/user_management/templates/user_management/list_users.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/user_management/templates/user_management/update_user.html" beforeDir="false" afterPath="$PROJECT_DIR$/user_management/templates/user_management/update_user.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/user_management/urls.py" beforeDir="false" afterPath="$PROJECT_DIR$/user_management/urls.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/user_management/views.py" beforeDir="false" afterPath="$PROJECT_DIR$/user_management/views.py" afterDir="false" />
     </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="SHOW_DIALOG" value="false" />
@@ -53,8 +38,8 @@
       <file pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/user_management/templates/user_management/unassigned_users_search_results.html">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="354">
-              <caret line="22" column="7" selection-start-line="22" selection-start-column="7" selection-end-line="22" selection-end-column="7" />
+            <state relative-caret-position="167">
+              <caret line="66" column="17" lean-forward="true" selection-start-line="66" selection-start-column="17" selection-end-line="66" selection-end-column="17" />
             </state>
           </provider>
         </entry>
@@ -71,7 +56,7 @@
       <file pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/user_management/templates/user_management/list_users.html">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="255">
+            <state relative-caret-position="1343">
               <caret line="79" column="108" selection-start-line="79" selection-start-column="108" selection-end-line="79" selection-end-column="108" />
             </state>
           </provider>
@@ -80,8 +65,8 @@
       <file pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/user_management/templates/user_management/list_groups.html">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="227">
-              <caret line="21" column="47" lean-forward="true" selection-start-line="21" selection-start-column="47" selection-end-line="21" selection-end-column="47" />
+            <state relative-caret-position="357">
+              <caret line="21" column="47" selection-start-line="21" selection-start-column="47" selection-end-line="21" selection-end-column="47" />
             </state>
           </provider>
         </entry>
@@ -89,15 +74,10 @@
       <file pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/user_management/views.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="119">
+            <state relative-caret-position="2414">
               <caret line="155" column="21" selection-start-line="155" selection-start-column="4" selection-end-line="155" selection-end-column="21" />
               <folding>
                 <element signature="e#0#53#0" expanded="true" />
-                <element signature="e#4352#4934#0" />
-                <element signature="e#5358#5834#0" />
-                <element signature="e#5901#6069#0" />
-                <element signature="e#6111#6289#0" />
-                <element signature="e#6347#6482#0" />
               </folding>
             </state>
           </provider>
@@ -106,7 +86,7 @@
       <file pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/user_management/urls.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="177">
+            <state relative-caret-position="238">
               <caret line="15" column="73" selection-start-line="15" selection-start-column="57" selection-end-line="15" selection-end-column="73" />
               <folding>
                 <element signature="e#0#28#0" expanded="true" />
@@ -118,8 +98,8 @@
       <file pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/templates/base.html">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="347">
-              <caret line="738" column="20" lean-forward="true" selection-start-line="738" selection-start-column="20" selection-end-line="738" selection-end-column="50" />
+            <state relative-caret-position="12546">
+              <caret line="738" column="20" selection-start-line="738" selection-start-column="20" selection-end-line="738" selection-end-column="50" />
               <folding>
                 <element signature="e#27041#27183#0#HTML" />
               </folding>
@@ -130,8 +110,8 @@
       <file pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/company_management/views.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="314">
-              <caret line="156" column="29" lean-forward="true" selection-start-line="153" selection-start-column="4" selection-end-line="156" selection-end-column="29" />
+            <state relative-caret-position="2499">
+              <caret line="156" column="29" selection-start-line="153" selection-start-column="4" selection-end-line="156" selection-end-column="29" />
               <folding>
                 <element signature="e#0#32#0" expanded="true" />
               </folding>
@@ -257,7 +237,6 @@
       <foldersAlwaysOnTop value="true" />
     </navigator>
     <panes>
-      <pane id="Scope" />
       <pane id="ProjectPane">
         <subPane>
           <expand>
@@ -298,6 +277,7 @@
           <select />
         </subPane>
       </pane>
+      <pane id="Scope" />
     </panes>
   </component>
   <component name="PropertiesComponent">
@@ -403,12 +383,13 @@
       <workItem from="1555476352868" duration="21954000" />
       <workItem from="1555564003415" duration="27127000" />
       <workItem from="1555999392654" duration="27070000" />
-      <workItem from="1556082675879" duration="14521000" />
+      <workItem from="1556082675879" duration="15589000" />
+      <workItem from="1556109875529" duration="845000" />
     </task>
     <servers />
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="273675000" />
+    <option name="totallyTimeSpent" value="275588000" />
   </component>
   <component name="TodoView" selected-index="3">
     <todo-panel id="selected-file">
@@ -421,9 +402,8 @@
   </component>
   <component name="ToolWindowManager">
     <frame x="-8" y="-8" width="1382" height="744" extended-state="6" />
-    <editor active="true" />
     <layout>
-      <window_info active="true" content_ui="combo" id="Project" order="0" sideWeight="0.4945355" visible="true" weight="0.21028744" />
+      <window_info content_ui="combo" id="Project" order="0" sideWeight="0.4945355" visible="true" weight="0.19515885" />
       <window_info id="Structure" order="1" sideWeight="0.5054645" side_tool="true" weight="0.2193646" />
       <window_info anchor="bottom" id="Message" order="0" />
       <window_info anchor="bottom" id="Find" order="1" weight="0.3289689" />
@@ -437,7 +417,7 @@
       <window_info anchor="bottom" id="Database Changes" order="9" show_stripe_button="false" />
       <window_info anchor="bottom" id="Event Log" order="10" sideWeight="0.09531014" side_tool="true" weight="0.31423897" />
       <window_info anchor="bottom" id="Favorites" order="11" sideWeight="0.5035461" weight="0.21931261" />
-      <window_info anchor="bottom" id="Terminal" order="12" sideWeight="0.90468985" visible="true" weight="0.20785597" />
+      <window_info active="true" anchor="bottom" id="Terminal" order="12" sideWeight="0.90468985" visible="true" weight="0.31914893" />
       <window_info anchor="bottom" id="Python Console" order="13" sideWeight="0.49848714" weight="0.3289689" />
       <window_info anchor="right" id="Commander" internal_type="SLIDING" order="0" type="SLIDING" weight="0.4" />
       <window_info anchor="right" id="Ant Build" order="1" weight="0.25" />
@@ -505,7 +485,6 @@
         <line-breakpoint enabled="true" type="javascript">
           <url>file://$PROJECT_DIR$/templates/base.html</url>
           <line>667</line>
-          <properties lambdaOrdinal="-1" />
           <option name="timeStamp" value="3" />
         </line-breakpoint>
       </breakpoints>
@@ -775,34 +754,10 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/user_management/templates/user_management/list_groups.html">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="227">
-          <caret line="21" column="47" lean-forward="true" selection-start-line="21" selection-start-column="47" selection-end-line="21" selection-end-column="47" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/company_management/views.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="314">
-          <caret line="156" column="29" lean-forward="true" selection-start-line="153" selection-start-column="4" selection-end-line="156" selection-end-column="29" />
-          <folding>
-            <element signature="e#0#32#0" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/company_management/templates/company_management/add_domain.html">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="180">
           <caret line="41" column="36" lean-forward="true" selection-start-line="41" selection-start-column="36" selection-end-line="41" selection-end-column="36" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/user_management/templates/user_management/list_group_users.html">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="1241">
-          <caret line="73" column="39" selection-start-line="72" selection-start-column="29" selection-end-line="73" selection-end-column="39" />
         </state>
       </provider>
     </entry>
@@ -813,24 +768,47 @@
         </state>
       </provider>
     </entry>
+    <entry file="file://$PROJECT_DIR$/user_management/templates/user_management/unassigned_users_search_results.html">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="167">
+          <caret line="66" column="17" lean-forward="true" selection-start-line="66" selection-start-column="17" selection-end-line="66" selection-end-column="17" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/user_management/templates/user_management/list_group_users.html">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="1241">
+          <caret line="73" column="39" selection-start-line="72" selection-start-column="29" selection-end-line="73" selection-end-column="39" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/user_management/templates/user_management/list_users.html">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="1343">
+          <caret line="79" column="108" selection-start-line="79" selection-start-column="108" selection-end-line="79" selection-end-column="108" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/user_management/templates/user_management/list_groups.html">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="357">
+          <caret line="21" column="47" selection-start-line="21" selection-start-column="47" selection-end-line="21" selection-end-column="47" />
+        </state>
+      </provider>
+    </entry>
     <entry file="file://$PROJECT_DIR$/user_management/views.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="119">
+        <state relative-caret-position="2414">
           <caret line="155" column="21" selection-start-line="155" selection-start-column="4" selection-end-line="155" selection-end-column="21" />
           <folding>
             <element signature="e#0#53#0" expanded="true" />
-            <element signature="e#4352#4934#0" />
-            <element signature="e#5358#5834#0" />
-            <element signature="e#5901#6069#0" />
-            <element signature="e#6111#6289#0" />
-            <element signature="e#6347#6482#0" />
           </folding>
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/user_management/urls.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="177">
+        <state relative-caret-position="238">
           <caret line="15" column="73" selection-start-line="15" selection-start-column="57" selection-end-line="15" selection-end-column="73" />
           <folding>
             <element signature="e#0#28#0" expanded="true" />
@@ -840,25 +818,21 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/templates/base.html">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="347">
-          <caret line="738" column="20" lean-forward="true" selection-start-line="738" selection-start-column="20" selection-end-line="738" selection-end-column="50" />
+        <state relative-caret-position="12546">
+          <caret line="738" column="20" selection-start-line="738" selection-start-column="20" selection-end-line="738" selection-end-column="50" />
           <folding>
             <element signature="e#27041#27183#0#HTML" />
           </folding>
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/user_management/templates/user_management/list_users.html">
+    <entry file="file://$PROJECT_DIR$/company_management/views.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="255">
-          <caret line="79" column="108" selection-start-line="79" selection-start-column="108" selection-end-line="79" selection-end-column="108" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/user_management/templates/user_management/unassigned_users_search_results.html">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="354">
-          <caret line="22" column="7" selection-start-line="22" selection-start-column="7" selection-end-line="22" selection-end-column="7" />
+        <state relative-caret-position="2499">
+          <caret line="156" column="29" selection-start-line="153" selection-start-column="4" selection-end-line="156" selection-end-column="29" />
+          <folding>
+            <element signature="e#0#32#0" expanded="true" />
+          </folding>
         </state>
       </provider>
     </entry>
