@@ -16,7 +16,6 @@
     {% include 'bottom.html' %}
 
     <script>
-        $('#listBranches').DataTable( {});
         $('#table_status').DataTable();
         $('#table_priorities').DataTable();
         $('#table_category').DataTable();
@@ -26,7 +25,7 @@
         $('#table_system_modules').DataTable();
         $('#table_users').DataTable();
         $('#groupList2').DataTable();
-        $('#groupList').DataTable();
+
 
         var modelList = [];
         $('.model_row_class').each(function () {
@@ -725,5 +724,77 @@
                 }
             });
         }
+
+        function functionManageUserGroup(grp, grpid) {
+            urldata = "{% url 'manageUserGroups'%}";
+            $.ajax({
+                type: "GET",
+                cache: false,
+                data: {
+                    grpid: grpid,
+                    grp: grp
+                },
+                url: urldata,
+                success: function (resp) {
+                    $('.page-wrapper').html(resp);
+
+                }
+            });
+        }
+
+        function functAssignMemberAGroup() {
+            window.location = '#userFormModalDialog';
+            initDialog('modalDialog2');
+        }
+
+        function displaySearchResults() {
+            document.getElementById("myDropdown").classList.add("showSearch");
+        }
+
+        function trim(x) {
+            return x.replace(/^\s+|\s+$/gm, '');
+        }
+
+        function searchUser() {
+            urldata = "{% url 'searchUnAssignedUsers'%}";
+            var staff = trim($('#userSearch').val());
+            var grpname = trim($('#group_name').val());
+            var grpid = trim($('#group_id').val());
+            var size = staff.length;
+            if (size > 0) {
+                $.ajax({
+                    type: "GET",
+                    cache: false,
+                    url: urldata,
+                    data: {
+                        searchValue: staff,
+                        grp: grpname,
+                        grpid: grpid
+                    },
+                    success: function (response) {
+                        $('#myDropdown').html(response);
+                    }
+                });
+            } else {
+                $('#myDropdown').html('');
+            }
+        }
+
+        function clearSearchResult() {
+            document.getElementById('searchResults').style.display = 'none';
+        }
+
+        window.onclick = function (event) {
+            if (!event.target.matches('.dropbtn')) {
+                var dropdowns = document.getElementsByClassName("search-content");
+                var i;
+                for (i = 0; i < dropdowns.length; i++) {
+                    var openDropdown = dropdowns[i];
+                    if (openDropdown.classList.contains('showSearch')) {
+                        openDropdown.classList.remove('showSearch');
+                    }
+                }
+            }
+        };
 
     </script>

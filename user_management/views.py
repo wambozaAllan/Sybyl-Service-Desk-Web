@@ -10,8 +10,9 @@ from django.contrib.contenttypes.models import ContentType
 from .models import User, UserTeam, UserTeamMember, GroupExtend
 from django.http import JsonResponse
 from django.template import loader
-from extra_views import CreateWithInlinesView, UpdateWithInlinesView, InlineFormSetFactory
 from .forms import UserForm, GroupExtendForm
+from django.db.models import Q
+
 
 # Used to add new users
 def user_createview(request):
@@ -31,17 +32,16 @@ def user_createview(request):
         last_name = data.get('last_name')
         gender = data.get('gender')
         company = data.get('company')
-        branch = data.get('branch')
+        # branch = data.get('branch')
         department = data.get('department')
-        usergroup = data.get('group')
         category = data.get('category')
         username = data.get('username')
         password = make_password(data.get('password'))
         email = data.get('email')
         created_by = request.user.id
 
-        obj = User(first_name=first_name, last_name=last_name, gender=gender, company_id=company, branch_id=branch,
-                   department_id=department, group_id=usergroup, category_id=category, username=username,
+        obj = User(first_name=first_name, last_name=last_name, gender=gender, company_id=company, branch_id=1,
+                   department_id=department, category_id=category, username=username,
                    password=password, created_by=created_by, email=email)
         obj.save()
 
@@ -50,7 +50,7 @@ def user_createview(request):
 
 class AddUser(CreateView):
     model = User
-    fields = ['first_name', 'last_name', 'gender', 'company', 'branch', 'department', 'group', 'category'
+    fields = ['first_name', 'last_name', 'gender', 'company', 'department', 'category'
         , 'username', 'email', 'password']
 
     template_name = 'user_management/add_user.html'
@@ -92,7 +92,7 @@ class DetailsUser(DetailView):
 class UpdateUser(UpdateView):
     model = User
     fields = ['first_name', 'last_name', 'gender', 'company'
-        , 'branch', 'department', 'group', 'category'
+        , 'department', 'group', 'category'
         , 'username', 'password', 'email', 'is_superuser', 'is_staff', 'is_active']
 
     template_name = 'user_management/update_user.html'
@@ -133,6 +133,7 @@ def save_user_group(request):
 
     return HttpResponse(template.render(context, request))
 
+
 def update_user_group(request):
     name = request.GET.get('name')
     desc = request.GET.get('desc')
@@ -147,6 +148,55 @@ def update_user_group(request):
     template = loader.get_template('user_management/list_groups.html')
     context = {
         'all_userGroups': all_user_groups,
+    }
+
+    return HttpResponse(template.render(context, request))
+
+
+def list_manage_group(request):
+    grpid = request.GET.get('grpid')
+    grpname = request.GET.get('grp')
+
+    group_users = User.objects.filter(group_id=grpid)
+    template = loader.get_template('user_management/list_group_users.html')
+    context = {
+        'group_users': group_users,
+        'grp': grpname,
+        'grpid': grpid,
+    }
+
+    return HttpResponse(template.render(context, request))
+
+
+def search_unassigned_users(request):
+    search_value = request.GET.get('searchValue')
+    grp = request.GET.get('grp')
+    grpid = request.GET.get('grpid')
+    users = User.objects.filter((Q(first_name__icontains=search_value) | Q(last_name__icontains=search_value)) & Q(group_id__isnull=True))
+    template = loader.get_template('user_management/unassigned_users_search_results.html')
+    context = {
+        'users': users,
+        'search_value': search_value,
+        'grp': grp,
+        'grpid': grpid,
+    }
+
+    return HttpResponse(template.render(context, request))
+
+
+def save_user_to_group(request):
+    user_id = request.GET.get('uid')
+    group_id = request.GET.get('grpid')
+    grpname = request.GET.get('grpname')
+
+    User.objects.filter(id=int(user_id)).update(group_id=int(group_id))
+
+    group_users = User.objects.filter(group_id=int(group_id))
+    template = loader.get_template('user_management/list_group_users.html')
+    context = {
+        'group_users': group_users,
+        'grp': grpname,
+        'grpid': group_id,
     }
 
     return HttpResponse(template.render(context, request))
