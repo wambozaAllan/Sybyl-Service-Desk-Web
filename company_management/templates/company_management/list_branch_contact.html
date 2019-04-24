@@ -33,20 +33,20 @@
                                 <table class="display nowrap table table-hover" cellspacing="0" width="100%">
                                     <thead>
                                         <tr>
+                                            <th>Company</th>
+                                            <th>Branch name</th>
                                             <th>Phone number</th>
                                             <th>Secondary_number</th>
-                                            <th>Branch name</th>
-                                            <th>Company</th>
                                             <th>Action</th>
                                         </tr>
                                     </thead>
                                     <tbody>
                                         {% for branch in branch_phone_contacts %}
                                           <tr>
+                                              <td>{{ branch.branch.company }}</td>
+                                              <td>{{ branch.branch }}</td>
                                               <td>{{ branch.phone_number }}</td>
                                               <td>{{ branch.secondary_number }}</td>
-                                              <td>{{ branch.branch }}</td>
-                                              <td>{{ branch.branch.company }}</td>
                                               <td>
                                                 <a href="{% url 'detailBranchContacts' branch.id %}">View</a> &nbsp;
                                                 <a href="{% url 'updateBranchContacts' branch.id %}">Update</a> &nbsp;
