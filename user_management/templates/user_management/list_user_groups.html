@@ -57,8 +57,10 @@
                                                 <td>{{ userGroup.group }}</td>
                                                 <td>{{ userGroup.company }}</td>
                                                 <td>{{ userGroup.description }}</td>
-                                                <td class="text-center"><span class="badge badge-pill badge-success">
-                                                        <a href="#" style="color: #fff" onclick="">{{ userGroup.get_users_count }}</a></span>
+                                                <td class="text-center">
+                                                    <span class="label label-rounded label-success">
+                                                        <a href="#" style="color: #fff" onclick="functionManageUserGroup('{{ userGroup.group }}', {{ userGroup.group_id }})">{{ userGroup.get_users_count }}</a>
+                                                    </span>
                                                 </td>
                                                 <td class="text-center">
                                                     <button onclick="functionEditUserGroup('{{ userGroup.group }}', {{ userGroup.id }})" class="btn btn-outline-success btn-sm" type="button">
@@ -79,3 +81,7 @@
         </div>
     </div>
 {% endblock %}
+<script>
+
+
+</script>

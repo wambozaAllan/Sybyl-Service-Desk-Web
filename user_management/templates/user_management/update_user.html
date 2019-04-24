@@ -53,10 +53,10 @@
                                             {{ form.company|as_crispy_field }}
                                         </div>
                                         <div class="col-4">
-                                            {{ form.branch|as_crispy_field }}
+                                            {{ form.department|as_crispy_field }}
                                         </div>
                                         <div class="col-4">
-                                            {{ form.department|as_crispy_field }}
+                                            {{ form.email|as_crispy_field }}
                                         </div>
                                     </div>
 
@@ -74,18 +74,16 @@
                                     </div>
 
                                     <div class="row">
-                                        <div class="col-3">
-                                            {{ form.email|as_crispy_field }}
-                                        </div>
 
-                                        <div class="col-3">
+
+                                        <div class="col-4">
                                             {{ form.is_superuser|as_crispy_field }}
                                         </div>
-                                        <div class="col-3">
+                                        <div class="col-4">
                                             {{ form.is_active|as_crispy_field }}
                                         </div>
 
-                                        <div class="col-3" style="margin-top: 3%">
+                                        <div class="col-4" style="margin-top: 3%">
                                             <button id="updateAddUser" class="btn btn-success pull-right col-6">
                                                 <i class="fa fa-fw fa-lg fa-save"></i>Submit
                                             </button>

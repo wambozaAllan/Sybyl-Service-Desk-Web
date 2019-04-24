@@ -1,0 +1,72 @@
+<div class="recent-comment">
+    {% if users %}
+        <ul class="items scrollbar" id="itemSearchScroll">
+            {% for u in users %}
+                <div onclick="functionAssignUser({{ u.id }}, '{{ u.first_name }} {{ u.last_name }}')"
+                     class="media on-hover ">
+                    <div class="media-body">
+                        <strong>{{ u.first_name }} {{ u.last_name }}</strong>
+                        <span class="text-muted" style="font-size: 77%"><font
+                                color="#1e90ff">{{ u.email }}</font> </span>
+                    </div>
+                </div>
+            {% endfor %}
+        </ul>
+    {% else %}
+        <p class="center">
+            <br>
+            User <strong><font color="#87ceeb">{{ search_value }}</font></strong> Not Found.
+        </p>
+    {% endif %}
+</div>
+<input type="hidden" id="grpname" value="{{ grp }}">
+<input type="hidden" id="grpid" value="{{ grpid }}">
+<script>
+    function functionAssignUser(uid, name) {
+        var grpname = trim($('#grpname').val());
+        var grpid = trim($('#grpid').val());
+        urldata = "{% url 'saveUserToGroup'%}";
+        $.confirm({
+            title: '<h3>ADD: <strong class="text-info"> ' + name + ' </strong>to <strong class="text-info"> ' + grpname + '</strong> Group.</h3>',
+            content: '',
+            type: 'dark',
+            typeAnimated: true,
+            boxWidth: '35%',
+            useBootstrap: false,
+            closeIcon: true,
+            icon: 'fa fa-warning',
+            buttons: {
+                formSubmit: {
+                    text: 'Add',
+                    btnClass: 'btn-blue',
+                    action: function () {
+                        $.ajax({
+                            type: "GET",
+                            cache: false,
+                            data: {
+                                grpid: grpid,
+                                uid: uid,
+                                grpname: grpname
+                            },
+                            url: urldata,
+                            success: function (resp) {
+                                $.dialog({
+                                    title: 'Alert!',
+                                    content: 'Member has been added to the Group',
+                                });
+                                $('.page-wrapper').html(resp);
+                            }
+                        });
+                    }
+                },
+                close: {
+                    text: 'Cancel',
+                    btnClass: 'btn-gray',
+                    action: function () {
+                    }
+                }
+            }
+        });
+
+    }
+</script>

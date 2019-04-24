@@ -9,7 +9,7 @@ class CustomUserCreationForm(UserCreationForm):
     class Meta(UserCreationForm):
         model = User
         fields = ['first_name', 'last_name', 'gender', 'company'
-            , 'branch', 'department', 'group', 'category'
+            , 'department', 'category'
             , 'username', 'email']
 
 
