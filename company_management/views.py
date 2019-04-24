@@ -1,13 +1,14 @@
 from django.views import generic
 from django.views.generic.edit import CreateView, UpdateView, DeleteView
-from django.shortcuts import render
+from django.shortcuts import render, get_object_or_404
 from django.http import HttpResponse, HttpResponseRedirect
 from django.urls import reverse, reverse_lazy
 from django.http import JsonResponse
+from django.shortcuts import redirect
 
-from .forms import CompanyForm, DepartmentForm
+from .forms import CompanyForm, DepartmentForm, BranchForm, BranchContactForm, BranchEmailForm
 
-from .models import Company, Department, Branch, CompanyDomain, CompanyCategory
+from .models import Company, Department, Branch, CompanyDomain, CompanyCategory, BranchPhoneContact, BranchEmailAddresses
 
 
 class AddCompanyDomain(CreateView):
@@ -217,11 +218,36 @@ class UpdateDepartment(UpdateView):
     success_url = reverse_lazy('listDepartments')
 
 
-class AddBranch(CreateView):
-    model = Branch
-    fields = ['name', 'company', 'location', 'phone_number', 'email']
-    template_name = 'company_management/add_branch.html'
-    success_url = reverse_lazy('listBranches')
+# creating branch
+def create_branch(request):
+    if request.method == 'POST':
+        branch_form = BranchForm(request.POST)
+        contact_form = BranchContactForm(request.POST)
+        email_form = BranchEmailForm(request.POST)
+
+        if all([branch_form.is_valid()]):
+            branch = branch_form.save()
+            branch_id = Branch.objects.get(pk=branch.id)
+
+            if branch:
+                form = request.POST.copy()
+                phone_number = form.get('phone_number')
+                email_address = form.get('email_address')
+                contact = BranchPhoneContact(branch_id=branch_id.id, phone_number=phone_number)
+                email = BranchEmailAddresses(branch_id=branch_id.id, email_address=email_address)
+                contact.save()
+                email.save()
+            return redirect('listBranches')
+    else:
+        branch_form = BranchForm()
+        contact_form = BranchContactForm()
+        email_form = BranchEmailForm()
+
+    return render(request, 'company_management/add_branch.html', {
+        'branch_form': branch_form,
+        'contact_form': contact_form,
+        'email_form': email_form,
+    })
 
 
 # All Branch list view
@@ -233,6 +259,8 @@ class ListBranches(generic.ListView):
         return Branch.objects.all()
 
 
+
+
 # Detailed view of a specific branch
 class DetailsBranch(generic.DetailView):
     model = Branch
@@ -240,39 +268,109 @@ class DetailsBranch(generic.DetailView):
     template_name = 'company_management/details_branch.html'
 
 
-class UpdateBranch(UpdateView):
-    model = Branch
-    fields = ['name', 'company', 'location', 'phone_number', 'email']
-    template_name = 'company_management/update_branch.html'
-    success_url = reverse_lazy('listBranches')
+# update branch
+# class UpdateBranch(UpdateView):
+#     model = Branch
+#     fields = ['name', 'company', 'location']
+#     template_name = 'company_management/update_branch.html'
+#     success_url = reverse_lazy('listBranches')
+
+
+def branch_update(request, pk):
+    if request.method == 'POST':
+        contact_form = BranchContactForm(request.POST)
+        email_form = BranchEmailForm(request.POST)
+
+        form = request.POST.copy()
+        phone_number = form.get('phone_number')
+        email_address = form.get('email_address')
+
+        branch = get_object_or_404(Branch, pk=pk)
+
+        branch_form = BranchForm(request.POST, instance=branch)
+        if branch_form.is_valid():
+            branch_obj = branch_form.save()
+            branch_id = Branch.objects.get(pk=branch_obj.id)
+
+            if branch_obj:
+                contact = BranchPhoneContact(branch_id=branch_id.id, phone_number=phone_number)
+                email = BranchEmailAddresses(branch_id=branch_id.id, email_address=email_address)
+                contact.save()
+                email.save()
+
+            return redirect('listBranches')
+
+    else:
+        branch_form = BranchForm()
+        contact_form = BranchContactForm()
+        email_form = BranchEmailForm()
+
+    return render(request, 'company_management/update_branch.html', {
+        'branch_form': branch_form,
+        'contact_form': contact_form,
+        'email_form': email_form,
+    })
 
 
 # BRANCH PHONE CONTACTS
-# class AddBranchContacts(CreateView):
-#     model = BranchPhoneContact
-#     fields = ['phone_number', 'secondary_number', 'branch']
-#     template_name = 'company_management/add_branch_contact.html'
-#     success_url = reverse_lazy('listBranchContacts')
+class AddBranchContacts(CreateView):
+    model = BranchPhoneContact
+    fields = ['phone_number', 'secondary_number', 'branch']
+    template_name = 'company_management/add_branch_contact.html'
+    success_url = reverse_lazy('listBranchContacts')
 
 
 # # All Branch list view
-# class ListBranchContacts(generic.ListView):
-#     template_name = 'company_management/list_branch_contact.html'
-#     context_object_name = 'branch_phone_contacts'
+class ListBranchContacts(generic.ListView):
+    template_name = 'company_management/list_branch_contact.html'
+    context_object_name = 'branch_phone_contacts'
 
-#     def get_queryset(self):
-#         return BranchPhoneContact.objects.all()
-
-
-# # Detailed view of a specific branch
-# class DetailBranchContacts(generic.DetailView):
-#     model = BranchPhoneContact
-#     context_object_name = 'branch_phone_contacts'
-#     template_name = 'company_management/details_branch_contact.html'
+    def get_queryset(self):
+        return BranchPhoneContact.objects.all()
 
 
-# class UpdateBranchContacts(UpdateView):
-#     model = BranchPhoneContact
-#     fields = ['phone_number', 'secondary_number', 'branch']
-#     template_name = 'company_management/update_branch_contact.html'
-#     success_url = reverse_lazy('listBranchContacts')
+# Detailed view of a specific branch
+class DetailBranchContacts(generic.DetailView):
+    model = BranchPhoneContact
+    context_object_name = 'branch_phone_contacts'
+    template_name = 'company_management/details_branch_contact.html'
+
+
+# Update view of branch
+class UpdateBranchContacts(UpdateView):
+    model = BranchPhoneContact
+    fields = ['phone_number', 'secondary_number', 'branch']
+    template_name = 'company_management/update_branch_contact.html'
+    success_url = reverse_lazy('listBranchContacts')
+
+
+# BRANCH EMAIL CONTACTS
+class AddBranchEmails(CreateView):
+    model = BranchEmailAddresses
+    fields = ['email_address', 'secondary_email', 'branch']
+    template_name = 'company_management/add_branch_email.html'
+    success_url = reverse_lazy('listBranchEmails')
+
+
+# # All branch email list view
+class ListBranchEmails(generic.ListView):
+    template_name = 'company_management/list_branch_email.html'
+    context_object_name = 'branch_emails'
+
+    def get_queryset(self):
+        return BranchEmailAddresses.objects.all()
+
+
+# Detailed view of a specific branch
+class DetailBranchEmails(generic.DetailView):
+    model = BranchEmailAddresses
+    context_object_name = 'branch_emails'
+    template_name = 'company_management/details_branch_email.html'
+
+
+# Update view of branch
+class UpdateBranchEmails(UpdateView):
+    model = BranchEmailAddresses
+    fields = ['email_address', 'secondary_email', 'branch']
+    template_name = 'company_management/update_branch_email.html'
+    success_url = reverse_lazy('listBranchEmails')
