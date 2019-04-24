@@ -30,7 +30,7 @@
                             <h6 class="card-subtitle">Export data to Copy, CSV, Excel, PDF & Print</h6>
                             <div class="table-responsive">
                                 {% if branch_phone_contacts %}
-                                <table class="display nowrap table table-hover" cellspacing="0" width="100%">
+                                <table class="display nowrap table table-hover" cellspacing="0" width="100%" id="listBranchContacts">
                                     <thead>
                                         <tr>
                                             <th>Company</th>
@@ -58,7 +58,7 @@
                                 </table>
                                 {% else %}
                                     <h5><span class="text-muted text-center"
-                                        style="padding: 24%; font-size: 107%;"><strong>No Registered Categories.</strong></span>
+                                        style="padding: 24%; font-size: 107%;"><strong>No Registered Branch Contacts</strong></span>
                                     </h5>
                                 {% endif %}
                             </div>
