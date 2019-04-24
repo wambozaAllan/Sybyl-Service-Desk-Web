@@ -1,5 +1,6 @@
 from django import forms
-from .models import Company, Department, Branch, CompanyCategory, CompanyDomain
+from .models import Company, Department, Branch, CompanyCategory, CompanyDomain, BranchPhoneContact, BranchEmailAddresses
+
 
 class CompanyDomainForm(forms.ModelForm):
     class Meta:
@@ -32,22 +33,31 @@ class DepartmentForm(forms.ModelForm):
 class BranchForm(forms.ModelForm):
     class Meta:
         model = Branch
-        fields = ('name', 'company', 'location', 'phone_number', 'email', )
+        fields = ('name', 'company', 'location', )
         widgets = {
             'name': forms.TextInput(attrs={'class': 'form-control input-flat'}),
             'location': forms.TextInput(attrs={'class': 'form-control input-flat'}),
-            'phone_number': forms.TextInput(attrs={'class': 'form-control input-flat'}),
-            'email': forms.TextInput(attrs={'class': 'form-control input-flat'}),
         }
 
-# class BranchContactForm(forms.ModelForm):
-#     phonenumber = PhoneNumberField(required=False)
+
+class BranchContactForm(forms.ModelForm):
+
+    class Meta:
+        model = BranchPhoneContact
+        fields = ('phone_number', 'secondary_number', 'branch')
+        widgets = {
+            'phone_number': forms.TextInput(attrs={'class': 'form-control input-flat'}),
+            'secondary_number': forms.TextInput(attrs={'class': 'form-control input-flat'}),
+        }
 
 
-#     class Meta:
-#         model = BranchPhoneContact
-#         fields = ('phone_number', 'secondary_number')
-#         widgets = {
-#             'phone_number': forms.TextInput(attrs={'class': 'form-control input-flat'}),
-#             'secondary_number': forms.TextInput(attrs={'class': 'form-control input-flat'}),
-#         }
+class BranchEmailForm(forms.ModelForm):
+
+    class Meta:
+        model = BranchEmailAddresses
+        fields = ('email_address', 'secondary_email', 'branch')
+        widgets = {
+            'email_address': forms.TextInput(attrs={'class': 'form-control input-flat',
+                                                    'placeholder': 'emailvalue@email.com',
+                                                    'required': True}),
+        }
