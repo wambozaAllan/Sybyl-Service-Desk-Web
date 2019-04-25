@@ -26,38 +26,46 @@
                 <div class="col-12">
                     <div class="card">
                         <div class="card-body">
-                            <h4 class="card-title">Branches</h4>
+                            <h4 class="card-title">Branch Emails</h4>
                             <h6 class="card-subtitle">Export data to Copy, CSV, Excel, PDF & Print</h6>
                             <div class="table-responsive">
-                                <table class="display nowrap table table-hover" cellspacing="0" width="100%" id="listBranches">
+                                {% if branch_emails %}
+                                <table class="display nowrap table table-hover" cellspacing="0" width="100%" id="listEmails">
                                     <thead>
                                         <tr>
-                                            <th>Branch Name</th>
                                             <th>Company</th>
-                                            <th>Location</th>
+                                            <th>Branch name</th>
+                                            <th>Email Address</th>
+                                            <th>Secondary Email</th>
                                             <th>Action</th>
                                         </tr>
                                     </thead>
                                     <tbody>
-                                        {% for branch in all_branches %}
+                                        {% for branch in branch_emails %}
                                           <tr>
-                                              <td>{{ branch.name }}</td>
-                                              <td>{{ branch.company }}</td>
-                                              <td>{{ branch.location }}</td>
+                                              <td>{{ branch.branch.company }}</td>
+                                              <td>{{ branch.branch }}</td>
+                                              <td>{{ branch.email_address }}</td>
+                                              <td>{{ branch.secondary_email }}</td>
                                               <td>
-                                                <a href="{% url 'detailsBranch' branch.id %}">View</a> &nbsp;
-                                                <a href="{% url 'updateBranch' branch.id %}">Update</a> &nbsp;
+                                                <a href="{% url 'detailBranchEmails' branch.id %}">View</a> &nbsp;
+                                                <a href="{% url 'updateBranchEmails' branch.id %}">Update</a> &nbsp;
                                                 <a href="#"><i class="mdi mdi-delete font-30 align-middle mr-2"></i></a>
                                               </td>
                                           </tr>
 										{% endfor %}
                                     </tbody>
                                 </table>
+                                {% else %}
+                                    <h5><span class="text-muted text-center"
+                                        style="padding: 24%; font-size: 107%;"><strong>No Emails Created</strong></span>
+                                    </h5>
+                                {% endif %}
                             </div>
                             <br />
 							<div class="row">
 								<div class="col-1">
-									<a href="{% url 'addBranch' %}" class="btn btn-success">Add Branch</a>
+									<a href="{% url 'addBranchEmails' %}" class="btn btn-success">Add Branch Emails</a>
 								</div>
 							</div>
                         </div>

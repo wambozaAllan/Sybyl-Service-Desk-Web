@@ -30,23 +30,23 @@
                             <h6 class="card-subtitle">Export data to Copy, CSV, Excel, PDF & Print</h6>
                             <div class="table-responsive">
                                 {% if branch_phone_contacts %}
-                                <table class="display nowrap table table-hover" cellspacing="0" width="100%">
+                                <table class="display nowrap table table-hover" cellspacing="0" width="100%" id="listBranchContacts">
                                     <thead>
                                         <tr>
+                                            <th>Company</th>
+                                            <th>Branch name</th>
                                             <th>Phone number</th>
                                             <th>Secondary_number</th>
-                                            <th>Branch name</th>
-                                            <th>Company</th>
                                             <th>Action</th>
                                         </tr>
                                     </thead>
                                     <tbody>
                                         {% for branch in branch_phone_contacts %}
                                           <tr>
+                                              <td>{{ branch.branch.company }}</td>
+                                              <td>{{ branch.branch }}</td>
                                               <td>{{ branch.phone_number }}</td>
                                               <td>{{ branch.secondary_number }}</td>
-                                              <td>{{ branch.branch }}</td>
-                                              <td>{{ branch.branch.company }}</td>
                                               <td>
                                                 <a href="{% url 'detailBranchContacts' branch.id %}">View</a> &nbsp;
                                                 <a href="{% url 'updateBranchContacts' branch.id %}">Update</a> &nbsp;
@@ -58,7 +58,7 @@
                                 </table>
                                 {% else %}
                                     <h5><span class="text-muted text-center"
-                                        style="padding: 24%; font-size: 107%;"><strong>No Registered Categories.</strong></span>
+                                        style="padding: 24%; font-size: 107%;"><strong>No Registered Branch Contacts</strong></span>
                                     </h5>
                                 {% endif %}
                             </div>

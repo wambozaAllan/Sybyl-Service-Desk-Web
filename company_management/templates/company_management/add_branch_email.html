@@ -16,7 +16,7 @@
 			<div class="col-md-7 align-self-center">
 				<ol class="breadcrumb">
 					<li class="breadcrumb-item"><a href="javascript:void(0)">Home</a></li>
-					<li class="breadcrumb-item active">Update Branch</li>
+					<li class="breadcrumb-item active">Add Branch Emails</li>
 				</ol>
 			</div>
 		</div>
@@ -28,29 +28,25 @@
 				<div class="col-12">
 					<div class="card">
 						<div class="card-title">
-							<h4>Update Branch</h4>
+							<h4>Add Branch Emails</h4>
 						</div>
 						<div class="card-body">
 							<div class="basic-form">
 								<form method="post">
 									{% csrf_token %}
 									<div class="row">
-										<div class="col-4">{{ branch_form.company|as_crispy_field }}</div>
-										<div class="col-4">{{ branch_form.name|as_crispy_field }}</div>
-										<div class="col-4">{{ branch_form.location|as_crispy_field }}</div>
-										<div class="col-4">
-											{{ contact_form.phone_number|as_crispy_field }}
-											<small ><strong><font id="validMsg" color="red"></font></strong></small>
-										</div>
-										<div class="col-4">{{ email_form.email_address|as_crispy_field }}</div>
+										<div class="col-4">{{ form.branch | as_crispy_field }}</div>
+										<div class="col-4">{{ form.email_address|as_crispy_field }}</div>
+										<div class="col-4">{{ form.secondary_email | as_crispy_field }}</div>
+
 									</div>
 									<div class="row">
-										<div class="col-4"></div>
+										<div class="col-5"></div>
 										<div class="col-1">
-											<a href="{% url 'listBranches' %}" class="btn btn-inverse">Cancel</a>
+											<a href="{% url 'listBranchEmails' %}" class="btn btn-inverse">Cancel</a>
 										</div>
 										<div class="col-1">
-											<button type="submit" value="Update" id="btn-submit" class="btn btn-success">Update Branch</button>
+											<button type="submit" class="btn btn-success">Add Email(s)</button>
 										</div>
 									</div>
 								</form>
@@ -68,3 +64,4 @@
 	<!-- End Page wrapper  -->
 </div>
 {% endblock %}
+

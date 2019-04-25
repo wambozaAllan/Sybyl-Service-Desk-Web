@@ -15,7 +15,7 @@
 			<div class="col-md-7 align-self-center">
 				<ol class="breadcrumb">
 					<li class="breadcrumb-item"><a href="javascript:void(0)">Home</a></li>
-					<li class="breadcrumb-item active">List of Branches</li>
+					<li class="breadcrumb-item active">List of Branch Contacts</li>
 				</ol>
 			</div>
 		</div>
@@ -27,35 +27,35 @@
 				<div class="col-12">
 					<div class="card">
 						<div class="card-title">
-							<h4>Branch Details</h4>
+							<h4>Branch Email Details</h4>
 						</div>
 						<div class="card-body">
 							<div class="basic-form">
 								<div class="row">
-									<div class="col-sm-2">
-										<p class="text-muted m-b-15 f-s-12">Branch Name</p>
+									<div class="col-sm">
+										<p class="text-muted m-b-15 f-s-12">Branch name</p>
 										<input type="text" class="form-control input-flat"
-											value="{{ branch.name }}" disabled>
+											value="{{ branch_emails.branch}}" disabled>
+									</div>
+									<div class="col-sm-4">
+										<p class="text-muted m-b-15 f-s-12">Email</p>
+										<input type="text" class="form-control input-flat"
+											value="{{ branch_emails.email_address }}" disabled>
 									</div>
 									<div class="col-sm">
-										<p class="text-muted m-b-15 f-s-12">Company</p>
+										<p class="text-muted m-b-15 f-s-12">Secondary Email</p>
 										<input type="text" class="form-control input-flat"
-											value="{{ branch.company }}" disabled>
+											value="{{ branch_emails.secondary_email }}" disabled>
 									</div>
 									<div class="col-sm">
-										<p class="text-muted m-b-15 f-s-12">Location</p>
+										<p class="text-muted m-b-15 f-s-12">Created Time</p>
 										<input type="text" class="form-control input-flat"
-											value="{{ branch.location }}" disabled>
-									</div>
-									<div class="col-sm">
-										<p class="text-muted m-b-15 f-s-12">Created_time</p>
-										<input type="text" class="form-control input-flat"
-											value="{{ branch.created_time }}" disabled>
+											value="{{ branch_emails.created_time }}" disabled>
 									</div>
 								</div>
 								<br />
 								<div class="row">
-									<div class="col-1"><a href="{% url 'listBranches' %}" class="btn btn-inverse">Back</a></div>
+									<div class="col-1"><a href="{% url 'listBranchEmails' %}" class="btn btn-inverse">Back</a></div>
                                 </div>
 							</div>
 						</div>

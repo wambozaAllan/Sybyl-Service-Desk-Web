@@ -179,8 +179,10 @@
                                 class="hide-menu">Branch
               Contacts</span></a>
                         <ul aria-expanded="false" class="collapse">
-                            <li><a href="#">List of Branch Contacts</a></li>
-                            <li><a href="#">Add Branch Contacts</a></li>
+                            <li><a href="{% url 'listBranchContacts' %}">List of Branch Contacts</a></li>
+                            <li><a href="{% url 'addBranchContacts' %}">Add Branch Contacts</a></li>
+                            <li><a href="{% url 'listBranchEmails' %}">List of Branch Emails</a></li>
+                            <li><a href="{% url 'addBranchEmails' %}">Add Branch Emails</a></li>
                         </ul>
                     </li>
 
