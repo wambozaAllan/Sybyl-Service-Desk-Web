@@ -797,4 +797,21 @@
             }
         };
 
+        function functionManageGroupPermissions(grp, grpid) {
+            urldata = "{% url 'manageGroupPermissions'%}";
+            $.ajax({
+                type: "GET",
+                cache: false,
+                data: {
+                    grpid: grpid,
+                    grp: grp
+                },
+                url: urldata,
+                success: function (resp) {
+                    $('.page-wrapper').html(resp);
+
+                }
+            });
+        }
+
     </script>

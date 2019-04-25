@@ -168,6 +168,21 @@ def list_manage_group(request):
     return HttpResponse(template.render(context, request))
 
 
+def manage_group_permissions(request):
+    grpid = request.GET.get('grpid')
+    grpname = request.GET.get('grp')
+
+    group_permissions = Permission.objects.filter(group=grpid)
+    template = loader.get_template('user_management/list_group_permissions.html')
+    context = {
+        'group_permissions': group_permissions,
+        'grp': grpname,
+        'grpid': grpid,
+    }
+
+    return HttpResponse(template.render(context, request))
+
+
 def search_unassigned_users(request):
     search_value = request.GET.get('searchValue')
     grp = request.GET.get('grp')

@@ -47,7 +47,8 @@
                                             <th>Group</th>
                                             <th>Company</th>
                                             <th>Description</th>
-                                            <th class="text-center">Users</th>
+                                            <th class="text-center">Members</th>
+                                            <th class="text-center">Permissions</th>
                                             <th class="text-center">Action</th>
                                         </tr>
                                         </thead>
@@ -60,6 +61,12 @@
                                                 <td class="text-center">
                                                     <span class="label label-rounded label-success">
                                                         <a href="#" style="color: #fff" onclick="functionManageUserGroup('{{ userGroup.group }}', {{ userGroup.group_id }})">{{ userGroup.get_users_count }}</a>
+                                                    </span>
+                                                </td>
+                                                <td class="text-center">
+                                                    <span class="label label-rounded label-success">
+                                                        <a href="#" style="color: #fff"
+                                                           onclick="functionManageGroupPermissions('{{ userGroup.group }}', {{ userGroup.group_id }})">{{ userGroup.get_permissions_count }}</a>
                                                     </span>
                                                 </td>
                                                 <td class="text-center">
@@ -81,7 +88,3 @@
         </div>
     </div>
 {% endblock %}
-<script>
-
-
-</script>

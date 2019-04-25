@@ -14,6 +14,7 @@ urlpatterns = [
     path('saveUserGroup/', views.save_user_group, name='saveUserGroup'),
     path('updateGroup/', views.update_user_group, name='updateGroup'),
     path('manageGroups/', views.list_manage_group, name='manageUserGroups'),
+    path('manageGroupPermissions/', views.manage_group_permissions, name='manageGroupPermissions'),
 
     # SYSTEM USERS
     path('addUser/', views.AddUser.as_view(), name='addUser'),
