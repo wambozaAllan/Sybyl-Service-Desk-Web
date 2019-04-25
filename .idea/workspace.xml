@@ -230,17 +230,6 @@
               <item name="Sybyl-Service-Desk-Web" type="b2602c69:ProjectViewProjectNode" />
               <item name="Sybyl-Service-Desk-Web" type="462c0819:PsiDirectoryNode" />
             </path>
-            <path>
-              <item name="Sybyl-Service-Desk-Web" type="b2602c69:ProjectViewProjectNode" />
-              <item name="Sybyl-Service-Desk-Web" type="462c0819:PsiDirectoryNode" />
-              <item name="user_management" type="462c0819:PsiDirectoryNode" />
-            </path>
-            <path>
-              <item name="Sybyl-Service-Desk-Web" type="b2602c69:ProjectViewProjectNode" />
-              <item name="Sybyl-Service-Desk-Web" type="462c0819:PsiDirectoryNode" />
-              <item name="user_management" type="462c0819:PsiDirectoryNode" />
-              <item name="migrations" type="462c0819:PsiDirectoryNode" />
-            </path>
           </expand>
           <select />
         </subPane>
@@ -371,7 +360,7 @@
   <component name="ToolWindowManager">
     <frame x="0" y="0" width="1366" height="732" extended-state="6" />
     <layout>
-      <window_info content_ui="combo" id="Project" order="0" sideWeight="0.4945355" visible="true" weight="0.34549516" />
+      <window_info content_ui="combo" id="Project" order="0" sideWeight="0.4945355" visible="true" weight="0.24199553" />
       <window_info id="Structure" order="1" sideWeight="0.5054645" side_tool="true" weight="0.2193646" />
       <window_info anchor="bottom" id="Message" order="0" />
       <window_info anchor="bottom" id="Find" order="1" weight="0.3289689" />
@@ -385,7 +374,7 @@
       <window_info anchor="bottom" id="Database Changes" order="9" show_stripe_button="false" />
       <window_info anchor="bottom" id="Event Log" order="10" sideWeight="0.09531014" side_tool="true" weight="0.31423897" />
       <window_info anchor="bottom" id="Favorites" order="11" sideWeight="0.5035461" weight="0.21931261" />
-      <window_info active="true" anchor="bottom" id="Terminal" order="12" sideWeight="0.90468985" visible="true" weight="0.53807944" />
+      <window_info active="true" anchor="bottom" id="Terminal" order="12" sideWeight="0.90468985" visible="true" weight="0.5529801" />
       <window_info anchor="bottom" id="Python Console" order="13" sideWeight="0.49848714" weight="0.32781458" />
       <window_info anchor="right" id="Commander" internal_type="SLIDING" order="0" type="SLIDING" weight="0.4" />
       <window_info anchor="right" id="Ant Build" order="1" weight="0.25" />
