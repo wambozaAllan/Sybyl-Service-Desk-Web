@@ -1,35 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="ChangeListManager">
-    <list default="true" id="5b39e269-faf1-4041-a9e1-91ce60eb0e26" name="Default Changelist" comment="">
-      <change beforePath="$PROJECT_DIR$/.idea/Sybyl-Service-Desk-Web.iml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/Sybyl-Service-Desk-Web.iml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/misc.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/misc.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/company_management/migrations/0001_initial.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/company_management/migrations/0002_auto_20190405_1223.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/company_management/migrations/0002_auto_20190408_1250.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/company_management/migrations/0003_auto_20190408_1022.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/company_management/migrations/0003_branchphonecontact.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/company_management/migrations/0004_auto_20190409_1050.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/company_management/migrations/0005_auto_20190409_1100.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/company_management/migrations/0006_merge_20190409_1840.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/core/migrations/0001_initial.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/core/migrations/0002_auto_20190411_0902.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/project_management/migrations/0001_initial.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/project_management/migrations/0002_priority.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/project_management/migrations/0003_status.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/user_management/forms.py" beforeDir="false" afterPath="$PROJECT_DIR$/user_management/forms.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/user_management/migrations/0001_initial.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/user_management/migrations/0002_auto_20190405_1223.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/user_management/migrations/0002_auto_20190408_1250.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/user_management/migrations/0003_auto_20190409_1532.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/user_management/migrations/0004_merge_20190409_1840.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/user_management/migrations/0005_auto_20190411_0902.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/user_management/migrations/0006_auto_20190411_0923.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/user_management/migrations/0007_auto_20190411_0929.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/user_management/migrations/0008_auto_20190416_1628.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/user_management/migrations/0009_groupextend.py" beforeDir="false" />
-    </list>
+    <list default="true" id="5b39e269-faf1-4041-a9e1-91ce60eb0e26" name="Default Changelist" comment="" />
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -64,7 +36,7 @@
       <file pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/user_management/templates/user_management/list_users.html">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="1335">
+            <state>
               <caret line="89" column="48" selection-start-line="89" selection-start-column="48" selection-end-line="89" selection-end-column="48" />
             </state>
           </provider>
@@ -91,23 +63,11 @@
           </provider>
         </entry>
       </file>
-      <file pinned="false" current-in-tab="false">
+      <file pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/user_management/forms.py">
           <provider selected="true" editor-type-id="text-editor">
             <state relative-caret-position="15">
               <caret line="2" column="44" selection-start-line="2" selection-start-column="44" selection-end-line="2" selection-end-column="44" />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file pinned="false" current-in-tab="true">
-        <entry file="file://$PROJECT_DIR$/user_management/migrations/0001_initial.py">
-          <provider selected="true" editor-type-id="text-editor">
-            <state>
-              <caret lean-forward="true" />
-              <folding>
-                <element signature="e#49#81#0" expanded="true" />
-              </folding>
             </state>
           </provider>
         </entry>
@@ -128,7 +88,7 @@
         <entry file="file://$PROJECT_DIR$/templates/base.html">
           <provider selected="true" editor-type-id="text-editor">
             <state relative-caret-position="12000">
-              <caret line="800" selection-start-line="800" selection-end-line="800" />
+              <caret line="803" selection-start-line="803" selection-end-line="803" />
             </state>
           </provider>
         </entry>
@@ -136,8 +96,8 @@
       <file pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/company_management/views.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="2205">
-              <caret line="156" column="29" selection-start-line="153" selection-start-column="4" selection-end-line="156" selection-end-column="29" />
+            <state relative-caret-position="2220">
+              <caret line="157" column="29" selection-start-line="157" selection-start-column="29" selection-end-line="157" selection-end-column="29" />
               <folding>
                 <element signature="e#0#32#0" expanded="true" />
               </folding>
@@ -195,7 +155,6 @@
   <component name="IdeDocumentHistory">
     <option name="CHANGED_PATHS">
       <list>
-        <option value="$PROJECT_DIR$/core/urls.py" />
         <option value="$PROJECT_DIR$/project_management/templates/project_management/listIncidents.html" />
         <option value="$PROJECT_DIR$/project_management/templates/project_management/list_all_priorities.html" />
         <option value="$PROJECT_DIR$/project_management/templates/project_management/list_all_statuses.html" />
@@ -246,6 +205,7 @@
         <option value="$PROJECT_DIR$/user_management/templates/user_management/list_users.html" />
         <option value="$PROJECT_DIR$/user_management/templates/user_management/unassigned_users_search_results.html" />
         <option value="$PROJECT_DIR$/user_management/forms.py" />
+        <option value="$PROJECT_DIR$/project_management/migrations/0002_auto_20190425_0830.py" />
       </list>
     </option>
   </component>
@@ -269,6 +229,17 @@
             <path>
               <item name="Sybyl-Service-Desk-Web" type="b2602c69:ProjectViewProjectNode" />
               <item name="Sybyl-Service-Desk-Web" type="462c0819:PsiDirectoryNode" />
+            </path>
+            <path>
+              <item name="Sybyl-Service-Desk-Web" type="b2602c69:ProjectViewProjectNode" />
+              <item name="Sybyl-Service-Desk-Web" type="462c0819:PsiDirectoryNode" />
+              <item name="user_management" type="462c0819:PsiDirectoryNode" />
+            </path>
+            <path>
+              <item name="Sybyl-Service-Desk-Web" type="b2602c69:ProjectViewProjectNode" />
+              <item name="Sybyl-Service-Desk-Web" type="462c0819:PsiDirectoryNode" />
+              <item name="user_management" type="462c0819:PsiDirectoryNode" />
+              <item name="migrations" type="462c0819:PsiDirectoryNode" />
             </path>
           </expand>
           <select />
@@ -414,7 +385,7 @@
       <window_info anchor="bottom" id="Database Changes" order="9" show_stripe_button="false" />
       <window_info anchor="bottom" id="Event Log" order="10" sideWeight="0.09531014" side_tool="true" weight="0.31423897" />
       <window_info anchor="bottom" id="Favorites" order="11" sideWeight="0.5035461" weight="0.21931261" />
-      <window_info active="true" anchor="bottom" id="Terminal" order="12" sideWeight="0.90468985" visible="true" weight="0.71357614" />
+      <window_info active="true" anchor="bottom" id="Terminal" order="12" sideWeight="0.90468985" visible="true" weight="0.53807944" />
       <window_info anchor="bottom" id="Python Console" order="13" sideWeight="0.49848714" weight="0.32781458" />
       <window_info anchor="right" id="Commander" internal_type="SLIDING" order="0" type="SLIDING" weight="0.4" />
       <window_info anchor="right" id="Ant Build" order="1" weight="0.25" />
@@ -483,7 +454,6 @@
     </breakpoint-manager>
   </component>
   <component name="editorHistoryManager">
-    <entry file="file://$PROJECT_DIR$/user_management/templates/user_management/detailsUserGroup.html" />
     <entry file="file://$PROJECT_DIR$/user_management/templates/user_management/detailsUser.html">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="204">
@@ -716,7 +686,7 @@
     <entry file="file://$PROJECT_DIR$/user_management/templates/user_management/unassigned_users_search_results.html" />
     <entry file="file://$PROJECT_DIR$/user_management/templates/user_management/list_users.html">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="1335">
+        <state>
           <caret line="89" column="48" selection-start-line="89" selection-start-column="48" selection-end-line="89" selection-end-column="48" />
         </state>
       </provider>
@@ -751,14 +721,14 @@
     <entry file="file://$PROJECT_DIR$/templates/base.html">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="12000">
-          <caret line="800" selection-start-line="800" selection-end-line="800" />
+          <caret line="803" selection-start-line="803" selection-end-line="803" />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/company_management/views.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="2205">
-          <caret line="156" column="29" selection-start-line="153" selection-start-column="4" selection-end-line="156" selection-end-column="29" />
+        <state relative-caret-position="2220">
+          <caret line="157" column="29" selection-start-line="157" selection-start-column="29" selection-end-line="157" selection-end-column="29" />
           <folding>
             <element signature="e#0#32#0" expanded="true" />
           </folding>
@@ -768,20 +738,22 @@
     <entry file="file://$PROJECT_DIR$/company_management/migrations/0001_initial.py">
       <provider selected="true" editor-type-id="text-editor" />
     </entry>
+    <entry file="file://$PROJECT_DIR$/user_management/migrations/0001_initial.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state>
+          <folding>
+            <element signature="e#49#81#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/project_management/migrations/0002_auto_20190425_0830.py">
+      <provider selected="true" editor-type-id="text-editor" />
+    </entry>
     <entry file="file://$PROJECT_DIR$/user_management/forms.py">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="15">
           <caret line="2" column="44" selection-start-line="2" selection-start-column="44" selection-end-line="2" selection-end-column="44" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/user_management/migrations/0001_initial.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state>
-          <caret lean-forward="true" />
-          <folding>
-            <element signature="e#49#81#0" expanded="true" />
-          </folding>
         </state>
       </provider>
     </entry>
