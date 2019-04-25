@@ -119,19 +119,14 @@
                 {% if perms.user_management.add_user or perms.user_management.view_user or perms.user_management.delete_user or perms.user_management.change_user %}
                     <li class="nav-label">User Management</li>
 
-                    <li>
-                    <a class="has-arrow  " href="#" aria-expanded="false"><i class="fa fa-suitcase"></i><span
-                            class="hide-menu">Users</span></a>
                 {% endif %}
-                <ul aria-expanded="false" class="collapse">
-
-                    {% if perms.user_management.view_user %}
-                        <li><a href="{% url 'listUsers' %}">List of Users</a></li>
-                    {% endif %}
-                    {% if perms.user_management.add_user %}
-                        <li><a href="{% url 'addUser' %}">Add User</a></li>
-                    {% endif %}
-                </ul>
+                {% if perms.user_management.view_user or perms.user_management.add_user %}
+                    <li><a href="{% url 'listUsers' %}"><i class="fa fa-suitcase"></i>
+                        <span class="hide-menu">
+                                Users
+                            </span></a>
+                    </li>
+                {% endif %}
                 </li>
 
                 {% if user.is_superuser %}

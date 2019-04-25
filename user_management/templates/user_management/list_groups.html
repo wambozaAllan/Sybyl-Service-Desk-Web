@@ -16,9 +16,15 @@
                 <td>{{ userGroup.group }}</td>
                 <td>{{ userGroup.company }}</td>
                 <td>{{ userGroup.description }}</td>
-                <td class="text-center">{{ userGroup.get_users_count }}</td>
                 <td class="text-center">
-                    <button  onclick="functionEditUserGroup('{{ userGroup.group }}', {{ userGroup.id }})" class="btn btn-outline-success btn-sm" type="button">
+                    <span class="label label-rounded label-success">
+                        <a href="#" style="color: #fff"
+                           onclick="functionManageUserGroup('{{ userGroup.group }}', {{ userGroup.group_id }})">{{ userGroup.get_users_count }}</a>
+                    </span>
+                </td>
+                <td class="text-center">
+                    <button onclick="functionEditUserGroup('{{ userGroup.group }}', {{ userGroup.id }})"
+                            class="btn btn-outline-success btn-sm" type="button">
                         <i title="Edit Group" class="fa fa-edit"></i>
                     </button>
                 </td>
@@ -27,3 +33,6 @@
         </tbody>
     </table>
 </div>
+<script>
+      $('#groupList').DataTable();
+</script>

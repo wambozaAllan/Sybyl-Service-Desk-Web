@@ -18,7 +18,7 @@ class UserCategory(models.Model):
 # CustomUser
 class User(AbstractUser):
     category = models.ForeignKey(UserCategory, default=1, on_delete=models.CASCADE)
-    group = models.ForeignKey(Group, default=1, on_delete=models.CASCADE, related_name='initialgroup')
+    group = models.ForeignKey(Group, on_delete=models.CASCADE, related_name='initialgroup', blank=True, null=True)
     company = models.ForeignKey(Company, default=1, on_delete=models.CASCADE)
     branch = models.ForeignKey(Branch, default=1, on_delete=models.CASCADE)
     department = models.ForeignKey(Department, default=1, on_delete=models.CASCADE)
