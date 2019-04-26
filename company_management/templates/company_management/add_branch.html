@@ -34,15 +34,14 @@
 								<form method="post">
 									{% csrf_token %}
 									<div class="row">
-										<div class="col-4">{{ form.company|as_crispy_field }}</div>
-										<div class="col-4">{{ form.name|as_crispy_field }}</div>
-										<div class="col-4">{{ form.location|as_crispy_field }}</div>
+										<div class="col-4">{{ branch_form.company|as_crispy_field }}</div>
+										<div class="col-4">{{ branch_form.name|as_crispy_field }}</div>
+										<div class="col-4">{{ branch_form.location|as_crispy_field }}</div>
 										<div class="col-4">
-											{{ form.phone_number|as_crispy_field }}
-											<small ><strong><font id="phoneMsg" color="red"></font></strong></small>
-
+											{{ contact_form.phone_number|as_crispy_field }}
+											<small ><strong><font id="validMsg" color="red"></font></strong></small>
 										</div>
-										<div class="col-4">{{ form.email|as_crispy_field }}</div>
+										<div class="col-4">{{ email_form.email_address|as_crispy_field }}</div>
 									</div>
 									<div class="row">
 										<div class="col-5"></div>

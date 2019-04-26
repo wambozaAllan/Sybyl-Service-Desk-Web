@@ -1,6 +1,9 @@
 from django.db import models
 
 #CompanyDomain
+from django.urls import reverse
+
+
 class CompanyDomain(models.Model):
     name = models.CharField(max_length=250)
     description = models.CharField(max_length=255, blank=True)
@@ -13,7 +16,8 @@ class CompanyDomain(models.Model):
     def __str__(self):
         return self.name
 
-#CompanyCategory
+
+# CompanyCategory
 class CompanyCategory(models.Model):
     category_value  = models.CharField(max_length=250)
     description     = models.CharField(max_length=255, blank=True)
@@ -26,7 +30,8 @@ class CompanyCategory(models.Model):
     def __str__(self):
         return self.category_value
 
-#Company
+
+# Company
 class Company(models.Model):
     name            = models.CharField(max_length=100)
     domain          = models.ForeignKey(CompanyDomain, on_delete=models.CASCADE, default=1)
@@ -51,8 +56,6 @@ class Branch(models.Model):
     name = models.CharField(max_length=100)
     company = models.ForeignKey(Company, on_delete=models.CASCADE)
     location = models.CharField(max_length=100)
-    phone_number = models.CharField(max_length=45)
-    email = models.EmailField(max_length=254)
     created_time = models.DateTimeField(auto_now_add=True)
     modified_time = models.DateTimeField(auto_now=True)
 
@@ -63,16 +66,27 @@ class Branch(models.Model):
         db_table = 'branch'
 
 
-# # branch_phone_ contact
-# class BranchPhoneContact(models.Model):
-#     phone_number = PhoneNumberField()
-#     secondary_number = PhoneNumberField(blank=True)
-#     branch = models.ForeignKey(Branch, on_delete=models.CASCADE)
-#     created_time = models.DateTimeField(auto_now_add=True)
-#     modified_time = models.DateTimeField(auto_now=True)
+# branch_phone_ contact
+class BranchPhoneContact(models.Model):
+    phone_number = models.CharField(max_length=45)
+    secondary_number = models.CharField(max_length=45, blank=True)
+    branch = models.ForeignKey(Branch, on_delete=models.CASCADE)
+    created_time = models.DateTimeField(auto_now_add=True)
+    modified_time = models.DateTimeField(auto_now=True)
 
-#     class Meta:
-#         db_table = 'branch_phone_contact'
+    class Meta:
+        db_table = 'branch_phone_contact'
+
+
+class BranchEmailAddresses(models.Model):
+    email_address = models.EmailField(max_length=254, unique=True)
+    secondary_email = models.EmailField(max_length=254, blank=True, null=True, unique=True)
+    branch = models.ForeignKey(Branch, on_delete=models.CASCADE)
+    created_time = models.DateTimeField(auto_now_add=True)
+    modified_time = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        db_table = 'branch_email_addresses'
 
 
 # Department

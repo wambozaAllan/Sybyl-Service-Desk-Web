@@ -35,9 +35,16 @@
 								<form method="post">
 									{% csrf_token %}
 									<div class="row">
-										<div class="col-4">{{ form.phone_number|as_crispy_field }}</div>
-										<div class="col-4">{{ form.secondary_number|as_crispy_field }}</div>
 										<div class="col-4">{{ form.branch | as_crispy_field }}</div>
+										<div class="col-4">
+											{{ form.phone_number|as_crispy_field }}
+											<small ><strong><font id="phoneMsg" color="red"></font></strong></small>
+										</div>
+										<div class="col-4">
+											{{ form.secondary_number|as_crispy_field }}
+											<small ><strong><font id="secondaryMsg" color="red"></font></strong></small>
+										</div>
+
 									</div>
 									<div class="row">
 										<div class="col-4"></div>
@@ -45,7 +52,7 @@
 											<a href="{% url 'listBranchContacts' %}" class="btn btn-inverse">Cancel</a>
 										</div>
 										<div class="col-1">
-											<button type="submit" value="Update" class="btn btn-success">Update Branch Contact</button>
+											<button type="submit" id="btn-contact" value="Update" class="btn btn-success">Update Branch Contact</button>
 										</div>
 									</div>
 								</form>

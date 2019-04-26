@@ -16,6 +16,9 @@
     {% include 'bottom.html' %}
 
     <script>
+        $('#listBranchContacts').DataTable({});
+        $('#listEmails').DataTable({});
+        $('#listBranches').DataTable({});
         $('#table_status').DataTable();
         $('#table_priorities').DataTable();
         $('#table_category').DataTable();
@@ -810,6 +813,78 @@
                 success: function (resp) {
                     $('.page-wrapper').html(resp);
 
+                }
+            });
+        }
+
+        function functAssignPermissionsAGroup(grpid, grp) {
+            urldata = "{% url 'assignPermissionsToGroup'%}";
+            $.ajax({
+                type: "GET",
+                cache: false,
+                data: {grpid: grpid, grp: grp},
+                url: urldata,
+                success: function (resp) {
+                    $.confirm({
+                        title: '<h3>Assign Group Permissions to Group: <span class="text-info">'+ grp +'</span>.</h3>',
+                        content: '' + resp,
+                        type: 'blue',
+                        typeAnimated: true,
+                        boxWidth: '90%',
+                        useBootstrap: false,
+                        closeIcon: true,
+                        buttons: {
+                            close: {
+                                text: 'Close',
+                                btnClass: 'btn-gray close-dialog',
+                                action: function () {
+                                }
+                            }
+                        }
+                    });
+                }
+            });
+        }
+
+        function functionDeleteGroupPermission(pid, pname, grpid, groupname) {
+            urldata = "{% url 'deleteGroupPermission'%}";
+
+            $.confirm({
+                title: '<h4>Remove Group Permission: <strong class="text-danger">"' + pname + ' "</strong>!</h4>',
+                content: '',
+                type: 'red',
+                typeAnimated: true,
+                boxWidth: '40%',
+                useBootstrap: false,
+                theme: 'modern',
+                icon: 'fa fa-exclamation-circle',
+                buttons: {
+                    formSubmit: {
+                        text: 'Remove',
+                        btnClass: 'btn-red',
+                        action: function () {
+                            $.ajax({
+                                type: "GET",
+                                cache: false,
+                                data: {
+                                    pid: pid,
+                                    grpname: groupname,
+                                    grpid: grpid
+                                },
+                                url: urldata,
+                                success: function (resp) {
+                                    $('.page-wrapper').html(resp);
+
+                                }
+                            });
+                        }
+                    },
+                    close: {
+                        text: 'Cancel',
+                        btnClass: 'btn-gray',
+                        action: function () {
+                        }
+                    }
                 }
             });
         }

@@ -35,8 +35,6 @@
                                             <th>Branch Name</th>
                                             <th>Company</th>
                                             <th>Location</th>
-                                            <th>PhoneNo.</th>
-                                            <th>Email</th>
                                             <th>Action</th>
                                         </tr>
                                     </thead>
@@ -46,8 +44,6 @@
                                               <td>{{ branch.name }}</td>
                                               <td>{{ branch.company }}</td>
                                               <td>{{ branch.location }}</td>
-                                              <td>{{ branch.phone_number }}</td>
-                                              <td>{{ branch.email }}</td>
                                               <td>
                                                 <a href="{% url 'detailsBranch' branch.id %}">View</a> &nbsp;
                                                 <a href="{% url 'updateBranch' branch.id %}">Update</a> &nbsp;

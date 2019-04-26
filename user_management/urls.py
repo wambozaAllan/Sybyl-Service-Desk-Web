@@ -15,6 +15,10 @@ urlpatterns = [
     path('updateGroup/', views.update_user_group, name='updateGroup'),
     path('manageGroups/', views.list_manage_group, name='manageUserGroups'),
     path('manageGroupPermissions/', views.manage_group_permissions, name='manageGroupPermissions'),
+    path('assignPermissions/', views.ListContentTypes.as_view(), name='assignPermissionsToGroup'),
+    path('groupPermissions', views.fetch_permissions_by_module, name='selectPermissionsByModule'),
+    path('savePermissions', views.save_group_permissions, name='saveGroupPermissions'),
+    path('removePermissions', views.remove_group_permissions, name='deleteGroupPermission'),
 
     # SYSTEM USERS
     path('addUser/', views.AddUser.as_view(), name='addUser'),

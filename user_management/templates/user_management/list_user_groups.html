@@ -60,7 +60,8 @@
                                                 <td>{{ userGroup.description }}</td>
                                                 <td class="text-center">
                                                     <span class="label label-rounded label-success">
-                                                        <a href="#" style="color: #fff" onclick="functionManageUserGroup('{{ userGroup.group }}', {{ userGroup.group_id }})">{{ userGroup.get_users_count }}</a>
+                                                        <a href="#" style="color: #fff"
+                                                           onclick="functionManageUserGroup('{{ userGroup.group }}', {{ userGroup.group_id }})">{{ userGroup.get_users_count }}</a>
                                                     </span>
                                                 </td>
                                                 <td class="text-center">
@@ -70,8 +71,14 @@
                                                     </span>
                                                 </td>
                                                 <td class="text-center">
-                                                    <button onclick="functionEditUserGroup('{{ userGroup.group }}', {{ userGroup.id }})" class="btn btn-outline-success btn-sm" type="button">
+                                                    <button onclick="functionEditUserGroup('{{ userGroup.group }}', {{ userGroup.id }})"
+                                                            class="btn btn-outline-success btn-sm" type="button">
                                                         <i title="Edit Group" class="fa fa-edit"></i>
+                                                    </button>
+
+                                                    <button onclick="functionDeleteGroup('{{ userGroup.group }}', {{ userGroup.id }}, {{ userGroup.get_permissions_count }}, {{ userGroup.get_users_count }})"
+                                                            id="" class="btn btn-outline-danger btn-sm" type="button">
+                                                        <i title="Delete Group" class="fa fa-remove"></i>
                                                     </button>
                                                 </td>
                                             </tr>

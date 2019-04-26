@@ -2,7 +2,6 @@ from .models import User, UserTeamMember, GroupExtend
 from django import forms
 from django.contrib.auth.forms import UserCreationForm, UserChangeForm
 from django.contrib.auth.models import Group
-from extra_views import InlineFormSet
 from django.forms.models import modelformset_factory
 
 class CustomUserCreationForm(UserCreationForm):
