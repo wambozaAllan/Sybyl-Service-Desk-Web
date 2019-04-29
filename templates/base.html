@@ -800,4 +800,166 @@
             }
         };
 
+        function functAddNewProject() {
+            urldata = "{% url 'addProject'%}";
+            $.ajax({
+                type: "GET",
+                cache: false,
+                data: {},
+                url: urldata,
+                success: function (resp) {
+                    $('#dialog_create_project').html(resp);
+
+                    window.location = '#projectFormModalDialog';
+                    initDialog('modalDialog');
+                }
+            });
+        }
+
+        function functAddProjectTeam() {
+            urldata = "{% url 'addProjectTeam'%}";
+            $.ajax({
+                type: "GET",
+                cache: false,
+                data: {},
+                url: urldata,
+                success: function (resp) {
+                    $.confirm({
+                        title: '<h3>Add New Project Team</h3>',
+                        content: '' + resp,
+                        type: 'blue',
+                        typeAnimated: true,
+                        boxWidth: '50%',
+                        useBootstrap: false,
+                        closeIcon: true,
+                        buttons: {
+                            close: {
+                                text: 'Cancel',
+                                btnClass: 'btn-gray',
+                                action: function () {
+                                }
+                            }
+                        }
+                    });
+                }
+            });
+        }
+
+        function editProjectTeam(teamid, teamname) {
+            urldata = "{% url 'updateProjectTeam' 999%}".replace(999, teamid);
+            $.ajax({
+                type: "GET",
+                cache: false,
+                data: {
+                    teamid: teamid
+                },
+                url: urldata,
+                success: function (resp) {
+                    $.confirm({
+                        title: '<h3>Team<strong class="text-info">' + teamname + ' </strong></h3>',
+                        content: '' + resp,
+                        type: 'blue',
+                        typeAnimated: true,
+                        boxWidth: '40%',
+                        useBootstrap: false,
+                        closeIcon: true,
+                        buttons: {
+                            close: {
+                                text: 'Close',
+                                btnClass: 'btn-gray',
+                                action: function () {
+                                }
+                            }
+                        }
+                    });
+                }
+            });
+        }
+
+        function deleteProjectTeam(teamId, teamName) {
+            urldata = "{% url 'deleteProjectTeam' 999%}".replace(999, teamId);
+            $.confirm({
+                title: '<h4>Delete ProjectTeam: <strong class="text-danger">' + teamName + ' </strong>!</h4>',
+                content: '',
+                type: 'red',
+                typeAnimated: true,
+                boxWidth: '40%',
+                useBootstrap: false,
+                theme: 'modern',
+                icon: 'fa fa-exclamation-circle',
+                buttons: {
+                    formSubmit: {
+                        text: 'OK',
+                        btnClass: 'btn-blue',
+                        action: function () {
+                            location.href = urldata;
+                        }
+                    },
+                    close: {
+                        text: 'Cancel',
+                        btnClass: 'btn-gray',
+                        action: function () {
+                        }
+                    }
+                }
+            });
+        }
+
+        function addProjectTeamMember() {
+            urldata = "{% url 'addProjectMember'%}";
+            $.ajax({
+                type: "GET",
+                cache: false,
+                data: {},
+                url: urldata,
+                success: function (resp) {
+                    $.confirm({
+                        title: '<h3>Add New Project Team Member</h3>',
+                        content: '' + resp,
+                        type: 'blue',
+                        typeAnimated: true,
+                        boxWidth: '50%',
+                        useBootstrap: false,
+                        closeIcon: true,
+                        buttons: {
+                            close: {
+                                text: 'Cancel',
+                                btnClass: 'btn-gray',
+                                action: function () {
+                                }
+                            }
+                        }
+                    });
+                }
+            });
+        }
+
+        function deleteProjectMember(memberId, memberName) {
+            urldata = "{% url 'deleteProjectMember' 999%}".replace(999, memberId);
+            $.confirm({
+                title: '<h4>Delete Project Member: <strong class="text-danger">' + memberName + ' </strong>!</h4>',
+                content: '',
+                type: 'red',
+                typeAnimated: true,
+                boxWidth: '40%',
+                useBootstrap: false,
+                theme: 'modern',
+                icon: 'fa fa-exclamation-circle',
+                buttons: {
+                    formSubmit: {
+                        text: 'OK',
+                        btnClass: 'btn-blue',
+                        action: function () {
+                            location.href = urldata;
+                        }
+                    },
+                    close: {
+                        text: 'Cancel',
+                        btnClass: 'btn-gray',
+                        action: function () {
+                        }
+                    }
+                }
+            });
+        }
     </script>
