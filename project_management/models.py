@@ -3,34 +3,49 @@ from django.conf import settings
 from datetime import datetime, date
 
 from company_management.models import Company
-from user_management.models import User, UserTeam, UserTeamMember
+from user_management.models import User, UserTeamMember
 
 from ckeditor.fields import RichTextField
 
 
-class Project(models.Model):
-    STATUS_CHOICES      = (('New','New'),('Ongoing', 'Ongoing'),('Completed', 'Completed'),('Closed', 'Closed'),('Terminated', 'Terminated'))
+# PRIORITIES
+class Priority(models.Model):
+    name = models.CharField(max_length=250)
+    description = models.CharField(max_length=255, blank=True)
+    created_time = models.DateTimeField(auto_now_add=True)
+    modified_time = models.DateTimeField(auto_now=True)
 
-    project_status      = models.CharField(max_length=12,choices=STATUS_CHOICES,default='New')
-    name                = models.CharField(max_length=100)
-    description         = RichTextField() #models.CharField(max_length=1000)
-    project_code        = models.CharField(max_length=20, default='JB/00/00')
-    client              = models.ForeignKey(Company, related_name='client', on_delete=models.DO_NOTHING)
-    vendor              = models.ForeignKey(Company, related_name='vendor', null=True, on_delete=models.DO_NOTHING)
-    estimated_cost      = models.FloatField(default=0.00)
-    final_cost          = models.FloatField(null=True, blank=True)
-    logo                = models.FileField(null=True, blank=True)
-    thumbnail           = models.CharField(max_length=100, null=True, blank=True)
-    startdate           = models.DateField(null=True, blank=True)
-    enddate             = models.DateField(null=True, blank=True)
-    actual_startdate    = models.DateField(null=True, blank=True)
-    actual_enddate      = models.DateField(null=True, blank=True)
-    project_manager     = models.ForeignKey(User, on_delete=models.CASCADE, related_name='manager')
-    project_assignee    = models.ForeignKey(User, on_delete=models.CASCADE, default=14, related_name='assignee')
-    project_team        = models.ForeignKey(UserTeam, on_delete=models.CASCADE, default=2)
-    created_time        = models.DateTimeField(auto_now_add=True)
-    creator             = models.ForeignKey(User, on_delete=models.CASCADE, default=2, related_name='project_creator')
-    modified_time       = models.DateTimeField(auto_now=True)
+    def __str__(self):
+        return self.name
+
+
+# STATUS
+class Status(models.Model):
+    name = models.CharField(max_length=250)
+    description = models.CharField(max_length=255, blank=True)
+    created_time = models.DateTimeField(auto_now_add=True)
+    modified_time = models.DateTimeField(auto_now=True)
+
+    def __str__(self):
+        return self.name
+
+
+class Project(models.Model):
+    name = models.CharField(max_length=100)
+    project_status = models.ForeignKey(Status, null=True, blank=True, on_delete=models.SET_NULL)
+    company = models.ManyToManyField(Company)
+    description = RichTextField()
+    project_code = models.CharField(max_length=20, default='JB/00/00')
+    estimated_cost = models.FloatField(default=0.00)
+    final_cost = models.FloatField(null=True, blank=True)
+    logo = models.FileField(null=True, blank=True)
+    thumbnail = models.CharField(max_length=100, null=True, blank=True)
+    start_date = models.DateField(null=True, blank=True)
+    end_date = models.DateField(null=True, blank=True)
+    actual_start_date = models.DateField(null=True, blank=True)
+    actual_end_date = models.DateField(null=True, blank=True)
+    created_time = models.DateTimeField(auto_now_add=True)
+    modified_time = models.DateTimeField(auto_now=True)
 
     def __str__(self):
         return self.name
@@ -44,87 +59,92 @@ class Project(models.Model):
             if completed > 0:
                 completion_level  = round(((completed / total_milestones) * 100),2)
         return completion_level
-
+    
     @property
     def task_completion(self):
         total_tasks         = Task.objects.filter(project_id=self.id).count()
         completed_tasks     = Task.objects.filter(project_id=self.id, status='Closed').count()
-
+    
         completion_percet = 0
         if total_tasks > 0 and completed_tasks > 0:
             completion_percet = round(((completed_tasks / total_tasks) * 100),2)
         return completion_percet
-
+    
     @property
     def incident_completion(self):
         total_incidents         = Incident.objects.filter(project_id=self.id).count()
         completed_incidents     = Incident.objects.filter(project_id=self.id, status='Closed').count()
-
+    
         incident_completion_percet = 0
         if total_incidents > 0 and completed_incidents > 0:
             incident_completion_percet = round(((completed_incidents / total_incidents) * 100),2)
         return incident_completion_percet
-
+    
     @property
     def milestone_count(self):
         milestone   = Milestone.objects.filter(project_id=self.id,status='Completed').count()
         milestone1  = Milestone.objects.filter(project_id=self.id).count()
         milestone_str = str(milestone) + '/' +str(milestone1)
         return milestone_str
-
+    
     @property
     def task_count(self):
         task   = Task.objects.filter(project_id=self.id,status='Closed').count()
         task1  = Task.objects.filter(project_id=self.id).count()
         task_str = str(task) + '/' +str(task1)
         return task_str
-
+    
     @property
     def incident_count(self):
         incident   = Incident.objects.filter(project_id=self.id,status='Closed').count()
         incident1  = Incident.objects.filter(project_id=self.id).count()
         incident_str = str(incident) + '/' +str(incident1)
         return incident_str
-
+    
     @property
     def time_now(self):
         time = datetime.now()
         return time
 
-    class Meta():
+    class Meta:
         db_table = 'project'
 
+
 class ProjectTeam(models.Model):
-    name            = models.CharField(max_length=100)
-    project_id      = models.OneToOneField(Project, on_delete=models.CASCADE)
-    created_time    = models.DateTimeField(auto_now_add=True)
-    modified_time   = models.DateTimeField(auto_now=True)
+    name = models.CharField(max_length=100)
+    project = models.OneToOneField(Project, on_delete=models.CASCADE)
+    created_time = models.DateTimeField(auto_now_add=True)
+    modified_time = models.DateTimeField(auto_now=True)
 
     def __str__(self):
         return self.name
 
+
 class ProjectTeamMember(models.Model):
-    responbility_options    = (('Primary','Primary'),('Secondary', 'Secondary'),('Tertiary', 'Tertiary'),('backup', 'backup'),('visitor', 'visitor'))
-    member_id               = models.ForeignKey(User, on_delete=models.CASCADE)
-    project_team_id         = models.ForeignKey(ProjectTeam, on_delete=models.CASCADE)
-    responsibility          = models.CharField(max_length=50, choices=responbility_options)
-    created_time            = models.DateTimeField(auto_now_add=True)
-    modified_time           = models.DateTimeField(auto_now=True)
+    responsibility_options = (('Engineer', 'Engineer'), ('ProjectManager', 'ProjectManager'), ('Sales', 'Sales'),
+                              ('admin', 'admin'), ('client', 'client'))
+    member = models.ManyToManyField(User)
+    project_team = models.ManyToManyField(ProjectTeam)
+    responsibility = models.CharField(max_length=50, choices=responsibility_options)
+    created_time = models.DateTimeField(auto_now_add=True)
+    modified_time = models.DateTimeField(auto_now=True)
 
     def __str__(self):
         return str(self.member_id)
 
+
 class ProjectDocument(models.Model):
-    title           = models.CharField(max_length=255)
-    description     = models.CharField(max_length=50)
-    document        = models.FileField(upload_to='documents/projects/')
-    project         = models.ForeignKey(Project, on_delete=models.DO_NOTHING)
-    created_by      = models.ForeignKey(User, on_delete=models.CASCADE, default=9)
-    uploaded_at     = models.DateTimeField(auto_now=True)
-    modified_time   = models.DateTimeField(auto_now=True)
+    title = models.CharField(max_length=255)
+    description = models.CharField(max_length=50)
+    document = models.FileField(upload_to='documents/projects/')
+    project = models.ForeignKey(Project, on_delete=models.DO_NOTHING)
+    created_by = models.ForeignKey(User, on_delete=models.CASCADE, default=9)
+    uploaded_at = models.DateTimeField(auto_now=True)
+    modified_time = models.DateTimeField(auto_now=True)
 
     def __str__(self):
         return self.title
+
 
 # ProjectAttachments
 class ProjectAttachments(models.Model):
@@ -137,6 +157,7 @@ class ProjectAttachments(models.Model):
     class Meta():
         db_table = 'project_attachment'
 
+
 # ProjectsHasCompany
 class ProjectsHasCompany(models.Model):
     project = models.ForeignKey(Project, on_delete=models.DO_NOTHING)
@@ -144,6 +165,7 @@ class ProjectsHasCompany(models.Model):
 
     class Meta():
         db_table = 'projects_has_companies'
+
 
 class Milestone(models.Model):
     STATUS_CHOICES = (
@@ -189,6 +211,7 @@ class Milestone(models.Model):
     class Meta:
         ordering = ['enddate']
 
+
 # MilestoneAttachment
 class MilestoneAttachment(models.Model):
     milestone = models.ForeignKey(Milestone, on_delete=models.DO_NOTHING)
@@ -201,6 +224,7 @@ class MilestoneAttachment(models.Model):
 
     class Meta():
         db_table = 'milestone_attachment'
+
 
 class Task(models.Model):
     STATUS_CHOICES      = (('Open', 'Open'), ('Ongoing', 'Ongoing'), ('Closed', 'Closed'))
@@ -223,6 +247,7 @@ class Task(models.Model):
     class Meta():
         db_table = 'task'
 
+
 # TaskAttachment
 class TaskAttachment(models.Model):
     task = models.ForeignKey(Task, on_delete=models.DO_NOTHING)
@@ -232,6 +257,7 @@ class TaskAttachment(models.Model):
 
     class Meta():
         db_table = 'task_attachment'
+
 
 # Incident
 class Incident(models.Model):
@@ -275,6 +301,7 @@ class Incident(models.Model):
     class Meta():
         db_table = 'incident'
 
+
 # IncidentAttachment
 class IncidentAttachment(models.Model):
     incident = models.ForeignKey(Incident, on_delete=models.DO_NOTHING)
@@ -285,6 +312,7 @@ class IncidentAttachment(models.Model):
     class Meta():
         db_table = 'incident_attachment'
 
+
 # IncidentComment
 class IncidentComment(models.Model):
     incident = models.ForeignKey(Incident, on_delete=models.DO_NOTHING)
@@ -294,6 +322,7 @@ class IncidentComment(models.Model):
 
     class Meta():
         db_table = 'incident_comment'
+
 
 # IncidentCommentAttachments
 class IncidentCommentAttachments(models.Model):
@@ -316,6 +345,7 @@ class IncidentCommentReply(models.Model):
     class Meta():
         db_table = 'incident_comment_reply'
 
+
 # IncidentCommentReplyAttachment
 class IncidentCommentReplyAttachment(models.Model):
     comment_reply = models.ForeignKey(IncidentCommentReply, on_delete=models.DO_NOTHING)
@@ -326,6 +356,7 @@ class IncidentCommentReplyAttachment(models.Model):
     class Meta():
         db_table = 'incident_comment_reply_attachment'
 
+
 # ProjectForum
 class ProjectForum(models.Model):
     project = models.ForeignKey(Project, on_delete=models.DO_NOTHING)
@@ -334,6 +365,7 @@ class ProjectForum(models.Model):
 
     class Meta():
         db_table = 'project_forum'
+
 
 # ProjectForumMessages
 class ProjectForumMessages(models.Model):
@@ -345,6 +377,7 @@ class ProjectForumMessages(models.Model):
     class Meta():
         db_table = 'project_forum_messages'
 
+
 # ProjectForumMessageAttachments
 class ProjectForumMessageAttachments(models.Model):
     projectforummessage = models.ForeignKey(ProjectForumMessages, on_delete=models.DO_NOTHING)
@@ -354,6 +387,7 @@ class ProjectForumMessageAttachments(models.Model):
 
     class Meta():
         db_table = 'project_forum_message_attachments'
+
 
 # ProjectForumMessageReplies
 class ProjectForumMessageReplies(models.Model):
@@ -366,6 +400,7 @@ class ProjectForumMessageReplies(models.Model):
     class Meta():
         db_table = 'project_forum_message_replies'
 
+
 # ProjectForumMessageReplyAttachments
 class ProjectForumMessageReplyAttachments(models.Model):
     projectforummessagereply = models.ForeignKey(ProjectForumMessageReplies, on_delete=models.DO_NOTHING)
@@ -375,24 +410,3 @@ class ProjectForumMessageReplyAttachments(models.Model):
 
     class Meta():
         db_table = 'project_forum_message_reply_attachments'
-
-
-# PRIORITIES
-class Priority(models.Model):
-    name = models.CharField(max_length=250)
-    description = models.CharField(max_length=255, blank=True)
-    created_time = models.DateTimeField(auto_now_add=True)
-    modified_time = models.DateTimeField(auto_now=True)
-
-    def __str__(self):
-        return self.name
-
-# STATUS
-class Status(models.Model):
-    name = models.CharField(max_length=250)
-    description = models.CharField(max_length=255, blank=True)
-    created_time = models.DateTimeField(auto_now_add=True)
-    modified_time = models.DateTimeField(auto_now=True)
-
-    def __str__(self):
-        return self.name
