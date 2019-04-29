@@ -104,7 +104,7 @@ class UpdateUser(UpdateView):
 # Used to add new user groups
 class AddUserGroup(CreateView):
     model = GroupExtend
-    fields = ['company', 'description']
+    fields = ['company', 'description', 'active']
     template_name = 'user_management/add_user_group.html'
     success_url = reverse_lazy('listUserGroups')
 
@@ -122,15 +122,16 @@ def save_user_group(request):
     name = request.GET.get('name')
     desc = request.GET.get('desc')
     comp_id = request.GET.get('company')
+    active = request.GET.get('active')
 
     group_obj = Group(name=name)
     group_obj.save()
 
     if group_obj.id != "":
         if desc != "":
-            group_extend_obj = GroupExtend(group_id=group_obj.id, company_id=comp_id, description=desc)
+            group_extend_obj = GroupExtend(group_id=group_obj.id, company_id=comp_id, description=desc, active=active)
         else:
-            group_extend_obj = GroupExtend(group_id=group_obj.id, company_id=comp_id)
+            group_extend_obj = GroupExtend(group_id=group_obj.id, company_id=comp_id, active=active)
         group_extend_obj.save()
 
     return HttpResponse(template.render(context, request))
@@ -139,11 +140,12 @@ def save_user_group(request):
 def update_user_group(request):
     name = request.GET.get('name')
     desc = request.GET.get('desc')
+    active = request.GET.get('active')
     comp_id = request.GET.get('company')
     grp_extid = request.GET.get('grpextid')
     group_id = request.GET.get('grpid')
 
-    GroupExtend.objects.filter(id=grp_extid).update(description=desc, company_id=comp_id)
+    GroupExtend.objects.filter(id=grp_extid).update(description=desc, company_id=comp_id, active=active)
     Group.objects.filter(id=group_id).update(name=name)
 
     all_user_groups = GroupExtend.objects.all()
@@ -231,7 +233,7 @@ class ListUserGroups(ListView):
 
 class UpdateUserGroup(UpdateView):
     model = GroupExtend
-    fields = ['group', 'description', 'company']
+    fields = ['group', 'description', 'company', 'active']
     template_name = 'user_management/update_user_group.html'
     success_url = reverse_lazy('listUserGroups')
 
@@ -385,6 +387,7 @@ def save_group_permissions(request):
 
     return HttpResponse(template.render(context, request))
 
+
 def remove_group_permissions(request):
     group_id = request.GET.get('grpid')
     grpname = request.GET.get('grpname')
@@ -398,6 +401,40 @@ def remove_group_permissions(request):
     template = loader.get_template('user_management/list_group_permissions.html')
     context = {
         'group_permissions': group_permissions,
+        'grp': grpname,
+        'grpid': group_id,
+    }
+
+    return HttpResponse(template.render(context, request))
+
+
+def delete_user_group(request):
+    group_id = request.GET.get('grpid')
+    group_ext_id = request.GET.get('grpextid')
+
+    GroupExtend.objects.filter(id=int(group_ext_id)).delete()
+    Group.objects.filter(id=int(group_id)).delete()
+
+    all_user_groups = GroupExtend.objects.all()
+    template = loader.get_template('user_management/list_groups.html')
+    context = {
+        'all_userGroups': all_user_groups,
+    }
+
+    return HttpResponse(template.render(context, request))
+
+
+def remove_user_from_group(request):
+    user_id = request.GET.get('uid')
+    group_id = request.GET.get('grpid')
+    grpname = request.GET.get('grpname')
+
+    User.objects.filter(pk=int(user_id)).update(group_id=None)
+
+    group_users = User.objects.filter(group_id=int(group_id))
+    template = loader.get_template('user_management/list_group_users.html')
+    context = {
+        'group_users': group_users,
         'grp': grpname,
         'grpid': group_id,
     }
