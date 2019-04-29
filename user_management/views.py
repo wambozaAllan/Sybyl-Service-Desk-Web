@@ -12,6 +12,8 @@ from django.http import JsonResponse
 from django.template import loader
 from .forms import UserForm, GroupExtendForm
 from django.db.models import Q
+from django.core import serializers
+import json
 
 
 # Used to add new users
@@ -168,11 +170,27 @@ def list_manage_group(request):
     return HttpResponse(template.render(context, request))
 
 
+def manage_group_permissions(request):
+    grpid = request.GET.get('grpid')
+    grpname = request.GET.get('grp')
+
+    group_permissions = Permission.objects.filter(group=grpid)
+    template = loader.get_template('user_management/list_group_permissions.html')
+    context = {
+        'group_permissions': group_permissions,
+        'grp': grpname,
+        'grpid': grpid,
+    }
+
+    return HttpResponse(template.render(context, request))
+
+
 def search_unassigned_users(request):
     search_value = request.GET.get('searchValue')
     grp = request.GET.get('grp')
     grpid = request.GET.get('grpid')
-    users = User.objects.filter((Q(first_name__icontains=search_value) | Q(last_name__icontains=search_value)) & Q(group_id__isnull=True))
+    users = User.objects.filter(
+        (Q(first_name__icontains=search_value) | Q(last_name__icontains=search_value)) & Q(group_id__isnull=True))
     template = loader.get_template('user_management/unassigned_users_search_results.html')
     context = {
         'users': users,
@@ -312,3 +330,76 @@ def filter_system_modules(request):
     modules = ContentType.objects.filter(app_label=app_label)
 
     return render(request, 'user_management/list_filtered_modules.html', {'list_modules': modules})
+
+
+class ListContentTypes(ListView):
+    template_name = 'user_management/assign_permissions.html'
+    context_object_name = 'all_modules'
+
+    def get_queryset(self):
+        return ContentType.objects.all()
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        grpid = int(self.request.GET['grpid'])
+        grp = self.request.GET['grp']
+        context['grpid'] = grpid
+        context['grp'] = grp
+        return context
+
+
+def fetch_permissions_by_module(request):
+    module_id = request.GET.get('moduleid')
+    grpid1 = request.GET.get('grpid')
+
+    all_permission = Permission.objects.filter(content_type_id=int(module_id))
+
+    permission_obj = Permission.objects.filter(content_type_id=int(module_id), group=int(grpid1))
+
+    distinct_permissions = set(all_permission).difference(set(permission_obj))
+
+    data = {
+        'perm': serializers.serialize("json", distinct_permissions)
+    }
+    return JsonResponse(data)
+
+
+def save_group_permissions(request):
+    group_id = request.GET.get('grpid')
+    grpname = request.GET.get('grpname')
+    permission_list = request.GET.get('permissionlist')
+    json_data = json.loads(permission_list)
+
+    for permission in json_data:
+        groupid = Group.objects.get(id=int(group_id))
+        permid = Permission.objects.get(id=int(permission['perm']))
+        groupid.permissions.add(permid)
+
+    group_permissions = Permission.objects.filter(group=int(group_id))
+    template = loader.get_template('user_management/list_group_permissions.html')
+    context = {
+        'group_permissions': group_permissions,
+        'grp': grpname,
+        'grpid': group_id,
+    }
+
+    return HttpResponse(template.render(context, request))
+
+def remove_group_permissions(request):
+    group_id = request.GET.get('grpid')
+    grpname = request.GET.get('grpname')
+    permission_id = request.GET.get('pid')
+
+    groupid = Group.objects.get(id=int(group_id))
+    permid = Permission.objects.get(id=int(permission_id))
+    groupid.permissions.remove(permid)
+
+    group_permissions = Permission.objects.filter(group=int(group_id))
+    template = loader.get_template('user_management/list_group_permissions.html')
+    context = {
+        'group_permissions': group_permissions,
+        'grp': grpname,
+        'grpid': group_id,
+    }
+
+    return HttpResponse(template.render(context, request))

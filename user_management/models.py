@@ -1,5 +1,5 @@
 from django.db import models
-from django.contrib.auth.models import AbstractUser, Group
+from django.contrib.auth.models import AbstractUser, Group, Permission
 from django.utils import timezone
 
 from company_management.models import Company, Branch, Department
@@ -88,3 +88,6 @@ class GroupExtend(models.Model):
 
     def get_users_count(self):
         return User.objects.filter(group_id=self.group).count()
+
+    def get_permissions_count(self):
+        return Permission.objects.filter(group=self.group).count()

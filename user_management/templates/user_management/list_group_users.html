@@ -37,6 +37,7 @@
                                 <th>Email</th>
                                 <th class="text-center">Status</th>
                                 <th class="text-center">User Type</th>
+                                <th class="text-center">Action</th>
                             </tr>
                             </thead>
                             <tbody>
@@ -60,6 +61,12 @@
                                         <td class="text-center"><span
                                                 class="badge badge-secondary"><strong>Normal User</strong></span></td>
                                     {% endif %}
+                                    <td class="text-center">
+                                        <button onclick=""
+                                                id="" class="btn btn-outline-danger btn-sm" type="button">
+                                            <i title="Delete Group" class="fa fa-remove"></i>
+                                        </button>
+                                    </td>
                                 </tr>
                             {% endfor %}
                             </tbody>
