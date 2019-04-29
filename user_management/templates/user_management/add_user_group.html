@@ -13,6 +13,7 @@
         </div>
         <div class="col-10">{{ form.company|as_crispy_field }}</div>
         <div class="col-10">{{ form.description|as_crispy_field }}</div>
+        <div class="col-10">{{ form.active|as_crispy_field }}</div>
     </div>
     <div class="">
         <div class="col-1">
@@ -26,6 +27,7 @@
         var name = $('#id_name').val();
         var company = $('#id_company').val();
         var description = $('#id_description').val();
+        var active = $('#id_active').val();
         urldata = "{% url 'saveUserGroup'%}";
 
         $.ajax({
@@ -34,7 +36,8 @@
             data: {
                 name: name,
                 company: company,
-                desc: description
+                desc: description,
+                active: active
             },
             url: urldata,
             success: function (resp) {

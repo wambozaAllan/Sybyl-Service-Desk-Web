@@ -6,7 +6,7 @@
         <nav class="sidebar-nav">
             <ul id="sidebarnav">
                 <li class="nav-devider"></li>
-                <li class="nav-label">Home</li>
+                <li class="nav-label">Home - <span class="text-info">{{ request.session.company }} : {{ request.session.department }}</span></li>
                 <li>
                     <a href="{% url 'home' %}"><i class="fa fa-tachometer"></i><span class="hide-menu">Dashboard</span></a>
                 </li>

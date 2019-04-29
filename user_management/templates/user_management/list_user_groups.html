@@ -47,6 +47,7 @@
                                             <th>Group</th>
                                             <th>Company</th>
                                             <th>Description</th>
+                                            <th class="text-center">Status</th>
                                             <th class="text-center">Members</th>
                                             <th class="text-center">Permissions</th>
                                             <th class="text-center">Action</th>
@@ -58,6 +59,15 @@
                                                 <td>{{ userGroup.group }}</td>
                                                 <td>{{ userGroup.company }}</td>
                                                 <td>{{ userGroup.description }}</td>
+                                                {% if userGroup.active %}
+                                                    <td class="text-center"><span
+                                                            class="badge badge-success"><strong>ACTIVE</strong></span>
+                                                    </td>
+                                                {% else %}
+                                                    <td class="text-center"><span
+                                                            class="badge badge-danger"><strong>INACTIVE</strong></span>
+                                                    </td>
+                                                {% endif %}
                                                 <td class="text-center">
                                                     <span class="label label-rounded label-success">
                                                         <a href="#" style="color: #fff"
@@ -76,7 +86,7 @@
                                                         <i title="Edit Group" class="fa fa-edit"></i>
                                                     </button>
 
-                                                    <button onclick="functionDeleteGroup('{{ userGroup.group }}', {{ userGroup.id }}, {{ userGroup.get_permissions_count }}, {{ userGroup.get_users_count }})"
+                                                    <button onclick="functionDeleteGroup('{{ userGroup.group }}', {{ userGroup.id }}, {{ userGroup.get_permissions_count }}, {{ userGroup.get_users_count }}, {{ userGroup.group_id }})"
                                                             id="" class="btn btn-outline-danger btn-sm" type="button">
                                                         <i title="Delete Group" class="fa fa-remove"></i>
                                                     </button>

@@ -85,6 +85,7 @@ class GroupExtend(models.Model):
     group = models.OneToOneField(Group, on_delete=models.CASCADE)
     description = models.CharField(max_length=255, blank=True)
     company = models.ForeignKey(Company, default=1, on_delete=models.CASCADE)
+    active = models.BooleanField(default=True)
 
     def get_users_count(self):
         return User.objects.filter(group_id=self.group).count()
