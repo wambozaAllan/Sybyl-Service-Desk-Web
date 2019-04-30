@@ -14,6 +14,7 @@ from .forms import UserForm, GroupExtendForm
 from django.db.models import Q
 from django.core import serializers
 import json
+from django.db.models import Count
 
 
 # Used to add new users
@@ -191,8 +192,7 @@ def search_unassigned_users(request):
     search_value = request.GET.get('searchValue')
     grp = request.GET.get('grp')
     grpid = request.GET.get('grpid')
-    users = User.objects.filter(
-        (Q(first_name__icontains=search_value) | Q(last_name__icontains=search_value)) & Q(group_id__isnull=True))
+    users = User.objects.filter((Q(first_name__icontains=search_value) | Q(last_name__icontains=search_value)) & Q(group_id__isnull=True))
     template = loader.get_template('user_management/unassigned_users_search_results.html')
     context = {
         'users': users,
@@ -297,20 +297,13 @@ class ListSystemModules(ListView):
     context_object_name = 'list_modules'
 
     def get_queryset(self):
-        return ContentType.objects.all()
+
+        return ContentType.objects.annotate(count_permissions=Count('permission'))
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context['module_apps'] = ContentType.objects.order_by().values('app_label').distinct()
         return context
-
-
-def get_permission_count(request):
-    model_id = request.GET.get('modelid', None)
-    data = {
-        'pcount': Permission.objects.filter(content_type_id=model_id).count()
-    }
-    return JsonResponse(data)
 
 
 class ListModulePermissions(ListView):
@@ -329,7 +322,7 @@ class ListModulePermissions(ListView):
 # Filter System Modules by app name
 def filter_system_modules(request):
     app_label = request.GET.get('appname')
-    modules = ContentType.objects.filter(app_label=app_label)
+    modules = ContentType.objects.filter(app_label=app_label).annotate(count_permissions=Count('permission'))
 
     return render(request, 'user_management/list_filtered_modules.html', {'list_modules': modules})
 

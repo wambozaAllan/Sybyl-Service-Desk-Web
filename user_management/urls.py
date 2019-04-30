@@ -41,7 +41,6 @@ urlpatterns = [
 
     # ACCESS RIGHTS
     path('listModules/', views.ListSystemModules.as_view(), name='listModules'),
-    path('permissionCount/', views.get_permission_count, name='permissionCount'),
     path('modulePermissions/<int:pk>/', views.ListModulePermissions.as_view(), name='listModulePermissions'),
     path('filterSystemModules/', views.filter_system_modules, name='filterSystemModules'),
 ]

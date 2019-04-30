@@ -17,19 +17,16 @@
                 <td>{{ mod.model }}</td>
                 <td>{{ mod.app_label }}</td>
                 <td class="text-center">
-                    <span id="model_id{{ mod.id }}"
-                          class="badge badge-pill badge-success">
-                        <i class="fa fa-spinner fa-spin"></i>
-                    </span>
+                    <span id="model_id{{ mod.id }}" class="badge badge-pill badge-success">{{ mod.count_permissions }}</span>
                 </td>
                 <td class="text-center">
-                    <button onclick="functionManageSystemModule({{ mod.id }}, '{{ mod.model }}')" id=""
-                            class="btn btn-outline-success btn-sm" type="button">
-                        <i title="Manage Module" class="fa fa-dedent"></i>
-                    </button>
+                    <button onclick="functionManageSystemModule({{ mod.id }}, '{{ mod.model }}')" id="" class="btn btn-outline-success btn-sm" type="button"></button>
                 </td>
             </tr>
         {% endfor %}
         </tbody>
     </table>
 </div>
+<script>
+    $('#table_system_modules').DataTable();
+</script>

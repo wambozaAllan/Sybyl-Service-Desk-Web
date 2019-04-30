@@ -28,33 +28,7 @@
         $('#table_system_modules').DataTable();
         $('#table_users').DataTable();
         $('#groupList2').DataTable();
-
-
-        var modelList = [];
-        $('.model_row_class').each(function () {
-            var mid = $(this).data('modelid');
-            modelList.push({id: mid});
-        });
-
-        for (var i = 0; i < modelList.length; i++) {
-            modelid = modelList[i].id;
-            functionPermissions(modelid);
-        }
-
-        function functionPermissions(modelid) {
-            urldata = "{% url 'permissionCount'%}";
-            $.ajax({
-                type: "GET",
-                cache: false,
-                data: {
-                    modelid: modelid
-                },
-                url: urldata,
-                success: function (data) {
-                    $('#model_id' + modelid).text(data.pcount);
-                }
-            });
-        }
+        $('#table_system_modules2').DataTable();
 
         function functAddDomain() {
             urldata = "{% url 'addDomain'%}";
