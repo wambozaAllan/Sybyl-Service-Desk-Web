@@ -2,7 +2,7 @@
 
 <div class="card-body">
     <div class="basic-form">
-        <form class="form-horizontal" action="{% url 'addCompany' %}" method="post" enctype="multipart/form-data">
+        <form class="form-horizontal" action="{% url 'addCompany' %}" method="post" enctype="multipart/form-data" autocomplete="off">
             {% csrf_token %}
             <div class="row col-12">
                 <div class="col-6">

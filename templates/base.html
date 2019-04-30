@@ -16,6 +16,11 @@
     {% include 'bottom.html' %}
 
     <script>
+    $('#dateOfBirth').datepicker({
+            format: "dd/mm/yyyy",
+            autoclose: true
+    });
+
         $('#listBranchContacts').DataTable({});
         $('#listEmails').DataTable({});
         $('#listBranches').DataTable({});

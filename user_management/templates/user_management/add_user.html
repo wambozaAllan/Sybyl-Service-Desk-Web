@@ -1,5 +1,5 @@
 {% load crispy_forms_tags %}
-<form class="form-horizontal" action="{% url 'saveUser' %}" method="post" enctype="multipart/form-data">
+<form class="form-horizontal" action="{% url 'saveUser' %}" method="post" enctype="multipart/form-data" autocomplete="off">
     {% csrf_token %}
     <div class="row col-12">
         <div class="col-6">
