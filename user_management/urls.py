@@ -14,6 +14,12 @@ urlpatterns = [
     path('saveUserGroup/', views.save_user_group, name='saveUserGroup'),
     path('updateGroup/', views.update_user_group, name='updateGroup'),
     path('manageGroups/', views.list_manage_group, name='manageUserGroups'),
+    path('manageGroupPermissions/', views.manage_group_permissions, name='manageGroupPermissions'),
+    path('assignPermissions/', views.ListContentTypes.as_view(), name='assignPermissionsToGroup'),
+    path('groupPermissions', views.fetch_permissions_by_module, name='selectPermissionsByModule'),
+    path('savePermissions', views.save_group_permissions, name='saveGroupPermissions'),
+    path('removePermissions', views.remove_group_permissions, name='deleteGroupPermission'),
+    path('deleteGroup', views.delete_user_group, name='deleteUserGroup'),
 
     # SYSTEM USERS
     path('addUser/', views.AddUser.as_view(), name='addUser'),
@@ -24,6 +30,7 @@ urlpatterns = [
     path('validateUserName', views.validate_user_name, name='validateUserName'),
     path('searchUnAssignedUsers', views.search_unassigned_users, name='searchUnAssignedUsers'),
     path('save', views.save_user_to_group, name='saveUserToGroup'),
+    path('removeUser', views.remove_user_from_group, name='removeUserFromGroup'),
 
     path('addTeam/', views.AddTeam.as_view(), name='addTeam'),
     path('listTeams/', views.ListTeams.as_view(), name='listTeams'),

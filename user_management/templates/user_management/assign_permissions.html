@@ -1,0 +1,209 @@
+<div class="col-12">
+    <div class="row">
+        <div class="col-md-4">
+            <div class="row">
+                <div class="col-md-12">
+                    <div class="card">
+                        <h4 class="card-title font-weight-bold">Assign Group Permissions.</h4>
+                        <div class="card-body">
+                            <form>
+                                {% csrf_token %}
+                                <div class="form-group">
+                                    <label class="col-form-label requiredField" for="">Module<span
+                                            class="asteriskField">*</span></label>
+                                    <select name="app" class="select select-module form-control" id="content_type">
+                                        <option value="" selected disabled="disabled">-----Select Module----</option>
+                                        {% for m in all_modules %}
+                                            <option value="{{ m.id }}">{{ m.model }} &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span
+                                                    font-size:30px; font-weight:bolder>[{{ m.app_label }}]</span>
+                                            </option>
+                                        {% endfor %}
+                                    </select>
+                                </div>
+
+
+                                <div class="form-group">
+                                    <label class="col-form-label requiredField">Permission<span
+                                            class="asteriskField">*</span></label>
+                                    <select class="form-control select select-permission" id="permission_id">
+                                        <option value="" selected disabled="disabled">-----Select Permission----
+                                        </option>
+                                    </select>
+                                </div>
+
+                            </form>
+                        </div>
+                        <hr>
+                        <div class="">
+                            <button class="btn btn-info float-right" type="button" id="btnAddPermission">
+                                <i class="fa fa-fw fa-lg fa-plus-circle"></i> Add Permission
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-8">
+            <div class="row">
+                <div class="col-md-12">
+                    <div class="card">
+                        <h4 class="card-title font-weight-bold">Selected Permissions.</h4>
+                        <table id="table_assign_permissions" class="table table-sm">
+                            <thead style="background-color: #e9e3e3;">
+                            <tr>
+                                <th>Permission</th>
+                                <th>Module</th>
+                                <th class="text-center">Remove</th>
+                            </tr>
+                            </thead>
+                            <tbody id="enteredGroupPermissionsBody">
+
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<hr>
+<input type="hidden" value="{{ grpid }}" id="grp_id">
+<input type="hidden" value="{{ grp }}" id="grpname">
+
+<div>
+    <button id="savePermissions" class="btn btn-success pull-right">
+        <i class="fa fa-fw fa-lg fa-save"></i>SAVE
+    </button>
+</div>
+
+<script>
+    var setPermissions = new Set();
+    var listPermissions = [];
+
+    $('#content_type').change(function () {
+        $('#permission_id').val(null).trigger('change');
+
+        var moduleid = parseInt($('#content_type').val());
+        urldata = "{% url 'selectPermissionsByModule'%}";
+        var grpid1 = $('#grp_id').val();
+
+        $.ajax({
+            type: 'GET',
+            url: urldata,
+            data: {
+                moduleid: moduleid,
+                grpid: grpid1
+            },
+            success: function (data) {
+                var res = JSON.parse(data.perm);
+                if (res !== '' && res.length > 0) {
+                    $('#permission_id').html('');
+                    for (i in res) {
+                        $('#permission_id').append('<option value="' + res[i].pk + '">' + res[i].fields.name + '</option>');
+                    }
+                }
+            }
+        });
+    });
+
+    $('#btnAddPermission').click(function () {
+
+        var perm = $("#permission_id option:selected").html();
+        var module = $("#content_type option:selected").html();
+
+        var permid = $("#permission_id").val();
+        var moduleid = $("#content_type").val();
+
+        if (moduleid === null || moduleid === '' || permid === null || permid === '') {
+            if (moduleid === null || moduleid === '') {
+                document.getElementById('permission_id').focus();
+            }
+
+            if (permid === null || permid === '') {
+                document.getElementById('content_type').focus();
+            }
+        } else {
+            if (!setPermissions.has(permid)) {
+                setPermissions.add(permid);
+                $('#enteredGroupPermissionsBody').append('<tr id="rows' + permid + '"><td>' + perm + '</td>' +
+                    '<td>' + module + '</td>' +
+                    '<td class="text-center" id="' + permid + '"> <span  title="Remove Permission." onclick="functionRemovePermission(' + permid + ')"  class="badge badge-danger icon-custom"><a href="#"><i class="fa fa-remove"></i></a></span></td></tr>');
+
+            } else {
+                $.alert({
+                    title: 'Alert!',
+                    content: 'Permission already added!',
+                });
+            }
+        }
+    });
+
+    $('#savePermissions').click(function () {
+        if (setPermissions.size !== 0) {
+            urldata = "{% url 'saveGroupPermissions'%}";
+            var grpid = $('#grp_id').val();
+            var grpname = $('#grpname').val();
+
+            for (const k of setPermissions) {
+                listPermissions.push({perm: k});
+            }
+
+            $.ajax({
+                type: 'GET',
+                data: {
+                    grpid: grpid,
+                    grpname: grpname,
+                    permissionlist: JSON.stringify(listPermissions)
+                },
+                url: urldata,
+                success: function (resp) {
+                    $('.close-dialog').click();
+                    $('.page-wrapper').html(resp);
+                    setPermissions = new Set();
+                    listPermissions = [];
+                }
+            });
+        } else {
+            $.confirm({
+                title: '<h3>Alert!</h3>',
+                content: 'No Added Permissions',
+                type: 'orange',
+                typeAnimated: true,
+                useBootstrap: false,
+                closeIcon: true,
+                buttons: {
+                    close: {
+                        text: 'Cancel',
+                        btnClass: 'btn-gray',
+                        action: function () {
+
+                        }
+                    }
+                }
+            });
+        }
+    });
+
+    function functionRemovePermission(perm_id) {
+        $.confirm({
+            title: 'Alert!',
+            icon: 'fa fa-warning',
+            content: 'Remove Permission from list!',
+            type: 'orange',
+            typeAnimated: true,
+            buttons: {
+                tryAgain: {
+                    text: 'Remove',
+                    btnClass: 'btn-orange',
+                    action: function () {
+                        setPermissions.delete(parseInt(perm_id));
+                        $('#rows' + perm_id).remove();
+                    }
+                },
+                cancel: function () {
+
+                }
+            }
+        });
+    }
+</script>

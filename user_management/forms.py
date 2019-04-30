@@ -32,7 +32,7 @@ class CustomUserChangeForm(UserChangeForm):
 class GroupExtendForm(forms.ModelForm):
     class Meta:
         model = GroupExtend
-        fields = ('company', 'description')
+        fields = ('company', 'description', 'active')
 
 
 class UserTeamMeamberForm(forms.ModelForm):

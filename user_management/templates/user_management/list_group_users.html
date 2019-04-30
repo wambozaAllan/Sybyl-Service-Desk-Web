@@ -37,6 +37,7 @@
                                 <th>Email</th>
                                 <th class="text-center">Status</th>
                                 <th class="text-center">User Type</th>
+                                <th class="text-center">Action</th>
                             </tr>
                             </thead>
                             <tbody>
@@ -60,6 +61,12 @@
                                         <td class="text-center"><span
                                                 class="badge badge-secondary"><strong>Normal User</strong></span></td>
                                     {% endif %}
+                                    <td class="text-center">
+                                        <button onclick="functionRemoveUserFromGrp({{ user.id }}, '{{ user.first_name }} {{ user.last_name }}', '{{ grp }}', {{ grpid }} )"
+                                                id="" class="btn btn-outline-danger btn-sm" type="button">
+                                            <i title="Remove User" class="fa fa-remove"></i>
+                                        </button>
+                                    </td>
                                 </tr>
                             {% endfor %}
                             </tbody>
@@ -120,4 +127,47 @@
     $('#attachGroupMember').click(function () {
         window.location = '#close';
     });
+
+    function functionRemoveUserFromGrp(uid, uname, grp, grpid) {
+        urldata = "{% url 'removeUserFromGroup'%}";
+
+        $.confirm({
+            title: '<h4>Remove User : <strong class="text-info">"' + uname + ' "</strong> from Group: <strong class="text-info">'+grp+'</strong>!</h4>',
+            content: '',
+            type: 'red',
+            typeAnimated: true,
+            boxWidth: '40%',
+            useBootstrap: false,
+            theme: 'modern',
+            icon: 'fa fa-exclamation-circle',
+            buttons: {
+                formSubmit: {
+                    text: 'Remove',
+                    btnClass: 'btn-red',
+                    action: function () {
+                        $.ajax({
+                            type: "GET",
+                            cache: false,
+                            data: {
+                                uid: uid,
+                                grpname: grp,
+                                grpid: grpid
+                            },
+                            url: urldata,
+                            success: function (resp) {
+                                $('.page-wrapper').html(resp);
+
+                            }
+                        });
+                    }
+                },
+                close: {
+                    text: 'Cancel',
+                    btnClass: 'btn-gray',
+                    action: function () {
+                    }
+                }
+            }
+        });
+    }
 </script>

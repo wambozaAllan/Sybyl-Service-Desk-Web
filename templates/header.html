@@ -55,6 +55,8 @@
                         </ul>
                     </div>
                 </li>
+
+
                 <!-- End Messages -->
             </ul>
             <!-- User profile and search -->
@@ -168,6 +170,7 @@
                     <a class="nav-link dropdown-toggle text-muted  " href="#" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"><img src="{% static 'template-static-files/images/users/5.jpg' %}" alt="user" class="profile-pic" /></a>
                     <div class="dropdown-menu dropdown-menu-right animated zoomIn">
                         <ul class="dropdown-user">
+                            <li class="text-info text-bold"><i class="fa fa-user-circle-o"></i> {{ request.session.first_name }}  {{ request.session.last_name }}</li>
                             <li><a href="{% url 'my_profile' %}"><i class="ti-user"></i> My Profile</a></li>
                             <li><a href="#"><i class="ti-email"></i> Inbox</a></li>
                             <li><a href="#"><i class="ti-settings"></i> Setting</a></li>

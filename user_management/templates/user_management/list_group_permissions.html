@@ -1,0 +1,72 @@
+<div class="row page-titles">
+    <div class="col-md-5 align-self-center">
+        <h3 class="text-primary">User Group :<strong> {{ grp }}</strong></h3>
+    </div>
+    <div class="col-md-7 align-self-center">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a href="javascript:void(0)">Home</a></li>
+            <li class="breadcrumb-item active"><a href="{% url 'listUserGroups' %}">User Groups</a></li>
+            <li class="breadcrumb-item active">Permissions</li>
+        </ol>
+    </div>
+</div>
+<!-- End Bread crumb -->
+<!-- Container fluid  -->
+<div class="container-fluid">
+    <!-- Start Page Content -->
+    <div class="row">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-body">
+                    <h4 class="card-title">Group Permissions</h4>
+
+                    <div class="row">
+                        <div class="col-md-12">
+                            <button id="" class="btn btn-info pull-right"
+                                    onclick="functAssignPermissionsAGroup({{ grpid }}, '{{ grp }}');">
+                                <i class="fa fa-fw fa-lg fa-plus"></i>Attach Permissions
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="table-responsive">
+                        <table id="tablePermissionList" class="display nowrap table table-hover" cellspacing="0"
+                               width="100%">
+                            <thead>
+                            <tr>
+                                <th>Permission</th>
+                                <th>Module</th>
+                                <th class="text-center">Action</th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            {% for p in group_permissions %}
+                                <tr>
+                                    <td>{{ p.name }}</td>
+                                    <td>{{ p.content_type }}</td>
+                                    <td class="text-center">
+                                        <button onclick="functionDeleteGroupPermission({{ p.id }}, '{{ p.name }}', {{ grpid }}, '{{ grp }}')"
+                                                id="" class="btn btn-outline-danger btn-sm" type="button">
+                                            <i title="Delete Group Permission" class="fa fa-remove"></i>
+                                        </button>
+                                    </td>
+                                </tr>
+                            {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<input value="{{ grp }}" id="group_name" type="hidden">
+<input value="{{ grpid }}" id="group_id" type="hidden">
+
+
+<script>
+    $('#tablePermissionList').DataTable();
+    $('#savePermissions').click(function () {
+        window.location = '#close';
+    });
+</script>
