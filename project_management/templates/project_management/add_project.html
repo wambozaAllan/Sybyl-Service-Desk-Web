@@ -1,0 +1,63 @@
+{% load crispy_forms_tags %}
+<form class="form-horizontal"  action="{% url 'addProject' %}" method="post" enctype="multipart/form-data">
+    {% csrf_token %}
+    <div class="row col-12">
+        <div class="col-6">
+            {{ form.name|as_crispy_field }}
+            <medium id="validate_project_name" class="text-muted hidden">
+                <font color="red">
+                    Project Name Already Exists!
+                </font>
+            </medium>
+            {{ form.project_status|as_crispy_field }}
+            {{ form.project_code|as_crispy_field }}
+            {{ form.estimated_cost|as_crispy_field }}
+            {{ form.final_cost|as_crispy_field }}
+            {{ form.description|as_crispy_field }}
+        </div>
+        <div class="col-6">
+
+            {{ form.logo|as_crispy_field }}
+            {{ form.thumbnail|as_crispy_field }}
+            {{ form.start_date|as_crispy_field }}
+            {{ form.end_date|as_crispy_field }}
+            {{ form.actual_start_date|as_crispy_field }}
+            {{ form.actual_end_date|as_crispy_field }}
+            <br>
+
+
+            <div class="">
+                <div class="col-md-12  ">
+                    <button id="btnAddProject" class="btn btn-success pull-right">
+                        <i class="fa fa-fw fa-lg fa-save"></i>Submit
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+</form>
+<script>
+
+    $('#id_name').on('input', function () {
+        var project_name = $(this).val();
+
+        $.ajax({
+            url: '{% url 'validateProjectName' %}',
+            data: {
+                'projectname': project_name
+            },
+            dataType: 'json',
+            success: function (data) {
+                if (data.is_taken) {
+                    $("#validate_project_name").show();
+                    document.getElementById('id_name').style.borderColor = "red";
+                    document.getElementById("btnAddProject").disabled = true;
+                } else {
+                    $("#validate_project_name").hide();
+                    document.getElementById('id_name').style.borderColor = "#e7e7e7";
+                    document.getElementById("btnAddProject").disabled = false;
+                }
+            }
+        });
+    });
+</script>
