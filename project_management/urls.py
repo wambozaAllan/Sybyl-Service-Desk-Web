@@ -50,4 +50,22 @@ urlpatterns = [
     path('updateStatus/<int:pk>/', views.UpdateStatus.as_view(), name='updateStatus'),
     path('deleteStatus/<int:pk>/', views.DeleteStatus.as_view(), name="deleteStatus"),
     path('validateStatusName/', views.ValidateStatusName, name='validateStatusName'),
+
+    path('addProject/', views.AddProject.as_view(), name='addProject'),
+    path('listProjects/', views.ListProjects.as_view(), name='listProjects'),
+    path('updateProject/<int:pk>', views.UpdateProject.as_view(), name='updateProject'),
+    path('detailsProject/<int:pk>', views.DetailProject.as_view(), name='detailsProject'),
+    path('validateProjectName/', views.validateProjectName, name='validateProjectName'),
+
+    path('addProjectTeam/', views.AddProjectTeam.as_view(), name='addProjectTeam'),
+    path('listProjectTeams/', views.ListProjectTeams.as_view(), name='listProjectTeams'),
+    path('updateProjectTeam/<int:pk>', views.UpdateProjectTeam.as_view(), name='updateProjectTeam'),
+    path('deleteProjectTeam/<int:pk>', views.DeleteProjectTeam.as_view(), name='deleteProjectTeam'),
+    path('validateProjectTeamName/', views.validateProjectTeamName, name='validateProjectTeamName'),
+
+    path('addProjectMember/', views.AddProjectMember.as_view(), name='addProjectMember'),
+    path('listProjectMembers/', views.ListProjectMembers.as_view(), name='listProjectMembers'),
+    path('deleteProjectMember/<int:pk>', views.DeleteProjectMember.as_view(), name='deleteProjectMember'),
+    path('validateProjectMember/', views.validateProjectMember, name='validateProjectMember'),
+
 ]

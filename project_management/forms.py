@@ -1,6 +1,6 @@
 from django import forms
 from django.db import models
-from .models import Project, Milestone, Task, ProjectDocument, Priority, Status
+from .models import Project, Milestone, Task, ProjectDocument, Priority, Status, ProjectTeamMember, ProjectTeam
 from company_management.models import Company
 from crispy_forms.helper import FormHelper
 from crispy_forms.layout import Submit
@@ -8,48 +8,52 @@ from crispy_forms.layout import Submit
 from ckeditor.widgets import CKEditorWidget
 
 class OldProjectForm(forms.ModelForm):
-    class Meta:
-        model = Project
-        fields = ('name', 'description', 'client', 'vendor', 'estimated_cost', 'startdate', 'enddate','project_manager',
-                    'project_assignee', 'project_team')
-
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-
-        if 'client' in self.data:
-            try:
-                country_id = int(self.data.get('client'))
-            except (ValueError, TypeError):
-                pass
+    # class Meta:
+    #     model = Project
+    #     fields = ('name', 'description', 'client', 'vendor', 'estimated_cost', 'startdate', 'enddate','project_manager',
+    #                 'project_assignee', 'project_team')
+    #
+    # def __init__(self, *args, **kwargs):
+    #     super().__init__(*args, **kwargs)
+    #
+    #     if 'client' in self.data:
+    #         try:
+    #             country_id = int(self.data.get('client'))
+    #         except (ValueError, TypeError):
+    #             pass
+    pass
 
 class CreateProjectForm(forms.ModelForm):
-    description = forms.CharField(widget=CKEditorWidget())
-    class Meta:
-        model = Project
-        fields = ('name', 'description', 'client', 'vendor', 'estimated_cost', 'startdate', 'enddate','project_manager',
-                 'project_assignee', 'project_team', 'project_status','logo')
+    # description = forms.CharField(widget=CKEditorWidget())
+    # class Meta:
+    #     model = Project
+    #     fields = ('name', 'description', 'client', 'vendor', 'estimated_cost', 'startdate', 'enddate','project_manager',
+    #              'project_assignee', 'project_team', 'project_status','logo')
+    #
+    #     # widgets = {
+    #     #     'description': forms.Textarea(attrs={'class':'richtexteditor'})
+    #     # }
+    #
+    # def __init__(self, *args, **kwargs):
+    #     super().__init__(*args, **kwargs)
+    #     self.helper = FormHelper()
+    #     self.helper.form_method = 'post'
+    #     self.helper.add_input(Submit('submit', 'Save Project'))
+    pass
 
-        # widgets = {
-        #     'description': forms.Textarea(attrs={'class':'richtexteditor'})
-        # }
-
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-        self.helper = FormHelper()
-        self.helper.form_method = 'post'
-        self.helper.add_input(Submit('submit', 'Save Project'))
 
 class ProjectUpdateForm(forms.ModelForm):
-    class Meta:
-        model = Project
-        fields = ('description', 'client', 'vendor', 'estimated_cost', 'startdate', 'enddate','project_manager',
-                    'project_assignee', 'project_team', 'final_cost', 'project_status','actual_startdate',
-                     'actual_enddate')
-
-        widgets = {
-            'actual_startdate': forms.DateTimeInput(attrs={'type':'date', 'placeholder':'Select a date'}, format='%d/%m/%Y'),
-            'actual_enddate': forms.DateTimeInput(attrs={'type':'date', 'placeholder':'Select a date'}, format='%d/%m/%Y')
-        }
+    # class Meta:
+    #     model = Project
+    #     fields = ('description', 'client', 'vendor', 'estimated_cost', 'startdate', 'enddate','project_manager',
+    #                 'project_assignee', 'project_team', 'final_cost', 'project_status','actual_startdate',
+    #                  'actual_enddate')
+    #
+    #     widgets = {
+    #         'actual_startdate': forms.DateTimeInput(attrs={'type':'date', 'placeholder':'Select a date'}, format='%d/%m/%Y'),
+    #         'actual_enddate': forms.DateTimeInput(attrs={'type':'date', 'placeholder':'Select a date'}, format='%d/%m/%Y')
+    #     }
+    pass
 
 
     def __init__(self, *args, **kwargs):
@@ -122,14 +126,41 @@ class DocumentForm(forms.ModelForm):
         self.helper.form_method = 'post'
         self.helper.add_input(Submit('submit', 'Save Document'))
 
+
 class PriorityForm(forms.ModelForm):
     class Meta:
         model = Priority
         fields = ('name', 'description',)
         widgets = {'name': forms.TextInput(attrs={'class': 'form-control input-flat'})}
 
+
 class StatusForm(forms.ModelForm):
     class Meta:
         model = Status
         fields = ('name', 'description',)
         widgets = {'name': forms.TextInput(attrs={'class': 'form-control input-flat'})}
+
+
+class ProjectForm(forms.ModelForm):
+    class Meta:
+        model = Project
+        fields = ('name', 'description', 'start_date', 'end_date', 'actual_start_date', 'actual_end_date',
+                  'project_status',)
+        widgets = {
+            'start_date': forms.DateTimeInput(attrs={'type': 'date', 'placeholder': 'Select a date', 'class': 'form-control date-input'},
+                                              format='%d/%m/%Y'),
+            'end_date': forms.DateTimeInput(attrs={'type': 'date', 'placeholder': 'Select a date'},
+                                            format='%d/%m/%Y'),
+            'actual_start_date': forms.DateTimeInput(attrs={'type': 'date', 'placeholder': 'Select a date'},
+                                                     format='%d/%m/%Y'),
+            'actual_end_date': forms.DateTimeInput(attrs={'type': 'date', 'placeholder': 'Select a date'},
+                                                   format='%d/%m/%Y'),
+            'description': forms.Textarea(attrs={'rows': 2, 'cols': 30})
+        }
+
+
+class ProjectTeamMemberForm(forms.ModelForm):
+
+    class Meta:
+        model = ProjectTeamMember
+        fields = ('member', 'responsibility', 'project_team', )

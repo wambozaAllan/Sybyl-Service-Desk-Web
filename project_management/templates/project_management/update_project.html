@@ -1,0 +1,87 @@
+{% extends 'base.html' %}
+{% load static %}
+{% load crispy_forms_tags %}
+{% block content %}
+    <!-- Main wrapper  -->
+    <div id="main-wrapper" class="main-wrapper">
+        {% include 'header.html' %}
+        {% include 'left-nav.html' %}
+        <!-- Page wrapper  -->
+        <div class="page-wrapper">
+            <!-- Bread crumb -->
+            <div class="row page-titles">
+                <div class="col-md-5 align-self-center">
+                    <h3 class="text-primary">Project Manager</h3></div>
+                <div class="col-md-7 align-self-center">
+                    <ol class="breadcrumb">
+                        <li class="breadcrumb-item"><a href="javascript:void(0)">Home</a></li>
+                        <li class="breadcrumb-item"><a href="{% url 'listProjects' %}">Projects List</a></li>
+                        <li class="breadcrumb-item active">Update Project</li>
+                    </ol>
+                </div>
+            </div>
+            <!-- End Bread crumb -->
+            <!-- Container fluid  -->
+            <div class="container-fluid">
+                <!-- Start Page Content -->
+                <div class="row">
+                    <div class="col-12">
+                        <div class="card">
+                            <div class="card-title">
+                                <div class="card-header bg-secondary">
+                                    <h4 class="m-b-0 text-white">Project List</h4>
+                                </div>
+                            </div>
+                            <div class="card-body">
+                                <form class="form-horizontal" action="{% url 'updateProject' project.id %}" method="post"
+                                      enctype="multipart/form-data">
+                                    {% csrf_token %}
+                                    <div class="row">
+                                        <div class="col-4">
+                                            {{ form.name|as_crispy_field }}
+                                        </div>
+                                        <div class="col-4">
+                                            {{ form.project_code|as_crispy_field }}
+                                        </div>
+                                        <div class="col-4">
+                                            {{ form.project_status|as_crispy_field }}
+                                        </div>
+                                    </div>
+
+                                    <div class="row">
+
+                                        <div class="col-4">
+                                            {{ form.final_cost|as_crispy_field }}
+                                        </div>
+                                        <div class="col-4">
+                                            {{ form.actual_start_date|as_crispy_field }}
+                                        </div>
+                                        <div class="col-4">
+                                            {{ form.actual_end_date|as_crispy_field }}
+                                        </div>
+                                    </div>
+
+
+                                    <div class="row">
+
+                                        <div class="col-1">
+                                            <a href="{% url 'listProjects' %}" class="btn btn-inverse">Cancel</a>
+                                        </div>
+                                        <div class="col-6" >
+                                            <button id="updateAddProject" class="btn btn-success pull-right col-6">
+                                                <i class="fa fa-fw fa-lg fa-save"></i>Submit
+                                            </button>
+                                        </div>
+                                    </div>
+
+
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                {% include 'footer.html' %}
+            </div>
+        </div>
+    </div>
+{% endblock %}
