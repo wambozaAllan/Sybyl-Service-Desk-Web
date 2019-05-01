@@ -38,6 +38,26 @@
 </form>
 <script>
 
+    $('#id_start_date').datepicker({
+        format: "dd/mm/yyyy",
+        autoclose: true
+    });
+
+    $('#id_end_date').datepicker({
+        format: "dd/mm/yyyy",
+        autoclose: true
+    });
+
+    $('#id_actual_start_date').datepicker({
+        format: "dd/mm/yyyy",
+        autoclose: true
+    });
+
+    $('#id_actual_end_date').datepicker({
+        format: "dd/mm/yyyy",
+        autoclose: true
+    });
+
     $('#id_name').on('input', function () {
         var project_name = $(this).val();
 
