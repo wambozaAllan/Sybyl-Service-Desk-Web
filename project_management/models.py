@@ -30,6 +30,18 @@ class Status(models.Model):
         return self.name
 
 
+# ROLE
+class Role(models.Model):
+    name = models.CharField(max_length=250)
+    description = models.CharField(max_length=255, blank=True)
+    created_time = models.DateTimeField(auto_now_add=True)
+    modified_time = models.DateTimeField(auto_now=True)
+
+    def __str__(self):
+        return self.name
+
+
+# PROJECT
 class Project(models.Model):
     name = models.CharField(max_length=100)
     project_status = models.ForeignKey(Status, null=True, blank=True, on_delete=models.SET_NULL)
@@ -121,16 +133,14 @@ class ProjectTeam(models.Model):
 
 
 class ProjectTeamMember(models.Model):
-    responsibility_options = (('Engineer', 'Engineer'), ('ProjectManager', 'ProjectManager'), ('Sales', 'Sales'),
-                              ('admin', 'admin'), ('client', 'client'))
     member = models.ManyToManyField(User)
     project_team = models.ManyToManyField(ProjectTeam)
-    responsibility = models.CharField(max_length=50, choices=responsibility_options)
+    responsibility = models.ForeignKey(Role, null=True, blank=True, on_delete=models.SET_NULL )
     created_time = models.DateTimeField(auto_now_add=True)
     modified_time = models.DateTimeField(auto_now=True)
 
     def __str__(self):
-        return str(self.member_id)
+        return str(self.member)
 
 
 class ProjectDocument(models.Model):
@@ -157,14 +167,6 @@ class ProjectAttachments(models.Model):
     class Meta():
         db_table = 'project_attachment'
 
-
-# ProjectsHasCompany
-class ProjectsHasCompany(models.Model):
-    project = models.ForeignKey(Project, on_delete=models.DO_NOTHING)
-    company = models.ForeignKey(Company, on_delete=models.DO_NOTHING)
-
-    class Meta():
-        db_table = 'projects_has_companies'
 
 
 class Milestone(models.Model):
