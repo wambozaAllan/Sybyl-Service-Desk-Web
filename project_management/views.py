@@ -15,7 +15,8 @@ from static.fusioncharts import FusionCharts
 
 from django.contrib.auth.decorators import user_passes_test, permission_required
 
-from .models import Project, Milestone, Task, ProjectDocument, Incident, Priority, Status, ProjectTeam, ProjectTeamMember
+from .models import Project, Milestone, Task, ProjectDocument, Incident, Priority, Status, ProjectTeam, \
+    ProjectTeamMember, Role
 from user_management.models import User
 from company_management.models import Company
 from .forms import CreateProjectForm, MilestoneForm, TaskForm, DocumentForm, ProjectUpdateForm, MilestoneUpdateForm
@@ -452,6 +453,51 @@ def ValidateStatusName(request):
     status_name = request.GET.get('statusname', None)
     data = {
         'is_taken': Status.objects.filter(name=status_name).exists()
+    }
+    return JsonResponse(data)
+
+
+# ROLES
+class AddRole(CreateView):
+    model = Role
+    fields = ['name', 'description']
+    template_name = 'project_management/add_role.html'
+    success_url = reverse_lazy('listAllRoles')
+
+
+class ListAllRoles(ListView):
+    template_name = 'project_management/list_all_roles.html'
+    context_object_name = 'list_roles'
+
+    def get_queryset(self):
+        return Role.objects.all()
+
+
+class UpdateRole(UpdateView):
+    model = Role
+    fields = ['name', 'description']
+    template_name = 'project_management/update_role.html'
+    success_url = reverse_lazy('listAllRoles')
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        roleid = int(self.request.GET['roleid'])
+        context['roleid'] = roleid
+        return context
+
+
+class DeleteRole(DeleteView):
+    model = Role
+    success_url = reverse_lazy('listAllRoles')
+
+    def get(self, request, *args, **kwargs):
+        return self.post(request, *args, **kwargs)
+
+
+def ValidateRoleName(request):
+    role_name = request.GET.get('rolename', None)
+    data = {
+        'is_taken': Role.objects.filter(name=role_name).exists()
     }
     return JsonResponse(data)
 
