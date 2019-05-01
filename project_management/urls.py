@@ -68,4 +68,10 @@ urlpatterns = [
     path('deleteProjectMember/<int:pk>', views.DeleteProjectMember.as_view(), name='deleteProjectMember'),
     path('validateProjectMember/', views.validateProjectMember, name='validateProjectMember'),
 
+    path('listAllRoles/', views.ListAllRoles.as_view(), name='listAllRoles'),
+    path('addRole/', views.AddRole.as_view(), name='addRole'),
+    path('updateRole/<int:pk>/', views.UpdateRole.as_view(), name='updateRole'),
+    path('deleteRole/<int:pk>/', views.DeleteRole.as_view(), name="deleteRole"),
+    path('validateRoleName/', views.ValidateRoleName, name='validateRoleName'),
+
 ]
