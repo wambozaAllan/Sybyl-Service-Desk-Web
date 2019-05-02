@@ -62,6 +62,7 @@ urlpatterns = [
     path('updateProjectTeam/<int:pk>', views.UpdateProjectTeam.as_view(), name='updateProjectTeam'),
     path('deleteProjectTeam/<int:pk>', views.DeleteProjectTeam.as_view(), name='deleteProjectTeam'),
     path('validateProjectTeamName/', views.validateProjectTeamName, name='validateProjectTeamName'),
+    path('validateProjectAssigned/', views.validateProjectAssigned, name='validateProjectAssigned'),
 
     path('addProjectMember/', views.AddProjectMember.as_view(), name='addProjectMember'),
     path('listProjectMembers/', views.ListProjectMembers.as_view(), name='listProjectMembers'),
