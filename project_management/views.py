@@ -586,8 +586,17 @@ def validateProjectTeamName(request):
     return JsonResponse(data)
 
 
-# PROJECT TEAM MEMBERS
+def validateProjectAssigned(request):
+    project = request.GET.get('project', None)
+    print(project)
+    data = {
+        'is_assigned': ProjectTeam.objects.filter(project=project).exists()
+    }
 
+    return JsonResponse(data)
+
+
+# PROJECT TEAM MEMBERS
 class AddProjectMember(CreateView):
     model = ProjectTeamMember
     template_name = 'project_management/add_team_member.html'
