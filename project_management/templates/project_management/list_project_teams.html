@@ -58,11 +58,10 @@
                                                     <td class="text-center">{{team.project}}</td>
                                                     <td class="text-center">
                                                         <button onclick="editProjectTeam({{ team.id }}, '{{ team.name }}')"
-                                                                id="" class="btn btn-outline-success btn-sm"
-                                                                type="button">
+                                                                class="btn btn-outline-success btn-sm" type="button">
                                                             <i title="Edit Team" class="fa fa-edit"></i>
                                                         </button>&nbsp;
-                                                        <button onclick="deleteProjectTeam({{ team.id }}, '{{ team.name }}')"
+                                                        <button onclick="deleteProjectTeam({{ team.id }}, '{{ team.name }}', '{{ team.num_members }}')"
                                                                 class="btn btn-outline-danger btn-sm" type="button">
                                                             <i title="Delete Team" class="fa fa-remove"></i>
                                                         </button>
