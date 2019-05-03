@@ -16,10 +16,15 @@
     {% include 'bottom.html' %}
 
     <script>
-    $('#dateOfBirth').datepicker({
-            format: "dd/mm/yyyy",
-            autoclose: true
-    });
+        $('#id_actual_start_date').datepicker({
+                format: "mm/dd/yyyy",
+                autoclose: true
+        });
+
+        $('#id_actual_end_date').datepicker({
+                format: "mm/dd/yyyy",
+                autoclose: true
+        });
 
         $('#listBranchContacts').DataTable({});
         $('#listEmails').DataTable({});
@@ -851,7 +856,7 @@ function editProjectTeam(teamid, teamname) {
                 url: urldata,
                 success: function (resp) {
                     $.confirm({
-                        title: '<h3>Team<strong class="text-info">' + teamname + ' </strong></h3>',
+                        title: '<h3>Team: <strong class="text-info">' + teamname + ' </strong></h3>',
                         content: '' + resp,
                         type: 'blue',
                         typeAnimated: true,
@@ -900,9 +905,10 @@ function functAssignPermissionsAGroup(grpid, grp) {
             });
         }
 
-function deleteProjectTeam(teamId, teamName) {
+function deleteProjectTeam(teamId, teamName, teamNum) {
             urldata = "{% url 'deleteProjectTeam' 999%}".replace(999, teamId);
-            $.confirm({
+            if (teamNum == 0){
+                $.confirm({
                 title: '<h4>Delete ProjectTeam: <strong class="text-danger">' + teamName + ' </strong>!</h4>',
                 content: '',
                 type: 'red',
@@ -927,6 +933,23 @@ function deleteProjectTeam(teamId, teamName) {
                     }
                 }
             });
+            }
+            else{
+                $.alert({
+                    type: 'red',
+                    typeAnimated: true,
+                    boxWidth: '40%',
+                    useBootstrap: false,
+                    theme: 'modern',
+                    title: 'Alert!',
+                    icon: 'fa fa-exclamation-circle',
+                    content: 'Cannot delete project team since it has members!',
+                    confirm: function(){
+                        alert('Confirmed!');
+                    }
+                });
+            }
+
         }
       
          function functionDeleteGroupPermission(pid, pname, grpid, groupname) {
@@ -971,7 +994,7 @@ function deleteProjectTeam(teamId, teamName) {
         }
       
 function addProjectTeamMember() {
-            urldata = "{% url 'addProjectMember'%}";
+            urldata = "{% url 'addProjectTeamMember'%}";
             $.ajax({
                 type: "GET",
                 cache: false,
@@ -1103,10 +1126,41 @@ function addProjectTeamMember() {
             }
         }
 
-   function deleteProjectMember(memberId, memberName) {
-            urldata = "{% url 'deleteProjectMember' 999%}".replace(999, memberId);
+        function editRole(roleId, roleName) {
+            urldata = "{% url 'updateRole' 999%}".replace(999, roleId);
+            $.ajax({
+                type: "GET",
+                cache: false,
+                data: {
+                    roleid: roleId
+                },
+                url: urldata,
+                success: function (resp) {
+                    $.confirm({
+                        title: '<h3>Update Role: <strong class="text-info">' + roleName + ' </strong>.</h3>',
+                        content: '' + resp,
+                        type: 'blue',
+                        typeAnimated: true,
+                        boxWidth: '40%',
+                        useBootstrap: false,
+                        closeIcon: true,
+                        buttons: {
+                            close: {
+                                text: 'Close',
+                                btnClass: 'btn-gray',
+                                action: function () {
+                                }
+                            }
+                        }
+                    });
+                }
+            });
+        }
+
+        function deleteRole(roleId, roleName) {
+            urldata = "{% url 'deleteRole' 999%}".replace(999, roleId);
             $.confirm({
-                title: '<h4>Delete Project Member: <strong class="text-danger">' + memberName + ' </strong>!</h4>',
+                title: '<h4>Delete Role: <strong class="text-danger">' + roleName + ' </strong>!</h4>',
                 content: '',
                 type: 'red',
                 typeAnimated: true,
@@ -1120,6 +1174,126 @@ function addProjectTeamMember() {
                         btnClass: 'btn-blue',
                         action: function () {
                             location.href = urldata;
+                        }
+                    },
+                    close: {
+                        text: 'Cancel',
+                        btnClass: 'btn-gray',
+                        action: function () {
+                        }
+                    }
+                }
+            });
+        }
+
+        function addRoleFunction() {
+            urldata = "{% url 'addRole'%}";
+            $.ajax({
+                type: "GET",
+                cache: false,
+                data: {},
+                url: urldata,
+                success: function (resp) {
+                    $.confirm({
+                        title: '<h3>Add New Role</h3>',
+                        content: '' + resp,
+                        type: 'blue',
+                        typeAnimated: true,
+                        boxWidth: '50%',
+                        useBootstrap: false,
+                        closeIcon: true,
+                        buttons: {
+                            close: {
+                                text: 'Cancel',
+                                btnClass: 'btn-gray',
+                                action: function () {
+                                }
+                            }
+                        }
+                    });
+                }
+            });
+        }
+
+        function manageTeamMembers(team_id, teamName) {
+            urldata = "{% url 'detailProjectTeamMembers'%}";
+
+            $.ajax({
+                type: "GET",
+                cache: false,
+                data: {
+                    tid: team_id,
+                    teamName: teamName
+                },
+                url: urldata,
+                success: function (resp) {
+                    $('.page-wrapper').html(resp);
+                }
+            });
+        }
+
+        function editProjectTeamMember(memberid, memberName) {
+
+            urldata = "{% url 'updateProjectTeamMember' 999%}".replace(999, memberid);
+            $.ajax({
+                type: "GET",
+                cache: false,
+                data: {
+                    memberid: memberid
+                },
+                url: urldata,
+                success: function (resp) {
+                    $.confirm({
+                        title: '<h3>Member: <strong class="text-info">' + memberName + ' </strong></h3>',
+                        content: '' + resp,
+                        type: 'blue',
+                        theme: 'material',
+                        typeAnimated: true,
+                        boxWidth: '40%',
+                        useBootstrap: false,
+                        closeIcon: true,
+                        buttons: {
+                            close: {
+                                text: 'Close',
+                                btnClass: 'btn-gray',
+                                action: function () {
+                                }
+                            }
+                        }
+                    });
+                }
+            });
+        }
+
+        function deleteProjectTeamMember(memberid, membername, teamid, teamname) {
+            urldata = "{% url 'deleteProjectTeamMember'%}";
+            $.confirm({
+                title: '<h4>Remove Member: <strong class="text-danger">"' + membername + ' "</strong>! from Team</h4>',
+                content: '',
+                type: 'red',
+                typeAnimated: true,
+                boxWidth: '40%',
+                useBootstrap: false,
+                theme: 'modern',
+                icon: 'fa fa-exclamation-circle',
+                buttons: {
+                    formSubmit: {
+                        text: 'Remove',
+                        btnClass: 'btn-red',
+                        action: function () {
+                            $.ajax({
+                                type: "GET",
+                                cache: false,
+                                data: {
+                                    memberid: memberid,
+                                    teamname: teamname,
+                                    teamid: teamid
+                                },
+                                url: urldata,
+                                success: function (resp) {
+                                    $('.page-wrapper').html(resp);
+                                }
+                            });
                         }
                     },
                     close: {

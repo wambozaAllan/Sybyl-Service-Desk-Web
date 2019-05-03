@@ -4,6 +4,7 @@ from .models import Project, Milestone, Task, ProjectDocument, Priority, Status,
 from company_management.models import Company
 from crispy_forms.helper import FormHelper
 from crispy_forms.layout import Submit
+from django.forms import Select
 
 from ckeditor.widgets import CKEditorWidget
 
@@ -77,6 +78,7 @@ class MilestoneForm(forms.ModelForm):
         self.helper.form_method = 'post'
         self.helper.add_input(Submit('submit', 'Save person'))
 
+
 class MilestoneUpdateForm(forms.ModelForm):
     class Meta:
         model = Milestone
@@ -93,6 +95,7 @@ class MilestoneUpdateForm(forms.ModelForm):
         self.helper.form_method = 'post'
         self.helper.add_input(Submit('submit', 'Save person'))
 
+
 class TaskForm(forms.ModelForm):
     class Meta:
         model = Task
@@ -104,6 +107,7 @@ class TaskForm(forms.ModelForm):
         self.helper.form_method = 'post'
         self.helper.add_input(Submit('submit', 'Save Task'))
 
+
 class TaskUpdateForm(forms.ModelForm):
     class Meta:
         model = Task
@@ -114,6 +118,7 @@ class TaskUpdateForm(forms.ModelForm):
         self.helper = FormHelper()
         self.helper.form_method = 'post'
         self.helper.add_input(Submit('submit', 'Save Task'))
+
 
 class DocumentForm(forms.ModelForm):
     class Meta:
