@@ -676,8 +676,68 @@
             });
         }
 
+        function functAddGlobalUserGroup() {
+            urldata = "{% url 'addGlobalUserGroup'%}";
+            $.ajax({
+                type: "GET",
+                cache: false,
+                data: {},
+                url: urldata,
+                success: function (resp) {
+                    $.confirm({
+                        title: '<h3>Add User Group</h3>',
+                        content: '' + resp,
+                        type: 'blue',
+                        typeAnimated: true,
+                        boxWidth: '40%',
+                        useBootstrap: false,
+                        closeIcon: true,
+                        buttons: {
+                            close: {
+                                text: 'Cancel',
+                                btnClass: 'btn-gray close-dialog',
+                                action: function () {
+                                }
+                            }
+                        }
+                    });
+                }
+            });
+        }
+
         function functionEditUserGroup(grp, grpextid) {
             urldata = "{% url 'updateUserGroup' 999%}".replace(999, grpextid);
+            $.ajax({
+                type: "GET",
+                cache: false,
+                data: {
+                    grpextid: grpextid
+                },
+                url: urldata,
+                success: function (resp) {
+                    $.confirm({
+                        title: '<h3>Edit Group: <strong class="text-info">' + grp + ' </strong>.</h3>',
+                        content: '' + resp,
+                        type: 'blue',
+                        typeAnimated: true,
+                        boxWidth: '50%',
+                        useBootstrap: false,
+                        closeIcon: true,
+                        buttons: {
+                            close: {
+                                text: 'Close',
+                                btnClass: 'btn-gray close-dialog',
+                                action: function () {
+                                }
+                            }
+                        }
+                    });
+                }
+            });
+        }
+
+        function functionEditUserGroupGlobal(grp, grpextid) {
+            urldata = "{% url 'updateUserGlobalGroup' 999%}".replace(999, grpextid);
             $.ajax({
                 type: "GET",
                 cache: false,
@@ -724,8 +784,30 @@
             });
         }
 
+        function functionManageGlobalUserGroup(grp, grpid) {
+            urldata = "{% url 'manageUserGlobalGroups'%}";
+            $.ajax({
+                type: "GET",
+                cache: false,
+                data: {
+                    grpid: grpid,
+                    grp: grp
+                },
+                url: urldata,
+                success: function (resp) {
+                    $('.page-wrapper').html(resp);
+
+                }
+            });
+        }
+
         function functAssignMemberAGroup() {
             window.location = '#userFormModalDialog';
+            initDialog('modalDialog2');
+        }
+
+        function functAssignMemberAGlobalGroup() {
+            window.location = '#user2FormModalDialog';
             initDialog('modalDialog2');
         }
 
@@ -743,6 +825,33 @@
             var grpname = trim($('#group_name').val());
             var grpid = trim($('#group_id').val());
             var size = staff.length;
+            if (size > 0) {
+                $.ajax({
+                    type: "GET",
+                    cache: false,
+                    url: urldata,
+                    data: {
+                        searchValue: staff,
+                        grp: grpname,
+                        grpid: grpid
+                    },
+                    success: function (response) {
+                        $('#myDropdown').html(response);
+                    }
+                });
+            } else {
+                $('#myDropdown').html('');
+            }
+        }
+
+        function searchGlobalUser() {
+            urldata = "{% url 'searchUnAssignedGlobalUsers'%}";
+
+            var staff = trim($('#userSearch').val());
+            var grpname = trim($('#group_name').val());
+            var grpid = trim($('#group_id').val());
+            var size = staff.length;
+
             if (size > 0) {
                 $.ajax({
                     type: "GET",
@@ -795,7 +904,7 @@
             });
         }
 
-         function functAddProjectTeam() {
+        function functAddProjectTeam() {
             urldata = "{% url 'addProjectTeam'%}";
             $.ajax({
                 type: "GET",
@@ -840,7 +949,23 @@
             });
         }
 
-function editProjectTeam(teamid, teamname) {
+        function functionManageGroupPermissions2(grp, grpid) {
+            urldata = "{% url 'manageGlobalGroupPermissions'%}";
+            $.ajax({
+                type: "GET",
+                cache: false,
+                data: {
+                    grpid: grpid,
+                    grp: grp
+                },
+                url: urldata,
+                success: function (resp) {
+                    $('.page-wrapper').html(resp);
+                }
+            });
+        }
+
+        function editProjectTeam(teamid, teamname) {
             urldata = "{% url 'updateProjectTeam' 999%}".replace(999, teamid);
             $.ajax({
                 type: "GET",
@@ -871,7 +996,7 @@ function editProjectTeam(teamid, teamname) {
             });
         }
       
-function functAssignPermissionsAGroup(grpid, grp) {
+        function functAssignPermissionsAGroup(grpid, grp) {
             urldata = "{% url 'assignPermissionsToGroup'%}";
             $.ajax({
                 type: "GET",
@@ -900,7 +1025,7 @@ function functAssignPermissionsAGroup(grpid, grp) {
             });
         }
 
-function deleteProjectTeam(teamId, teamName) {
+        function deleteProjectTeam(teamId, teamName) {
             urldata = "{% url 'deleteProjectTeam' 999%}".replace(999, teamId);
             $.confirm({
                 title: '<h4>Delete ProjectTeam: <strong class="text-danger">' + teamName + ' </strong>!</h4>',
@@ -970,7 +1095,7 @@ function deleteProjectTeam(teamId, teamName) {
             });
         }
       
-function addProjectTeamMember() {
+        function addProjectTeamMember() {
             urldata = "{% url 'addProjectMember'%}";
             $.ajax({
                 type: "GET",
@@ -1103,6 +1228,111 @@ function addProjectTeamMember() {
             }
         }
 
+        function functionDeleteGlobalGroup(grp, grpextid, percount, usercount, grpid) {
+            if (percount > 0 || usercount > 0) {
+                if (percount > 0 && usercount > 0) {
+                    $.confirm({
+                        title: '<h3>Alert.</h3>',
+                        content: 'Can not delete Group: <strong class="text-info">' + grp + '</strong>, it has attached <strong>Users</strong> and <strong>Permissions</strong>.',
+                        type: 'blue',
+                        typeAnimated: true,
+                        boxWidth: '40%',
+                        useBootstrap: false,
+                        closeIcon: true,
+                        icon: 'fa fa-warning',
+                        buttons: {
+                            close: {
+                                text: 'Close',
+                                btnClass: 'btn-gray',
+                                action: function () {
+                                }
+                            }
+                        }
+                    });
+                }
+                if (percount > 0 && usercount == 0) {
+                    $.confirm({
+                        title: '<h3>Alert.</h3>',
+                        content: 'Can not delete Group: <strong class="text-info">' + grp + '</strong>, it has attached <strong>Permissions</strong>.',
+                        type: 'blue',
+                        typeAnimated: true,
+                        boxWidth: '40%',
+                        useBootstrap: false,
+                        closeIcon: true,
+                        icon: 'fa fa-warning',
+                        buttons: {
+                            close: {
+                                text: 'Close',
+                                btnClass: 'btn-gray',
+                                action: function () {
+                                }
+                            }
+                        }
+                    });
+                }
+                if (usercount > 0 && percount == 0) {
+                    $.confirm({
+                        title: '<h3>Alert.</h3>',
+                        content: 'Can not delete Group: <strong class="text-info">' + grp + '</strong>, it has attached <strong>Users</strong>.',
+                        type: 'blue',
+                        typeAnimated: true,
+                        boxWidth: '40%',
+                        useBootstrap: false,
+                        closeIcon: true,
+                        icon: 'fa fa-warning',
+                        buttons: {
+                            close: {
+                                text: 'Close',
+                                btnClass: 'btn-gray',
+                                action: function () {
+                                }
+                            }
+                        }
+                    });
+                }
+            } else {
+                urldata = 'url'
+                $.confirm({
+                    title: '<h4>Delete Group: <strong class="text-danger">' + grp + ' </strong>!</h4>',
+                    content: '',
+                    type: 'red',
+                    typeAnimated: true,
+                    boxWidth: '40%',
+                    useBootstrap: false,
+                    theme: 'modern',
+                    icon: 'fa fa-exclamation-circle',
+                    buttons: {
+                        formSubmit: {
+                            text: 'OK',
+                            btnClass: 'btn-blue',
+                            action: function () {
+                                urldata = "{% url 'deleteGlobalUserGroup'%}";
+                                $.ajax({
+                                    type: "GET",
+                                    cache: false,
+                                    data: {
+                                        grpid: grpid,
+                                        grpextid: grpextid
+                                    },
+                                    url: urldata,
+                                    success: function (resp) {
+                                        $('.table-responsive').html(resp);
+                                    }
+                                });
+                            }
+                        },
+                        close: {
+                            text: 'Cancel',
+                            btnClass: 'btn-gray',
+                            action: function () {
+                            }
+                        }
+                    }
+                });
+            }
+        }
+
+
    function deleteProjectMember(memberId, memberName) {
             urldata = "{% url 'deleteProjectMember' 999%}".replace(999, memberId);
             $.confirm({
@@ -1131,4 +1361,5 @@ function addProjectTeamMember() {
                 }
             });
         }
+
     </script>

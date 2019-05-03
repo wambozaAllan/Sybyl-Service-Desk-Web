@@ -25,7 +25,7 @@
         event.preventDefault();
         var name = $('#id_name').val();
         var description = $('#id_description').val();
-        urldata = "{% url 'saveUserGroup'%}";
+        urldata = "{% url 'saveGlobalUserGroup'%}";
 
         var active;
         if (document.getElementById('id_active').checked) {

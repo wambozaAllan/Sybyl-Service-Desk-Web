@@ -1,0 +1,50 @@
+<div class="col-12">
+    <div class="row">
+        <div class="col-md-12">
+            <div class="card">
+                <h4 class="card-title font-weight-bold">Assign User To Group.</h4>
+                <div class="card-body">
+                    <form>
+                        {% csrf_token %}
+
+                        <div class="col-10">
+                            <div class="form-group">
+                                <label class="col-form-label  requiredField">User<span
+                                        class="asteriskField">*</span></label>
+                                <div class="">
+                                    <input id="id_user" type="text" name="" class="textinput textInput form-control"
+                                           required="" value="{{ u_name }}" disabled>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="col-10">
+                            <div class="form-group">
+                                <label class="col-form-label  requiredField">Company<span class="asteriskField">*</span></label>
+                                <div class="">
+                                    <input id="id_company" type="text" name="" class="textinput textInput form-control" required="" value="{{ company_name }}" disabled>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="col-10">
+                            <div class="form-group">
+                                <label class="col-form-label  requiredField">Group<span
+                                        class="asteriskField">*</span></label>
+                                <div class="">
+                                    <input id="id_group" type="text" name="" class="textinput textInput form-control"
+                                           required="" value="{{ grp_name }}" disabled>
+                                </div>
+                            </div>
+                        </div>
+
+                        <input type="hidden" id="uid" value="{{ uid }}">
+                        <input type="hidden" id="grpid" value="{{ grpid }}">
+
+                    </form>
+                </div>
+                <hr>
+            </div>
+        </div>
+    </div>
+</div>
