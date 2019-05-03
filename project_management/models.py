@@ -133,7 +133,7 @@ class ProjectTeam(models.Model):
 
 
 class ProjectTeamMember(models.Model):
-    member = models.ManyToManyField(User)
+    member = models.ForeignKey(User, on_delete=models.CASCADE, default='')
     project_team = models.ManyToManyField(ProjectTeam)
     responsibility = models.ForeignKey(Role, null=True, blank=True, on_delete=models.SET_NULL )
     created_time = models.DateTimeField(auto_now_add=True)
