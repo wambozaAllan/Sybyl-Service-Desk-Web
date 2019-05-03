@@ -12,6 +12,7 @@ from django.http import HttpResponseRedirect, HttpResponse
 from django.template.loader import get_template
 from django.core.mail import EmailMessage
 from static.fusioncharts import FusionCharts
+from django.template import loader
 
 from django.contrib.auth.decorators import user_passes_test, permission_required
 
@@ -22,6 +23,7 @@ from company_management.models import Company
 from .forms import CreateProjectForm, MilestoneForm, TaskForm, DocumentForm, ProjectUpdateForm, MilestoneUpdateForm
 from django.contrib.auth.mixins import PermissionRequiredMixin
 from django.http import JsonResponse
+from django.db.models import Count
 import json
 
 # Custom Views
@@ -554,7 +556,7 @@ class ListProjectTeams(ListView):
     context_object_name = 'project_teams'
 
     def get_queryset(self):
-        return ProjectTeam.objects.all()
+        return ProjectTeam.objects.annotate(num_members=Count('projectteammember'))
 
 
 class UpdateProjectTeam(UpdateView):
@@ -597,38 +599,90 @@ def validateProjectAssigned(request):
 
 
 # PROJECT TEAM MEMBERS
-class AddProjectMember(CreateView):
+class AddProjectTeamMember(CreateView):
     model = ProjectTeamMember
     template_name = 'project_management/add_team_member.html'
     fields = ['member', 'project_team', 'responsibility']
-    success_url = reverse_lazy('listProjectMembers')
+    success_url = reverse_lazy('listProjectTeamMembers')
 
 
-class ListProjectMembers(ListView):
+class ListProjectTeamMembers(ListView):
     template_name = 'project_management/list_team_members.html'
-    context_object_name = 'team_members'
+    context_object_name = 'teams'
 
     def get_queryset(self):
-        return ProjectTeamMember.objects.all()
+        return ProjectTeam.objects.annotate(num_members=Count('projectteammember'))
 
 
-class DeleteProjectMember(DeleteView):
+class UpdateProjectTeamMember(UpdateView):
     model = ProjectTeamMember
-    success_url = reverse_lazy('listProjectMembers')
+    fields = ['responsibility']
+    template_name = 'project_management/update_project_team_member.html'
+    success_url = reverse_lazy('listProjectTeamMembers')
 
-    def get(self, request, *args, **kwargs):
-        return self.post(request, *args, **kwargs)
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        member_id = self.request.GET.get('memberid')
+        context['member_id'] = member_id
+        return context
 
 
-def validateProjectMember(request):
-    team_name = request.GET.get('teamname', None)
-    data = {
-        'is_taken': ProjectTeamMember.objects.filter(name=team_name).exists()
+def detail_team_member(request):
+    team_id = request.GET.get('tid')
+    team_name = request.GET.get('teamName')
+
+    team_members = ProjectTeamMember.objects.filter(project_team=int(team_id))
+    team = ProjectTeam.objects.get(id=team_id)
+
+    context = {
+        'team_member': team_members,
+        'team': team
     }
-    return JsonResponse(data)
+
+    return render(request, 'project_management/details_team_member.html', context)
 
 
+def validateProjectTeamAssigned(request):
+    member_name = request.GET.get('member')
+    project_team = request.GET.get('projectTeam')
+    print(member_name)
+    print(project_team)
 
 
+    projectteam = ProjectTeam.objects.get(id=project_team)
+    membername = ProjectTeamMember.objects.filter(id=member_name).exists()
+    print("member name exists as '{}'".format(membername))
+
+    if membername == 'True':
+        print("member name is '{}'".format(membername))
 
 
+        data = {
+
+            'is_assigned': ProjectTeamMember.objects.filter(project_team=project_team).exists()
+        }
+        print(data)
+
+        return JsonResponse(data)
+
+
+def remove_project_team_member(request):
+    team_id = request.GET.get('teamid')
+    team_name = request.GET.get('teamname')
+    member_id = request.GET.get('memberid')
+
+    teamid = ProjectTeam.objects.get(id=int(team_id))
+    memberid = ProjectTeamMember.objects.get(member=int(member_id))
+    memberid.project_team.remove(teamid)
+
+
+    team = ProjectTeamMember.objects.filter(project_team=int(team_id))
+    template = loader.get_template('user_management/details_team_member.html')
+    context = {
+        'team': team,
+        'team_name': team_name,
+        'team_id': team_id,
+    }
+
+
+    return HttpResponse(template.render(context, request))
