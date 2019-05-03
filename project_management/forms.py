@@ -4,6 +4,7 @@ from .models import Project, Milestone, Task, ProjectDocument, Priority, Status,
 from company_management.models import Company
 from crispy_forms.helper import FormHelper
 from crispy_forms.layout import Submit
+from django.forms import Select
 
 from ckeditor.widgets import CKEditorWidget
 
