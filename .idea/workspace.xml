@@ -3,6 +3,7 @@
   <component name="ChangeListManager">
     <list default="true" id="5b39e269-faf1-4041-a9e1-91ce60eb0e26" name="Default Changelist" comment="Merge branch 'master' of https://github.com/wambozaAllan/Sybyl-Service-Desk-Web into usergroups&#10;&#10;# Conflicts:&#10;#&#9;.idea/workspace.xml">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/templates/base.html" beforeDir="false" afterPath="$PROJECT_DIR$/templates/base.html" afterDir="false" />
     </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="SHOW_DIALOG" value="false" />
@@ -59,8 +60,20 @@
       <file pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/templates/base.html">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="127">
-              <caret line="1103" column="29" lean-forward="true" selection-start-line="1103" selection-start-column="29" selection-end-line="1103" selection-end-column="29" />
+            <state relative-caret-position="1926">
+              <caret line="1535" column="9" selection-start-line="1535" selection-start-column="9" selection-end-line="1535" selection-end-column="9" />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/user_management/templates/user_management/global_user_groups.html">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="177">
+              <caret line="86" column="94" selection-start-line="86" selection-start-column="69" selection-end-line="86" selection-end-column="94" />
+              <folding>
+                <element signature="n#style#0;n#a#0;n#span#0;n#td#4;n#tr#0;n#tbody#0;n#table#0;n#div#1;n#div#0;n#div#0;n#div#0;n#div#0;n#div#1;n#div#0;n#div#0;n#!!top" expanded="true" />
+              </folding>
             </state>
           </provider>
         </entry>
@@ -78,7 +91,6 @@
   </component>
   <component name="FindInProjectRecents">
     <findStrings>
-      <find>displaySearchResults</find>
       <find>searchUnAssignedUsers</find>
       <find>list_groups</find>
       <find>functionManageGlobalUserGroup</find>
@@ -108,6 +120,7 @@
       <find>update</find>
       <find>saveUserUpdate</find>
       <find>.update(</find>
+      <find>functionDeleteGlobalGroup</find>
     </findStrings>
   </component>
   <component name="Git.Settings">
@@ -164,9 +177,9 @@
         <option value="$PROJECT_DIR$/user_management/templates/user_management/add_user.html" />
         <option value="$PROJECT_DIR$/user_management/templates/user_management/update_user.html" />
         <option value="$PROJECT_DIR$/user_management/urls.py" />
-        <option value="$PROJECT_DIR$/templates/base.html" />
         <option value="$PROJECT_DIR$/user_management/templates/user_management/list_users.html" />
         <option value="$PROJECT_DIR$/user_management/views.py" />
+        <option value="$PROJECT_DIR$/templates/base.html" />
       </list>
     </option>
   </component>
@@ -367,7 +380,7 @@
     <frame x="-8" y="-8" width="1382" height="744" extended-state="6" />
     <editor active="true" />
     <layout>
-      <window_info content_ui="combo" id="Project" order="0" sideWeight="0.4945355" visible="true" weight="0.25669643" />
+      <window_info active="true" content_ui="combo" id="Project" order="0" sideWeight="0.4945355" visible="true" weight="0.25669643" />
       <window_info id="Structure" order="1" sideWeight="0.5054645" side_tool="true" weight="0.2193646" />
       <window_info anchor="bottom" id="Message" order="0" />
       <window_info anchor="bottom" id="Find" order="1" weight="0.3289689" />
@@ -381,7 +394,7 @@
       <window_info anchor="bottom" id="Database Changes" order="9" show_stripe_button="false" />
       <window_info anchor="bottom" id="Event Log" order="10" sideWeight="0.10193452" side_tool="true" weight="0.14729951" />
       <window_info anchor="bottom" id="Favorites" order="11" sideWeight="0.5035461" weight="0.21931261" />
-      <window_info active="true" anchor="bottom" id="Terminal" order="12" sideWeight="0.89806545" visible="true" weight="0.41898528" />
+      <window_info anchor="bottom" id="Terminal" order="12" sideWeight="0.89806545" weight="0.21440262" />
       <window_info anchor="bottom" id="Python Console" order="13" sideWeight="0.49848714" weight="0.3289689" />
       <window_info anchor="bottom" id="GraphQL" order="14" />
       <window_info anchor="right" id="Commander" internal_type="SLIDING" order="0" type="SLIDING" weight="0.4" />
@@ -658,16 +671,6 @@
         <state relative-caret-position="-734" />
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/user_management/templates/user_management/global_user_groups.html">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="306">
-          <caret line="71" column="97" selection-start-line="71" selection-start-column="68" selection-end-line="71" selection-end-column="97" />
-          <folding>
-            <element signature="n#style#0;n#a#0;n#span#0;n#td#4;n#tr#0;n#tbody#0;n#table#0;n#div#1;n#div#0;n#div#0;n#div#0;n#div#0;n#div#1;n#div#0;n#div#0;n#!!top" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/user_management/templates/user_management/unassigned_users_search_results.html">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="-51">
@@ -874,10 +877,20 @@
         </state>
       </provider>
     </entry>
+    <entry file="file://$PROJECT_DIR$/user_management/templates/user_management/global_user_groups.html">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="177">
+          <caret line="86" column="94" selection-start-line="86" selection-start-column="69" selection-end-line="86" selection-end-column="94" />
+          <folding>
+            <element signature="n#style#0;n#a#0;n#span#0;n#td#4;n#tr#0;n#tbody#0;n#table#0;n#div#1;n#div#0;n#div#0;n#div#0;n#div#0;n#div#1;n#div#0;n#div#0;n#!!top" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
     <entry file="file://$PROJECT_DIR$/templates/base.html">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="127">
-          <caret line="1103" column="29" lean-forward="true" selection-start-line="1103" selection-start-column="29" selection-end-line="1103" selection-end-column="29" />
+        <state relative-caret-position="1926">
+          <caret line="1535" column="9" selection-start-line="1535" selection-start-column="9" selection-end-line="1535" selection-end-column="9" />
         </state>
       </provider>
     </entry>

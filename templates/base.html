@@ -1030,7 +1030,7 @@
             });
         }
 
-function deleteProjectTeam(teamId, teamName, teamNum) {
+        function deleteProjectTeam(teamId, teamName, teamNum) {
             urldata = "{% url 'deleteProjectTeam' 999%}".replace(999, teamId);
             if (teamNum == 0){
                 $.confirm({
@@ -1118,7 +1118,7 @@ function deleteProjectTeam(teamId, teamName, teamNum) {
             });
         }
       
-function addProjectTeamMember() {
+        function addProjectTeamMember() {
             urldata = "{% url 'addProjectTeamMember'%}";
             $.ajax({
                 type: "GET",
@@ -1429,5 +1429,109 @@ function addProjectTeamMember() {
                     }
                 }
             });
+        }
+
+        function functionDeleteGlobalGroup(grp, grpextid, percount, usercount, grpid) {
+            if (percount > 0 || usercount > 0) {
+                if (percount > 0 && usercount > 0) {
+                    $.confirm({
+                        title: '<h3>Alert.</h3>',
+                        content: 'Can not delete Group: <strong class="text-info">' + grp + '</strong>, it has attached <strong>Users</strong> and <strong>Permissions</strong>.',
+                        type: 'blue',
+                        typeAnimated: true,
+                        boxWidth: '40%',
+                        useBootstrap: false,
+                        closeIcon: true,
+                        icon: 'fa fa-warning',
+                        buttons: {
+                            close: {
+                                text: 'Close',
+                                btnClass: 'btn-gray',
+                                action: function () {
+                                }
+                            }
+                        }
+                    });
+                }
+                if (percount > 0 && usercount == 0) {
+                    $.confirm({
+                        title: '<h3>Alert.</h3>',
+                        content: 'Can not delete Group: <strong class="text-info">' + grp + '</strong>, it has attached <strong>Permissions</strong>.',
+                        type: 'blue',
+                        typeAnimated: true,
+                        boxWidth: '40%',
+                        useBootstrap: false,
+                        closeIcon: true,
+                        icon: 'fa fa-warning',
+                        buttons: {
+                            close: {
+                                text: 'Close',
+                                btnClass: 'btn-gray',
+                                action: function () {
+                                }
+                            }
+                        }
+                    });
+                }
+                if (usercount > 0 && percount == 0) {
+                    $.confirm({
+                        title: '<h3>Alert.</h3>',
+                        content: 'Can not delete Group: <strong class="text-info">' + grp + '</strong>, it has attached <strong>Users</strong>.',
+                        type: 'blue',
+                        typeAnimated: true,
+                        boxWidth: '40%',
+                        useBootstrap: false,
+                        closeIcon: true,
+                        icon: 'fa fa-warning',
+                        buttons: {
+                            close: {
+                                text: 'Close',
+                                btnClass: 'btn-gray',
+                                action: function () {
+                                }
+                            }
+                        }
+                    });
+                }
+            } else {
+                urldata = 'url'
+                $.confirm({
+                    title: '<h4>Delete Group: <strong class="text-danger">' + grp + ' </strong>!</h4>',
+                    content: '',
+                    type: 'red',
+                    typeAnimated: true,
+                    boxWidth: '40%',
+                    useBootstrap: false,
+                    theme: 'modern',
+                    icon: 'fa fa-exclamation-circle',
+                    buttons: {
+                        formSubmit: {
+                            text: 'OK',
+                            btnClass: 'btn-blue',
+                            action: function () {
+                                urldata = "{% url 'deleteGlobalUserGroup'%}";
+                                $.ajax({
+                                    type: "GET",
+                                    cache: false,
+                                    data: {
+                                        grpid: grpid,
+                                        grpextid: grpextid
+                                    },
+                                    url: urldata,
+                                    success: function (resp) {
+                                        $('.table-responsive').html(resp);
+                                    }
+                                });
+                            }
+                        },
+                        close: {
+                            text: 'Cancel',
+                            btnClass: 'btn-gray',
+                            action: function () {
+                            }
+                        }
+                    }
+                });
+            }
         }
     </script>
