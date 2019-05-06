@@ -2,30 +2,7 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="5b39e269-faf1-4041-a9e1-91ce60eb0e26" name="Default Changelist" comment="Merge branch 'master' of https://github.com/wambozaAllan/Sybyl-Service-Desk-Web into usergroups&#10;&#10;# Conflicts:&#10;#&#9;.idea/workspace.xml">
-      <change afterPath="$PROJECT_DIR$/user_management/templates/user_management/add_global_user_group.html" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/user_management/templates/user_management/add_user_to_global_group.html" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/user_management/templates/user_management/global_user_groups.html" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/user_management/templates/user_management/list_global_group_permissions.html" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/user_management/templates/user_management/list_global_group_users.html" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/user_management/templates/user_management/list_global_groups.html" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/user_management/templates/user_management/unassigned_global_users_search_results.html" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/user_management/templates/user_management/update_global_user_group.html" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/core/views.py" beforeDir="false" afterPath="$PROJECT_DIR$/core/views.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/templates/base.html" beforeDir="false" afterPath="$PROJECT_DIR$/templates/base.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/templates/left-nav.html" beforeDir="false" afterPath="$PROJECT_DIR$/templates/left-nav.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/user_management/forms.py" beforeDir="false" afterPath="$PROJECT_DIR$/user_management/forms.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/user_management/models.py" beforeDir="false" afterPath="$PROJECT_DIR$/user_management/models.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/user_management/templates/user_management/add_user.html" beforeDir="false" afterPath="$PROJECT_DIR$/user_management/templates/user_management/add_user.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/user_management/templates/user_management/add_user_group.html" beforeDir="false" afterPath="$PROJECT_DIR$/user_management/templates/user_management/add_user_group.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/user_management/templates/user_management/list_group_permissions.html" beforeDir="false" afterPath="$PROJECT_DIR$/user_management/templates/user_management/list_group_permissions.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/user_management/templates/user_management/list_groups.html" beforeDir="false" afterPath="$PROJECT_DIR$/user_management/templates/user_management/list_groups.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/user_management/templates/user_management/list_user_groups.html" beforeDir="false" afterPath="$PROJECT_DIR$/user_management/templates/user_management/list_user_groups.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/user_management/templates/user_management/list_users.html" beforeDir="false" afterPath="$PROJECT_DIR$/user_management/templates/user_management/list_users.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/user_management/templates/user_management/update_user.html" beforeDir="false" afterPath="$PROJECT_DIR$/user_management/templates/user_management/update_user.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/user_management/templates/user_management/update_user_group.html" beforeDir="false" afterPath="$PROJECT_DIR$/user_management/templates/user_management/update_user_group.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/user_management/urls.py" beforeDir="false" afterPath="$PROJECT_DIR$/user_management/urls.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/user_management/views.py" beforeDir="false" afterPath="$PROJECT_DIR$/user_management/views.py" afterDir="false" />
     </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="SHOW_DIALOG" value="false" />
@@ -57,7 +34,38 @@
     <favorites_list name="Sybyl-Service-Desk-Web" />
   </component>
   <component name="FileEditorManager">
-    <leaf SIDE_TABS_SIZE_LIMIT_KEY="300" />
+    <leaf SIDE_TABS_SIZE_LIMIT_KEY="300">
+      <file pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/user_management/templates/user_management/list_users.html">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="119">
+              <caret line="7" column="31" selection-start-line="7" selection-start-column="31" selection-end-line="7" selection-end-column="31" />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/user_management/templates/user_management/update_user.html">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="403">
+              <caret line="34" column="47" selection-start-line="34" selection-start-column="47" selection-end-line="34" selection-end-column="47" />
+              <folding>
+                <element signature="n#style#0;n#div#2;n#div#3;n#form#0;n#div#1;n#div#0;n#div#0;n#div#0;n#div#1;n#div#0;n#div#0;n#!!top" expanded="true" />
+              </folding>
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file pinned="false" current-in-tab="true">
+        <entry file="file://$PROJECT_DIR$/templates/base.html">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="127">
+              <caret line="1103" column="29" lean-forward="true" selection-start-line="1103" selection-start-column="29" selection-end-line="1103" selection-end-column="29" />
+            </state>
+          </provider>
+        </entry>
+      </file>
+    </leaf>
   </component>
   <component name="FileTemplateManagerImpl">
     <option name="RECENT_TEMPLATES">
@@ -162,7 +170,7 @@
       </list>
     </option>
   </component>
-  <component name="ProjectFrameBounds" extendedState="7">
+  <component name="ProjectFrameBounds" extendedState="6">
     <option name="x" value="10" />
     <option name="y" value="20" />
     <option name="width" value="1346" />
@@ -186,13 +194,25 @@
             <path>
               <item name="Sybyl-Service-Desk-Web" type="b2602c69:ProjectViewProjectNode" />
               <item name="Sybyl-Service-Desk-Web" type="462c0819:PsiDirectoryNode" />
-              <item name="company_management" type="462c0819:PsiDirectoryNode" />
+              <item name="templates" type="462c0819:PsiDirectoryNode" />
             </path>
             <path>
               <item name="Sybyl-Service-Desk-Web" type="b2602c69:ProjectViewProjectNode" />
               <item name="Sybyl-Service-Desk-Web" type="462c0819:PsiDirectoryNode" />
-              <item name="company_management" type="462c0819:PsiDirectoryNode" />
+              <item name="user_management" type="462c0819:PsiDirectoryNode" />
+            </path>
+            <path>
+              <item name="Sybyl-Service-Desk-Web" type="b2602c69:ProjectViewProjectNode" />
+              <item name="Sybyl-Service-Desk-Web" type="462c0819:PsiDirectoryNode" />
+              <item name="user_management" type="462c0819:PsiDirectoryNode" />
               <item name="templates" type="462c0819:PsiDirectoryNode" />
+            </path>
+            <path>
+              <item name="Sybyl-Service-Desk-Web" type="b2602c69:ProjectViewProjectNode" />
+              <item name="Sybyl-Service-Desk-Web" type="462c0819:PsiDirectoryNode" />
+              <item name="user_management" type="462c0819:PsiDirectoryNode" />
+              <item name="templates" type="462c0819:PsiDirectoryNode" />
+              <item name="user_management" type="462c0819:PsiDirectoryNode" />
             </path>
           </expand>
           <select />
@@ -205,10 +225,10 @@
     <property name="DefaultHtmlFileTemplate" value="HTML File" />
     <property name="SHARE_PROJECT_CONFIGURATION_FILES" value="true" />
     <property name="WebServerToolWindowFactoryState" value="false" />
-    <property name="last_opened_file_path" value="$PROJECT_DIR$/static/template-static-files/javascript" />
+    <property name="last_opened_file_path" value="$PROJECT_DIR$" />
     <property name="nodejs_interpreter_path.stuck_in_default_project" value="undefined stuck path" />
     <property name="nodejs_npm_path_reset_for_default_project" value="true" />
-    <property name="settings.editor.selected.configurable" value="fileTemplates" />
+    <property name="settings.editor.selected.configurable" value="preferences.fileTypes" />
   </component>
   <component name="RecentsManager">
     <key name="MoveFile.RECENT_KEYS">
@@ -344,7 +364,8 @@
     </todo-panel>
   </component>
   <component name="ToolWindowManager">
-    <frame x="-8" y="-8" width="1382" height="744" extended-state="7" />
+    <frame x="-8" y="-8" width="1382" height="744" extended-state="6" />
+    <editor active="true" />
     <layout>
       <window_info content_ui="combo" id="Project" order="0" sideWeight="0.4945355" visible="true" weight="0.25669643" />
       <window_info id="Structure" order="1" sideWeight="0.5054645" side_tool="true" weight="0.2193646" />
@@ -360,7 +381,7 @@
       <window_info anchor="bottom" id="Database Changes" order="9" show_stripe_button="false" />
       <window_info anchor="bottom" id="Event Log" order="10" sideWeight="0.10193452" side_tool="true" weight="0.14729951" />
       <window_info anchor="bottom" id="Favorites" order="11" sideWeight="0.5035461" weight="0.21931261" />
-      <window_info active="true" anchor="bottom" id="Terminal" order="12" sideWeight="0.89806545" visible="true" weight="0.3747954" />
+      <window_info active="true" anchor="bottom" id="Terminal" order="12" sideWeight="0.89806545" visible="true" weight="0.41898528" />
       <window_info anchor="bottom" id="Python Console" order="13" sideWeight="0.49848714" weight="0.3289689" />
       <window_info anchor="bottom" id="GraphQL" order="14" />
       <window_info anchor="right" id="Commander" internal_type="SLIDING" order="0" type="SLIDING" weight="0.4" />
@@ -750,13 +771,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/templates/base.html">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="256">
-          <caret line="1362" column="9" lean-forward="true" selection-start-line="1362" selection-start-column="9" selection-end-line="1362" selection-end-column="9" />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/user_management/urls.py">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="115">
@@ -836,27 +850,34 @@
         </state>
       </provider>
     </entry>
+    <entry file="file://$PROJECT_DIR$/user_management/templates/user_management/list_group_users.html">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="1139">
+          <caret line="67" column="49" lean-forward="true" selection-start-line="64" selection-start-column="40" selection-end-line="67" selection-end-column="49" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/user_management/templates/user_management/list_users.html">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="119">
+          <caret line="7" column="31" selection-start-line="7" selection-start-column="31" selection-end-line="7" selection-end-column="31" />
+        </state>
+      </provider>
+    </entry>
     <entry file="file://$PROJECT_DIR$/user_management/templates/user_management/update_user.html">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="595">
-          <caret line="35" column="88" selection-start-line="35" selection-start-column="74" selection-end-line="35" selection-end-column="88" />
+        <state relative-caret-position="403">
+          <caret line="34" column="47" selection-start-line="34" selection-start-column="47" selection-end-line="34" selection-end-column="47" />
           <folding>
             <element signature="n#style#0;n#div#2;n#div#3;n#form#0;n#div#1;n#div#0;n#div#0;n#div#0;n#div#1;n#div#0;n#div#0;n#!!top" expanded="true" />
           </folding>
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/user_management/templates/user_management/list_users.html">
+    <entry file="file://$PROJECT_DIR$/templates/base.html">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="1258">
-          <caret line="74" column="50" lean-forward="true" selection-start-line="74" selection-start-column="50" selection-end-line="74" selection-end-column="50" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/user_management/templates/user_management/list_group_users.html">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="1139">
-          <caret line="67" column="49" lean-forward="true" selection-start-line="64" selection-start-column="40" selection-end-line="67" selection-end-column="49" />
+        <state relative-caret-position="127">
+          <caret line="1103" column="29" lean-forward="true" selection-start-line="1103" selection-start-column="29" selection-end-line="1103" selection-end-column="29" />
         </state>
       </provider>
     </entry>
