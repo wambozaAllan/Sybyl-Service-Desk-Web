@@ -29,7 +29,7 @@
                         <div class="col-12">
                             <div class="card">
                                 <div class="card-body">
-                                    <h4 class="card-title">Project Team Members</h4>
+                                    <h4 class="card-title">List Count of Project Members</h4>
                                     <div class="row">
                                         <div class="col-md-12">
                                             <button id="" class="btn btn-info pull-right" onclick="addProjectTeamMember();">
@@ -44,33 +44,32 @@
                                             <thead>
                                             <tr>
                                                 <th>#</th>
-                                                <th>Member</th>
                                                 <th>Team</th>
-                                                <th>Role</th>
+                                                <th class="text-center">Members</th>
                                                 <th class="text-center">Action</th>
                                             </tr>
                                             </thead>
                                             <tbody>
 
-                                            {% for staff in team_members %}
+                                            {% for team in teams %}
                                                 <tr>
                                                     <td>{{ forloop.counter }}</td>
                                                     <td>
-                                                        {% for user in staff.member.all %}
-                                                            {{ user.first_name }} {{user.last_name}}
-                                                        {% endfor %}
+                                                       {{team.name}}
                                                     </td>
-                                                    <td>
-                                                        {% for team in staff.project_team.all %}
-                                                            {{team.name}}
-                                                        {% endfor %}
-                                                    </td>
-                                                    <td>{{ staff.responsibility }}</td>
-
                                                     <td class="text-center">
-                                                        <button onclick="deleteProjectMember({{ member.id }}, '{{ member.member }}')"
+
+                                                        <span class="badge badge-pill badge-success">{{ team.num_members }}</span>
+                                                    </td>
+                                                    <td class="text-center">
+                                                        <button class="btn btn-outline-success btn-sm" onclick="manageTeamMembers({{ team.id }}, '{{ team.name }}')">
+                                                           <i title="View Team" class="fa fa-navicon"></i>
+                                                        </button>
+
+
+                                                        <button onclick="deleteProjectTeam({{ team.id }}, '{{ team.name }}', '{{ team.num_members }}')"
                                                                 class="btn btn-outline-danger btn-sm" type="button">
-                                                            <i title="Delete Team Member" class="fa fa-remove"></i>
+                                                            <i title="Delete Team" class="fa fa-remove"></i>
                                                         </button>
                                                     </td>
                                                 </tr>
