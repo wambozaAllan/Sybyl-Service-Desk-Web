@@ -1,12 +1,21 @@
 {% load crispy_forms_tags %}
 <div class="card-body">
     <div class="basic-form">
-        <form class="form-horizontal" action="{% url 'addProjectMember' %}" method="post" enctype="multipart/form-data">
+        <form class="form-horizontal" action="{% url 'addProjectTeamMember' %}" method="post" enctype="multipart/form-data">
             {% csrf_token %}
             <div class="row col-12">
-                <div class="col-6">{{ form.member|as_crispy_field }}</div>
-                <div class="col-6">{{form.responsibility | as_crispy_field}}</div>
-                <div class="col-6">{{form.project_team|as_crispy_field}}</div>
+                <div class="col-12">
+                    {{form.project_team|as_crispy_field}}
+                </div>
+                <div class="col-12">
+                    {{ form.member|as_crispy_field }}
+                    <medium id="validate_member_name" class="text-muted hidden">
+                        <font color="red">
+                            Member already added to team
+                        </font>
+                    </medium>
+                </div>
+                <div class="col-12">{{form.responsibility | as_crispy_field}}</div>
             </div>
             <div>
                 <div class="col-md-12">
@@ -21,28 +30,37 @@
 </div>
 
 <script>
-    $("#id_name").attr("placeholder", "Enter Project Team Member");
+    $("#id_project_team").removeAttr("multiple", "");
 
-    $('#id_name').on('input', function () {
-        var team_name = $(this).val();
+
+    $('#id_member').on('input', function () {
+        var member = $(this).val();
+
+        var projectTeam = document.getElementById('id_project_team').value;
+        console.log(projectTeam)
 
         $.ajax({
-            url: '{% url 'validateProjectMember' %}',
+            url: '{% url 'validateProjectTeamAssigned' %}',
+
             data: {
-                'teamname': team_name
+                'projectTeam': projectTeam,
+                'member': member
             },
             dataType: 'json',
             success: function (data) {
-                if (data.is_taken) {
-                    $("#validate_team_name").show();
-                    document.getElementById('id_name').style.borderColor = "red";
+                if (data.is_assigned) {
+                    $("#validate_member_name").show();
+                    document.getElementById('id_member').style.borderColor = "red";
                     document.getElementById("btnAddProjectMember").disabled = true;
                 } else {
-                    $("#validate_team_name").hide();
-                    document.getElementById('id_name').style.borderColor = "#e7e7e7";
+                    $("#validate_member_name").hide();
+                    document.getElementById('id_member').style.borderColor = "#e7e7e7";
                     document.getElementById("btnAddProjectMember").disabled = false;
                 }
             }
         });
     });
+
+
+
 </script>

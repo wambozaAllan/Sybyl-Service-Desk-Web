@@ -62,10 +62,19 @@ urlpatterns = [
     path('updateProjectTeam/<int:pk>', views.UpdateProjectTeam.as_view(), name='updateProjectTeam'),
     path('deleteProjectTeam/<int:pk>', views.DeleteProjectTeam.as_view(), name='deleteProjectTeam'),
     path('validateProjectTeamName/', views.validateProjectTeamName, name='validateProjectTeamName'),
+    path('validateProjectAssigned/', views.validateProjectAssigned, name='validateProjectAssigned'),
 
-    path('addProjectMember/', views.AddProjectMember.as_view(), name='addProjectMember'),
-    path('listProjectMembers/', views.ListProjectMembers.as_view(), name='listProjectMembers'),
-    path('deleteProjectMember/<int:pk>', views.DeleteProjectMember.as_view(), name='deleteProjectMember'),
-    path('validateProjectMember/', views.validateProjectMember, name='validateProjectMember'),
+    path('addProjectTeamMember/', views.AddProjectTeamMember.as_view(), name='addProjectTeamMember'),
+    path('listProjectTeamMembers/', views.ListProjectTeamMembers.as_view(), name='listProjectTeamMembers'),
+    path('updateProjectTeamMember/<int:pk>', views.UpdateProjectTeamMember.as_view(), name='updateProjectTeamMember'),
+    path('detailProjectTeamMembers/', views.detail_team_member, name='detailProjectTeamMembers'),
+    path('deleteProjectTeamMember/', views.remove_project_team_member, name='deleteProjectTeamMember'),
+    path('validateProjectTeamAssigned/', views.validateProjectTeamAssigned, name='validateProjectTeamAssigned'),
+
+    path('listAllRoles/', views.ListAllRoles.as_view(), name='listAllRoles'),
+    path('addRole/', views.AddRole.as_view(), name='addRole'),
+    path('updateRole/<int:pk>/', views.UpdateRole.as_view(), name='updateRole'),
+    path('deleteRole/<int:pk>/', views.DeleteRole.as_view(), name="deleteRole"),
+    path('validateRoleName/', views.ValidateRoleName, name='validateRoleName'),
 
 ]

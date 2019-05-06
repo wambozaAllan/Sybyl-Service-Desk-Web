@@ -1,0 +1,51 @@
+{% load crispy_forms_tags %}
+<div class="card-body">
+    <div class="basic-form">
+        <form class="form-horizontal" action="{% url 'updateRole' roleid %}" method="post" enctype="multipart/form-data">
+            {% csrf_token %}
+            <div class="row col-12">
+                <div class="col-6">
+                    {{ form.name|as_crispy_field }}
+                    <small id="validate_role_update" class="text-muted hidden">
+                        <font color="red">
+                            Can't Update. Role Already Exists!
+                        </font>
+                    </small>
+                </div>
+                <div class="col-6">{{ form.description|as_crispy_field }}</div>
+            </div>
+            <div class="">
+                <div class="col-md-12">
+                    <button id="btnUpdateRole" class="btn btn-success pull-right">
+                        <i class="fa fa-fw fa-lg fa-save"></i>Update
+                    </button>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+
+<script>
+    $('#id_name').on('input', function () {
+        var role_name = $(this).val();
+
+        $.ajax({
+            url: '{% url 'validateRoleName' %}',
+            data: {
+                'rolename': role_name
+            },
+            dataType: 'json',
+            success: function (data) {
+                if (data.is_taken) {
+                    $("#validate_role_update").show();
+                    document.getElementById('id_name').style.borderColor = "red";
+                    document.getElementById("btnUpdateRole").disabled = true;
+                } else {
+                    $("#validate_role_update").hide();
+                    document.getElementById('id_name').style.borderColor = "#e7e7e7";
+                    document.getElementById("btnUpdateRole").disabled = false;
+                }
+            }
+        });
+    });
+</script>
