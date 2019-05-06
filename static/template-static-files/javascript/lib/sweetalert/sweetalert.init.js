@@ -24,7 +24,61 @@ document.querySelector('.sweet-confirm').onclick = function(){
             swal("Deleted !!", "Hey, your imaginary file has been deleted !!", "success");
         });
 };*/
-document.querySelector('.sweet-success-cancel').onclick = function(){
+
+function getCookie(name) {
+    var cookieValue = null;
+    if (document.cookie && document.cookie !== '') {
+        var cookies = document.cookie.split(';');
+        for (var i = 0; i < cookies.length; i++) {
+            var cookie = cookies[i].trim();
+            // Does this cookie string begin with the name we want?
+            if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                break;
+            }
+        }
+    }
+    return cookieValue;
+}
+
+function csrfSafeMethod(method) {
+    // these HTTP methods do not require CSRF protection
+    return (/^(GET|HEAD|OPTIONS|TRACE)$/.test(method));
+}
+
+function validateEmail(email) {
+  var re = /^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
+  return re.test(email);
+}
+
+function validate(email) {
+   var csrftoken = getCookie('csrftoken');
+  if (validateEmail(email)) {
+    $.ajax({
+            url: "/core/password-reset/",
+            type: "POST",
+            data: {
+                email: email
+            },
+            beforeSend: function(xhr, settings) {
+                if (!csrfSafeMethod(settings.type) && !this.crossDomain) {
+                    xhr.setRequestHeader("X-CSRFToken", csrftoken);
+                }
+            },
+            success: function () {
+                swal("Nice!", "A password reset link has been sent to: " + email, "success");
+                },
+            error: function (xhr, ajaxOptions, thrownError) {
+                swal("Error!", "Error generating password reset link. Please try again", "error");
+            }
+        });
+  } else {
+   swal.showInputError("Hey, "+ email +" is not a valid email!");
+   return false
+  }
+}
+
+document.querySelector('.forgot-password').onclick = function(){
     swal({
             title: "Enter your Email",
             text: "A new password will be generated and sent to your email address !!",
@@ -47,7 +101,9 @@ document.querySelector('.sweet-success-cancel').onclick = function(){
               return false
             }
 
-            swal("Nice!", "A new password has been sent to: " + inputValue, "success");
+            if(inputValue !== "") {
+             validate(inputValue);
+            }
         });
 };
 
