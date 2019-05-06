@@ -1,11 +1,11 @@
 <div class="row page-titles">
     <div class="col-md-5 align-self-center">
-        <h3 class="text-primary">User Group :<strong> {{ grp }}</strong></h3>
+        <h3 class="text-primary">Global User Group :<strong> {{ grp }}</strong></h3>
     </div>
     <div class="col-md-7 align-self-center">
         <ol class="breadcrumb">
             <li class="breadcrumb-item"><a href="javascript:void(0)">Home</a></li>
-            <li class="breadcrumb-item active"><a href="{% url 'listUserGroups' %}">User Groups</a></li>
+            <li class="breadcrumb-item active"><a href="{% url 'manageGlobalGroups' %}">User Groups</a></li>
             <li class="breadcrumb-item active">Permissions</li>
         </ol>
     </div>
@@ -22,7 +22,7 @@
 
                     <div class="row">
                         <div class="col-md-12">
-                            <button id="" class="btn btn-info pull-right"
+                            <button class="btn btn-info pull-right"
                                     onclick="functAssignPermissionsAGroup({{ grpid }}, '{{ grp }}');">
                                 <i class="fa fa-fw fa-lg fa-plus"></i>Attach Permissions
                             </button>
@@ -30,7 +30,7 @@
                     </div>
 
                     <div class="table-responsive">
-                        <table id="tablePermissionList" class="display nowrap table table-hover" cellspacing="0"
+                        <table id="tablePermissionList2" class="display nowrap table table-hover" cellspacing="0"
                                width="100%">
                             <thead>
                             <tr>
@@ -45,7 +45,8 @@
                                     <td>{{ p.name }}</td>
                                     <td>{{ p.content_type }}</td>
                                     <td class="text-center">
-                                        <button onclick="functionDeleteGroupPermission({{ p.id }}, '{{ p.name }}', {{ grpid }}, '{{ grp }}')" class="btn btn-outline-danger btn-sm" type="button">
+                                        <button onclick="functionDeleteGroupPermission({{ p.id }}, '{{ p.name }}', {{ grpid }}, '{{ grp }}')"
+                                                id="" class="btn btn-outline-danger btn-sm" type="button">
                                             <i title="Delete Group Permission" class="fa fa-remove"></i>
                                         </button>
                                     </td>
@@ -64,7 +65,7 @@
 
 
 <script>
-    $('#tablePermissionList').DataTable();
+    $('#tablePermissionList2').DataTable();
     $('#savePermissions').click(function () {
         window.location = '#close';
     });

@@ -1,0 +1,176 @@
+<div class="row page-titles">
+    <div class="col-md-5 align-self-center">
+        <h3 class="text-primary">User Group :<strong> {{ grp }}</strong></h3>
+    </div>
+    <div class="col-md-7 align-self-center">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a href="javascript:void(0)">Home</a></li>
+            <li class="breadcrumb-item active"><a href="{% url 'manageGlobalGroups' %}">All Groups</a></li>
+            <li class="breadcrumb-item active">Members</li>
+        </ol>
+    </div>
+</div>
+<!-- End Bread crumb -->
+<!-- Container fluid  -->
+<div class="container-fluid">
+    <!-- Start Page Content -->
+    <div class="row">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-body">
+                    <h4 class="card-title">Group Members</h4>
+
+                    <div class="row">
+                        <div class="col-md-12">
+                            <button id="" class="btn btn-info pull-right" onclick="functAssignMemberAGlobalGroup();">
+                                <i class="fa fa-fw fa-lg fa-plus"></i>Add Member
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="table-responsive">
+                        <table id="tableMemberList2" class="display nowrap table table-hover" cellspacing="0"
+                               width="100%">
+                            <thead>
+                            <tr>
+                                <th>Name</th>
+                                <th>Email</th>
+                                <th>Company</th>
+                                <th class="text-center">Status</th>
+                                <th class="text-center">User Type</th>
+                                <th class="text-center">Action</th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            {% for user in group_users %}
+                                <tr>
+                                    <td>{{ user.first_name }} {{ user.last_name }}</td>
+                                    <td>{{ user.email }}</td>
+                                    <td>{{ user.company }}</td>
+
+                                    {% if user.is_active %}
+                                        <td class="text-center"><span
+                                                class="badge badge-success"><strong>Active</strong></span></td>
+                                    {% else %}
+                                        <td class="text-center"><span
+                                                class="badge badge-danger"><strong>Inactive</strong></span></td>
+                                    {% endif %}
+
+                                    {% if user.is_superuser %}
+                                        <td class="text-center"><span
+                                                class="badge badge-success"><strong>Super User</strong></span></td>
+                                    {% else %}
+                                        <td class="text-center"><span
+                                                class="badge badge-secondary"><strong>Normal User</strong></span></td>
+                                    {% endif %}
+                                    <td class="text-center">
+                                        <button onclick="functionRemoveUserFromGlobalGrp({{ user.id }}, '{{ user.first_name }} {{ user.last_name }}', '{{ grp }}', {{ grpid }} )"
+                                            class="btn btn-outline-danger btn-sm" type="button">
+                                            <i title="Remove User" class="fa fa-remove"></i>
+                                        </button>
+                                    </td>
+                                </tr>
+                            {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<input value="{{ grp }}" id="group_name" type="hidden">
+<input value="{{ grpid }}" id="group_id" type="hidden">
+
+<!-- The Modal -->
+<div class="">
+    <div id="user2FormModalDialog" class="modalDialog2">
+        <div>
+            <div id="head">
+                <a href="#close" title="Close" class="close2">X</a>
+                <h5 class="modalDialog-title">Attach User</h5>
+            </div>
+            <hr>
+
+            <div class="modal-body">
+
+                <div class="">
+                    <div class="">
+
+                        <div class="col-12">
+                            <div class="tile-body">
+                                <div id="search-form_3">
+                                    <input id="userSearch" type="text" oninput="searchGlobalUser()" placeholder="Search User"
+                                           onfocus="displaySearchResults()" class="search_3 dropbtn"/>
+                                </div>
+                                <div id="myDropdown" class="search-content scrollbar-modal2">
+
+                                </div>
+                                <br>
+                            </div>
+                        </div>
+
+                        <div style="margin-top: 4%;">
+                            <button col-6 id="attachGroupMember2" class="btn pull-right">
+                                <i class="fa fa-fw fa-lg fa-close"></i>Exit
+                            </button>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+</div>
+
+
+<script>
+    $('#tableMemberList2').DataTable();
+    $('#attachGroupMember2').click(function () {
+        window.location = '#close';
+    });
+
+    function functionRemoveUserFromGlobalGrp(uid, uname, grp, grpid) {
+        urldata = "{% url 'removeUserFromGlobalGroup'%}";
+
+        $.confirm({
+            title: '<h4>Remove User : <strong class="text-info">"' + uname + ' "</strong> from Group: <strong class="text-info">'+grp+'</strong>!</h4>',
+            content: '',
+            type: 'red',
+            typeAnimated: true,
+            boxWidth: '40%',
+            useBootstrap: false,
+            theme: 'modern',
+            icon: 'fa fa-exclamation-circle',
+            buttons: {
+                formSubmit: {
+                    text: 'Remove',
+                    btnClass: 'btn-red',
+                    action: function () {
+                        $.ajax({
+                            type: "GET",
+                            cache: false,
+                            data: {
+                                uid: uid,
+                                grpname: grp,
+                                grpid: grpid
+                            },
+                            url: urldata,
+                            success: function (resp) {
+                                $('.page-wrapper').html(resp);
+
+                            }
+                        });
+                    }
+                },
+                close: {
+                    text: 'Cancel',
+                    btnClass: 'btn-gray',
+                    action: function () {
+                    }
+                }
+            }
+        });
+    }
+</script>

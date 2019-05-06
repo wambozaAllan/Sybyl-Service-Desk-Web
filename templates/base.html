@@ -681,8 +681,68 @@
             });
         }
 
+        function functAddGlobalUserGroup() {
+            urldata = "{% url 'addGlobalUserGroup'%}";
+            $.ajax({
+                type: "GET",
+                cache: false,
+                data: {},
+                url: urldata,
+                success: function (resp) {
+                    $.confirm({
+                        title: '<h3>Add User Group</h3>',
+                        content: '' + resp,
+                        type: 'blue',
+                        typeAnimated: true,
+                        boxWidth: '40%',
+                        useBootstrap: false,
+                        closeIcon: true,
+                        buttons: {
+                            close: {
+                                text: 'Cancel',
+                                btnClass: 'btn-gray close-dialog',
+                                action: function () {
+                                }
+                            }
+                        }
+                    });
+                }
+            });
+        }
+
         function functionEditUserGroup(grp, grpextid) {
             urldata = "{% url 'updateUserGroup' 999%}".replace(999, grpextid);
+            $.ajax({
+                type: "GET",
+                cache: false,
+                data: {
+                    grpextid: grpextid
+                },
+                url: urldata,
+                success: function (resp) {
+                    $.confirm({
+                        title: '<h3>Edit Group: <strong class="text-info">' + grp + ' </strong>.</h3>',
+                        content: '' + resp,
+                        type: 'blue',
+                        typeAnimated: true,
+                        boxWidth: '50%',
+                        useBootstrap: false,
+                        closeIcon: true,
+                        buttons: {
+                            close: {
+                                text: 'Close',
+                                btnClass: 'btn-gray close-dialog',
+                                action: function () {
+                                }
+                            }
+                        }
+                    });
+                }
+            });
+        }
+
+        function functionEditUserGroupGlobal(grp, grpextid) {
+            urldata = "{% url 'updateUserGlobalGroup' 999%}".replace(999, grpextid);
             $.ajax({
                 type: "GET",
                 cache: false,
@@ -729,8 +789,30 @@
             });
         }
 
+        function functionManageGlobalUserGroup(grp, grpid) {
+            urldata = "{% url 'manageUserGlobalGroups'%}";
+            $.ajax({
+                type: "GET",
+                cache: false,
+                data: {
+                    grpid: grpid,
+                    grp: grp
+                },
+                url: urldata,
+                success: function (resp) {
+                    $('.page-wrapper').html(resp);
+
+                }
+            });
+        }
+
         function functAssignMemberAGroup() {
             window.location = '#userFormModalDialog';
+            initDialog('modalDialog2');
+        }
+
+        function functAssignMemberAGlobalGroup() {
+            window.location = '#user2FormModalDialog';
             initDialog('modalDialog2');
         }
 
@@ -748,6 +830,33 @@
             var grpname = trim($('#group_name').val());
             var grpid = trim($('#group_id').val());
             var size = staff.length;
+            if (size > 0) {
+                $.ajax({
+                    type: "GET",
+                    cache: false,
+                    url: urldata,
+                    data: {
+                        searchValue: staff,
+                        grp: grpname,
+                        grpid: grpid
+                    },
+                    success: function (response) {
+                        $('#myDropdown').html(response);
+                    }
+                });
+            } else {
+                $('#myDropdown').html('');
+            }
+        }
+
+        function searchGlobalUser() {
+            urldata = "{% url 'searchUnAssignedGlobalUsers'%}";
+
+            var staff = trim($('#userSearch').val());
+            var grpname = trim($('#group_name').val());
+            var grpid = trim($('#group_id').val());
+            var size = staff.length;
+
             if (size > 0) {
                 $.ajax({
                     type: "GET",
@@ -800,7 +909,7 @@
             });
         }
 
-         function functAddProjectTeam() {
+        function functAddProjectTeam() {
             urldata = "{% url 'addProjectTeam'%}";
             $.ajax({
                 type: "GET",
@@ -845,7 +954,23 @@
             });
         }
 
-function editProjectTeam(teamid, teamname) {
+        function functionManageGroupPermissions2(grp, grpid) {
+            urldata = "{% url 'manageGlobalGroupPermissions'%}";
+            $.ajax({
+                type: "GET",
+                cache: false,
+                data: {
+                    grpid: grpid,
+                    grp: grp
+                },
+                url: urldata,
+                success: function (resp) {
+                    $('.page-wrapper').html(resp);
+                }
+            });
+        }
+
+        function editProjectTeam(teamid, teamname) {
             urldata = "{% url 'updateProjectTeam' 999%}".replace(999, teamid);
             $.ajax({
                 type: "GET",
@@ -876,7 +1001,7 @@ function editProjectTeam(teamid, teamname) {
             });
         }
       
-function functAssignPermissionsAGroup(grpid, grp) {
+        function functAssignPermissionsAGroup(grpid, grp) {
             urldata = "{% url 'assignPermissionsToGroup'%}";
             $.ajax({
                 type: "GET",
@@ -1156,8 +1281,8 @@ function addProjectTeamMember() {
                 }
             });
         }
-
-        function deleteRole(roleId, roleName) {
+      
+              function deleteRole(roleId, roleName) {
             urldata = "{% url 'deleteRole' 999%}".replace(999, roleId);
             $.confirm({
                 title: '<h4>Delete Role: <strong class="text-danger">' + roleName + ' </strong>!</h4>',

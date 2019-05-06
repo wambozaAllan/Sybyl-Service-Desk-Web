@@ -1,9 +1,12 @@
 from django.db import models
 from django.contrib.auth.models import AbstractUser, Group, Permission
 from django.utils import timezone
+from datetime import datetime
+from django.contrib.sessions.models import Session
+
 
 from company_management.models import Company, Branch, Department
-
+from django.http import HttpRequest
 
 class UserCategory(models.Model):
     CATEGORY_CHOICES = (('Self', 'Self'), ('Client', 'Client'), ('Vendor', 'Vendor'), ('Partner', 'Partner'))
@@ -84,11 +87,9 @@ class UserEmailAddress(models.Model):
 class GroupExtend(models.Model):
     group = models.OneToOneField(Group, on_delete=models.CASCADE)
     description = models.CharField(max_length=255, blank=True)
-    company = models.ForeignKey(Company, default=1, on_delete=models.CASCADE)
     active = models.BooleanField(default=True)
-
-    def get_users_count(self):
-        return User.objects.filter(group_id=self.group).count()
+    created_by = models.ForeignKey(User, default=1, on_delete=models.CASCADE)
 
     def get_permissions_count(self):
         return Permission.objects.filter(group=self.group).count()
+

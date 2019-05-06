@@ -7,7 +7,7 @@ from django.urls import reverse, reverse_lazy
 from django.contrib.auth.models import Group, Permission
 from django.contrib.contenttypes.models import ContentType
 
-from .models import User, UserTeam, UserTeamMember, GroupExtend
+from .models import User, UserTeam, UserTeamMember, GroupExtend, Company, Branch, Department
 from django.http import JsonResponse
 from django.template import loader
 from .forms import UserForm, GroupExtendForm
@@ -19,10 +19,9 @@ from django.db.models import Count
 
 # Used to add new users
 def user_createview(request):
-    model = User
-    form_class = UserForm
+    comp_id = request.session['company_id']
 
-    all_users = User.objects.all()
+    all_users = User.objects.filter(company=comp_id)
     template = loader.get_template('user_management/list_users.html')
     context = {
         'all_users': all_users,
@@ -34,8 +33,8 @@ def user_createview(request):
         first_name = data.get('first_name')
         last_name = data.get('last_name')
         gender = data.get('gender')
-        company = data.get('company')
-        # branch = data.get('branch')
+        company = request.session['company_id']
+        branch = data.get('branch')
         department = data.get('department')
         category = data.get('category')
         username = data.get('username')
@@ -43,7 +42,7 @@ def user_createview(request):
         email = data.get('email')
         created_by = request.user.id
 
-        obj = User(first_name=first_name, last_name=last_name, gender=gender, company_id=company, branch_id=1,
+        obj = User(first_name=first_name, last_name=last_name, gender=gender, company_id=company, branch_id=branch,
                    department_id=department, category_id=category, username=username,
                    password=password, created_by=created_by, email=email)
         obj.save()
@@ -53,11 +52,20 @@ def user_createview(request):
 
 class AddUser(CreateView):
     model = User
-    fields = ['first_name', 'last_name', 'gender', 'company', 'department', 'category'
-        , 'username', 'email', 'password']
+    fields = ['first_name', 'last_name', 'gender', 'category', 'username', 'email', 'password']
 
     template_name = 'user_management/add_user.html'
     success_url = reverse_lazy('listUsers')
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        comp_id = self.request.session['company_id']
+
+        comp_branches = Branch.objects.filter(company=comp_id)
+        comp_department = Department.objects.filter(company=comp_id)
+        context['branches'] = comp_branches
+        context['dept'] = comp_department
+        return context
 
 
 # All user groups list view
@@ -66,7 +74,8 @@ class ListUsers(ListView):
     context_object_name = 'all_users'
 
     def get_queryset(self):
-        return User.objects.all()
+        comp_id = self.request.session['company_id']
+        return User.objects.filter(company=comp_id)
 
 
 def validate_user_name(request):
@@ -94,27 +103,69 @@ class DetailsUser(DetailView):
 
 class UpdateUser(UpdateView):
     model = User
-    fields = ['first_name', 'last_name', 'gender', 'company'
-        , 'department', 'group', 'category'
+    fields = ['first_name', 'last_name', 'gender', 'company', 'department', 'group', 'category', 'branch'
         , 'username', 'password', 'email', 'is_superuser', 'is_staff', 'is_active']
 
     template_name = 'user_management/update_user.html'
     success_url = reverse_lazy('listUsers')
 
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        comp_id = self.request.session['company_id']
 
-# Used to add new user groups
+        comp_branches = Branch.objects.filter(company=comp_id)
+        comp_department = Department.objects.filter(company=comp_id)
+        context['branches'] = comp_branches
+        context['dept'] = comp_department
+        return context
+
+
+def save_system_user_update(request, uid):
+    comp_id = request.session['company_id']
+
+    all_users = User.objects.filter(company=comp_id)
+    template = loader.get_template('user_management/list_users.html')
+    context = {
+        'all_users': all_users,
+    }
+
+    form = UserForm(request.POST)
+    if form.is_valid:
+        data = request.POST.copy()
+        first_name = data.get('first_name')
+        last_name = data.get('last_name')
+        gender = data.get('gender')
+        branch = data.get('branch')
+        department = data.get('department')
+        category = data.get('category')
+        username = data.get('username')
+        email = data.get('email')
+        group = data.get('group')
+        active = data.get('is_active')
+
+        User.objects.filter(pk=int(uid)).update(first_name=first_name, last_name=last_name, gender=gender, branch_id=branch,
+                   department_id=department, category_id=category, username=username, email=email, group=group, is_active=active)
+
+    return HttpResponse(template.render(context, request))
+
+
 class AddUserGroup(CreateView):
     model = GroupExtend
-    fields = ['company', 'description', 'active']
+    fields = ['description', 'active']
     template_name = 'user_management/add_user_group.html'
     success_url = reverse_lazy('listUserGroups')
 
 
-def save_user_group(request):
+class AddGlobalUserGroup(CreateView):
     model = GroupExtend
-    form_class = GroupExtendForm
+    fields = ['description', 'active']
+    template_name = 'user_management/add_global_user_group.html'
+    success_url = reverse_lazy('listUserGroups')
 
-    all_user_groups = GroupExtend.objects.all()
+
+def save_user_group(request):
+    company_id = request.session['company_id']
+    all_user_groups = Group.objects.filter(initialgroup__company_id=company_id).annotate(num_user=Count('initialgroup'))
     template = loader.get_template('user_management/list_groups.html')
     context = {
         'all_userGroups': all_user_groups,
@@ -122,7 +173,6 @@ def save_user_group(request):
 
     name = request.GET.get('name')
     desc = request.GET.get('desc')
-    comp_id = request.GET.get('company')
     active = request.GET.get('active')
 
     group_obj = Group(name=name)
@@ -130,9 +180,57 @@ def save_user_group(request):
 
     if group_obj.id != "":
         if desc != "":
-            group_extend_obj = GroupExtend(group_id=group_obj.id, company_id=comp_id, description=desc, active=active)
+            group_extend_obj = GroupExtend(group_id=group_obj.id, description=desc, active=active)
         else:
-            group_extend_obj = GroupExtend(group_id=group_obj.id, company_id=comp_id, active=active)
+            group_extend_obj = GroupExtend(group_id=group_obj.id, active=active)
+        group_extend_obj.save()
+
+    return HttpResponse(template.render(context, request))
+
+
+def save_global_user_group(request):
+    all_user_groups = Group.objects.annotate(num_user=Count('initialgroup'))
+    template = loader.get_template('user_management/global_user_groups.html')
+    context = {
+        'all_userGroups': all_user_groups,
+    }
+
+    name = request.GET.get('name')
+    desc = request.GET.get('desc')
+    active = request.GET.get('active')
+
+    group_obj = Group(name=name)
+    group_obj.save()
+
+    if group_obj.id != "":
+        if desc != "":
+            group_extend_obj = GroupExtend(group_id=group_obj.id, description=desc, active=active)
+        else:
+            group_extend_obj = GroupExtend(group_id=group_obj.id, active=active)
+        group_extend_obj.save()
+
+    return HttpResponse(template.render(context, request))
+
+
+def save_global_user_group(request):
+    all_user_groups = Group.objects.annotate(num_user=Count('initialgroup'))
+    template = loader.get_template('user_management/list_global_groups.html')
+    context = {
+        'all_userGroups': all_user_groups,
+    }
+
+    name = request.GET.get('name')
+    desc = request.GET.get('desc')
+    active = request.GET.get('active')
+
+    group_obj = Group(name=name)
+    group_obj.save()
+
+    if group_obj.id != "":
+        if desc != "":
+            group_extend_obj = GroupExtend(group_id=group_obj.id, description=desc, active=active)
+        else:
+            group_extend_obj = GroupExtend(group_id=group_obj.id, active=active)
         group_extend_obj.save()
 
     return HttpResponse(template.render(context, request))
@@ -142,15 +240,35 @@ def update_user_group(request):
     name = request.GET.get('name')
     desc = request.GET.get('desc')
     active = request.GET.get('active')
-    comp_id = request.GET.get('company')
     grp_extid = request.GET.get('grpextid')
     group_id = request.GET.get('grpid')
 
-    GroupExtend.objects.filter(id=grp_extid).update(description=desc, company_id=comp_id, active=active)
+    GroupExtend.objects.filter(id=grp_extid).update(description=desc, active=active)
     Group.objects.filter(id=group_id).update(name=name)
 
-    all_user_groups = GroupExtend.objects.all()
+    company_id = request.session['company_id']
+    all_user_groups = Group.objects.filter(initialgroup__company_id=company_id).annotate(num_user=Count('initialgroup'))
     template = loader.get_template('user_management/list_groups.html')
+    context = {
+        'all_userGroups': all_user_groups,
+    }
+
+    return HttpResponse(template.render(context, request))
+
+
+def update_global_user_group(request):
+    name = request.GET.get('name')
+    desc = request.GET.get('desc')
+    active = request.GET.get('active')
+    grp_extid = request.GET.get('grpextid')
+    group_id = request.GET.get('grpid')
+
+    GroupExtend.objects.filter(id=grp_extid).update(description=desc, active=active)
+    Group.objects.filter(id=group_id).update(name=name)
+
+    company_id = request.session['company_id']
+    all_user_groups = Group.objects.annotate(num_user=Count('initialgroup'))
+    template = loader.get_template('user_management/list_global_groups.html')
     context = {
         'all_userGroups': all_user_groups,
     }
@@ -161,9 +279,25 @@ def update_user_group(request):
 def list_manage_group(request):
     grpid = request.GET.get('grpid')
     grpname = request.GET.get('grp')
+    company_id = request.session['company_id']
+
+    group_users = User.objects.filter(group_id=grpid, company=company_id)
+    template = loader.get_template('user_management/list_group_users.html')
+    context = {
+        'group_users': group_users,
+        'grp': grpname,
+        'grpid': grpid,
+    }
+
+    return HttpResponse(template.render(context, request))
+
+
+def list_manage_global_group(request):
+    grpid = request.GET.get('grpid')
+    grpname = request.GET.get('grp')
 
     group_users = User.objects.filter(group_id=grpid)
-    template = loader.get_template('user_management/list_group_users.html')
+    template = loader.get_template('user_management/list_global_group_users.html')
     context = {
         'group_users': group_users,
         'grp': grpname,
@@ -188,12 +322,44 @@ def manage_group_permissions(request):
     return HttpResponse(template.render(context, request))
 
 
+def manage_global_group_permissions(request):
+    grpid = request.GET.get('grpid')
+    grpname = request.GET.get('grp')
+
+    group_permissions = Permission.objects.filter(group=grpid)
+    template = loader.get_template('user_management/list_global_group_permissions.html')
+    context = {
+        'group_permissions': group_permissions,
+        'grp': grpname,
+        'grpid': grpid,
+    }
+
+    return HttpResponse(template.render(context, request))
+
+
 def search_unassigned_users(request):
     search_value = request.GET.get('searchValue')
     grp = request.GET.get('grp')
     grpid = request.GET.get('grpid')
-    users = User.objects.filter((Q(first_name__icontains=search_value) | Q(last_name__icontains=search_value)) & Q(group_id__isnull=True))
+    company_id = request.session['company_id']
+    users = User.objects.filter((Q(first_name__icontains=search_value) | Q(last_name__icontains=search_value)) & Q(group_id__isnull=True) & Q(company=company_id))
     template = loader.get_template('user_management/unassigned_users_search_results.html')
+    context = {
+        'users': users,
+        'search_value': search_value,
+        'grp': grp,
+        'grpid': grpid,
+    }
+
+    return HttpResponse(template.render(context, request))
+
+
+def search_unassigned_global_users(request):
+    search_value = request.GET.get('searchValue')
+    grp = request.GET.get('grp')
+    grpid = request.GET.get('grpid')
+    users = User.objects.filter((Q(first_name__icontains=search_value) | Q(last_name__icontains=search_value)) & Q(group_id__isnull=True))
+    template = loader.get_template('user_management/unassigned_global_users_search_results.html')
     context = {
         'users': users,
         'search_value': search_value,
@@ -208,10 +374,11 @@ def save_user_to_group(request):
     user_id = request.GET.get('uid')
     group_id = request.GET.get('grpid')
     grpname = request.GET.get('grpname')
+    company_id = request.session['company_id']
 
     User.objects.filter(id=int(user_id)).update(group_id=int(group_id))
 
-    group_users = User.objects.filter(group_id=int(group_id))
+    group_users = User.objects.filter(group_id=int(group_id), company=company_id)
     template = loader.get_template('user_management/list_group_users.html')
     context = {
         'group_users': group_users,
@@ -222,20 +389,55 @@ def save_user_to_group(request):
     return HttpResponse(template.render(context, request))
 
 
-# All user groups list view
+def save_user_to_global_group(request):
+    user_id = request.GET.get('uid')
+    group_id = request.GET.get('grpid')
+    grpname = request.GET.get('grpname')
+
+    User.objects.filter(id=int(user_id)).update(group_id=int(group_id))
+
+    group_users = User.objects.filter(group_id=int(group_id))
+    template = loader.get_template('user_management/list_global_group_users.html')
+    context = {
+        'group_users': group_users,
+        'grp': grpname,
+        'grpid': group_id,
+    }
+
+    return HttpResponse(template.render(context, request))
+
+
+# Company user groups list view
 class ListUserGroups(ListView):
     template_name = 'user_management/list_user_groups.html'
     context_object_name = 'all_userGroups'
 
-    def get_queryset(self):
-        return GroupExtend.objects.all()
+    def get_queryset(self, *args, **kwargs):
+        company_id = self.request.session['company_id']
+        return Group.objects.filter(initialgroup__company_id=company_id).annotate(num_user=Count('initialgroup'))
+
+
+# All user groups list view
+class GlobalUserGroups(ListView):
+    template_name = 'user_management/global_user_groups.html'
+    context_object_name = 'all_userGroups'
+
+    def get_queryset(self, *args, **kwargs):
+        return Group.objects.annotate(num_user=Count('initialgroup'))
 
 
 class UpdateUserGroup(UpdateView):
     model = GroupExtend
-    fields = ['group', 'description', 'company', 'active']
+    fields = ['group', 'description', 'active']
     template_name = 'user_management/update_user_group.html'
     success_url = reverse_lazy('listUserGroups')
+
+
+class UpdateUserGlobalGroup(UpdateView):
+    model = GroupExtend
+    fields = ['group', 'description', 'active']
+    template_name = 'user_management/update_global_user_group.html'
+    success_url = reverse_lazy('globalUserGroups')
 
 
 # Used to add new teams
@@ -408,8 +610,25 @@ def delete_user_group(request):
     GroupExtend.objects.filter(id=int(group_ext_id)).delete()
     Group.objects.filter(id=int(group_id)).delete()
 
-    all_user_groups = GroupExtend.objects.all()
+    company_id = request.session['company_id']
+    all_user_groups = Group.objects.filter(initialgroup__company_id=company_id).annotate(num_user=Count('initialgroup'))
     template = loader.get_template('user_management/list_groups.html')
+    context = {
+        'all_userGroups': all_user_groups,
+    }
+
+    return HttpResponse(template.render(context, request))
+
+
+def delete_global_user_group(request):
+    group_id = request.GET.get('grpid')
+    group_ext_id = request.GET.get('grpextid')
+
+    GroupExtend.objects.filter(id=int(group_ext_id)).delete()
+    Group.objects.filter(id=int(group_id)).delete()
+
+    all_user_groups = Group.objects.annotate(num_user=Count('initialgroup'))
+    template = loader.get_template('user_management/list_global_groups.html')
     context = {
         'all_userGroups': all_user_groups,
     }
@@ -421,15 +640,54 @@ def remove_user_from_group(request):
     user_id = request.GET.get('uid')
     group_id = request.GET.get('grpid')
     grpname = request.GET.get('grpname')
+    company_id = request.session['company_id']
 
     User.objects.filter(pk=int(user_id)).update(group_id=None)
 
-    group_users = User.objects.filter(group_id=int(group_id))
+    group_users = User.objects.filter(group_id=int(group_id), company=company_id)
     template = loader.get_template('user_management/list_group_users.html')
     context = {
         'group_users': group_users,
         'grp': grpname,
         'grpid': group_id,
+    }
+
+    return HttpResponse(template.render(context, request))
+
+
+def remove_user_from_global_group(request):
+    user_id = request.GET.get('uid')
+    group_id = request.GET.get('grpid')
+    grpname = request.GET.get('grpname')
+
+    User.objects.filter(pk=int(user_id)).update(group_id=None)
+
+    group_users = User.objects.filter(group_id=int(group_id))
+    template = loader.get_template('user_management/list_global_group_users.html')
+    context = {
+        'group_users': group_users,
+        'grp': grpname,
+        'grpid': group_id,
+    }
+
+    return HttpResponse(template.render(context, request))
+
+
+def add_user_to_global_group(request):
+    user_id = request.GET.get('uid')
+    user_name = request.GET.get('user_name')
+    grpid = request.GET.get('grpid')
+    grp_name = request.GET.get('grpname')
+    company_name = request.GET.get('company')
+    company_id = request.GET.get('cid')
+
+    template = loader.get_template('user_management/add_user_to_global_group.html')
+    context = {
+        'uid': user_id,
+        'u_name': user_name,
+        'grpid': grpid,
+        'grp_name': grp_name,
+        'company_name': company_name,
     }
 
     return HttpResponse(template.render(context, request))

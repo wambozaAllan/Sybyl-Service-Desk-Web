@@ -1,16 +1,54 @@
 {% load crispy_forms_tags %}
-<form class="form-horizontal" action="{% url 'saveUser' %}" method="post" enctype="multipart/form-data" autocomplete="off">
+<form class="form-horizontal" action="{% url 'saveUser' %}" method="post" enctype="multipart/form-data"
+      autocomplete="off">
     {% csrf_token %}
     <div class="row col-12">
         <div class="col-6">
-            {{ form.first_name|as_crispy_field }}
-            {{ form.last_name|as_crispy_field }}
-            {{ form.company|as_crispy_field }}
-            {{ form.department|as_crispy_field }}
+            <div class="form-group">
+                <label class="col-form-label  requiredField">Company<span class="asteriskField">*</span></label>
+                <div class="">
+                    <input id="id_name" type="text" name="" class="textinput textInput form-control" disabled
+                           value="{{request.session.company}}">
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-6">
+                    {{ form.first_name|as_crispy_field }}
+                </div>
+                <div class="col-6">
+                    {{ form.last_name|as_crispy_field }}
+                </div>
+            </div>
+
+
+            <div id="div_id_branch" class="form-group">
+                <label for="id_branch" class="col-form-label  requiredField">Branch<span class="asteriskField">*</span>
+                </label>
+                <div class="">
+                    <select name="branch" class="select form-control" id="id_branch">
+                        {% for b in branches %}
+                        <option value="{{ b.id }}">{{ b.name }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+            </div>
+
+            <div id="div_id_department" class="form-group">
+                <label for="id_department" class="col-form-label  requiredField">Department<span class="asteriskField">*</span>
+                </label>
+                <div class="">
+                    <select name="department" class="select form-control" id="id_department">
+                        {% for d in dept %}
+                        <option value="{{ d.id }}">{{ d.name }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+            </div>
+
             {{ form.gender|as_crispy_field }}
         </div>
         <div class="col-6">
-
 
             {{ form.email|as_crispy_field }}
             {{ form.category|as_crispy_field }}
@@ -62,4 +100,5 @@
             }
         });
     });
+
 </script>

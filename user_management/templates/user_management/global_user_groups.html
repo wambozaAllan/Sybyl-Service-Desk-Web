@@ -12,7 +12,7 @@
             <!-- Bread crumb -->
             <div class="row page-titles">
                 <div class="col-md-5 align-self-center">
-                    <h3 class="text-primary">User Groups</h3>
+                    <h3 class="text-primary">Global User Groups</h3>
                 </div>
                 <div class="col-md-7 align-self-center">
                     <ol class="breadcrumb">
@@ -33,7 +33,7 @@
 
                                 <div class="row">
                                     <div class="col-md-12">
-                                        <button id="" class="btn btn-info pull-right" onclick="functAddUserGroup();">
+                                        <button id="" class="btn btn-info pull-right" onclick="functAddGlobalUserGroup();">
                                             <i class="fa fa-fw fa-lg fa-plus"></i>Add Group
                                         </button>
                                     </div>
@@ -47,7 +47,7 @@
                                             <th>Group</th>
                                             <th>Description</th>
                                             <th class="text-center">Status</th>
-                                            <th class="text-center">Members</th>
+                                            <th class="text-center">All Members</th>
                                             <th class="text-center">Permissions</th>
                                             <th class="text-center">Action</th>
                                         </tr>
@@ -55,7 +55,7 @@
                                         <tbody>
                                         {% for userGroup in all_userGroups %}
                                             <tr>
-                                                 <td>{{ userGroup.name }}</td>
+                                                <td>{{ userGroup.name }}</td>
                                                 <td>{{ userGroup.groupextend.description }}</td>
                                                 {% if userGroup.groupextend.active %}
                                                     <td class="text-center"><span
@@ -69,22 +69,22 @@
                                                 <td class="text-center">
                                                     <span class="label label-rounded label-success">
                                                         <a href="#" style="color: #fff"
-                                                           onclick="functionManageUserGroup('{{ userGroup.name }}', {{ userGroup.id }})">{{ userGroup.num_user}}</a>
+                                                           onclick="functionManageGlobalUserGroup('{{ userGroup.name }}', {{ userGroup.id }})">{{ userGroup.num_user}}</a>
                                                     </span>
                                                 </td>
                                                 <td class="text-center">
                                                     <span class="label label-rounded label-success">
                                                         <a href="#" style="color: #fff"
-                                                           onclick="functionManageGroupPermissions('{{ userGroup.name }}', {{ userGroup.id }})">{{ userGroup.groupextend.get_permissions_count }} </a>
+                                                           onclick="functionManageGroupPermissions2('{{ userGroup.name }}', {{ userGroup.id }})">{{ userGroup.groupextend.get_permissions_count }} </a>
                                                     </span>
                                                 </td>
                                                 <td class="text-center">
-                                                    <button onclick="functionEditUserGroup('{{ userGroup.name }}', {{ userGroup.groupextend.id }})"
+                                                    <button onclick="functionEditUserGroupGlobal('{{ userGroup.name }}', {{ userGroup.groupextend.id }})"
                                                             class="btn btn-outline-success btn-sm" type="button">
                                                         <i title="Edit Group" class="fa fa-edit"></i>
                                                     </button>
 
-                                                    <button onclick="functionDeleteGroup('{{ userGroup.name }}', {{ userGroup.groupextend.id }}, {{ userGroup.groupextend.get_permissions_count }}, {{ userGroup.num_user }}, {{ userGroup.id }})"
+                                                    <button onclick="functionDeleteGlobalGroup('{{ userGroup.name }}', {{ userGroup.groupextend.id }}, {{ userGroup.groupextend.get_permissions_count }}, {{ userGroup.num_user }}, {{ userGroup.id }})"
                                                           class="btn btn-outline-danger btn-sm" type="button">
                                                         <i title="Delete Group" class="fa fa-remove"></i>
                                                     </button>
@@ -96,7 +96,6 @@
                                 </div>
                             </div>
                         </div>
-                        {% include 'footer.html' %}
                     </div>
                 </div>
             </div>

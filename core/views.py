@@ -70,6 +70,7 @@ class Login(auth_views.LoginView):
                 request.session['first_name'] = user.first_name
                 request.session['last_name'] = user.last_name
                 request.session['company'] = user.company.name
+                request.session['company_id'] = user.company.id
                 request.session['branch'] = user.branch.name
                 request.session['department'] = user.department.name
                 return redirect("/home/")
