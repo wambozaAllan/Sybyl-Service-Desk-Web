@@ -123,7 +123,7 @@ class TaskUpdateForm(forms.ModelForm):
 class DocumentForm(forms.ModelForm):
     class Meta:
         model = ProjectDocument
-        fields = ('title', 'description', 'document', 'project')
+        fields = ('title', 'description', 'document', 'project', 'created_by')
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -147,21 +147,12 @@ class StatusForm(forms.ModelForm):
 
 
 class ProjectForm(forms.ModelForm):
+
     class Meta:
         model = Project
-        fields = ('name', 'description', 'start_date', 'end_date', 'actual_start_date', 'actual_end_date',
-                  'project_status',)
-        widgets = {
-            'start_date': forms.DateTimeInput(attrs={'type': 'date', 'placeholder': 'Select a date', 'class': 'form-control date-input'},
-                                              format='%d/%m/%Y'),
-            'end_date': forms.DateTimeInput(attrs={'type': 'date', 'placeholder': 'Select a date'},
-                                            format='%d/%m/%Y'),
-            'actual_start_date': forms.DateTimeInput(attrs={'type': 'date', 'placeholder': 'Select a date'},
-                                                     format='%d/%m/%Y'),
-            'actual_end_date': forms.DateTimeInput(attrs={'type': 'date', 'placeholder': 'Select a date'},
-                                                   format='%d/%m/%Y'),
-            'description': forms.Textarea(attrs={'rows': 2, 'cols': 30})
-        }
+        fields = ('name', 'company', 'description', 'estimated_start_date', 'estimated_end_date', 'actual_start_date', 'actual_end_date',
+                  'project_status', 'logo', 'thumbnail', 'estimated_cost', 'project_code')
+       
 
 
 class ProjectTeamMemberForm(forms.ModelForm):
