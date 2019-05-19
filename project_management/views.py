@@ -19,8 +19,8 @@ from django.contrib.auth.decorators import user_passes_test, permission_required
 from .models import Project, Milestone, Task, ProjectDocument, Incident, Priority, Status, ProjectTeam, \
     ProjectTeamMember, Role
 from user_management.models import User
-from company_management.models import Company
-from .forms import CreateProjectForm, MilestoneForm, TaskForm, DocumentForm, ProjectUpdateForm, MilestoneUpdateForm
+from company_management.models import Company, CompanyCategory
+from .forms import CreateProjectForm, MilestoneForm, TaskForm, DocumentForm, ProjectUpdateForm, MilestoneUpdateForm, ProjectForm
 from django.contrib.auth.mixins import PermissionRequiredMixin
 from django.http import JsonResponse
 from django.db.models import Count
@@ -505,12 +505,38 @@ def ValidateRoleName(request):
 
 
 # PROJECT LIST
-class AddProject(CreateView):
-    model = Project
-    template_name = 'project_management/add_project.html'
-    fields = ['name', 'project_status', 'description', 'project_code', 'estimated_cost', 'final_cost', 'start_date',
-              'end_date', 'actual_start_date', 'actual_end_date', 'logo', 'thumbnail']
-    success_url = reverse_lazy('listProjects')
+def addProject(request):
+    if request.method == 'POST':
+        project_form = ProjectForm(request.POST, request.FILES)
+        document_form = DocumentForm(request.FILES)
+
+        if project_form.is_valid():
+            project = project_form.save()
+            project_id = Project.objects.get(pk=project.id)
+        
+            if project:
+                # save project document information
+                form = request.POST.copy()
+                title = form.get('title')
+                description = form.get('description')
+                creator = form.get('created_by')
+                user = User.objects.get(id=creator)
+               
+                # saving single document
+                document = request.FILES['document'];
+                
+                doc = ProjectDocument(title=title, description=description, project=project_id, document=document, created_by=user)
+                doc.save()
+                
+            return redirect('listProjects')
+    else:
+        project_form = ProjectForm()
+        document_form = DocumentForm()
+
+    return render(request, 'project_management/add_project.html', {
+            'project_form': project_form,
+            'document_form': document_form
+    })
 
 
 class ListProjects(ListView):
@@ -523,7 +549,7 @@ class ListProjects(ListView):
 
 class UpdateProject(UpdateView):
     model = Project
-    fields = ['name', 'project_status', 'project_code', 'final_cost', 'actual_start_date', 'actual_end_date']
+    fields = ['name', 'project_status', 'company', 'project_code', 'final_cost', 'estimated_start_date', 'estimated_end_date', 'actual_start_date', 'actual_end_date', 'description', 'logo']
     template_name = 'project_management/update_project.html'
     success_url = reverse_lazy('listProjects')
 
@@ -541,6 +567,49 @@ def validateProjectName(request):
         'is_taken': Project.objects.filter(name=project_name).exists()
     }
     return JsonResponse(data)
+
+
+def format_project_code(request):
+    companies = request.GET.get('companies')
+    company_values = json.loads(companies)
+    empty_list = []
+    category_list = []
+    client_company = []
+    company_name = []
+    
+    for val in company_values:
+        company = Company.objects.get(id=val)
+        empty_list.append(company)
+    
+    for c in empty_list:
+        category = CompanyCategory.objects.get(id=c.category_id)
+        category_list.append(category)
+
+    for v in category_list:
+        if v.category_value == 'Client':
+            for val in company_values:
+                new_company = Company.objects.filter(id=val, category=v.id)
+                lst = list(new_company)
+                client_company.append(lst)
+
+    # returning client company 
+    for final in client_company:
+        if final != []:
+            for check in final:
+                company_name.append(check.name)
+            
+            if company_name:
+                data = {
+                    "name": company_name[0]
+                }
+
+                return JsonResponse(data)
+    else:
+        data = {
+            "name": ""
+        }
+
+        return JsonResponse(data)
 
 
 # PROJECT TEAMS
@@ -677,7 +746,7 @@ def remove_project_team_member(request):
 
 
     team = ProjectTeamMember.objects.filter(project_team=int(team_id))
-    template = loader.get_template('user_management/details_team_member.html')
+    template = loader.get_template('project_management/details_team_member.html')
     context = {
         'team': team,
         'team_name': team_name,
