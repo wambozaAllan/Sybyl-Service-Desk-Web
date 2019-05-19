@@ -15,7 +15,7 @@
 			<div class="col-md-7 align-self-center">
 				<ol class="breadcrumb">
 					<li class="breadcrumb-item"><a href="javascript:void(0)">Home</a></li>
-					<li class="breadcrumb-item active">List of Branches</li>
+					<li class="breadcrumb-item active"><a href="{% url 'listProjects' %}">List of Projects</a></li>
 				</ol>
 			</div>
 		</div>
@@ -27,43 +27,67 @@
 				<div class="col-12">
 					<div class="card">
 						<div class="card-title">
-							<h4>Branch Details</h4>
+							<h4>Project Details</h4>
 						</div>
 						<div class="card-body">
 							<div class="basic-form">
 								<div class="row">
-									<div class="col-sm-2">
+									<div class="col-4">
 										<p class="text-muted m-b-15 f-s-12">Name</p>
 										<input type="text" class="form-control input-flat"
 											value="{{ project.name }}" disabled>
 									</div>
-									<div class="col-sm">
+									<div class="col-4">
 										<p class="text-muted m-b-15 f-s-12">Status</p>
 										<input type="text" class="form-control input-flat"
 											value="{{ project.project_status }}" disabled>
 									</div>
-									<div class="col-sm">
+									<div class="col-4">
 										<p class="text-muted m-b-15 f-s-12">Project Code</p>
 										<input type="text" class="form-control input-flat"
 											value="{{ project.project_code }}" disabled>
 									</div>
-									<div class="col-sm">
+								</div>
+								<br>
+								<div class="row">
+									<div class="col-4">
 										<p class="text-muted m-b-15 f-s-12">Estimated Cost</p>
 										<input type="text" class="form-control input-flat"
 											value="{{ project.estimated_cost }}" disabled>
 									</div>
-									<div class="col-sm">
+									<div class="col-4">
 										<p class="text-muted m-b-15 f-s-12">Start Date</p>
 										<input type="text" class="form-control input-flat"
-											value="{{ project.start_date }}" disabled>
+											value="{{ project.estimated_start_date }}" disabled>
 									</div>
-									<div class="col-sm">
+									<div class="col-4">
 										<p class="text-muted m-b-15 f-s-12">End Date</p>
 										<input type="text" class="form-control input-flat"
-											value="{{ project.end_date }}" disabled>
+											value="{{ project.estimated_end_date }}" disabled>
 									</div>
 								</div>
+								<br>
+
+								<div class="row">
+									<div class="col-4">
+										{% for p in project.company.all %}
+										<p class="text-muted m-b-15 f-s-12">Company</p>
+										<input type="text" class="form-control input-flat"
+											value="{{ p.name }}" disabled>
+										{% endfor %}
+									</div>
+								</div>
+
 								<br />
+
+								<div class="col-12">
+									<p class="text-muted m-b-15 f-s-12">Description</p>
+									<input type="text" class="form-control input-flat"
+											value="{{ project.description }}" id="description" disabled>
+								</div>
+
+								<br>
+
 								<div class="row">
 									<div class="col-1"><a href="{% url 'listProjects' %}" class="btn btn-inverse">Back</a></div>
                                 </div>
