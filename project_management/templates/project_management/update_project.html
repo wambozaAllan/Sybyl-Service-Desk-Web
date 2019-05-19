@@ -11,11 +11,11 @@
             <!-- Bread crumb -->
             <div class="row page-titles">
                 <div class="col-md-5 align-self-center">
-                    <h3 class="text-primary">Project Manager</h3></div>
+                    <h3 class="text-primary">Projects</h3></div>
                 <div class="col-md-7 align-self-center">
                     <ol class="breadcrumb">
                         <li class="breadcrumb-item"><a href="javascript:void(0)">Home</a></li>
-                        <li class="breadcrumb-item"><a href="{% url 'listProjects' %}">Projects List</a></li>
+                        <li class="breadcrumb-item"><a href="{% url 'listProjects' %}">Project List</a></li>
                         <li class="breadcrumb-item active">Update Project</li>
                     </ol>
                 </div>
@@ -29,7 +29,7 @@
                         <div class="card">
                             <div class="card-title">
                                 <div class="card-header bg-secondary">
-                                    <h4 class="m-b-0 text-white">Project List</h4>
+                                    <h4 class="m-b-0 text-white">Project Update</h4>
                                 </div>
                             </div>
                             <div class="card-body">
@@ -39,25 +39,91 @@
                                     <div class="row">
                                         <div class="col-4">
                                             {{ form.name|as_crispy_field }}
+                                            <medium id="validate_project_name" class="text-muted hidden">
+                                                <font color="red">
+                                                    Project Name Already Exists!
+                                                </font>
+                                            </medium>
                                         </div>
                                         <div class="col-4">
-                                            {{ form.project_code|as_crispy_field }}
+                                            {{ form.company|as_crispy_field }}
                                         </div>
+                                        
                                         <div class="col-4">
                                             {{ form.project_status|as_crispy_field }}
                                         </div>
                                     </div>
 
                                     <div class="row">
+                                        <div class="col-4">
+                                            {{ form.estimated_start_date|as_crispy_field }}
+                                            <medium id="start_date" class="text-muted hidden">
+                                                <font color="red">
+                                                    Start date has to be less or equal to end date
+                                                </font>
+                                            </medium>
+                                        </div>
+                                        
+                                        <div class="col-4">
+                                            {{ form.estimated_end_date|as_crispy_field }}
+                                            <medium id="end_date" class="text-muted hidden">
+                                                <font color="red">
+                                                    End date has to be greater or equal to start date
+                                                </font>
+                                            </medium>
+                                        </div>
+
+                                        <div class="col-4">
+                                            {{ form.actual_start_date|as_crispy_field }}
+                                            <medium id="actual_start" class="text-muted hidden">
+                                                <font color="red">
+                                                    Start date has to be less or equal to end date
+                                                </font>
+                                            </medium>
+                                        </div>
+
+                                        
+                                    </div>
+
+                                    <div class="row">
+                                        <div class="col-4">
+                                            {{ form.actual_end_date|as_crispy_field }}
+                                            <medium id="actual_end" class="text-muted hidden">
+                                                <font color="red">
+                                                    End date has to be greater or equal to start date
+                                                </font>
+                                            </medium>
+                                        </div>
 
                                         <div class="col-4">
                                             {{ form.final_cost|as_crispy_field }}
+                                            <medium id="final_cost" class="text-muted hidden">
+                                                <font color="red">
+                                                    Minimum Cost is 500,000
+                                                </font>
+                                            </medium>
                                         </div>
+
                                         <div class="col-4">
-                                            {{ form.actual_start_date|as_crispy_field }}
+                                            {{ form.project_code|as_crispy_field }}
+                                            <medium id="project_code" class="text-muted hidden">
+                                                <font color="red">
+                                                    Please first fill in all fields above
+                                                </font>
+                                            </medium>
                                         </div>
-                                        <div class="col-4">
-                                            {{ form.actual_end_date|as_crispy_field }}
+                                        
+                                    </div>
+
+                                    <div>
+                                        <div class="col-3">
+                                            {{ form.logo|as_crispy_field }}
+                                        </div>
+                                    </div>
+
+                                    <div class="row">
+                                        <div class="col-12">
+                                            {{ form.description|as_crispy_field }}
                                         </div>
                                     </div>
 
@@ -68,7 +134,7 @@
                                             <a href="{% url 'listProjects' %}" class="btn btn-inverse">Cancel</a>
                                         </div>
                                         <div class="col-6" >
-                                            <button id="updateAddProject" class="btn btn-success pull-right col-6">
+                                            <button id="btnUpdateProject" class="btn btn-success pull-right col-6">
                                                 <i class="fa fa-fw fa-lg fa-save"></i>Submit
                                             </button>
                                         </div>
@@ -85,3 +151,128 @@
         </div>
     </div>
 {% endblock %}
+
+<script>
+
+    $('#id_estimated_start_date').datepicker({
+        format: "mm/dd/yyyy",
+        autoclose: true
+    });
+
+    $('#id_estimated_end_date').datepicker({
+        format: "mm/dd/yyyy",
+        autoclose: true
+    });
+
+    $('#id_actual_start_date').datepicker({
+        format: "mm/dd/yyyy",
+        autoclose: true
+    });
+
+    $('#id_actual_end_date').datepicker({
+        format: "mm/dd/yyyy",
+        autoclose: true
+    });
+
+    $('#id_estimated_start_date').on('change', function(){
+        var startDate= document.getElementById('id_estimated_start_date').value;
+        var endDate= document.getElementById('id_estimated_end_date').value;
+
+        var sDate = new Date(startDate);
+        var eDate = new Date(endDate);
+
+        if(startDate != '' && endDate != '' && sDate > eDate){
+            document.getElementById("btnUpdateAddProject").disabled = true;
+            document.getElementById('id_estimated_end_date').style.borderColor = "red";
+            $('#start_date').show();
+        }
+        else{
+            document.getElementById("btnUpdateAddProject").disabled = false;
+            document.getElementById('id_estimated_end_date').style.borderColor = "";
+            $('#start_date').hide();
+        }
+    })
+    
+
+    $('#id_estimated_start_date').on('change', function(){
+        var startDate= document.getElementById('id_estimated_start_date').value;
+        var endDate= document.getElementById('id_estimated_start_date').value;
+
+        var sDate = new Date(startDate);
+        var eDate = new Date(endDate);
+
+        if(startDate != '' && endDate != '' && sDate > eDate){
+            document.getElementById("btnUpdateAddProject").disabled = true;
+            document.getElementById('id_estimated_start_date').style.borderColor = "red";
+            $('#start_date').show();
+        }
+        else{
+            document.getElementById("btnUpdateAddProject").disabled = false;
+            document.getElementById('id_estimated_start_date').style.borderColor = "";
+            $('#start_date').hide();
+        }
+    });
+
+    $("#id_final_cost").keypress(function(event) {
+        if(event.which != 0){
+            return /\d/.test(String.fromCharCode(event.keyCode));
+        }
+
+    });
+
+    $("#id_final_cost").on('input', function(){
+        var cost = $(this).val();
+        if (cost < 500000){
+            $("#final_cost").show();
+            document.getElementById('id_final_cost').style.borderColor = "red";
+            document.getElementById('btnUpdateAddProject').disabled = true;
+        }
+        else if(cost >= 500000){
+            $("#final_cost").hide();
+            document.getElementById('id_estimated_cost').style.borderColor = "";
+            document.getElementById('btnUpdateAddProject').disabled = false;
+        }
+    })
+
+    // status attribute 
+    // $("#id_project_status").prop("selectedIndex", -1);
+    $('#id_project_status').removeAttr('multiple', "");
+    $('#id_project_status').attr('data-live-search', "true");
+    $('#id_project_status').selectpicker({
+        size: 3,
+    });
+
+
+    // $('#id_company').removeAttr('multiple', "");
+    $("#id_company").prop("selectedIndex", -1);
+
+
+    // PROJECT NAME 
+    $("#id_name").attr('autocomplete', 'off');
+    
+
+    $('#id_name').on('input', function () {
+        var project_name = $(this).val();
+
+        $.ajax({
+            url: '{% url 'validateProjectName' %}',
+            data: {
+                'projectname': project_name
+            },
+            dataType: 'json',
+            success: function (data) {
+                if (data.is_taken) {
+                    $("#validate_project_name").show();
+                    document.getElementById('id_name').style.borderColor = "red";
+                    document.getElementById("btnUpdateAddProject").disabled = true;
+                } else {
+                    $("#validate_project_name").hide();
+                    document.getElementById('id_name').style.borderColor = "#e7e7e7";
+                    document.getElementById("btnUpdateAddProject").disabled = false;
+                }
+            }
+        });
+    });
+    
+    
+</script>
