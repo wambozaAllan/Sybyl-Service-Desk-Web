@@ -672,12 +672,12 @@ class AddProjectTeamMember(CreateView):
     model = ProjectTeamMember
     template_name = 'project_management/add_team_member.html'
     fields = ['member', 'project_team', 'responsibility']
-    success_url = reverse_lazy('listProjectTeamMembers')
+    success_url = reverse_lazy('listProjectTeams')
 
 
 class ListProjectTeamMembers(ListView):
-    template_name = 'project_management/list_team_members.html'
-    context_object_name = 'teams'
+    template_name = 'project_management/list_project_teams.html'
+    context_object_name = 'project_teams'
 
     def get_queryset(self):
         return ProjectTeam.objects.annotate(num_members=Count('projectteammember'))
@@ -687,7 +687,7 @@ class UpdateProjectTeamMember(UpdateView):
     model = ProjectTeamMember
     fields = ['responsibility']
     template_name = 'project_management/update_project_team_member.html'
-    success_url = reverse_lazy('listProjectTeamMembers')
+    success_url = reverse_lazy('listProjectTeams')
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
