@@ -31,7 +31,24 @@
 
 <script>
     $("#id_project_team").removeAttr("multiple", "");
+    $('#id_project_team').attr( 'readOnly' , 'true' );
+    $('#id_project_team').attr('data-live-search', "true");
+    $('#id_project_team').selectpicker({
+        size: 3
+    });
+    
 
+    // member    
+    $('#id_member').attr('data-live-search', "true"); 
+    $('#id_member').selectpicker({
+        size: 3
+    });
+
+    // responsibility
+    $('#id_responsibility').attr('data-live-search', "true"); 
+    $('#id_responsibility').selectpicker({
+        size: 3
+    });
 
     $('#id_member').on('input', function () {
         var member = $(this).val();
