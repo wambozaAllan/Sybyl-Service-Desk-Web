@@ -51,11 +51,12 @@ urlpatterns = [
     path('deleteStatus/<int:pk>/', views.DeleteStatus.as_view(), name="deleteStatus"),
     path('validateStatusName/', views.ValidateStatusName, name='validateStatusName'),
 
-    path('addProject/', views.AddProject.as_view(), name='addProject'),
+    path('addProject/', views.addProject, name='addProject'),
     path('listProjects/', views.ListProjects.as_view(), name='listProjects'),
     path('updateProject/<int:pk>', views.UpdateProject.as_view(), name='updateProject'),
     path('detailsProject/<int:pk>', views.DetailProject.as_view(), name='detailsProject'),
     path('validateProjectName/', views.validateProjectName, name='validateProjectName'),
+    path('formatProjectCode/', views.format_project_code, name='formatProjectCode'),
 
     path('addProjectTeam/', views.AddProjectTeam.as_view(), name='addProjectTeam'),
     path('listProjectTeams/', views.ListProjectTeams.as_view(), name='listProjectTeams'),

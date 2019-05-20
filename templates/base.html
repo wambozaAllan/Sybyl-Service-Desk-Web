@@ -15,16 +15,272 @@
     {% block additional_javascript %}{% endblock %}
     {% include 'bottom.html' %}
 
-    <script>
+    <script> 
+
+        // update project attributes
+
+        $('#id_company').attr('multiple', "multiple");
+        $('#id_company').attr('data-live-search', "true");
+        $('#id_company').selectpicker({
+            size: 2,
+        });
+
+        $("#id_estimated_start_date").attr("placeholder", "mm/dd/yyyy");
+        $("#id_estimated_end_date").attr("placeholder", "mm/dd/yyyy");
+        $("#id_actual_start_date").attr("placeholder", "mm/dd/yyyy");
+        $("#id_actual_end_date").attr("placeholder", "mm/dd/yyyy");
+
+        $('#id_estimated_start_date').datepicker({
+            format: "mm/dd/yyyy",
+            autoclose: true
+        });
+
+        $('#id_estimated_end_date').datepicker({
+            format: "mm/dd/yyyy",
+            autoclose: true
+        });
+
         $('#id_actual_start_date').datepicker({
-                format: "mm/dd/yyyy",
-                autoclose: true
+            format: "mm/dd/yyyy",
+            autoclose: true
         });
 
         $('#id_actual_end_date').datepicker({
-                format: "mm/dd/yyyy",
-                autoclose: true
+            format: "mm/dd/yyyy",
+            autoclose: true
         });
+
+        // estimated end date
+        $('#id_estimated_end_date').on('focus', function(){
+            var date = $(this).blur();
+        });
+        
+        $('#id_estimated_end_date').on('change', function(){
+            var startDate= document.getElementById('id_estimated_start_date').value;
+            var endDate= document.getElementById('id_estimated_end_date').value;
+
+            var sDate = new Date(startDate);
+            var eDate = new Date(endDate);
+
+            if(startDate != '' && endDate != '' && sDate > eDate){
+                document.getElementById("btnUpdateProject").disabled = true;
+                document.getElementById('id_estimated_end_date').style.borderColor = "red";
+                $('#end_date').show();
+            }
+            else{
+                document.getElementById("btnUpdateProject").disabled = false;
+                document.getElementById('id_estimated_end_date').style.borderColor = "";
+                document.getElementById('id_estimated_start_date').style.borderColor = "";
+                $('#end_date').hide();
+                $('#start_date').hide();
+            }
+        });
+
+        // estimated start date
+        $('#id_estimated_start_date').on('focus', function(){
+            var date = $(this).blur();
+        });
+
+        $('#id_estimated_start_date').on('change', function(){
+            var startDate= document.getElementById('id_estimated_start_date').value;
+            var endDate= document.getElementById('id_estimated_end_date').value;
+
+            var sDate = new Date(startDate);
+            var eDate = new Date(endDate);
+
+            if(startDate != '' && endDate != '' && sDate > eDate){
+                document.getElementById("btnUpdateProject").disabled = true;
+                document.getElementById('id_estimated_start_date').style.borderColor = "red";
+                $('#start_date').show();
+            }
+            else{
+                document.getElementById("btnUpdateProject").disabled = false;
+                document.getElementById('id_estimated_start_date').style.borderColor = "";
+                document.getElementById('id_estimated_end_date').style.borderColor = "";
+                $('#start_date').hide();
+                $('#end_date').hide();
+            }
+        });
+
+        // actual end date
+
+        $('#id_actual_end_date').on('focus', function(){
+            var date = $(this).blur();
+        });
+
+        $('#id_actual_end_date').on('change', function(){
+            var startDate= document.getElementById('id_actual_start_date').value;
+            var endDate= document.getElementById('id_actual_end_date').value;
+
+            var sDate = new Date(startDate);
+            var eDate = new Date(endDate);
+
+            if(startDate != '' && endDate != '' && sDate > eDate){
+                document.getElementById("btnUpdateProject").disabled = true;
+                document.getElementById('id_actual_end_date').style.borderColor = "red";
+                $('#actual_end').show();
+            }
+            else{
+                document.getElementById("btnUpdateProject").disabled = false;
+                document.getElementById('id_actual_end_date').style.borderColor = "";
+                document.getElementById('id_actual_start_date').style.borderColor = "";
+                $('#actual_end').hide();
+                $('#actual_start').hide();
+
+            }
+        });
+
+        // actual start date
+        $('#id_actual_start_date').on('focus', function(){
+            var date = $(this).blur();
+        });
+
+        $('#id_actual_start_date').on('change', function(){
+            var startDate= document.getElementById('id_actual_start_date').value;
+            var endDate= document.getElementById('id_actual_end_date').value;
+
+            var sDate = new Date(startDate);
+            var eDate = new Date(endDate);
+
+            if(startDate != '' && endDate != '' && sDate > eDate){
+                document.getElementById("btnUpdateProject").disabled = true;
+                document.getElementById('id_actual_start_date').style.borderColor = "red";
+                $('#actual_start').show();
+            }
+            else{
+                document.getElementById("btnUpdateProject").disabled = false;
+                document.getElementById('id_actual_start_date').style.borderColor = "";
+                document.getElementById('id_actual_end_date').style.borderColor = "";
+                $('#actual_start').hide();
+                $('#actual_end').hide();
+            }
+        });
+
+        // final cost
+        $('#id_final_cost').attr('placeholder', '500,000');
+
+        $("#id_final_cost").keypress(function(event) {
+            if(event.which != 0){
+                return /\d/.test(String.fromCharCode(event.keyCode));
+            }
+
+        });
+
+        $("#id_final_cost").on('input', function(){
+            var cost = $(this).val();
+            if (cost < 500000){
+                $("#final_cost").show();
+                document.getElementById('id_final_cost').style.borderColor = "red";
+                document.getElementById('btnUpdateProject').disabled = true;
+            }
+            else if(cost >= 500000){
+                $("#final_cost").hide();
+                document.getElementById('id_final_cost').style.borderColor = "";
+                document.getElementById('btnUpdateProject').disabled = false;
+            }
+        })
+
+        // status attribute 
+        $('#id_project_status').removeAttr('multiple', "");
+        $('#id_project_status').attr('data-live-search', "true");
+        $('#id_project_status').selectpicker({
+            size: 3,
+        });
+
+        // company attribute
+        $("#id_company").prop("selectedIndex", -1);
+        $('#id_company').attr('multiple', "multiple");
+        $('#id_company').attr('data-live-search', "true");
+        $('#id_company').selectpicker({
+            size: 2,
+        });
+
+
+
+        // PROJECT NAME 
+        $("#id_name").attr('autocomplete', 'off');
+
+        $("#id_project_code").attr('autocomplete', 'off');
+
+        $("#id_name").css("text-transform", "uppercase");
+
+        $('#id_name').on('input', function () {
+            var project_name = $(this).val().toUpperCase();
+
+            $.ajax({
+                url: '{% url 'validateProjectName' %}',
+                data: {
+                    'projectname': project_name
+                },
+                dataType: 'json',
+                success: function (data) {
+                    if (data.is_taken) {
+                        $("#validate_project_name").show();
+                        document.getElementById('id_name').style.borderColor = "red";
+                        document.getElementById("btnUpdateProject").disabled = true;
+                    } else {
+                        $("#validate_project_name").hide();
+                        document.getElementById('id_name').style.borderColor = "#e7e7e7";
+                        document.getElementById("btnUpdateProject").disabled = false;
+                    }
+                }
+            });
+        });      
+
+        $('#id_project_code').attr( 'readOnly' , 'true' );
+
+        // generate project_code
+        $('#id_project_code').on('focus', function(){
+            var company = document.getElementById('id_company');
+            
+            var companies = Array.from(company.selectedOptions).map(option => option.value);
+
+            var jsonText = JSON.stringify(companies);
+            console.log(jsonText);
+
+
+            $.ajax({
+                url: '{% url 'formatProjectCode' %}',
+                data: {
+                    companies: jsonText
+                },
+            
+                dataType: 'json',
+                success: function(data){
+                    
+                    if (data['name'] != "" && startDate != "" && sDate != 'Invalid Date' ){
+                        var clientName = data.name;
+                        var name = document.getElementById("id_name").value;
+                        var upper = name.toUpperCase();
+
+                        if (upper != ''){
+                            var clientArr = clientName.slice(0,3);
+                            var upperArr = upper.slice(0,2);
+                            var startDate= document.getElementById('id_estimated_start_date').value;
+                            var sDate = new Date(startDate);
+                            var final = upperArr + "/" + clientArr + "/" + sDate;
+
+                            document.getElementById('id_project_code').value=final;
+                            $("#project_code").hide();
+                            document.getElementById("btnUpdateProject").disabled = false;
+                            document.getElementById('id_project_code').style.borderColor = "";
+                        }
+                        else{
+                            document.getElementById('id_project_code').style.borderColor = "red";
+                            document.getElementById("btnAddProject").disabled = true;
+                            $("#project_code").show();
+                        }   
+                    }
+                    else{
+                        $("#project_code").show();
+                        document.getElementById('id_project_code').style.borderColor = "red";
+                        document.getElementById("btnUpdateProject").disabled = true;
+                    }
+                    
+                }
+            })
+        });
+        
 
         $('#listBranchContacts').DataTable({});
         $('#listEmails').DataTable({});
@@ -1340,7 +1596,7 @@
             });
         }
 
-        function manageTeamMembers(team_id, teamName) {
+        function viewTeamMembers(team_id, teamName) {
             urldata = "{% url 'detailProjectTeamMembers'%}";
 
             $.ajax({
@@ -1374,7 +1630,8 @@
                         type: 'blue',
                         theme: 'material',
                         typeAnimated: true,
-                        boxWidth: '40%',
+                        boxWidth: '50%',
+                        height: '40%',
                         useBootstrap: false,
                         closeIcon: true,
                         buttons: {
@@ -1534,4 +1791,5 @@
                 });
             }
         }
+
     </script>
