@@ -1596,7 +1596,7 @@
             });
         }
 
-        function manageTeamMembers(team_id, teamName) {
+        function viewTeamMembers(team_id, teamName) {
             urldata = "{% url 'detailProjectTeamMembers'%}";
 
             $.ajax({
@@ -1630,7 +1630,8 @@
                         type: 'blue',
                         theme: 'material',
                         typeAnimated: true,
-                        boxWidth: '40%',
+                        boxWidth: '50%',
+                        height: '40%',
                         useBootstrap: false,
                         closeIcon: true,
                         buttons: {
