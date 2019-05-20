@@ -4,7 +4,7 @@
         <form class="form-horizontal" action="{% url 'updateProjectTeamMember' member_id %}" method="post" enctype="multipart/form-data">
             {% csrf_token %}
             <div class="row col-12">
-                <div class="col-6">{{ form.responsibility | as_crispy_field}}</div>
+                <div class="col-12">{{ form.responsibility | as_crispy_field}}</div>
             </div>
             <div class="">
                 <div class="col-md-12">
@@ -17,4 +17,12 @@
     </div>
 </div>
 
+<script>
+        $("#id_responsibility").removeAttr("multiple", "");
+        $('#id_responsibility').attr('data-live-search', "true"); 
+        $('#id_responsibility').selectpicker({
+            size: 3
+        });
+
+</script>
 
