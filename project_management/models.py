@@ -6,12 +6,15 @@ from company_management.models import Company
 from user_management.models import User, UserTeamMember
 
 from ckeditor.fields import RichTextField
+# color palette import
+from colorfield.fields import ColorField
 
 
 # PRIORITIES
 class Priority(models.Model):
     name = models.CharField(max_length=250)
     description = models.CharField(max_length=255, blank=True)
+    color = ColorField(default="#fff")
     created_time = models.DateTimeField(auto_now_add=True)
     modified_time = models.DateTimeField(auto_now=True)
 
@@ -46,7 +49,7 @@ class Project(models.Model):
     name = models.CharField(max_length=100)
     project_status = models.ForeignKey(Status, null=True, blank=True, on_delete=models.SET_NULL)
     company = models.ManyToManyField(Company)
-    description = RichTextField(config_name='default')
+    description = RichTextField()
     project_code = models.CharField(max_length=255)
     estimated_cost = models.FloatField(default=0.00)
     final_cost = models.FloatField(null=True, blank=True)
@@ -263,39 +266,20 @@ class TaskAttachment(models.Model):
 
 # Incident
 class Incident(models.Model):
-
-    PRIORITY_CHOICES = (
-        ('High', 'High'),
-        ('Medium', 'Medium'),
-        ('Low', 'Low'),
-    )
-    priority = models.CharField(
-        max_length=6,
-        choices=PRIORITY_CHOICES,
-        default='High',
-    )
-    STATUS_CHOICES = (
-        ('Open', 'Open'),
-        ('Ongoing', 'Ongoing'),
-        ('Closed', 'Closed'),
-    )
-    status = models.CharField(
-        max_length=10,
-        choices=STATUS_CHOICES,
-        default='Open',
-    )
-    project             = models.ForeignKey(Project, on_delete=models.DO_NOTHING, blank=True, null=True)
-    milestone           = models.ForeignKey(Milestone, on_delete=models.DO_NOTHING, blank=True, null=True)
-    task                = models.ForeignKey(Task, on_delete=models.DO_NOTHING, blank=True, null=True)
-    assignee            = models.ForeignKey(UserTeamMember, on_delete=models.DO_NOTHING, blank=True, null=True)
-    title               = models.CharField(max_length=100)
-    description         = models.CharField(max_length=500)
-    resolution_time     = models.DateTimeField(null=True, auto_now=True)
-    reopen_time         = models.DateTimeField(null=True, auto_now=True)
-    close_time          = models.DateTimeField(null=True, auto_now=True)
-    created_time        = models.DateTimeField(auto_now_add=True)
-    creator             = models.ForeignKey(User, default=2, on_delete=models.CASCADE, related_name='incident_creator')
-    modified_time       = models.DateTimeField(auto_now=True)
+    title = models.CharField(max_length=100)
+    description = RichTextField()
+    priority = models.ForeignKey(Priority, on_delete=models.SET_NULL, null=True, blank=True)
+    status = models.ForeignKey(Status, null=True, blank=True, on_delete=models.SET_NULL)
+    project = models.ForeignKey(Project, on_delete=models.DO_NOTHING, blank=True, null=True)
+    assignee = models.ManyToManyField(ProjectTeamMember)
+    creator = models.ForeignKey(ProjectTeamMember, on_delete=models.SET_NULL, null=True, related_name='incident_creator')
+    image = models.ImageField(upload_to='images/incidents/', null=True, blank=True)
+    document = models.FileField(upload_to='documents/incidents/', null=True, blank=True)
+    resolution_time = models.DateTimeField(null=True, blank=True)
+    reopen_time = models.DateTimeField(null=True, blank=True)
+    close_time = models.DateTimeField(null=True, blank=True)
+    created_time = models.DateTimeField(auto_now_add=True)
+    modified_time = models.DateTimeField(auto_now=True)
 
     def __str__(self):
         return self.name
