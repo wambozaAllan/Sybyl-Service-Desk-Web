@@ -1,0 +1,121 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block content %}
+<!-- Main wrapper  -->
+<div id="main-wrapper">
+	{% include 'header.html' %}
+	{% include 'left-nav.html' %}
+	<!-- Page wrapper  -->
+	<div class="page-wrapper">
+		<!-- Bread crumb -->
+		<div class="row page-titles">
+			<div class="col-md-5 align-self-center">
+				<h3 class="text-primary">Dashboard</h3>
+			</div>
+			<div class="col-md-7 align-self-center">
+				<ol class="breadcrumb">
+					<li class="breadcrumb-item"><a href="{% url 'home' %}">Home</a></li>
+					<li class="breadcrumb-item active">List of Incidents</li>
+				</ol>
+			</div>
+		</div>
+		<!-- End Bread crumb -->
+		<!-- Container fluid  -->
+		<div class="container-fluid">
+			<!-- Start Page Content -->
+			<div class="row">
+				<div class="col-12">
+					<div class="card">
+						<div class="card-body">
+							<div class="row">
+								<div class="col-10">
+									<h4 class="card-title">Incidents</h4>
+								</div>
+
+								<div class="col-2">
+									<button id="" class="btn btn-info pull-right" onclick="functAddIncident();">
+										<i class="fa fa-fw fa-lg fa-plus"></i>Add Incident
+									</button>
+								</div>
+							</div>
+							<br />
+							<!-- <h6 class="card-subtitle">Export data to Copy, CSV, Excel, PDF & Print</h6> -->
+							<div class="table-responsive">
+								<table id="table_priorities" class="display nowrap table table-hover" cellspacing="0"
+									width="100%">
+									<thead>
+										<tr>
+											<th>Title</th>
+											<th>Status</th>
+											<th>Priority</th>
+											<th>Color code</th>
+											<th>Creator</th>
+											<th>Assignee</th>
+											<th>Action</th>
+										</tr>
+									</thead>
+									<tbody>
+										{% for incident in all_incidents %}
+										<tr>
+											<td>{{ incident.title }}</td>
+											<td>{{ incident.status }}</td>
+											<td>{{ incident.priority}}</td>
+											<td><input type="text" style="background-color: {{ incident.priority.color }}; border: 0;"></input></td>
+											<td>{{ incident.creator }}</td>
+											
+											<td>
+												<select class="form-control" id="list_select">
+													{% for assigned in incident.assignee.all%}
+														<option value="{{assigned.id}}">{{ assigned }}</option>
+													{% endfor %}
+												</select> 
+											</td>
+											
+											<td><a
+												href="{% url 'detailsIncident' incident.id %}">View</a>
+												&nbsp; <a
+												href="{% url 'updateIncident' incident.id %}">Update</a>
+												&nbsp; <a href="#"><i
+													class="mdi mdi-delete font-30 align-middle mr-2"></i></a></td>
+										</tr>
+										{% endfor %}
+									</tbody>
+								</table>
+							</div>
+							<br />
+						</div>
+					</div>
+					{% include 'footer.html' %}
+					<!-- End Page Content -->
+				</div>
+				<!-- End Container fluid  -->
+
+			</div>
+			<!-- End Page wrapper  -->
+		</div>
+
+		<!-- The Modal -->
+		<div class="">
+				<div id="incidentFormModalDialog" class="modalDialog">
+					<div>
+						<div id="head">
+							<a href="#close" title="Close" class="close2">X</a>
+							<h5 class="modalDialog-title">Add Incident</h5>
+						</div>
+						<hr>
+		
+						<div class="modal-body">
+		
+							<div class="scrollbar-modal1">
+								<div id="dialog_create_incident">
+		
+								</div>
+							</div>
+						</div>
+		
+					</div>
+				</div>
+			</div>
+			<!-- END The Modal -->
+			
+		{% endblock %}
