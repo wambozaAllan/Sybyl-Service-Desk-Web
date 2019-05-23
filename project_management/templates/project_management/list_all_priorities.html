@@ -44,6 +44,7 @@
                                             <tr>
                                                 <th>#</th>
                                                 <th>Priority Name</th>
+                                                <th>Color code</th>
                                                 <th>Description</th>
                                                 <th class="text-center">Action</th>
                                             </tr>
@@ -54,6 +55,7 @@
                                                 <tr>
                                                     <td>{{ forloop.counter }}</td>
                                                     <td>{{ pri.name }}</td>
+                                                    <td><input type="text" style="background-color: {{ pri.color }}; border: 0;"></input></td>
                                                     <td>{{ pri.description }}</td>
                                                     <td class="text-center">
                                                         <button onclick="functionEditPriority({{ pri.id }}, '{{ pri.name }}')"
