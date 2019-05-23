@@ -13,6 +13,7 @@
                     </medium>
                 </div>
                 <div class="col-6">{{ form.description|as_crispy_field }}</div>
+                <div class="col-6">{{ form.color|as_crispy_field }}</div>
             </div>
             <div class="">
                 <div class="col-md-12">
@@ -25,6 +26,15 @@
     </div>
 </div>
 <script>
+    $(document).ready(function() {
+        jscolor.installByClassName("jscolor");
+    });
+
+    $('#id_color').addClass('form-control');
+    $("#id_color").addClass("jscolor");
+
+    $('#id_color').attr( 'readOnly' , 'true' );
+
     $("#id_name").attr("placeholder", "Enter Priority Name");
     $("#id_description").attr("placeholder", "Enter Description");
 
