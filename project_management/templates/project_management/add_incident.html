@@ -1,0 +1,151 @@
+{% load crispy_forms_tags %}
+<form method="post"  action="{% url 'addIncident' %}" method="post" enctype="multipart/form-data">
+	{% csrf_token %}
+	{{form.media}}
+	<div class="row">
+		<div class="col-12">{{ form.title|as_crispy_field }}</div>
+	</div>
+	<div class="row">
+		<div class="col-12">{{ form.description|as_crispy_field }}</div>
+	</div>
+	<div class="row">
+		<div class="col-4">
+			{{ form.project|as_crispy_field }}
+			<medium id="project_has_team" class="text-muted hidden">
+				<font color="red">
+					Project has no team
+				</font>
+			</medium>
+		</div>
+		<div class="col-4">{{ form.creator|as_crispy_field }}</div>
+		<div class="col-4">{{ form.assignee|as_crispy_field }}</div>
+		<div class="col-4">{{ form.priority|as_crispy_field }}</div>
+		<div class="col-4">
+			<div><label>Color Code</label></div>
+			<div><input type="text" id="priority_color" class="form-control" style="width: 50%;"></div>
+		</div>
+	</div>
+	<div class="row">
+		<div class="col-4">{{ form.status|as_crispy_field }}</div>
+		<div class="col-4">{{ form.document|as_crispy_field }}</div>
+		<div class="col-4">{{ form.image|as_crispy_field }}</div>
+	</div>
+	<div class="row">
+		<div class="col-5"></div>
+		<div class="col-1">
+			<a href="{% url 'listIncidents' %}" class="btn btn-inverse">Cancel</a>
+		</div>
+		<div class="col-1">
+			<button type="submit" class="btn btn-success">Add Incident</button>
+		</div>
+	</div>
+</form>
+
+<script>
+	$("#id_assignee").html("");
+	$("#id_creator").html("");
+
+	
+	$('#id_creator').removeAttr('multiple', "");
+	$('#id_creator').attr('data-live-search', 'true');
+	$('#id_creator').selectpicker({
+		size: 3,
+	});
+
+	$('#id_assignee').attr('multiple', "");
+	$('#id_assignee').attr('data-live-search', 'true');
+	$('#id_assignee').selectpicker({
+		size: 3,
+	});
+
+
+	$('#id_title').attr('autocomplete', 'off');
+
+	// project
+	$('#id_project').removeAttr('multiple', "");
+	$('#id_project').attr('data-live-search', 'true');
+	$('#id_project').selectpicker({
+		size: 3,
+	});
+
+	// PRIORITY
+	$('#id_priority').removeAttr('multiple', "");
+	$('#id_priority').attr('data-live-search', 'true');
+	$('#id_priority').selectpicker({
+		size: 3,
+	});
+
+	// STATUS
+	$('#id_status').removeAttr('multiple', "");
+	$('#id_status').attr('data-live-search', 'true');
+	$('#id_status').selectpicker({
+		size: 3,
+	});
+
+	
+	// hide project elements
+	$('#id_assignee').hide();
+	$('#id_creator').hide();
+
+	// selecting project
+	$('#id_project').on('change', function(){
+		var project_name = $(this).val();
+		$("#id_assignee").html("");
+		$("#id_creator").html("");
+
+		
+
+		$.ajax({
+			url: '{% url 'getTeamMembers' %}',
+			data:{
+				project: project_name
+			},
+			dataType: 'json',
+			success: function(data){
+				var teamList = data.team_members;
+				
+				if (teamList.length > 0 && teamList.length !== ''){
+					$("#id_assignee").html("");
+					$("#id_creator").html("");
+
+					for(i in teamList){
+						$("#project_has_team").hide();
+						$('#id_assignee').append('<option value="' + teamList[i].id + '">' + teamList[i].first_name + " " + teamList[i].last_name + '</option>');
+						$('#id_creator').append('<option value="' + teamList[i].id + '">' + teamList[i].first_name + " " + teamList[i].last_name + '</option>');
+						$('#id_assignee').selectpicker('refresh');
+						$('#id_creator').selectpicker('refresh');
+					}
+				}
+				else{
+					$("#project_has_team").show();
+				}
+				
+			}
+		})
+	});
+
+	$('#priority_color').attr( 'readOnly' , 'true' );
+
+	// setting incident color code
+	$('#id_priority').on('change', function(){
+		var priority_name = $(this).val();
+
+		$.ajax({
+			url: '{% url 'setColorCode' %}',
+			data: {
+				priority: priority_name
+			},
+			dataType: 'json',
+			success: function(data){
+				var name = data.name;
+				var color = data.color;
+				
+				if (data !== ''){
+					$('#priority_color').css("background-color", data.color);
+				}
+				
+			}
+		})
+	})
+
+</script>
