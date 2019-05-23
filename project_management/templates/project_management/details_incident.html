@@ -15,7 +15,7 @@
 			<div class="col-md-7 align-self-center">
 				<ol class="breadcrumb">
 					<li class="breadcrumb-item"><a href="{% url 'home' %}">Home</a></li>
-					<li class="breadcrumb-item active">List of Incidents</li>
+					<li class="breadcrumb-item active"><a href="{% url 'listIncidents'%}">List of Incidents</a></li>
 				</ol>
 			</div>
 		</div>
@@ -38,6 +38,7 @@
 											value="{{ incident.title }}" disabled>
 									</div>
 								</div>
+								<br>
 								<div class="row">
 									<div class="col-sm">
 										<p class="text-muted m-b-15 f-s-12">Description</p>
@@ -45,6 +46,7 @@
 											value="{{ incident.description }}" disabled>
 									</div>
 								</div>
+								<br>
 								<div class="row">
 									<div class="col-sm">
 										<p class="text-muted m-b-15 f-s-12">Project</p>
@@ -52,16 +54,12 @@
 											value="{{ incident.project }}" disabled>
 									</div>
 									<div class="col-sm">
-										<p class="text-muted m-b-15 f-s-12">Milestone</p>
+										<p class="text-muted m-b-15 f-s-12">Priority</p>
 										<input type="text" class="form-control input-flat"
-											value="{{ incident.milestone }}" disabled>
-									</div>
-									<div class="col-sm">
-										<p class="text-muted m-b-15 f-s-12">Task</p>
-										<input type="text" class="form-control input-flat"
-											value="{{ incident.task }}" disabled>
+											value="{{ incident.priority }}" disabled>
 									</div>
 								</div>
+								<br>
 								<div class="row">
 									<div class="col-sm">
 										<p class="text-muted m-b-15 f-s-12">Status</p>
@@ -69,19 +67,22 @@
 											value="{{ incident.status }}" disabled>
 									</div>
 									<div class="col-sm">
-										<p class="text-muted m-b-15 f-s-12">Priority</p>
+										<p class="text-muted m-b-15 f-s-12">Created By</p>
 										<input type="text" class="form-control input-flat"
-											value="{{ incident.priority }}" disabled>
+											value="{{ incident.creator }}" disabled>
 									</div>
 									<div class="col-sm">
 										<p class="text-muted m-b-15 f-s-12">Assigned To</p>
+										{% for assigned in incident.assignee.all%}
 										<input type="text" class="form-control input-flat"
-											value="{{ incident.assignee }}" disabled>
+											value="{{ assigned }}" disabled>
+										{% endfor %}
 									</div>
 								</div>
 								<br />
 								<div class="row">
 									<div class="col-1"><a href="{% url 'listIncidents' %}" class="btn btn-inverse">Back</a></div>
+									<div class="col-1"><a href="{% url 'updateIncident' incident.id %}" class="btn btn-success">Update</a></div>	
                                 </div>
 							</div>
 						</div>

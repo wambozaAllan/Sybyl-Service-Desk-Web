@@ -13,6 +13,8 @@ from django.template.loader import get_template
 from django.core.mail import EmailMessage
 from static.fusioncharts import FusionCharts
 from django.template import loader
+from django.core import serializers
+from django.forms.models import model_to_dict
 
 from django.contrib.auth.decorators import user_passes_test, permission_required
 
@@ -306,14 +308,13 @@ def load_task_milestones(request):
 
 class AddIncident(CreateView):
     model = Incident
-    fields = ['project', 'milestone', 'task', 'title', 'description'
-              , 'status', 'priority', 'assignee']
-    template_name = 'project_management/addIncident.html'
+    fields = ['project', 'title', 'description', 'status', 'priority', 'assignee', 'creator', 'document', 'image']
+    template_name = 'project_management/add_incident.html'
     success_url = reverse_lazy('listIncidents')
 
 
 class ListIncidents(ListView):
-    template_name = 'project_management/listIncidents.html'
+    template_name = 'project_management/list_incidents.html'
     context_object_name = 'all_incidents'
 
     def get_queryset(self):
@@ -323,15 +324,74 @@ class ListIncidents(ListView):
 class DetailsIncident(DetailView):
     model = Incident
     context_object_name = 'incident'
-    template_name = 'project_management/detailsIncident.html'
+    template_name = 'project_management/details_incident.html'
 
 
 class UpdateIncident(UpdateView):
     model = Incident
-    fields = ['project', 'milestone', 'task', 'title', 'description'
-              , 'status', 'priority', 'assignee']
-    template_name = 'project_management/updateIncident.html'
+    fields = ['project', 'title', 'description', 'document', 'image', 'status', 'priority', 'assignee']
+    template_name = 'project_management/update_incident.html'
     success_url = reverse_lazy('listIncidents')
+
+
+def get_team_members(request):
+    """display team members on incident assigning"""
+
+    project_id = request.GET.get('project')
+
+    team = ProjectTeam.objects.filter(project_id=project_id).exists()
+
+    if team == True:
+        project_team = ProjectTeam.objects.get(project_id=project_id)
+        project_members_exist = ProjectTeamMember.objects.filter(project_team=project_team.id).exists()
+
+        if project_members_exist == True:
+            project_members = ProjectTeamMember.objects.filter(project_team=project_team.id)
+
+            new_list = []
+
+            for i in project_members:
+                new_dict = {}
+                new_dict['first_name'] = i.member.first_name
+                new_dict['last_name'] = i.member.last_name
+                new_dict['id'] = i.pk
+                new_list.append(new_dict)
+
+            data = {
+                'team_members': new_list
+            }
+            return JsonResponse(data)
+
+        else:
+            data = {
+                'team_members': ''
+            }
+
+    else:
+        data = {
+            'team_members': ''
+        }
+    
+    return JsonResponse(data)
+
+
+def set_priority_color_code(request):
+    """ retrieving priority name"""
+
+    priority_id = request.GET.get('priority')
+    data = {}
+
+    if priority_id is not None:
+        priority = Priority.objects.get(id=priority_id)
+        data['name'] = priority.name
+        data['color'] = priority.color
+
+    else:
+        data['name'] = ''
+        data['color'] = ''
+
+    
+    return JsonResponse(data)
 
 
 def Milestone_progress():
@@ -381,14 +441,14 @@ class ListAllPriorities(ListView):
 
 class AddPriority(CreateView):
     model = Priority
-    fields = ['name', 'description']
+    fields = ['name', 'description', 'color']
     template_name = 'project_management/add_priority.html'
     success_url = reverse_lazy('listAllPriorities')
 
 
 class UpdatePriority(UpdateView):
     model = Priority
-    fields = ['name', 'description']
+    fields = ['name', 'description', 'color']
     template_name = 'project_management/update_priority.html'
     success_url = reverse_lazy('listAllPriorities')
 

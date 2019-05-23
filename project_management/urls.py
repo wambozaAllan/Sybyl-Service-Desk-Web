@@ -78,4 +78,7 @@ urlpatterns = [
     path('deleteRole/<int:pk>/', views.DeleteRole.as_view(), name="deleteRole"),
     path('validateRoleName/', views.ValidateRoleName, name='validateRoleName'),
 
+    path('getTeamMembers/', views.get_team_members, name='getTeamMembers'),
+    path('setColorCode/', views.set_priority_color_code, name='setColorCode'),
+
 ]
