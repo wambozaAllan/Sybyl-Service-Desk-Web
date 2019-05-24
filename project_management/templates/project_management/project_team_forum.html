@@ -1,10 +1,250 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>$Title$</title>
-</head>
-<body>
-$END$
-</body>
-</html>
+<div class="group_chat_pane">
+    <input id="project_forum_id" type="hidden" value="{{ p_forum_id }}"/>
+    <input id="project_id" type="hidden" value="{{ project_id }}"/>
+    <input id="project_name" type="hidden" value="{{ project_name }}"/>
+    <input id="forum_name" type="hidden" value="{{ forum_name }}"/>
+
+{% if state %}
+    <span style="font-size: 140%; margin-top: -1%; margin-left: -1%;" class="font-weight-bold pull-left ">#{{forum_name}}</span>
+    <br><hr>
+    <div id="scrollDiv2" style="height:340px; overflow-y: scroll;">
+        <div id="chat-log3" class="profiletimeline">
+            {% for chat in msg %}
+            <div class="sl-item">
+                <div class="sl-left"><img src="../../media/avatar.png" alt="user" class="img-circle"/></div>
+                <div class="sl-right">
+                    <div>
+                        {% if chat.team_member.member.username == request.session.username %}
+                        <span class="link">{{chat.team_member.member.first_name}} {{chat.team_member.member.last_name}}
+                            <span class="text-info">(you)</span>
+                            <a href="#" class="pull-right" data-toggle="dropdown"><i class="fa fa-ellipsis-h fa-2x"></i></a>
+                            <ul class="dropdown-menu" role="menu">
+                                <li onclick="functionDeleteSMS({{chat.id}}, '{{chat.chat_message}}', {{chat.count_replies}}, {{project_id}}, '{{project_name}}', '{{forum_name}}', {{p_forum_id}})"><a href="#">Delete</a></li>
+                            </ul>
+                        </span>
+                        {% else %}
+                        <span  class="link">{{chat.team_member.member.first_name}} {{chat.team_member.member.last_name}}
+                            <a href="#" class="pull-right" data-toggle="dropdown"><i class="fa fa-ellipsis-h fa-2x"></i></a>
+                            <ul class="dropdown-menu" role="menu">
+                                <li onclick="functionDeleteSMS({{chat.id}}, '{{chat.chat_message}}', {{chat.count_replies}}, {{project_id}}, '{{project_name}}', '{{forum_name}}', {{p_forum_id}})"><a href="#">Delete</a></li>
+                            </ul>
+                        </span>
+                        {% endif %}
+                        <div> <span class="m-t-10">{{chat.chat_message}}</span> <span class="sl-date text-info" style="float: right !important;">{{chat.created_time}}</span></div>
+                        <div style="margin-top:1%" onclick="functionManageReplies({{chat.id}}, '{{chat.chat_message}}', {{project_id}}, '{{project_name}}', '{{chat.team_member.member.first_name}} {{chat.team_member.member.last_name}}', '{{forum_name}}', {{p_forum_id}})"><a href="#" class="link m-r-10 text-info">{{chat.count_replies}} replies</a></div>
+                    </div>
+                </div>
+                <hr>
+            </div>
+
+            {% endfor %}
+        </div>
+    </div>
+
+    <div class="form-group" style="bottom: 10px;">
+        <div class="input-group input-group-rounded ">
+            <input id="chat-message-input3" type="text" placeholder="Type your message" name="Search" class="form-control">
+
+            <span class="input-group-btn">
+                    <button id="chat-message-submit3" class="btn btn-primary btn-group-right" type="submit">
+                        <i class="ti-share"></i>
+                    </button>
+            </span>
+        </div>
+    </div>
+
+    {% else %}
+    <h3 class="font-weight-bold">Project: <span class="text-info">{{project_name }}</span></h3>
+        <button id="" class="btn btn-info " onclick="functCreateProjectForum({{project_id}}, '{{project_name}}');">
+            <i class="fa fa-fw fa-lg fa-plus"></i>Create Project Forum
+        </button>
+    {% endif %}
+</div>
+
+<script>
+    var project_forum_id = $('#project_forum_id').val();
+    var project_id = $('#project_id').val();
+    var project_name = $('#project_name').val();
+    var forum_name = $('#forum_name').val();
+    var chatstate =parseInt(0);
+    var msg_id = 'none';
+
+    var chatSocket = new WebSocket('ws://' + window.location.host + '/groupChat/'+project_forum_id+', '+ msg_id +', '+chatstate+'/');
+
+    var scrollDiv = document.getElementById("scrollDiv2");
+    scrollDiv.scrollTop = scrollDiv.scrollHeight;
+
+    chatSocket.onmessage = function(e) {
+        var data = JSON.parse(e.data);
+        var message = data['message'];
+        var username = data['username'];
+        var fname = data['fname'];
+        var lname = data['lname'];
+        var fullname = fname + ' ' + lname;
+        var uid = data['uid'];
+        var msg_id = data['msg_id'];
+        var created_time = data['created_time'];
+        replies = 0;
+        created_time= moment(created_time).format('MMMM Do YYYY, h:mm a');
+        $("#chat-log3").append(
+            '<div class="sl-item">'+
+            '<div class="sl-left"><img src="../../media/avatar.png" alt="user" class="img-circle"/></div>'+
+            '<div class="sl-right"><div>{% if '+username+' == request.session.username %}<span class="link">'+fname +'  '+lname+'<span class="text-info">(you)'+
+            '</span>'+
+            '<a href="#" class="pull-right" data-toggle="dropdown"><i class="fa fa-ellipsis-h fa-2x"></i></a>'+
+            '<ul class="dropdown-menu" role="menu">'+
+            '<li onclick="functionDeleteSMS('+msg_id+', \''+ message +'\', '+replies+', '+project_id+', \''+project_name +'\', \''+ forum_name +'\', '+ project_forum_id +')"><a href="#">Delete</a></li>'+
+            '</ul>'+
+            '</span>{% else %}<span'+
+            'class="link">'+fname +'  '+lname+' <a href="#" class="pull-right" data-toggle="dropdown"><i class="fa fa-ellipsis-h fa-2x"></i></a>'+
+            '<ul class="dropdown-menu" role="menu">'+
+            '<li onclick="functionDeleteSMS('+msg_id+', \''+ message +'\', '+replies+', '+project_id+', \''+project_name +'\', \''+ forum_name +'\', '+ project_forum_id +')"><a href="#">Delete</a></li>'+
+            '</ul></span>{% endif %}<div>'+
+             '<span class="m-t-10">'+message+'</span> <span class="sl-date text-info" style="float: right !important;">'+created_time+'</span></div>'+
+             '<div style="margin-top:1%" onclick="functionManageReplies('+msg_id+', \''+ message +'\', '+project_id+', \''+project_name +'\', \''+ fullname +'\', \''+ forum_name +'\', '+ project_forum_id +')">'+
+             '<a href="#" class="link m-r-10 text-info">0 replies</a></div>'+
+             '</div></div><hr></div>'
+         );
+
+        var scrollDiv2 = document.getElementById("scrollDiv2");
+        scrollDiv2.scrollTop = scrollDiv2.scrollHeight;
+    };
+
+    chatSocket.onclose = function(e) {
+        console.error('Chat socket closed unexpectedly');
+    };
+
+    document.querySelector('#chat-message-input3').focus();
+    document.querySelector('#chat-message-input3').onkeyup = function(e) {
+        if (e.keyCode === 13) {  // enter, return
+            document.querySelector('#chat-message-submit3').click();
+        }
+    };
+
+    document.querySelector('#chat-message-submit3').onclick = function(e) {
+        var messageInputDom = document.querySelector('#chat-message-input3');
+        var message = messageInputDom.value;
+        chatSocket.send(JSON.stringify({'message': message}));
+
+        messageInputDom.value = '';
+    };
+
+    function functCreateProjectForum(pid, pname) {
+        url_data = "{% url 'createProjectForum'%}";
+        $.confirm({
+            title: '<h3>Add Project Forum</h3>',
+                content: '' +
+                '<form action="" class="formName">' +
+                '<div class="form-group">' +
+                '<label>Project Forum Name<span class="asteriskField">*</span></label>' +
+                '<input type="text" placeholder="Enter Forum Name" class="forum_name form-control" required />' +
+                '</div>' +
+                '</form>',
+            type: 'blue',
+            typeAnimated: true,
+            boxWidth: '30%',
+            useBootstrap: false,
+            closeIcon: true,
+                buttons: {
+                    formSubmit: {
+                        text: 'Submit',
+                        btnClass: 'btn-blue',
+                        action: function () {
+                            var fname = this.$content.find('.forum_name').val();
+                            if(!fname){
+                                $.alert('provide a valid name');
+                                return false;
+                            }
+                            $.ajax({
+                                type: "GET",
+                                cache: false,
+                                data: {
+                                    pid: pid,
+                                    fname: fname,
+                                    pname: pname
+                                },
+                                url: url_data,
+                                success: function (resp) {
+                                    $.alert({
+                                        title: 'Alert!',
+                                        content: 'Project Forum had been Added!',
+                                    });
+                                    $('.group_chat_pane').html(resp);
+                                }
+                            });
+                        }
+                    },
+                    cancel: function () {
+                        //close
+                    },
+                },
+        });
+    }
+
+    function functionManageReplies(msg_id, msg_body, project_id, project_name, sender, forum_name, forum_id){
+        url_data2 = "{% url 'manageForumReplies'%}";
+        $.ajax({
+            type: "GET",
+            cache: false,
+            data: {
+                msg_id: msg_id,
+                msg_body: msg_body,
+                project_id: project_id,
+                project_name: project_name,
+                sender: sender,
+                forum_name: forum_name,
+                forum_id: forum_id
+            },
+            url: url_data2,
+            success: function (resp) {
+                $('.group_chat_pane').html(resp);
+            }
+        });
+    }
+
+    function functionDeleteSMS(chat_id, message, count_replies, project_id, project_name, forum_name2, forum_id2) {
+        url_data3 = "{% url 'deleteChatMessage'%}";
+        $.confirm({
+            title: '<h4><span class="font-weight-bold">Are you sure you want to delete Message:</span> <br> <span class="text-info">' + message + ' </span>!</h4>'+
+            '<span style="font-size: 76%;">'+count_replies+' replies.</span>',
+            content: '',
+            type: 'red',
+            typeAnimated: true,
+            boxWidth: '50%',
+            useBootstrap: false,
+            theme: 'modern',
+            icon: 'fa fa-exclamation-circle',
+            closeIcon: true,
+            buttons: {
+                formSubmit: {
+                    text: 'Delete',
+                    btnClass: 'btn-red',
+                    action: function () {
+                        $.ajax({
+                            type: "GET",
+                            cache: false,
+                            data: {
+                                chat_id: chat_id,
+                                count_replies: count_replies,
+                                project_id: project_id,
+                                project_name: project_name,
+                                forum_id: forum_id2,
+                                forum_name: forum_name2,
+                            },
+                            url: url_data3,
+                            success: function (resp) {
+                                $('.group_chat_pane').html(resp);
+                            }
+                        });
+                    }
+                },
+                close: {
+                    text: 'Cancel',
+                    btnClass: 'btn-gray',
+                    action: function () {
+                    }
+                }
+            }
+        });
+    }
+</script>

@@ -77,4 +77,10 @@ urlpatterns = [
     path('deleteRole/<int:pk>/', views.DeleteRole.as_view(), name="deleteRole"),
     path('validateRoleName/', views.ValidateRoleName, name='validateRoleName'),
 
+    path('projectForum/', views.project_forum, name='tabProjectForum'),
+    path('createForum/', views.create_project_forum, name='createProjectForum'),
+    path('forumReplies/', views.manage_forum_replies, name='manageForumReplies'),
+    path('deleteChatMessage/', views.delete_forum_message, name='deleteChatMessage'),
+    path('deleteReply/', views.delete_forum_reply, name='deleteChatReply'),
+
 ]

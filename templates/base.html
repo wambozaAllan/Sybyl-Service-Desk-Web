@@ -40,6 +40,17 @@
         $('#groupList2').DataTable();
         $('#table_system_modules2').DataTable();
 
+        function loadURL(url, params, responseDiv, method) {
+            $.ajax({
+                type: method,
+                url: url + '?' + params,
+                success: function (response) {
+                    $('.body-card-sidebar').addClass('side-bar-off');
+                    $('.' + responseDiv).html(response);
+                }
+            });
+        }
+
         function functAddDomain() {
             urldata = "{% url 'addDomain'%}";
             $.ajax({
@@ -1534,4 +1545,5 @@
                 });
             }
         }
+
     </script>

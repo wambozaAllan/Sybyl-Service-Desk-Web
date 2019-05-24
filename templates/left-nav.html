@@ -220,6 +220,23 @@
                             <li><a href="{% url 'listAllRoles' %}"><i class="fa fa-list"></i> Member Roles</a></li>
                         </ul>
                     </li>
+                    <li class="">
+                        <a class="has-arrow" href="#" aria-expanded="false"><i class="fa fa-envelope-square"></i>
+                            <span class="hide-menu">CHAT</span></a>
+                        <ul aria-expanded="false" class="collapse">
+                            <li class="">
+                                <a class="has-arrow" href="#" aria-expanded="false"><i class="fa fa-comments"></i>
+                                    <span class="hide-menu">Direct SMS </span></a>
+                                <ul aria-expanded="false" class="collapse">
+                                    <li onclick="loadURL('{% url 'directMessages' %}', '', 'page-wrapper', 'GET');"><a href="#"><i class="fa fa-envelope"></i> New Message</a></li>
+                                    <li><a href="#"><i class="fa fa-user"></i> Grace</a></li>
+                                    <li><a href="#"><i class="fa fa-user"></i> Peter</a></li>
+                                    <li><a href="#"><i class="fa fa-user"></i> Ritah</a></li>
+                                    <li><a href="#"><i class="fa fa-user"></i> Ali</a></li>
+                                </ul>
+                            </li>
+                        </ul>
+                    </li>
                 {% endif %}
 
             </ul>

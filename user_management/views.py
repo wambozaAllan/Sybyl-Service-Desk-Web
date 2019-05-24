@@ -16,6 +16,8 @@ from django.core import serializers
 import json
 from django.db.models import Count
 
+from django.shortcuts import render
+
 
 # Used to add new users
 def user_createview(request):
@@ -691,3 +693,4 @@ def add_user_to_global_group(request):
     }
 
     return HttpResponse(template.render(context, request))
+

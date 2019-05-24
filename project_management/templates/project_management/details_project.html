@@ -3,79 +3,108 @@
 {% block content %}
 <!-- Main wrapper  -->
 <div id="main-wrapper">
-	{% include 'header.html' %}
-	{% include 'left-nav.html' %}
-	<!-- Page wrapper  -->
-	<div class="page-wrapper">
-		<!-- Bread crumb -->
-		<div class="row page-titles">
-			<div class="col-md-5 align-self-center">
-				<h3 class="text-primary">Dashboard</h3>
-			</div>
-			<div class="col-md-7 align-self-center">
-				<ol class="breadcrumb">
-					<li class="breadcrumb-item"><a href="javascript:void(0)">Home</a></li>
-					<li class="breadcrumb-item active">List of Branches</li>
-				</ol>
-			</div>
-		</div>
-		<!-- End Bread crumb -->
-		<!-- Container fluid  -->
-		<div class="container-fluid">
-			<!-- Start Page Content -->
-			<div class="row">
-				<div class="col-12">
-					<div class="card">
-						<div class="card-title">
-							<h4>Branch Details</h4>
-						</div>
-						<div class="card-body">
-							<div class="basic-form">
-								<div class="row">
-									<div class="col-sm-2">
-										<p class="text-muted m-b-15 f-s-12">Name</p>
-										<input type="text" class="form-control input-flat"
-											value="{{ project.name }}" disabled>
-									</div>
-									<div class="col-sm">
-										<p class="text-muted m-b-15 f-s-12">Status</p>
-										<input type="text" class="form-control input-flat"
-											value="{{ project.project_status }}" disabled>
-									</div>
-									<div class="col-sm">
-										<p class="text-muted m-b-15 f-s-12">Project Code</p>
-										<input type="text" class="form-control input-flat"
-											value="{{ project.project_code }}" disabled>
-									</div>
-									<div class="col-sm">
-										<p class="text-muted m-b-15 f-s-12">Estimated Cost</p>
-										<input type="text" class="form-control input-flat"
-											value="{{ project.estimated_cost }}" disabled>
-									</div>
-									<div class="col-sm">
-										<p class="text-muted m-b-15 f-s-12">Start Date</p>
-										<input type="text" class="form-control input-flat"
-											value="{{ project.start_date }}" disabled>
-									</div>
-									<div class="col-sm">
-										<p class="text-muted m-b-15 f-s-12">End Date</p>
-										<input type="text" class="form-control input-flat"
-											value="{{ project.end_date }}" disabled>
-									</div>
-								</div>
-								<br />
-								<div class="row">
-									<div class="col-1"><a href="{% url 'listProjects' %}" class="btn btn-inverse">Back</a></div>
-                                </div>
-							</div>
-						</div>
-					</div>
-					{% include 'footer.html' %}
-					<!-- End Page Content -->
-				</div>
-				<!-- End Container fluid  -->
+    {% include 'header.html' %}
+    {% include 'left-nav.html' %}
+    <!-- Page wrapper  -->
+    <div class="page-wrapper">
+        <!-- Bread crumb -->
+        <div class="row page-titles">
+            <div class="col-md-5 align-self-center">
+                <h3 class="text-primary">Dashboard</h3>
+            </div>
+            <div class="col-md-7 align-self-center">
+                <ol class="breadcrumb">
+                    <li class="breadcrumb-item"><a href="javascript:void(0)">Home</a></li>
+                    <li class="breadcrumb-item active">List of Branches</li>
+                </ol>
+            </div>
+        </div>
+        <!-- End Bread crumb -->
+        <!-- Container fluid  -->
+        <div class="container-fluid">
+            <!-- Start Page Content -->
+                    <div class="card" style="margin-top: -2%;">
+                        <ul class="nav nav-tabs" role="tablist">
+                            <li class="nav-item">
+                                <a class="nav-link active" data-toggle="tab" href="#home" role="tab"><span class="hidden-sm-up"><i class="ti-home"></i></span>
+                                <span class="hidden-xs-down">Home</span></a>
+                            </li>
 
-			</div>
-			<!-- End Page wrapper  -->
-		</div>
-		{% endblock %}
+                            {% if forum_status %}
+                            <li class="nav-item"  onclick="loadURL('{% url 'tabProjectForum'%}', 'projectid={{ project.id }}&projectname={{ project.name }}&b=a&c=a&d=0&ofst=1&maxR=100&sStr=', 'projectforum', 'GET');">
+                                <a class="nav-link" data-toggle="tab" href="#project_forum" >
+                                    <span class="hidden-sm-up"><i  class="ti-email"></i></span>
+                                    <span class="hidden-xs-down">Forum</span></a>
+                            </li>
+                            {% else %}{% endif %}
+
+                            <li class="nav-item"><a class="nav-link" data-toggle="tab" href="#messages" role="tab">
+                                <span class="hidden-sm-up"><i class="ti-user"></i></span> <span class="hidden-xs-down">Milestones</span></a>
+                            </li>
+                        </ul>
+                        <!-- Tab panes -->
+                        <div class="tab-content tabcontent-border">
+                            <div class="tab-pane active" id="home" role="tabpanel">
+                                <div class="p-20">
+                                    <div class="card-title">
+                                        <h4>Projects Details</h4>
+                                    </div>
+                                    <div class="card-body">
+                                        <div class="basic-form">
+                                            <div class="row">
+                                                <div class="col-sm-2">
+                                                    <p class="text-muted m-b-15 f-s-12">Name</p>
+                                                    <input type="text" class="form-control input-flat"
+                                                           value="{{ project.name }}" disabled>
+                                                </div>
+                                                <div class="col-sm">
+                                                    <p class="text-muted m-b-15 f-s-12">Status</p>
+                                                    <input type="text" class="form-control input-flat"
+                                                           value="{{ project.project_status }}" disabled>
+                                                </div>
+                                                <div class="col-sm">
+                                                    <p class="text-muted m-b-15 f-s-12">Project Code</p>
+                                                    <input type="text" class="form-control input-flat"
+                                                           value="{{ project.project_code }}" disabled>
+                                                </div>
+                                                <div class="col-sm">
+                                                    <p class="text-muted m-b-15 f-s-12">Estimated Cost</p>
+                                                    <input type="text" class="form-control input-flat"
+                                                           value="{{ project.estimated_cost }}" disabled>
+                                                </div>
+                                                <div class="col-sm">
+                                                    <p class="text-muted m-b-15 f-s-12">Start Date</p>
+                                                    <input type="text" class="form-control input-flat"
+                                                           value="{{ project.start_date }}" disabled>
+                                                </div>
+                                                <div class="col-sm">
+                                                    <p class="text-muted m-b-15 f-s-12">End Date</p>
+                                                    <input type="text" class="form-control input-flat"
+                                                           value="{{ project.end_date }}" disabled>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="tab-pane p-20 projectforum" id="project_forum">
+                                <!-- PROJECT FORUM -->
+                                <div class="text-center">
+                                    <i class="fa fa-spinner fa-spin fa-4x "></i>
+                                </div>
+                            </div>
+                            <div class="tab-pane p-20" id="messages" role="tabpanel">
+                                3
+
+                                <!-- tab 3 -->
+                            </div>
+                        </div>
+                    <!-- End Page Content -->
+                <!-- End Container fluid  -->
+
+            </div>
+            <!-- End Page wrapper  -->
+        </div>
+    </div>
+</div>
+{% endblock %}

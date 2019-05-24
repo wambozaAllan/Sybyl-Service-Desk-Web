@@ -1,10 +1,60 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>$Title$</title>
-</head>
-<body>
-$END$
-</body>
-</html>
+<div class="row page-titles">
+    <div class="col-md-5 align-self-center">
+        <h3 class="text-primary">Chat</h3>
+    </div>
+    <div class="col-md-7 align-self-center">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a href="javascript:void(0)">Home</a></li>
+            <li class="breadcrumb-item active">Chat</li>
+        </ol>
+    </div>
+</div>
+<!-- End Bread crumb -->
+<!-- Container fluid  -->
+<div class="container-fluid">
+    <!-- Start Page Content -->
+
+    <div class="col-12">
+        <div class="col-1"></div>
+        <div class="col-10">
+            <h2 class="font-weight-bold">Direct Messages</h2><hr>
+
+            <div class="tile-body">
+                <div id="search-form_3" class="input-group input-group-rounded">
+                    <input id="userSearch" type="text" placeholder="Search User to start a conversation" name="Search" class="form-control dropbtn" oninput="searchChatClient()" onfocus="displaySearchResults()"/>
+                    <span class="input-group-btn"><button class="btn btn-primary btn-group-right" type="submit"><i class="ti-search"></i></button></span>
+                </div>
+
+                <div id="myDropdown" class="search-content scrollbar-modal2">
+
+                </div>
+            </div>
+        </div>
+        <div class="col-1"></div>
+    </div>
+
+
+</div>
+
+<script>
+    function searchChatClient() {
+            urldata = "{% url 'searchChatClient'%}";
+            var staff = trim($('#userSearch').val());
+            var size = staff.length;
+            if (size > 0) {
+                $.ajax({
+                    type: "GET",
+                    cache: false,
+                    url: urldata,
+                    data: {
+                        searchValue: staff,
+                    },
+                    success: function (response) {
+                        $('#myDropdown').html(response);
+                    }
+                });
+            } else {
+                $('#myDropdown').html('');
+            }
+        }
+</script>

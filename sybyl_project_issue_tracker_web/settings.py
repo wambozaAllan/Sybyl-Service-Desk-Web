@@ -41,6 +41,8 @@ INSTALLED_APPS = [
     'project_management',
     'crispy_forms',
     'ckeditor',
+    'channels',
+    'chat',
 ]
 
 LOGIN_REDIRECT_URL = 'home'
@@ -150,3 +152,15 @@ EMAIL_HOST = 'smtp.gmail.com'
 EMAIL_HOST_USER = 'softdev.sybyl@gmail.com'
 EMAIL_HOST_PASSWORD = 'Admin@123'
 EMAIL_PORT = 587
+
+
+ASGI_APPLICATION = 'sybyl_project_issue_tracker_web.routing.application'
+
+CHANNEL_LAYERS = {
+    'default': {
+        'BACKEND': 'channels_redis.core.RedisChannelLayer',
+        'CONFIG': {
+            "hosts": [('127.0.0.1', 6379)],
+        },
+    },
+}
