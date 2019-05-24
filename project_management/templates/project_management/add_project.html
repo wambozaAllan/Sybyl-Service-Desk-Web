@@ -116,7 +116,7 @@
         var date = $(this).blur();
     });
 
-    $('#id_estimated_end_date').on('focus', function(){
+    $('#id_estimated_end_date').on('change', function(){
         var startDate= document.getElementById('id_estimated_start_date').value;
         var endDate= document.getElementById('id_estimated_end_date').value;
 
@@ -139,7 +139,7 @@
         var date = $(this).blur();
     });
 
-    $('#id_estimated_start_date').on('focus', function(){
+    $('#id_estimated_start_date').on('change', function(){
         var startDate= document.getElementById('id_estimated_start_date').value;
         var endDate= document.getElementById('id_estimated_end_date').value;
 
