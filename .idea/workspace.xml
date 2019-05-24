@@ -2,10 +2,8 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="5b39e269-faf1-4041-a9e1-91ce60eb0e26" name="Default Changelist" comment="Merge branch 'master' of https://github.com/wambozaAllan/Sybyl-Service-Desk-Web into usergroups&#10;&#10;# Conflicts:&#10;#&#9;.idea/workspace.xml">
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/chat/templates/chat/direct_message_pane.html" beforeDir="false" afterPath="$PROJECT_DIR$/chat/templates/chat/direct_message_pane.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/chat/views.py" beforeDir="false" afterPath="$PROJECT_DIR$/chat/views.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/user_management/templates/user_management/assign_permissions.html" beforeDir="false" afterPath="$PROJECT_DIR$/user_management/templates/user_management/assign_permissions.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/templates/left-nav.html" beforeDir="false" afterPath="$PROJECT_DIR$/templates/left-nav.html" afterDir="false" />
     </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="SHOW_DIALOG" value="false" />
@@ -38,8 +36,8 @@
       <file pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/chat/templates/chat/direct_message_pane.html">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="194">
-              <caret line="90" column="19" lean-forward="true" selection-start-line="90" selection-start-column="19" selection-end-line="90" selection-end-column="19" />
+            <state relative-caret-position="398">
+              <caret line="33" column="103" selection-start-line="33" selection-start-column="103" selection-end-line="33" selection-end-column="103" />
               <folding>
                 <element signature="n#style#0;n#i#0;n#span#0;n#div#1;n#div#1;n#div#0;n#div#1;n#!!top" expanded="true" />
                 <element signature="n#style#0;n#div#0;n#div#1;n#div#1;n#div#0;n#div#1;n#!!top" expanded="true" />
@@ -195,7 +193,6 @@
         <option value="$PROJECT_DIR$/core/views.py" />
         <option value="$PROJECT_DIR$/project_management/routing.py" />
         <option value="$PROJECT_DIR$/company_management/views.py" />
-        <option value="$PROJECT_DIR$/templates/left-nav.html" />
         <option value="$PROJECT_DIR$/static/template-static-files/css/style.css" />
         <option value="$PROJECT_DIR$/project_management/models.py" />
         <option value="$PROJECT_DIR$/project_management/ReplyConsumer.py" />
@@ -213,6 +210,7 @@
         <option value="$PROJECT_DIR$/templates/header.html" />
         <option value="$PROJECT_DIR$/user_management/templates/user_management/assign_permissions.html" />
         <option value="$PROJECT_DIR$/chat/views.py" />
+        <option value="$PROJECT_DIR$/templates/left-nav.html" />
         <option value="$PROJECT_DIR$/chat/templates/chat/direct_message_pane.html" />
       </list>
     </option>
@@ -255,6 +253,11 @@
               <item name="chat" type="462c0819:PsiDirectoryNode" />
               <item name="templates" type="462c0819:PsiDirectoryNode" />
               <item name="chat" type="462c0819:PsiDirectoryNode" />
+            </path>
+            <path>
+              <item name="Sybyl-Service-Desk-Web" type="b2602c69:ProjectViewProjectNode" />
+              <item name="Sybyl-Service-Desk-Web" type="462c0819:PsiDirectoryNode" />
+              <item name="templates" type="462c0819:PsiDirectoryNode" />
             </path>
           </expand>
           <select />
@@ -408,8 +411,9 @@
   </component>
   <component name="ToolWindowManager">
     <frame x="-4" y="0" width="1377" height="735" extended-state="0" />
+    <editor active="true" />
     <layout>
-      <window_info content_ui="combo" id="Project" order="0" sideWeight="0.4945355" visible="true" weight="0.21060494" />
+      <window_info active="true" content_ui="combo" id="Project" order="0" sideWeight="0.4945355" visible="true" weight="0.21060494" />
       <window_info id="Structure" order="1" sideWeight="0.5054645" side_tool="true" weight="0.2193646" />
       <window_info anchor="bottom" id="Message" order="0" />
       <window_info anchor="bottom" id="Find" order="1" weight="0.3289689" />
@@ -423,7 +427,7 @@
       <window_info anchor="bottom" id="Database Changes" order="9" show_stripe_button="false" />
       <window_info anchor="bottom" id="Event Log" order="10" sideWeight="0.10491072" side_tool="true" weight="0.15711948" />
       <window_info anchor="bottom" id="Favorites" order="11" sideWeight="0.5035461" weight="0.4435216" />
-      <window_info active="true" anchor="bottom" id="Terminal" order="12" sideWeight="0.89508927" visible="true" weight="0.42524916" />
+      <window_info anchor="bottom" id="Terminal" order="12" sideWeight="0.89508927" visible="true" weight="0.16445182" />
       <window_info anchor="bottom" id="Python Console" order="13" sideWeight="0.49848714" weight="0.3289689" />
       <window_info anchor="bottom" id="GraphQL" order="14" />
       <window_info anchor="right" id="Commander" internal_type="SLIDING" order="0" type="SLIDING" weight="0.4" />
@@ -515,12 +519,6 @@
     </breakpoint-manager>
   </component>
   <component name="editorHistoryManager">
-    <entry file="file://$PROJECT_DIR$/media/logos/umeme.jpg">
-      <provider selected="true" editor-type-id="images" />
-    </entry>
-    <entry file="file://$PROJECT_DIR$/media/documents/projects/1.jpg">
-      <provider selected="true" editor-type-id="images" />
-    </entry>
     <entry file="file://$PROJECT_DIR$/media/documents/projects/uhi.png">
       <provider selected="true" editor-type-id="images" />
     </entry>
@@ -746,13 +744,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/templates/left-nav.html">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="111">
-          <caret line="8" column="116" selection-start-line="8" selection-start-column="112" selection-end-line="8" selection-end-column="116" />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/requirements.txt">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="187">
@@ -870,10 +861,23 @@
         </state>
       </provider>
     </entry>
+    <entry file="file://$PROJECT_DIR$/.gitignore">
+      <provider selected="true" editor-type-id="text-editor" />
+    </entry>
+    <entry file="file://$PROJECT_DIR$/manage.py">
+      <provider selected="true" editor-type-id="text-editor" />
+    </entry>
+    <entry file="file://$PROJECT_DIR$/templates/left-nav.html">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="356">
+          <caret line="234" lean-forward="true" selection-start-line="234" selection-end-line="234" />
+        </state>
+      </provider>
+    </entry>
     <entry file="file://$PROJECT_DIR$/chat/templates/chat/direct_message_pane.html">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="194">
-          <caret line="90" column="19" lean-forward="true" selection-start-line="90" selection-start-column="19" selection-end-line="90" selection-end-column="19" />
+        <state relative-caret-position="398">
+          <caret line="33" column="103" selection-start-line="33" selection-start-column="103" selection-end-line="33" selection-end-column="103" />
           <folding>
             <element signature="n#style#0;n#i#0;n#span#0;n#div#1;n#div#1;n#div#0;n#div#1;n#!!top" expanded="true" />
             <element signature="n#style#0;n#div#0;n#div#1;n#div#1;n#div#0;n#div#1;n#!!top" expanded="true" />
