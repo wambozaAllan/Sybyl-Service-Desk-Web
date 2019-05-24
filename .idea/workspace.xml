@@ -2,30 +2,8 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="5b39e269-faf1-4041-a9e1-91ce60eb0e26" name="Default Changelist" comment="Merge branch 'master' of https://github.com/wambozaAllan/Sybyl-Service-Desk-Web into usergroups&#10;&#10;# Conflicts:&#10;#&#9;.idea/workspace.xml">
-      <change afterPath="$PROJECT_DIR$/chat/templates/chat/direct_message_chat_room.html" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/chat/templates/chat/direct_message_pane.html" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/chat/templates/chat/user_search_results.html" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/chat/urls.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/media/avatar.png" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/project_management/consumers.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/project_management/templates/project_management/project_forum_replies.html" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/project_management/templates/project_management/project_team_forum.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.gitignore" beforeDir="false" afterPath="$PROJECT_DIR$/.gitignore" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/company_management/urls.py" beforeDir="false" afterPath="$PROJECT_DIR$/company_management/urls.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/project_management/models.py" beforeDir="false" afterPath="$PROJECT_DIR$/project_management/models.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/project_management/templates/project_management/details_project.html" beforeDir="false" afterPath="$PROJECT_DIR$/project_management/templates/project_management/details_project.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/project_management/urls.py" beforeDir="false" afterPath="$PROJECT_DIR$/project_management/urls.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/project_management/views.py" beforeDir="false" afterPath="$PROJECT_DIR$/project_management/views.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/sybyl_project_issue_tracker_web/settings.py" beforeDir="false" afterPath="$PROJECT_DIR$/sybyl_project_issue_tracker_web/settings.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/sybyl_project_issue_tracker_web/urls.py" beforeDir="false" afterPath="$PROJECT_DIR$/sybyl_project_issue_tracker_web/urls.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/templates/base.html" beforeDir="false" afterPath="$PROJECT_DIR$/templates/base.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/requirements.txt" beforeDir="false" afterPath="$PROJECT_DIR$/requirements.txt" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/templates/header.html" beforeDir="false" afterPath="$PROJECT_DIR$/templates/header.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/templates/left-nav.html" beforeDir="false" afterPath="$PROJECT_DIR$/templates/left-nav.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/user_management/models.py" beforeDir="false" afterPath="$PROJECT_DIR$/user_management/models.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/user_management/templates/user_management/assign_permissions.html" beforeDir="false" afterPath="$PROJECT_DIR$/user_management/templates/user_management/assign_permissions.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/user_management/urls.py" beforeDir="false" afterPath="$PROJECT_DIR$/user_management/urls.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/user_management/views.py" beforeDir="false" afterPath="$PROJECT_DIR$/user_management/views.py" afterDir="false" />
     </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="SHOW_DIALOG" value="false" />
@@ -89,7 +67,7 @@
           </provider>
         </entry>
       </file>
-      <file pinned="false" current-in-tab="true">
+      <file pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/project_management/consumers.py">
           <provider selected="true" editor-type-id="text-editor">
             <state relative-caret-position="170">
@@ -97,6 +75,24 @@
               <folding>
                 <element signature="e#0#61#0" expanded="true" />
               </folding>
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/requirements.txt">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="187">
+              <caret line="11" selection-start-line="11" selection-end-line="11" />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file pinned="false" current-in-tab="true">
+        <entry file="file://$PROJECT_DIR$/templates/header.html">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="162">
+              <caret line="226" column="55" lean-forward="true" selection-start-line="226" selection-start-column="55" selection-end-line="226" selection-end-column="55" />
             </state>
           </provider>
         </entry>
@@ -114,7 +110,6 @@
   </component>
   <component name="FindInProjectRecents">
     <findStrings>
-      <find>t-message-submit3</find>
       <find>chat-log</find>
       <find>save</find>
       <find>ProjectTeamMember</find>
@@ -144,6 +139,7 @@
       <find>sender</find>
       <find>functionManageReplies</find>
       <find>functionDeleteReply</find>
+      <find>sess</find>
     </findStrings>
   </component>
   <component name="Git.Settings">
@@ -152,7 +148,6 @@
   <component name="IdeDocumentHistory">
     <option name="CHANGED_PATHS">
       <list>
-        <option value="$PROJECT_DIR$/user_management/templates/user_management/update_global_user_group.html" />
         <option value="$PROJECT_DIR$/user_management/templates/user_management/global_user_groups.html" />
         <option value="$PROJECT_DIR$/user_management/templates/user_management/list_global_groups.html" />
         <option value="$PROJECT_DIR$/user_management/templates/user_management/list_global_group_users.html" />
@@ -188,7 +183,6 @@
         <option value="$PROJECT_DIR$/company_management/views.py" />
         <option value="$PROJECT_DIR$/templates/left-nav.html" />
         <option value="$PROJECT_DIR$/user_management/templates/user_management/assign_permissions.html" />
-        <option value="$PROJECT_DIR$/templates/header.html" />
         <option value="$PROJECT_DIR$/static/template-static-files/css/style.css" />
         <option value="$PROJECT_DIR$/project_management/models.py" />
         <option value="$PROJECT_DIR$/project_management/ReplyConsumer.py" />
@@ -203,6 +197,8 @@
         <option value="$PROJECT_DIR$/project_management/templates/project_management/project_team_forum.html" />
         <option value="$PROJECT_DIR$/project_management/consumers.py" />
         <option value="$PROJECT_DIR$/project_management/templates/project_management/project_forum_replies.html" />
+        <option value="$PROJECT_DIR$/requirements.txt" />
+        <option value="$PROJECT_DIR$/templates/header.html" />
       </list>
     </option>
   </component>
@@ -219,6 +215,7 @@
       <foldersAlwaysOnTop value="true" />
     </navigator>
     <panes>
+      <pane id="Scope" />
       <pane id="ProjectPane">
         <subPane>
           <expand>
@@ -229,20 +226,19 @@
             <path>
               <item name="Sybyl-Service-Desk-Web" type="b2602c69:ProjectViewProjectNode" />
               <item name="Sybyl-Service-Desk-Web" type="462c0819:PsiDirectoryNode" />
-              <item name="project_management" type="462c0819:PsiDirectoryNode" />
+              <item name="templates" type="462c0819:PsiDirectoryNode" />
             </path>
           </expand>
           <select />
         </subPane>
       </pane>
-      <pane id="Scope" />
     </panes>
   </component>
   <component name="PropertiesComponent">
     <property name="DefaultHtmlFileTemplate" value="HTML File" />
     <property name="SHARE_PROJECT_CONFIGURATION_FILES" value="true" />
     <property name="WebServerToolWindowFactoryState" value="false" />
-    <property name="last_opened_file_path" value="$PROJECT_DIR$/../Backup/15/Sybyl-Service-Desk-Web" />
+    <property name="last_opened_file_path" value="$PROJECT_DIR$" />
     <property name="nodejs_interpreter_path.stuck_in_default_project" value="undefined stuck path" />
     <property name="nodejs_npm_path_reset_for_default_project" value="true" />
     <property name="settings.editor.selected.configurable" value="preferences.fileTypes" />
@@ -384,8 +380,9 @@
   </component>
   <component name="ToolWindowManager">
     <frame x="-4" y="0" width="1377" height="735" extended-state="0" />
+    <editor active="true" />
     <layout>
-      <window_info content_ui="combo" id="Project" order="0" sideWeight="0.4945355" visible="true" weight="0.21060494" />
+      <window_info active="true" content_ui="combo" id="Project" order="0" sideWeight="0.4945355" visible="true" weight="0.21060494" />
       <window_info id="Structure" order="1" sideWeight="0.5054645" side_tool="true" weight="0.2193646" />
       <window_info anchor="bottom" id="Message" order="0" />
       <window_info anchor="bottom" id="Find" order="1" weight="0.3289689" />
@@ -399,7 +396,7 @@
       <window_info anchor="bottom" id="Database Changes" order="9" show_stripe_button="false" />
       <window_info anchor="bottom" id="Event Log" order="10" sideWeight="0.10491072" side_tool="true" weight="0.15711948" />
       <window_info anchor="bottom" id="Favorites" order="11" sideWeight="0.5035461" weight="0.4435216" />
-      <window_info active="true" anchor="bottom" id="Terminal" order="12" sideWeight="0.89508927" visible="true" weight="0.44684386" />
+      <window_info anchor="bottom" id="Terminal" order="12" sideWeight="0.89508927" visible="true" weight="0.3139535" />
       <window_info anchor="bottom" id="Python Console" order="13" sideWeight="0.49848714" weight="0.3289689" />
       <window_info anchor="bottom" id="GraphQL" order="14" />
       <window_info anchor="right" id="Commander" internal_type="SLIDING" order="0" type="SLIDING" weight="0.4" />
@@ -491,9 +488,6 @@
     </breakpoint-manager>
   </component>
   <component name="editorHistoryManager">
-    <entry file="file://$PROJECT_DIR$/media/logos/26195832_266068157266698_3499763516276618613_n_arF0aL7.jpg">
-      <provider selected="true" editor-type-id="images" />
-    </entry>
     <entry file="file://$PROJECT_DIR$/media/logos/prisons.png">
       <provider selected="true" editor-type-id="images" />
     </entry>
@@ -578,13 +572,6 @@
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/chat/templates/chat/room.html" />
-    <entry file="file://$PROJECT_DIR$/templates/left-nav.html">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="251">
-          <caret line="232" column="47" selection-start-line="232" selection-start-column="47" selection-end-line="232" selection-end-column="47" />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/chat/models.py">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="243">
@@ -641,13 +628,6 @@
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="292">
           <caret line="86" lean-forward="true" selection-start-line="86" selection-end-line="86" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/templates/header.html">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="2482">
-          <caret line="146" column="49" selection-start-line="146" selection-start-column="49" selection-end-line="146" selection-end-column="64" />
         </state>
       </provider>
     </entry>
@@ -846,6 +826,27 @@
           <folding>
             <element signature="e#0#61#0" expanded="true" />
           </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/templates/left-nav.html">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="111">
+          <caret line="8" column="116" selection-start-line="8" selection-start-column="112" selection-end-line="8" selection-end-column="116" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/requirements.txt">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="187">
+          <caret line="11" selection-start-line="11" selection-end-line="11" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/templates/header.html">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="162">
+          <caret line="226" column="55" lean-forward="true" selection-start-line="226" selection-start-column="55" selection-end-line="226" selection-end-column="55" />
         </state>
       </provider>
     </entry>
