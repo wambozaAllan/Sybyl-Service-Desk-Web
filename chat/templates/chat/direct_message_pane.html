@@ -29,6 +29,31 @@
 
                 </div>
             </div>
+
+            <div class="card">
+                <span class="text-muted font-weight-bold"><i style="color: lightblue;" class="ti-comments"></i> Recent Conversions </span>
+                <div style="max-height:303px; overflow-y: scroll;" class="table-responsive">
+                    <table  class="table table-hover ">
+                        <tbody>
+                            {% if chat_users %}
+
+                                {% for cli in chat_users %}
+                                    <tr onclick="sendChatMessage2({{cli.id}}, '{{ cli.first_name }} {{cli.last_name}}', '{{ cli.username }}')">
+                                        <th>
+                                            <a href="#"> <img width=35 height="35" src="../../media/avatar.png"/>
+                                            &nbsp;<strong>{{ cli.first_name }} {{cli.last_name}}</strong> <font style="font-size: 80%;" color="#1e90ff"> < {{ cli.email }} ></font> </span>
+                                            </a>
+                                        </th>
+                                    </tr>
+                                {% endfor %}
+                            {% else %}
+                                <h3 class="text-center">No recent Conversations.</h3>
+                            {% endif %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
         </div>
         <div class="col-1"></div>
     </div>
@@ -57,4 +82,22 @@
                 $('#myDropdown').html('');
             }
         }
+
+        function sendChatMessage2(uid, name, username) {
+        urldata = "{% url 'sendUserChatMessage'%}";
+        $.ajax({
+            type: "GET",
+            cache: false,
+            data: {
+                uid: uid,
+                fname: name,
+                username: username
+            },
+            url: urldata,
+            success: function (resp) {
+                $('.page-wrapper').html(resp);
+            }
+        });
+
+    }
 </script>
