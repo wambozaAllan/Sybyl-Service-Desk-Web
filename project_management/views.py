@@ -718,8 +718,10 @@ def validateProjectTeamName(request):
 
 
 def validateProjectAssigned(request):
+    """check to see if project already assigned team"""
+
     project = request.GET.get('project', None)
-    print(project)
+    team = ProjectTeam.objects.filter(project=project).exists()
     data = {
         'is_assigned': ProjectTeam.objects.filter(project=project).exists()
     }
@@ -772,27 +774,28 @@ def detail_team_member(request):
 
 
 def validateProjectTeamAssigned(request):
-    member_name = request.GET.get('member')
-    project_team = request.GET.get('projectTeam')
-    print(member_name)
-    print(project_team)
+    project_team_id = request.GET.get('project_team')
+    print("the project id is {}".format(project_team_id))
 
+    projectteam = ProjectTeam.objects.get(id=project_team_id)
+    pro = ProjectTeamMember.objects.exclude(project_team=projectteam)
+    members = ProjectTeamMember.objects.filter(project_team=projectteam)
 
-    projectteam = ProjectTeam.objects.get(id=project_team)
-    membername = ProjectTeamMember.objects.filter(id=member_name).exists()
-    print("member name exists as '{}'".format(membername))
+    print("xxxxxxxx-in-team")
+    print(members)
+    print("yyyyyyyyyyyyyyyyyyyyyy-not in team")
+    print(pro)
 
-    if membername == 'True':
-        print("member name is '{}'".format(membername))
+    distinct_permissions = set(pro).difference(set(members))
+    print("distinct is {}".format(distinct_permissions) )
+    
 
+    data = {
+        'new_member': serializers.serialize("json", distinct_permissions)
+    }
 
-        data = {
-
-            'is_assigned': ProjectTeamMember.objects.filter(project_team=project_team).exists()
-        }
-        print(data)
-
-        return JsonResponse(data)
+    print("data is ")
+    print(data)
 
 
 def remove_project_team_member(request):
@@ -801,7 +804,7 @@ def remove_project_team_member(request):
     member_id = request.GET.get('memberid')
 
     teamid = ProjectTeam.objects.get(id=int(team_id))
-    memberid = ProjectTeamMember.objects.get(member=int(member_id))
+    memberid = ProjectTeamMember.objects.get(id=int(member_id))
     memberid.project_team.remove(teamid)
 
 
@@ -812,6 +815,5 @@ def remove_project_team_member(request):
         'team_name': team_name,
         'team_id': team_id,
     }
-
-
+    
     return HttpResponse(template.render(context, request))
