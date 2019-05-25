@@ -30,6 +30,8 @@
 </div>
 
 <script>
+    $('#id_member').html("");
+    $('#id_project_team').prop("selectedIndex", -1);
     $("#id_project_team").removeAttr("multiple", "");
     $('#id_project_team').attr( 'readOnly' , 'true' );
     $('#id_project_team').attr('data-live-search', "true");
@@ -50,30 +52,25 @@
         size: 3
     });
 
-    $('#id_member').on('input', function () {
-        var member = $(this).val();
+    $("#id_project_team").prop("selectedIndex", -1);
+    $("#id_project_team").prepend('<option value="-1"> -----Select Team----- </option>');
+    $("#id_project_team").selectpicker('refresh');
 
-        var projectTeam = document.getElementById('id_project_team').value;
+    // on selecting project team
+    $('#id_project_team').on('change', function () {
+    
+        var projectTeam = $(this).val();
         console.log(projectTeam)
 
         $.ajax({
             url: '{% url 'validateProjectTeamAssigned' %}',
 
             data: {
-                'projectTeam': projectTeam,
-                'member': member
+               project_team: projectTeam
             },
             dataType: 'json',
             success: function (data) {
-                if (data.is_assigned) {
-                    $("#validate_member_name").show();
-                    document.getElementById('id_member').style.borderColor = "red";
-                    document.getElementById("btnAddProjectMember").disabled = true;
-                } else {
-                    $("#validate_member_name").hide();
-                    document.getElementById('id_member').style.borderColor = "#e7e7e7";
-                    document.getElementById("btnAddProjectMember").disabled = false;
-                }
+
             }
         });
     });
