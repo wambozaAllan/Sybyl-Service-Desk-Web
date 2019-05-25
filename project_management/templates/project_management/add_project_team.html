@@ -74,7 +74,7 @@
 
     $('#id_project').on('change', function () {
         var project = $(this).val();
-
+        
         $.ajax({
             url: '{% url 'validateProjectAssigned' %}',
             data: {
@@ -82,7 +82,6 @@
             },
             dataType: 'json',
             success: function (data) {
-                console.log(project)
                 if (data.is_assigned) {
                     $("#validate_project_name").show();
                     document.getElementById('id_project').style.borderColor = "red";
