@@ -14,7 +14,6 @@ from django.core.mail import EmailMessage
 from static.fusioncharts import FusionCharts
 from django.template import loader
 from django.core import serializers
-from django.forms.models import model_to_dict
 
 from django.contrib.auth.decorators import user_passes_test, permission_required
 
@@ -775,27 +774,35 @@ def detail_team_member(request):
 
 def validateProjectTeamAssigned(request):
     project_team_id = request.GET.get('project_team')
-    print("the project id is {}".format(project_team_id))
-
     projectteam = ProjectTeam.objects.get(id=project_team_id)
-    pro = ProjectTeamMember.objects.exclude(project_team=projectteam)
-    members = ProjectTeamMember.objects.filter(project_team=projectteam)
-
-    print("xxxxxxxx-in-team")
-    print(members)
-    print("yyyyyyyyyyyyyyyyyyyyyy-not in team")
-    print(pro)
-
-    distinct_permissions = set(pro).difference(set(members))
-    print("distinct is {}".format(distinct_permissions) )
     
+    members = ProjectTeamMember.objects.filter(project_team=projectteam)
+    member_list = list(members)
 
-    data = {
-        'new_member': serializers.serialize("json", distinct_permissions)
-    }
+    old = []
+    new_users = set()
 
-    print("data is ")
-    print(data)
+    if len(member_list) != 0:
+        for member in member_list:
+            old_user = User.objects.get(id=member.member_id)
+            old.append(old_user)
+            
+        all_users = User.objects.filter()
+
+        new_users = set(all_users).difference(set(old))
+        data = {
+            'users': serializers.serialize("json", new_users)
+        }
+        
+        return JsonResponse(data)
+    
+    else:
+        new_users = User.objects.all().filter()
+        data = {
+            'users': serializers.serialize("json", new_users)
+        }
+
+        return JsonResponse(data)
 
 
 def remove_project_team_member(request):
