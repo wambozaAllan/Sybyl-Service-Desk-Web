@@ -773,6 +773,7 @@ def detail_team_member(request):
 
 
 def validateProjectTeamAssigned(request):
+    """ Assign members not already in team """
     project_team_id = request.GET.get('project_team')
     projectteam = ProjectTeam.objects.get(id=project_team_id)
     
