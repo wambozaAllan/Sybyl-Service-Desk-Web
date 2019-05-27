@@ -60,7 +60,6 @@
     $('#id_project_team').on('change', function () {
     
         var projectTeam = $(this).val();
-        console.log(projectTeam)
 
         $.ajax({
             url: '{% url 'validateProjectTeamAssigned' %}',
@@ -71,6 +70,18 @@
             dataType: 'json',
             success: function (data) {
 
+                var newData = JSON.parse(data.users);
+                console.log(newData);
+                let actual = '';
+                $("#id_member").html("");
+                $("#id_member").prepend('<option value="-1"> -----Select Member----- </option>');
+                for(i=0; i<newData.length; i++){
+                    actual = newData[i];
+                    
+                    $('#id_member').append('<option value="' + actual["pk"] + '">' + actual["fields"]["first_name"] + " " + actual["fields"]["last_name"] + '</option>');
+                    $("#id_member").selectpicker('refresh');
+                }
+                    
             }
         });
     });
