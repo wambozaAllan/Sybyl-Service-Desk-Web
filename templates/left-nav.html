@@ -219,6 +219,17 @@
                             <li><a href="{% url 'listAllRoles' %}"><i class="fa fa-list"></i> Member Roles</a></li>
                         </ul>
                     </li>
+                    <li class="">
+                        <a class="has-arrow" href="#" aria-expanded="false"><i class="fa fa-envelope-square"></i>
+                            <span class="hide-menu">CHAT</span></a>
+                        <ul aria-expanded="false" class="collapse">
+                            <li onclick="loadURL('{% url 'directMessages' %}', '', 'page-wrapper', 'GET');">
+                                <a href="#" aria-expanded="false"><i class="fa fa-envelope"></i>
+                                    <span class="hide-menu">Direct SMS </span>
+                                </a>
+                            </li>
+                        </ul>
+                    </li>
                 {% endif %}
 
             </ul>

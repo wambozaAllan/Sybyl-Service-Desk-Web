@@ -4,9 +4,9 @@ from django.utils import timezone
 from datetime import datetime
 from django.contrib.sessions.models import Session
 
-
 from company_management.models import Company, Branch, Department
 from django.http import HttpRequest
+
 
 class UserCategory(models.Model):
     CATEGORY_CHOICES = (('Self', 'Self'), ('Client', 'Client'), ('Vendor', 'Vendor'), ('Partner', 'Partner'))
@@ -92,4 +92,3 @@ class GroupExtend(models.Model):
 
     def get_permissions_count(self):
         return Permission.objects.filter(group=self.group).count()
-

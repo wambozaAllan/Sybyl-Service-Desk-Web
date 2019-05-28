@@ -81,4 +81,11 @@ urlpatterns = [
     path('getTeamMembers/', views.get_team_members, name='getTeamMembers'),
     path('setColorCode/', views.set_priority_color_code, name='setColorCode'),
 
+    path('projectForum/', views.project_forum, name='tabProjectForum'),
+    path('createForum/', views.create_project_forum, name='createProjectForum'),
+    path('forumReplies/', views.manage_forum_replies, name='manageForumReplies'),
+    path('deleteChatMessage/', views.delete_forum_message, name='deleteChatMessage'),
+    path('deleteReply/', views.delete_forum_reply, name='deleteChatReply'),
+
+
 ]

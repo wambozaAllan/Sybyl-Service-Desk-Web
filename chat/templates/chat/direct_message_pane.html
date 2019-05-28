@@ -1,0 +1,101 @@
+<div class="row page-titles">
+    <div class="col-md-5 align-self-center">
+        <h3 class="text-primary">Chat</h3>
+    </div>
+    <div class="col-md-7 align-self-center">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a href="javascript:void(0)">Home</a></li>
+            <li class="breadcrumb-item active">Chat</li>
+        </ol>
+    </div>
+</div>
+<!-- End Bread crumb -->
+<!-- Container fluid  -->
+<div class="container-fluid">
+    <!-- Start Page Content -->
+
+    <div class="col-12">
+        <div class="col-1"></div>
+        <div class="col-10">
+            <h2 class="font-weight-bold">Direct Messages</h2><hr>
+
+            <div class="tile-body">
+                <div id="search-form_3" class="input-group input-group-rounded">
+                    <input id="userSearch" type="text" placeholder="Search User to start a conversation" name="Search" class="form-control dropbtn" oninput="searchChatClient()" onfocus="displaySearchResults()"/>
+                    <span class="input-group-btn"><button class="btn btn-primary btn-group-right" type="submit"><i class="ti-search"></i></button></span>
+                </div>
+
+                <div id="myDropdown" class="search-content scrollbar-modal2">
+
+                </div>
+            </div>
+
+            <div class="card">
+                <span class="text-muted font-weight-bold"><i style="color: #4c7fb1;" class="ti-comments"></i> Recent Conversions </span>
+                <div style="max-height:303px; overflow-y: scroll;" class="table-responsive">
+                    <table  class="table table-hover ">
+                        <tbody>
+                            {% if chat_users %}
+
+                                {% for cli in chat_users %}
+                                    <tr onclick="sendChatMessage2({{cli.id}}, '{{ cli.first_name }} {{cli.last_name}}', '{{ cli.username }}')">
+                                        <th>
+                                            <a href="#"> <img width=35 height="35" src="../../media/avatar.png"/>
+                                            &nbsp;<strong>{{ cli.first_name }} {{cli.last_name}}</strong> <font style="font-size: 80%;" color="#1e90ff"> < {{ cli.email }} ></font> </span>
+                                            </a>
+                                        </th>
+                                    </tr>
+                                {% endfor %}
+                            {% else %}
+                                <h3 class="text-center">No recent Conversations.</h3>
+                            {% endif %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+        </div>
+        <div class="col-1"></div>
+    </div>
+</div>
+
+<script>
+    function searchChatClient() {
+            urldata = "{% url 'searchChatClient'%}";
+            var staff = trim($('#userSearch').val());
+            var size = staff.length;
+            if (size > 0) {
+                $.ajax({
+                    type: "GET",
+                    cache: false,
+                    url: urldata,
+                    data: {
+                        searchValue: staff,
+                    },
+                    success: function (response) {
+                        $('#myDropdown').html(response);
+                    }
+                });
+            } else {
+                $('#myDropdown').html('');
+            }
+        }
+
+        function sendChatMessage2(uid, name, username) {
+        urldata = "{% url 'sendUserChatMessage'%}";
+        $.ajax({
+            type: "GET",
+            cache: false,
+            data: {
+                uid: uid,
+                fname: name,
+                username: username
+            },
+            url: urldata,
+            success: function (resp) {
+                $('.page-wrapper').html(resp);
+            }
+        });
+
+    }
+</script>

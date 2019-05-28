@@ -1,0 +1,41 @@
+<div class="recent-comment">
+    {% if users %}
+        <ul class="items scrollbar" id="itemSearchScroll">
+            {% for u in users %}
+                <div onclick="sendChatMessage({{ u.id }}, '{{ u.first_name }} {{ u.last_name }}', '{{ u.username }}')"
+                     class="media on-hover ">
+                    <div class="media-body">
+                        <strong>{{ u.first_name }} {{ u.last_name }}</strong>
+                        <span class="text-muted" style="font-size: 77%"><font color="#1e90ff">{{ u.email }}</font></span>
+                    </div>
+                </div>
+            {% endfor %}
+        </ul>
+    {% else %}
+        <p class="center">
+            <br>
+            User <strong><font color="#87ceeb">{{ search_value }}</font></strong> Not Found.
+        </p>
+    {% endif %}
+</div>
+
+<script>
+    function sendChatMessage(uid, name, username) {
+        urldata = "{% url 'sendUserChatMessage'%}";
+        $.ajax({
+            type: "GET",
+            cache: false,
+            data: {
+                uid: uid,
+                fname: name,
+                username: username
+            },
+            url: urldata,
+            success: function (resp) {
+                $('.page-wrapper').html(resp);
+            }
+        });
+
+    }
+
+</script>

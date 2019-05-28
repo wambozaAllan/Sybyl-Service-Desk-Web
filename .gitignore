@@ -12,6 +12,8 @@ company_management/migrations/
 user_management/migrations/__pycache__/
 user_management/migrations/
 project_management/migrations/
-
 ven4/
 ven5/
+.idea/
+.directory
+.gitignore

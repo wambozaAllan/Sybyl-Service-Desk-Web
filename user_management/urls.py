@@ -1,6 +1,5 @@
 from django.urls import path
 from . import views
-
 urlpatterns = [
 
     path('addUserToTeam/', views.AddUserToTeam.as_view(), name='addUserToTeam'),
