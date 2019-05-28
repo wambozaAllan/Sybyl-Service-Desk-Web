@@ -31,7 +31,7 @@
                                 <div class="card-body">
                                     <h4 class="card-title">Project Teams</h4>
                                     <div class="row">
-                                        <div class="col-md-12">
+                                        <div class="col-12">
                                             <button id="" class="btn btn-info pull-right" onclick="functAddProjectTeam();">
                                                 <i class="fa fa-fw fa-lg fa-plus"></i>Add Project Team
                                             </button>
@@ -46,6 +46,7 @@
                                                 <th>#</th>
                                                 <th>Project Team</th>
                                                 <th class="text-center">Projects</th>
+                                                <th class="text-center">Members</th>
                                                 <th class="text-center">Action</th>
                                             </tr>
                                             </thead>
@@ -57,11 +58,19 @@
                                                     <td>{{ team.name }}</td>
                                                     <td class="text-center">{{team.project}}</td>
                                                     <td class="text-center">
-                                                        <button onclick="editProjectTeam({{ team.id }}, '{{ team.name }}')"
+                                                        <span class="badge badge-pill badge-success">{{ team.num_members }}</span>
+                                                    </td>
+                                                    <td class="text-center">
+                                                            <button class="btn btn-outline-success btn-sm" onclick="viewTeamMembers('{{ team.id }}', '{{ team.name }}')">
+                                                                    <i title="View Team" class="fa fa-navicon"></i>
+                                                                 </button>
+         
+                                                        <!-- <a class="btn btn-outline-success btn-sm" href="{% url 'listProjectTeamMembers' %}"><i title="View Teams" class="fa fa-navicon"></i></a> -->
+                                                        <button onclick="editProjectTeam('{{ team.id }}', '{{ team.name }}')"
                                                                 class="btn btn-outline-success btn-sm" type="button">
                                                             <i title="Edit Team" class="fa fa-edit"></i>
                                                         </button>&nbsp;
-                                                        <button onclick="deleteProjectTeam({{ team.id }}, '{{ team.name }}', '{{ team.num_members }}')"
+                                                        <button onclick="deleteProjectTeam('{{ team.id }}', '{{ team.name }}', '{{ team.num_members }}')"
                                                                 class="btn btn-outline-danger btn-sm" type="button">
                                                             <i title="Delete Team" class="fa fa-remove"></i>
                                                         </button>

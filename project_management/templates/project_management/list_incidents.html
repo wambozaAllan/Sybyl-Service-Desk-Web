@@ -33,19 +33,24 @@
 								</div>
 
 								<div class="col-2">
-									<a href="{% url 'addIncident' %}" class="btn btn-outline-success fa fa-plus">Add Incident</a>
+									<button id="" class="btn btn-info pull-right" onclick="functAddIncident();">
+										<i class="fa fa-fw fa-lg fa-plus"></i>Add Incident
+									</button>
 								</div>
 							</div>
 							<br />
 							<!-- <h6 class="card-subtitle">Export data to Copy, CSV, Excel, PDF & Print</h6> -->
 							<div class="table-responsive">
-								<table class="display nowrap table table-hover" cellspacing="0"
+								<table id="table_priorities" class="display nowrap table table-hover" cellspacing="0"
 									width="100%">
 									<thead>
 										<tr>
 											<th>Title</th>
 											<th>Status</th>
 											<th>Priority</th>
+											<th>Color code</th>
+											<th>Creator</th>
+											<th>Assignee</th>
 											<th>Action</th>
 										</tr>
 									</thead>
@@ -54,7 +59,18 @@
 										<tr>
 											<td>{{ incident.title }}</td>
 											<td>{{ incident.status }}</td>
-											<td>{{ incident.priority }}</td>
+											<td>{{ incident.priority}}</td>
+											<td><input type="text" style="background-color: {{ incident.priority.color }}; border: 0;"></input></td>
+											<td>{{ incident.creator }}</td>
+											
+											<td>
+												<select class="form-control" id="list_select">
+													{% for assigned in incident.assignee.all%}
+														<option value="{{assigned.id}}">{{ assigned }}</option>
+													{% endfor %}
+												</select> 
+											</td>
+											
 											<td><a
 												href="{% url 'detailsIncident' incident.id %}">View</a>
 												&nbsp; <a
@@ -77,4 +93,29 @@
 			</div>
 			<!-- End Page wrapper  -->
 		</div>
+
+		<!-- The Modal -->
+		<div class="">
+				<div id="incidentFormModalDialog" class="modalDialog">
+					<div>
+						<div id="head">
+							<a href="#close" title="Close" class="close2">X</a>
+							<h5 class="modalDialog-title">Add Incident</h5>
+						</div>
+						<hr>
+		
+						<div class="modal-body">
+		
+							<div class="scrollbar-modal1">
+								<div id="dialog_create_incident">
+		
+								</div>
+							</div>
+						</div>
+		
+					</div>
+				</div>
+			</div>
+			<!-- END The Modal -->
+			
 		{% endblock %}

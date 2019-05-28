@@ -2,64 +2,189 @@
 <form class="form-horizontal"  action="{% url 'addProject' %}" method="post" enctype="multipart/form-data">
     {% csrf_token %}
     <div class="row col-12">
+        {{project_form.media}}
         <div class="col-6">
-            {{ form.name|as_crispy_field }}
+            {{ project_form.name|as_crispy_field }}
             <medium id="validate_project_name" class="text-muted hidden">
                 <font color="red">
                     Project Name Already Exists!
                 </font>
             </medium>
-            {{ form.project_status|as_crispy_field }}
-            {{ form.project_code|as_crispy_field }}
-            {{ form.estimated_cost|as_crispy_field }}
-            {{ form.final_cost|as_crispy_field }}
-            {{ form.description|as_crispy_field }}
-        </div>
-        <div class="col-6">
 
-            {{ form.logo|as_crispy_field }}
-            {{ form.thumbnail|as_crispy_field }}
-            {{ form.start_date|as_crispy_field }}
-            {{ form.end_date|as_crispy_field }}
-            {{ form.actual_start_date|as_crispy_field }}
-            {{ form.actual_end_date|as_crispy_field }}
+            {{ project_form.company|as_crispy_field}}
+            {{ project_form.estimated_cost|as_crispy_field }}
+            <medium id="cost_check" class="text-muted hidden">
+                <font color="red">
+                    Minimum Cost is 500,000
+                </font>
+            </medium>
+
+            {{ project_form.project_status|as_crispy_field }}
+            {{ project_form.estimated_start_date|as_crispy_field }}
+            <medium id="start_date" class="text-muted hidden">
+                <font color="red">
+                    Start date has to be less or equal to end date
+                </font>
+            </medium>
+
+            {{ project_form.estimated_end_date|as_crispy_field }}
+            <medium id="end_date" class="text-muted hidden">
+                <font color="red">
+                    End date has to be greater or equal to start date
+                </font>
+            </medium>
+            {{ project_form.project_code|as_crispy_field }}
+            <medium id="project_code" class="text-muted hidden">
+                <font color="red">
+                    Please first fill in all fields above
+                </font>
+            </medium>
+            {{ project_form.description|as_crispy_field }}
+            
+        </div>
+        <div class="col-6 card-body">
+            {{ project_form.logo|as_crispy_field }}
+            {{ project_form.thumbnail|as_crispy_field }}
+
+            <h3>UPLOAD PROJECT DOCUMENTS</h3>
+            {{ document_form.title|as_crispy_field }}
+            {{ document_form.description|as_crispy_field }}
+            {{ document_form.document|as_crispy_field}}
+            {{ document_form.created_by | as_crispy_field}}
             <br>
 
-
-            <div class="">
-                <div class="col-md-12  ">
-                    <button id="btnAddProject" class="btn btn-success pull-right">
-                        <i class="fa fa-fw fa-lg fa-save"></i>Submit
-                    </button>
-                </div>
-            </div>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-md-12  ">
+            <button id="btnAddProject" class="btn btn-success pull-right">
+                <i class="fa fa-fw fa-lg fa-save"></i>Submit
+            </button>
         </div>
     </div>
 </form>
 <script>
 
-    $('#id_start_date').datepicker({
+    // company attribute
+    $('#id_company').attr('multiple', "multiple");
+    $('#id_company').attr('data-live-search', "true");
+    $('#id_company').selectpicker({
+        size: 2,
+    });
+
+    
+    // status attribute 
+    $('#id_project_status').removeAttr('multiple', "");
+    $('#id_project_status').attr('data-live-search', "true"); 
+    $('#id_project_status').selectpicker({
+        size: 3,
+    });
+
+
+    $('#id_created_by').removeAttr('multiple', "");
+    $('#id_created_by').attr('data-live-search', "true"); 
+    $('#id_created_by').selectpicker({
+        size: 3,
+    });
+    
+
+    $('#id_title').attr('placeholder', 'Document Title');
+    $('#id_title').attr('autocomplete', 'off');
+
+    // date input fields
+    $('#id_estimated_start_date').datepicker({
         format: "mm/dd/yyyy",
         autoclose: true
     });
 
-    $('#id_end_date').datepicker({
+    $('#id_estimated_end_date').datepicker({
         format: "mm/dd/yyyy",
         autoclose: true
     });
 
-    $('#id_actual_start_date').datepicker({
-        format: "mm/dd/yyyy",
-        autoclose: true
+    $("#id_estimated_cost").keypress(function(event) {
+        if(event.which != 0){
+            return /\d/.test(String.fromCharCode(event.keyCode));
+        }
     });
 
-    $('#id_actual_end_date').datepicker({
-        format: "mm/dd/yyyy",
-        autoclose: true
+    $("#id_estimated_start_date").attr("placeholder", "mm/dd/yyyy");
+    $("#id_estimated_end_date").attr("placeholder", "mm/dd/yyyy");
+
+    // stop manual input 
+    $('#id_estimated_end_date').on('focus', function(){
+        var date = $(this).blur();
     });
+
+    $('#id_estimated_end_date').on('change', function(){
+        var startDate= document.getElementById('id_estimated_start_date').value;
+        var endDate= document.getElementById('id_estimated_end_date').value;
+
+        var sDate = new Date(startDate);
+        var eDate = new Date(endDate);
+
+        if(startDate != '' && endDate != '' && sDate > eDate){
+            document.getElementById("btnAddProject").disabled = true;
+            document.getElementById('id_estimated_end_date').style.borderColor = "red";
+            $('#end_date').show();
+        }
+        else if(startDate != '' && endDate != '' && sDate < eDate){
+            document.getElementById("btnAddProject").disabled = false;
+            document.getElementById('id_estimated_end_date').style.borderColor = "";
+            $('#end_date').hide();
+        }
+    })
+
+    $('#id_estimated_start_date').on('focus', function(){
+        var date = $(this).blur();
+    });
+
+    $('#id_estimated_start_date').on('change', function(){
+        var startDate= document.getElementById('id_estimated_start_date').value;
+        var endDate= document.getElementById('id_estimated_end_date').value;
+
+        var sDate = new Date(startDate);
+        var eDate = new Date(endDate);
+
+        if(startDate != '' && endDate != '' && sDate > eDate){
+            document.getElementById("btnAddProject").disabled = true;
+            document.getElementById('id_estimated_start_date').style.borderColor = "red";
+            $('#start_date').show();
+        }
+        else if(startDate != '' && endDate != '' && sDate < eDate){
+            document.getElementById("btnAddProject").disabled = false;
+            document.getElementById('id_estimated_start_date').style.borderColor = "";
+            $('#start_date').hide();
+        }
+    })
+
+    // setting default value for estimated cost
+
+    $('#id_estimated_cost').attr('placeholder', '500,000');
+
+    $('#id_estimated_cost').attr('value', '500000');
+
+    $("#id_estimated_cost").on('input', function(){
+        var cost = $(this).val();
+        if (cost < 500000){
+            $("#cost_check").show();
+            document.getElementById('id_estimated_cost').style.borderColor = "red";
+            document.getElementById('btnAddProject').disabled = true;
+        }
+        else if(cost >= 500000){
+            $("#cost_check").hide();
+            document.getElementById('id_estimated_cost').style.borderColor = "";
+            document.getElementById('btnAddProject').disabled = false;
+        }
+    })
+    
+
+    $("#id_name").attr('autocomplete', 'off');
+
+    $("#id_name").css("text-transform", "uppercase");
 
     $('#id_name').on('input', function () {
-        var project_name = $(this).val();
+        var project_name = $(this).val().toUpperCase();
 
         $.ajax({
             url: '{% url 'validateProjectName' %}',
@@ -72,7 +197,8 @@
                     $("#validate_project_name").show();
                     document.getElementById('id_name').style.borderColor = "red";
                     document.getElementById("btnAddProject").disabled = true;
-                } else {
+                } 
+                else {
                     $("#validate_project_name").hide();
                     document.getElementById('id_name').style.borderColor = "#e7e7e7";
                     document.getElementById("btnAddProject").disabled = false;
@@ -80,4 +206,67 @@
             }
         });
     });
+
+    
+
+    // generate project_code
+    var startDate= document.getElementById('id_estimated_start_date').value;
+    var sDate = new Date(startDate);
+
+    $('#id_project_code').attr( 'readOnly' , 'true' );
+
+    $("#id_project_code").attr('autocomplete', 'off');
+
+    $('#id_project_code').on('focus', function(){
+        var company = document.getElementById('id_company');
+        
+        var companies = Array.from(company.selectedOptions).map(option => option.value);
+
+        var jsonText = JSON.stringify(companies);
+        console.log(jsonText);
+
+        var name = document.getElementById("id_name").value;
+
+
+        $.ajax({
+            url: '{% url 'formatProjectCode' %}',
+            data: {
+                companies: jsonText
+            },
+           
+            dataType: 'json',
+            success: function(data){
+                
+                if (data['name'] != "" && startDate != "" && sDate != 'Invalid Date' && name != "" ){
+                    var clientName = data.name;
+                    var name = document.getElementById("id_name").value;
+                    var upper = name.toUpperCase();
+                    var clientArr = clientName.slice(0,3);
+                    if (upper != ''){
+                        var upperArr = upper.slice(0,2);
+                        var startDate= document.getElementById('id_estimated_start_date').value;
+                        var sDate = new Date(startDate);
+                        var final = upperArr + "/" + clientArr + "/" + sDate;
+
+                        document.getElementById('id_project_code').value=final;
+                        $("#project_code").hide();
+                        document.getElementById("btnAddProject").disabled = false;
+                        document.getElementById('id_project_code').style.borderColor = "";
+                    }
+                    else{
+                        document.getElementById('id_project_code').style.borderColor = "red";
+                        document.getElementById("btnAddProject").disabled = true;
+                        $("#project_code").show();
+                    }
+                }
+                else{
+                    $("#project_code").show();
+                    document.getElementById('id_project_code').style.borderColor = "red";
+                    document.getElementById("btnAddProject").disabled = true;
+                }
+                 
+            }
+        })
+    });
+
 </script>

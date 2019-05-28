@@ -14,17 +14,19 @@
     </div>
     {% block additional_javascript %}{% endblock %}
     {% include 'bottom.html' %}
+    
+    <script> 
 
-    <script>
-        $('#id_actual_start_date').datepicker({
-                format: "mm/dd/yyyy",
-                autoclose: true
+        // update project attributes
+        $(document).ready(function() {
+            jscolor.installByClassName("jscolor");
         });
 
-        $('#id_actual_end_date').datepicker({
-                format: "mm/dd/yyyy",
-                autoclose: true
-        });
+        $('#id_company').attr('multiple', "multiple");
+        $('#id_company').attr('data-live-search', "true");
+        $('#id_company').selectpicker({
+            size: 2,
+        }); 
 
         $('#listBranchContacts').DataTable({});
         $('#listEmails').DataTable({});
@@ -1351,7 +1353,7 @@
             });
         }
 
-        function manageTeamMembers(team_id, teamName) {
+        function viewTeamMembers(team_id, teamName) {
             urldata = "{% url 'detailProjectTeamMembers'%}";
 
             $.ajax({
@@ -1385,7 +1387,8 @@
                         type: 'blue',
                         theme: 'material',
                         typeAnimated: true,
-                        boxWidth: '40%',
+                        boxWidth: '50%',
+                        height: '40%',
                         useBootstrap: false,
                         closeIcon: true,
                         buttons: {
@@ -1546,4 +1549,24 @@
             }
         }
 
+<<<<<<< HEAD
+=======
+        // ADD INCIDENT
+        function functAddIncident() {
+            urldata = "{% url 'addIncident'%}";
+            $.ajax({
+                type: "GET",
+                cache: false,
+                data: {},
+                url: urldata,
+                success: function (resp) {
+                    $('#dialog_create_incident').html(resp);
+
+                    window.location = '#incidentFormModalDialog';
+                    initDialog('modalDialog');
+                }
+            });
+        }
+
+>>>>>>> master
     </script>

@@ -3,6 +3,7 @@
 {% block content %}
 <!-- Main wrapper  -->
 <div id="main-wrapper">
+<<<<<<< HEAD
     {% include 'header.html' %}
     {% include 'left-nav.html' %}
     <!-- Page wrapper  -->
@@ -85,6 +86,95 @@
                                             </div>
                                         </div>
                                     </div>
+=======
+	{% include 'header.html' %}
+	{% include 'left-nav.html' %}
+	<!-- Page wrapper  -->
+	<div class="page-wrapper">
+		<!-- Bread crumb -->
+		<div class="row page-titles">
+			<div class="col-md-5 align-self-center">
+				<h3 class="text-primary">Dashboard</h3>
+			</div>
+			<div class="col-md-7 align-self-center">
+				<ol class="breadcrumb">
+					<li class="breadcrumb-item"><a href="javascript:void(0)">Home</a></li>
+					<li class="breadcrumb-item active"><a href="{% url 'listProjects' %}">List of Projects</a></li>
+				</ol>
+			</div>
+		</div>
+		<!-- End Bread crumb -->
+		<!-- Container fluid  -->
+		<div class="container-fluid">
+			<!-- Start Page Content -->
+			<div class="row">
+				<div class="col-12">
+					<div class="card">
+						<div class="card-title">
+							<h4>Project Details</h4>
+						</div>
+						<div class="card-body">
+							<div class="basic-form">
+								<div class="row">
+									<div class="col-4">
+										<p class="text-muted m-b-15 f-s-12">Name</p>
+										<input type="text" class="form-control input-flat"
+											value="{{ project.name }}" disabled>
+									</div>
+									<div class="col-4">
+										<p class="text-muted m-b-15 f-s-12">Status</p>
+										<input type="text" class="form-control input-flat"
+											value="{{ project.project_status }}" disabled>
+									</div>
+									<div class="col-4">
+										<p class="text-muted m-b-15 f-s-12">Project Code</p>
+										<input type="text" class="form-control input-flat"
+											value="{{ project.project_code }}" disabled>
+									</div>
+								</div>
+								<br>
+								<div class="row">
+									<div class="col-4">
+										<p class="text-muted m-b-15 f-s-12">Estimated Cost</p>
+										<input type="text" class="form-control input-flat"
+											value="{{ project.estimated_cost }}" disabled>
+									</div>
+									<div class="col-4">
+										<p class="text-muted m-b-15 f-s-12">Start Date</p>
+										<input type="text" class="form-control input-flat"
+											value="{{ project.estimated_start_date }}" disabled>
+									</div>
+									<div class="col-4">
+										<p class="text-muted m-b-15 f-s-12">End Date</p>
+										<input type="text" class="form-control input-flat"
+											value="{{ project.estimated_end_date }}" disabled>
+									</div>
+								</div>
+								<br>
+
+								<div class="row">
+									<div class="col-4">
+										{% for p in project.company.all %}
+										<p class="text-muted m-b-15 f-s-12">Company</p>
+										<input type="text" class="form-control input-flat"
+											value="{{ p.name }}" disabled>
+										{% endfor %}
+									</div>
+								</div>
+
+								<br />
+
+								<div class="col-12">
+									<p class="text-muted m-b-15 f-s-12">Description</p>
+									<input type="text" class="form-control input-flat"
+											value="{{ project.description }}" id="description" disabled>
+								</div>
+
+								<br>
+
+								<div class="row">
+									<div class="col-1"><a href="{% url 'listProjects' %}" class="btn btn-inverse">Back</a></div>
+>>>>>>> master
                                 </div>
                             </div>
                             <div class="tab-pane p-20 projectforum" id="project_forum">
@@ -102,9 +192,16 @@
                     <!-- End Page Content -->
                 <!-- End Container fluid  -->
 
+<<<<<<< HEAD
             </div>
             <!-- End Page wrapper  -->
         </div>
     </div>
 </div>
 {% endblock %}
+=======
+			</div>
+			<!-- End Page wrapper  -->
+		</div>
+		{% endblock %}
+>>>>>>> master
