@@ -21,13 +21,11 @@
                                     </select>
                                 </div>
 
-
                                 <div class="form-group">
                                     <label class="col-form-label requiredField">Permission<span
                                             class="asteriskField">*</span></label>
                                     <select class="form-control select select-permission" id="permission_id">
-                                        <option value="" selected disabled="disabled">-----Select Permission----
-                                        </option>
+                                        <option value="" selected disabled="disabled">-----Select Permission----</option>
                                     </select>
                                 </div>
 
@@ -123,12 +121,11 @@
                 document.getElementById('content_type').focus();
             }
         } else {
-            if (!setPermissions.has(permid)) {
-                setPermissions.add(permid);
+            if (!setPermissions.has(parseInt(permid))) {
+                setPermissions.add(parseInt(permid));
                 $('#enteredGroupPermissionsBody').append('<tr id="rows' + permid + '"><td>' + perm + '</td>' +
                     '<td>' + module + '</td>' +
                     '<td class="text-center" id="' + permid + '"> <span  title="Remove Permission." onclick="functionRemovePermission(' + permid + ')"  class="badge badge-danger icon-custom"><a href="#"><i class="fa fa-remove"></i></a></span></td></tr>');
-
             } else {
                 $.alert({
                     title: 'Alert!',

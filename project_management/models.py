@@ -349,6 +349,8 @@ class ProjectForum(models.Model):
     project = models.ForeignKey(Project, on_delete=models.DO_NOTHING)
     created_time = models.DateTimeField(auto_now_add=True)
     modified_time = models.DateTimeField(auto_now=True)
+    forum_name = models.CharField(max_length=255, default=1)
+    chat_room_id = models.CharField(max_length=255, blank=True, null=True)
 
     class Meta():
         db_table = 'project_forum'
@@ -357,9 +359,10 @@ class ProjectForum(models.Model):
 # ProjectForumMessages
 class ProjectForumMessages(models.Model):
     projectforum = models.ForeignKey(ProjectForum, on_delete=models.DO_NOTHING)
-    team_member = models.ForeignKey(UserTeamMember, on_delete=models.DO_NOTHING)
+    team_member = models.ForeignKey(ProjectTeamMember, on_delete=models.DO_NOTHING)
     created_time = models.DateTimeField(auto_now_add=True)
     modified_time = models.DateTimeField(auto_now=True)
+    chat_message = RichTextField()
 
     class Meta():
         db_table = 'project_forum_messages'
@@ -379,8 +382,8 @@ class ProjectForumMessageAttachments(models.Model):
 # ProjectForumMessageReplies
 class ProjectForumMessageReplies(models.Model):
     projectforummessage = models.ForeignKey(ProjectForumMessages, on_delete=models.DO_NOTHING)
-    team_member = models.ForeignKey(UserTeamMember, on_delete=models.DO_NOTHING)
-    reply = models.CharField(max_length=200)
+    team_member = models.ForeignKey(ProjectTeamMember, on_delete=models.DO_NOTHING)
+    reply = RichTextField()
     created_time = models.DateTimeField(auto_now_add=True)
     modified_time = models.DateTimeField(auto_now=True)
 

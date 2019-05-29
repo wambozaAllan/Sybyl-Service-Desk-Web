@@ -14,8 +14,8 @@
     </div>
     {% block additional_javascript %}{% endblock %}
     {% include 'bottom.html' %}
-    
-    <script> 
+
+    <script>
 
         // update project attributes
         $(document).ready(function() {
@@ -26,7 +26,7 @@
         $('#id_company').attr('data-live-search', "true");
         $('#id_company').selectpicker({
             size: 2,
-        }); 
+        });
 
         $('#listBranchContacts').DataTable({});
         $('#listEmails').DataTable({});
@@ -41,6 +41,17 @@
         $('#table_users').DataTable();
         $('#groupList2').DataTable();
         $('#table_system_modules2').DataTable();
+
+        function loadURL(url, params, responseDiv, method) {
+            $.ajax({
+                type: method,
+                url: url + '?' + params,
+                success: function (response) {
+                    $('.body-card-sidebar').addClass('side-bar-off');
+                    $('.' + responseDiv).html(response);
+                }
+            });
+        }
 
         function functAddDomain() {
             urldata = "{% url 'addDomain'%}";
@@ -1002,7 +1013,7 @@
                 }
             });
         }
-      
+
         function functAssignPermissionsAGroup(grpid, grp) {
             urldata = "{% url 'assignPermissionsToGroup'%}";
             $.ajax({
@@ -1078,7 +1089,7 @@
             }
 
         }
-      
+
          function functionDeleteGroupPermission(pid, pname, grpid, groupname) {
             urldata = "{% url 'deleteGroupPermission'%}";
             $.confirm({
@@ -1119,7 +1130,7 @@
                 }
             });
         }
-      
+
         function addProjectTeamMember() {
             urldata = "{% url 'addProjectTeamMember'%}";
             $.ajax({
@@ -1148,7 +1159,7 @@
                 }
             });
         }
-      
+
         function functionDeleteGroup(grp, grpextid, percount, usercount, grpid) {
             if (percount > 0 || usercount > 0) {
                 if (percount > 0 && usercount > 0) {
@@ -1283,7 +1294,7 @@
                 }
             });
         }
-      
+
               function deleteRole(roleId, roleName) {
             urldata = "{% url 'deleteRole' 999%}".replace(999, roleId);
             $.confirm({
@@ -1537,7 +1548,6 @@
                 });
             }
         }
-
         // ADD INCIDENT
         function functAddIncident() {
             urldata = "{% url 'addIncident'%}";
@@ -1554,5 +1564,4 @@
                 }
             });
         }
-
     </script>

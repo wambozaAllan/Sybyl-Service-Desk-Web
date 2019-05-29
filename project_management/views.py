@@ -18,8 +18,7 @@ from django.core import serializers
 
 from django.contrib.auth.decorators import user_passes_test, permission_required
 
-from .models import Project, Milestone, Task, ProjectDocument, Incident, Priority, Status, ProjectTeam, \
-    ProjectTeamMember, Role
+from .models import Project, Milestone, Task, ProjectDocument, Incident, Priority, Status, ProjectTeam, ProjectTeamMember, Role, ProjectForumMessages, ProjectForum, ProjectForumMessageReplies
 from user_management.models import User
 from company_management.models import Company, CompanyCategory
 from .forms import CreateProjectForm, MilestoneForm, TaskForm, DocumentForm, ProjectUpdateForm, MilestoneUpdateForm, ProjectForm
@@ -27,6 +26,7 @@ from django.contrib.auth.mixins import PermissionRequiredMixin
 from django.http import JsonResponse
 from django.db.models import Count
 import json
+
 
 # Custom Views
 class ProjectCreateView(PermissionRequiredMixin, CreateView):
@@ -63,9 +63,9 @@ def model_form_upload(request):
         form = DocumentForm(request.POST, request.FILES)
         if form.is_valid():
             # title             = form.cleaned_data['title']
-            project           = form.cleaned_data['project'].id
+            project = form.cleaned_data['project'].id
             form.save()
-            return redirect('%d/'%project)
+            return redirect('%d/' % project)
     else:
         form = DocumentForm()
     return render(request, 'project_management/model_form_upload.html', {
@@ -86,10 +86,10 @@ class ProjectDetailView(DetailView):
         return Project.objects.all()
 
     def get_context_data(self, **kwargs):
-        context                 = super(ProjectDetailView, self).get_context_data(**kwargs)
-        context['milestones']   = Milestone.objects.filter(project_id=self.kwargs.get('pk'))
-        context['tasks']        = Task.objects.filter(project_id=self.kwargs.get('pk'))
-        context['incidents']    = Incident.objects.filter(project_id=self.kwargs.get('pk'))
+        context = super(ProjectDetailView, self).get_context_data(**kwargs)
+        context['milestones'] = Milestone.objects.filter(project_id=self.kwargs.get('pk'))
+        context['tasks'] = Task.objects.filter(project_id=self.kwargs.get('pk'))
+        context['incidents'] = Incident.objects.filter(project_id=self.kwargs.get('pk'))
         return context
 
 
@@ -123,14 +123,18 @@ class ProjectUpdateView(UpdateView):
 def projects_download(request):
     items = Project.objects.all()
 
-    response    = HttpResponse(content_type='text/csv')
+    response = HttpResponse(content_type='text/csv')
     response['Content-Disposition'] = 'attachment; filename="projects.csv"'
 
     writer = csv.writer(response)
-    writer.writerow(['Project Name', 'Description', 'Client', 'Start Date', 'End Date', 'Project Manager', 'Status', 'Vendor', 'Completion', 'Cost'])
+    writer.writerow(
+        ['Project Name', 'Description', 'Client', 'Start Date', 'End Date', 'Project Manager', 'Status', 'Vendor',
+         'Completion', 'Cost'])
 
     for obj in items:
-        writer.writerow([obj.name, obj.description, obj.client, obj.startdate,obj.enddate, obj.project_manager, obj.project_status, obj.vendor, obj.completion, obj.estimated_cost])
+        writer.writerow(
+            [obj.name, obj.description, obj.client, obj.startdate, obj.enddate, obj.project_manager, obj.project_status,
+             obj.vendor, obj.completion, obj.estimated_cost])
 
     return response
 
@@ -145,10 +149,10 @@ def export_projects_xls(request):
 
     row_num = 1
 
-    columns = [(u"Project Name", 5000),(u"Description", 5000),(u"Client", 5000),
-        (u"Start Date", 5000),(u"End Date", 5000),(u"Project Manager", 5000),
-        (u"Status", 5000),(u"Vendor", 5000),(u"Cost", 5000)
-    ]
+    columns = [(u"Project Name", 5000), (u"Description", 5000), (u"Client", 5000),
+               (u"Start Date", 5000), (u"End Date", 5000), (u"Project Manager", 5000),
+               (u"Status", 5000), (u"Vendor", 5000), (u"Cost", 5000)
+               ]
 
     font_style = xlwt.XFStyle()
     font_style.font.bold = True
@@ -183,36 +187,37 @@ def export_projects_xls(request):
     return response
 
 
-class MilestoneCreateView(LoginRequiredMixin,CreateView):
+class MilestoneCreateView(LoginRequiredMixin, CreateView):
     model = Milestone
     form_class = MilestoneForm
 
     def form_valid(self, form):
-        milestone_name  = form.cleaned_data['name']
-        project         = form.cleaned_data['project']
-        start           = form.cleaned_data['startdate']
-        finish          = form.cleaned_data['enddate']
-        current_user    = self.request.user
-        name            = current_user.username
+        milestone_name = form.cleaned_data['name']
+        project = form.cleaned_data['project']
+        start = form.cleaned_data['startdate']
+        finish = form.cleaned_data['enddate']
+        current_user = self.request.user
+        name = current_user.username
         form.save()
         cxt = {
-            'name'              :name,
-            'milestone_name'    :milestone_name,
-            'project'           :project,
-            'startdate'         :start,
-            'enddate'           :finish,
+            'name': name,
+            'milestone_name': milestone_name,
+            'project': project,
+            'startdate': start,
+            'enddate': finish,
         }
 
-        subject                         = 'New Milestone | Action Required'
-        message                         = get_template('mails/new_milestone_email.html').render(cxt)
-        email_from                      = settings.EMAIL_HOST_USER
-        recipient_list                  = [current_user.email,'ampumuzadickson@gmail.com']
-        mail_to_send                    = EmailMessage(subject, message, to=recipient_list, from_email=email_from)
-        mail_to_send                    = EmailMessage(subject, message, to=recipient_list, from_email=email_from)
-        mail_to_send.content_subtype    = 'html'
-        #mail_to_send.send()
+        subject = 'New Milestone | Action Required'
+        message = get_template('mails/new_milestone_email.html').render(cxt)
+        email_from = settings.EMAIL_HOST_USER
+        recipient_list = [current_user.email, 'ampumuzadickson@gmail.com']
+        mail_to_send = EmailMessage(subject, message, to=recipient_list, from_email=email_from)
+        mail_to_send = EmailMessage(subject, message, to=recipient_list, from_email=email_from)
+        mail_to_send.content_subtype = 'html'
+        # mail_to_send.send()
 
         return HttpResponseRedirect('/projectManagement/milestones')
+
     success_url = reverse_lazy('milestones')
 
 
@@ -236,7 +241,8 @@ def load_milestones(request):
 def load_task_milestoneI_list(request):
     project_id = request.GET.get('project')
     milestones = Milestone.objects.filter(project_id=project_id).order_by('name')
-    return render(request, 'project_management/new_task_milestone_dropdown_list_options.html', {'milestones': milestones})
+    return render(request, 'project_management/new_task_milestone_dropdown_list_options.html',
+                  {'milestones': milestones})
 
 
 class MilestoneDetailView(DetailView):
@@ -278,17 +284,17 @@ class TaskUpdateView(UpdateView):
     template_name = 'project_management/task_update_form.html'
     form_class = TaskForm
 
-        #id = self.request.GET.get('id',None)
-        # task_id = self.kwargs['pk']
-        # milestone_id =
+    # id = self.request.GET.get('id',None)
+    # task_id = self.kwargs['pk']
+    # milestone_id =
 
     def get_object1(self, queryset=None):
         obj = Task.objects.get(id=self.kwargs['pk'])
-    #     print('Milestone Id is : '+str(obj.milestone_id))
-    #     milestone_obj = Model.objects.get(id=obj.milestone_id)
-    #     milestone_obj.status = 'Completed'
-    #     milestone_obj.save()
-    #     return obj
+        #     print('Milestone Id is : '+str(obj.milestone_id))
+        #     milestone_obj = Model.objects.get(id=obj.milestone_id)
+        #     milestone_obj.status = 'Completed'
+        #     milestone_obj.save()
+        #     return obj
         milestone_obj = Milestone.objects.get(id=obj.milestone_id)
         print(milestone_obj.completion)
 
@@ -371,7 +377,7 @@ def get_team_members(request):
         data = {
             'team_members': ''
         }
-    
+
     return JsonResponse(data)
 
 
@@ -390,7 +396,7 @@ def set_priority_color_code(request):
         data['name'] = ''
         data['color'] = ''
 
-    
+
     return JsonResponse(data)
 
 
@@ -606,10 +612,9 @@ def addProject(request):
                 creator = request.user.id
                 user = User.objects.get(id=creator)
                 document = request.FILES['document']
-                
                 doc = ProjectDocument(title=title, description=description, project=project_id, document=document, created_by=user)
                 doc.save()
-                
+
             return redirect('listProjects')
     else:
         project_form = ProjectForm()
@@ -640,7 +645,24 @@ class DetailProject(DetailView):
     model = Project
     context_object_name = 'project'
     template_name = 'project_management/details_project.html'
-    success_url = reverse_lazy('listProjects')
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        project_id = self.kwargs['pk']
+
+        if ProjectTeam.objects.filter(project_id=project_id).exists():
+            obj1 = ProjectTeam.objects.filter(project_id=project_id).values('id').first()
+            project_team_id = obj1['id']
+
+            if ProjectTeamMember.objects.filter(project_team=project_team_id, member_id=self.request.user.id).exists():
+                forum_status = True
+            else:
+                forum_status = False
+        else:
+            forum_status = False
+
+        context['forum_status'] = forum_status
+        return context
 
 
 def validateProjectName(request):
@@ -658,11 +680,11 @@ def format_project_code(request):
     category_list = []
     client_company = []
     company_name = []
-    
+
     for val in company_values:
         company = Company.objects.get(id=val)
         empty_list.append(company)
-    
+
     for c in empty_list:
         category = CompanyCategory.objects.get(id=c.category_id)
         category_list.append(category)
@@ -674,12 +696,12 @@ def format_project_code(request):
                 lst = list(new_company)
                 client_company.append(lst)
 
-    # returning client company 
+    # returning client company
     for final in client_company:
         if final != []:
             for check in final:
                 company_name.append(check.name)
-            
+
             if company_name:
                 data = {
                     "name": company_name[0]
@@ -794,12 +816,11 @@ def detail_team_member(request):
 
     return render(request, 'project_management/details_team_member.html', context)
 
-
 def validateProjectTeamAssigned(request):
     """ Assign members not already in team """
     project_team_id = request.GET.get('project_team')
     projectteam = ProjectTeam.objects.get(id=project_team_id)
-    
+
     members = ProjectTeamMember.objects.filter(project_team=projectteam)
     member_list = list(members)
 
@@ -810,16 +831,16 @@ def validateProjectTeamAssigned(request):
         for member in member_list:
             old_user = User.objects.get(id=member.member_id)
             old.append(old_user)
-            
+
         all_users = User.objects.filter()
 
         new_users = set(all_users).difference(set(old))
         data = {
             'users': serializers.serialize("json", new_users)
         }
-        
+
         return JsonResponse(data)
-    
+
     else:
         new_users = User.objects.all().filter()
         data = {
@@ -827,7 +848,6 @@ def validateProjectTeamAssigned(request):
         }
 
         return JsonResponse(data)
-
 
 def remove_project_team_member(request):
     team_id = request.GET.get('teamid')
@@ -846,5 +866,142 @@ def remove_project_team_member(request):
         'team_name': team_name,
         'team_id': team_id,
     }
-    
+
+    return HttpResponse(template.render(context, request))
+
+def project_forum(request):
+    project_name = request.GET.get('projectname')
+    project_id = request.GET.get('projectid')
+    template = loader.get_template('project_management/project_team_forum.html')
+
+    if ProjectForum.objects.filter(project_id=project_id).exists():
+        obj3 = ProjectForum.objects.filter(project_id=project_id).values('forum_name', 'id').first()
+        forum_name = obj3['forum_name']
+        p_forum_id = obj3['id']
+        state = True
+
+        msg = ProjectForumMessages.objects.filter(projectforum_id=p_forum_id).annotate(count_replies=Count('projectforummessagereplies'))
+        context = {
+            'forum_name': forum_name,
+            'msg': msg,
+            'project_name': project_name,
+            'project_id': project_id,
+            'p_forum_id': p_forum_id,
+            'state': state
+        }
+    else:
+        state = False
+
+        context = {
+            'project_name': project_name,
+            'project_id': project_id,
+            'state': state
+        }
+    return HttpResponse(template.render(context, request))
+
+
+def create_project_forum(request):
+    project_id2 = request.GET['pid']
+    forum_name2 = request.GET['fname']
+    project_name2 = request.GET['pname']
+
+    template = loader.get_template('project_management/project_team_forum.html')
+
+    obj = ProjectForum(forum_name=forum_name2, project_id=project_id2)
+    obj.save()
+    p_forum_id = obj.id
+
+    context = {
+        'forum_name': forum_name2,
+        'project_name': project_name2,
+        'project_id': project_id2,
+        'p_forum_id': p_forum_id,
+        'state': True
+    }
+
+    return HttpResponse(template.render(context, request))
+
+
+def manage_forum_replies(request):
+    msg_id = request.GET['msg_id']
+    msg_body = request.GET['msg_body']
+    project_id = request.GET['project_id']
+    project_name = request.GET['project_name']
+    sender = request.GET['sender']
+    forum_name = request.GET['forum_name']
+    forum_id = request.GET['forum_id']
+
+    template = loader.get_template('project_management/project_forum_replies.html')
+    msg = ProjectForumMessageReplies.objects.filter(projectforummessage_id=msg_id)
+
+    context = {
+        'msg_id': msg_id,
+        'msg_body': msg_body,
+        'project_id': project_id,
+        'project_name': project_name,
+        'sender': sender,
+        'msg_len': len(msg_body),
+        'forum_name': forum_name,
+        'msg': msg,
+        'forum_id': forum_id,
+    }
+
+    return HttpResponse(template.render(context, request))
+
+
+def delete_forum_message(request):
+    project_name = request.GET.get('project_name')
+    project_id = request.GET.get('project_id')
+    forum_name = request.GET.get('forum_name')
+    p_forum_id = request.GET.get('forum_id')
+    count_replies = request.GET.get('count_replies')
+    chat_id = request.GET.get('chat_id')
+    state = True
+
+    template = loader.get_template('project_management/project_team_forum.html')
+
+    if int(count_replies) > 0:
+        ProjectForumMessageReplies.objects.filter(projectforummessage_id=int(chat_id)).delete()
+        ProjectForumMessages.objects.filter(id=int(chat_id)).delete()
+    else:
+        ProjectForumMessages.objects.filter(id=int(chat_id)).delete()
+
+    msg = ProjectForumMessages.objects.filter(projectforum_id=p_forum_id).annotate(count_replies=Count('projectforummessagereplies'))
+    context = {
+        'forum_name': forum_name,
+        'msg': msg,
+        'project_name': project_name,
+        'project_id': project_id,
+        'p_forum_id': p_forum_id,
+        'state': state
+    }
+    return HttpResponse(template.render(context, request))
+
+
+def delete_forum_reply(request):
+    msg_id = request.GET['chat_id']
+    msg_body = request.GET['message']
+    project_id = request.GET['project_id']
+    project_name = request.GET['project_name']
+    sender = request.GET['sender']
+    forum_name = request.GET['forum_name']
+    forum_id = request.GET['forum_id']
+    reply_id = request.GET['reply_id']
+
+    template = loader.get_template('project_management/project_forum_replies.html')
+    ProjectForumMessageReplies.objects.filter(id=int(reply_id)).delete()
+    msg = ProjectForumMessageReplies.objects.filter(projectforummessage_id=msg_id)
+
+    context = {
+        'msg_id': msg_id,
+        'msg_body': msg_body,
+        'project_id': project_id,
+        'project_name': project_name,
+        'sender': sender,
+        'msg_len': len(msg_body),
+        'forum_name': forum_name,
+        'msg': msg,
+        'forum_id': forum_id,
+    }
+
     return HttpResponse(template.render(context, request))

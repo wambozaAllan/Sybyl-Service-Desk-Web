@@ -1,0 +1,165 @@
+<!-- End Bread crumb -->
+<!-- Container fluid  -->
+<div class="container-fluid">
+    <!-- Start Page Content -->
+
+    <div class="card ">
+        <span style="font-size: 140%; margin-top: -1%; margin-left: -1%;" class="font-weight-bold pull-left ">{{username}}</span>
+        <hr>
+        <div id="scrollDiv" style="height:420px; overflow-y: scroll;">
+            <div id="chat-log2" class="profiletimeline">
+                {% for chat in msg %}
+                <div class="sl-item">
+                    <div class="sl-left"><img src="../../media/avatar.png" alt="user" class="img-circle"/></div>
+                    <div class="sl-right">
+                        <div>
+                            {% if chat.sent_by.username == request.session.username %}
+                            <span class="link">{{chat.sent_by.first_name}} {{chat.sent_by.last_name}}
+                                <span class="text-info">(you)</span>
+                                <span class="pull-right" data-toggle="dropdown"><i class="fa fa-ellipsis-h fa-2x"></i></span>
+                                <ul class="dropdown-menu" role="menu">
+                                <li onclick="functionDeleteChatSMS({{chat.id}}, '{{chat.chat_message}}', {{direct_chat_id}}, {{uid}}, '{{username}}', '{{fullname}}')"><a href="#">Delete</a></li>
+                            </ul>
+                            </span>
+                            {% else %}
+                            <span class="link">{{chat.sent_by.first_name}} {{chat.sent_by.last_name}}
+                                <span class="pull-right" data-toggle="dropdown"><i class="fa fa-ellipsis-h fa-2x"></i></span>
+                                <ul class="dropdown-menu" role="menu">
+                                    <li onclick="functionDeleteChatSMS({{chat.id}}, '{{chat.chat_message}}', {{direct_chat_id}}, {{uid}}, '{{username}}', '{{fullname}}')"><a href="#">Delete</a></li>
+                                </ul>
+                            </span>
+                            {% endif %}
+                            <div> <span class="m-t-10">{{chat.chat_message}}</span> <span class="sl-date text-info" style="float: right !important;">{{chat.created_time}}</span></div>
+                        </div>
+                    </div>
+                    <hr>
+                </div>
+
+                {% endfor %}
+            </div>
+        </div>
+
+    </div>
+    <div class="form-group" style="bottom: 10px;">
+        <div class="input-group input-group-rounded ">
+            <input id="chat-message-input2" type="text" placeholder="Type your message" name="Search"
+                   class="form-control">
+            <span class="input-group-btn">
+                    <button id="chat-message-submit2" class="btn btn-primary btn-group-right" type="submit">
+                        <i class="ti-share"></i>
+                    </button>
+            </span>
+        </div>
+    </div>
+
+    <input id="clientId" type="hidden" value="{{ uid }}"/>
+    <input id="direct_chat_id" type="hidden" value="{{ direct_chat_id }}"/>
+    <input id="username" type="hidden" value="{{ username }}"/>
+    <input id="fullname" type="hidden" value="{{ fullname }}"/>
+</div>
+
+
+<script>
+    var client_id = $('#clientId').val();
+
+    var direct_chat_id2 = $('#direct_chat_id').val();
+    var username2 = $('#username').val();
+    var fullname = $('#fullname').val();
+
+    var chatSocket = new WebSocket('ws://' + window.location.host + '/chatRoom/' + client_id + '/');
+
+    var scrollDiv = document.getElementById("scrollDiv");
+    scrollDiv.scrollTop = scrollDiv.scrollHeight;
+
+    chatSocket.onmessage = function(e) {
+        var data = JSON.parse(e.data);
+        var message = data['message'];
+        var username = data['username'];
+        var fname = data['fname'];
+        var lname = data['lname'];
+        var msg_id = data['msg_id'];
+        var created_time = data['created_time'];
+        created_time= moment(created_time).format('MMMM Do YYYY, h:mm a');
+        var uid = data['uid'];
+        $("#chat-log2").append(
+            '<div class="sl-item">'+
+            '<div class="sl-left"><img src="../../media/avatar.png" alt="user" class="img-circle"/></div>'+
+            '<div class="sl-right"><div>{% if '+username+' == request.session.username %}<a href="#" class="link">'+fname +'  '+lname+'<span class="text-info">'+
+            '(you)<a href="#" class="pull-right" data-toggle="dropdown"><i class="fa fa-ellipsis-h fa-2x"></i></a>'+
+            '<ul class="dropdown-menu" role="menu">'+
+            '<li onclick="functionDeleteChatSMS('+msg_id+', \''+ message +'\', '+direct_chat_id2+', '+client_id+', \''+username2 +'\', \''+ fullname +'\')"><a href="#">Delete</a></li>'+
+            '</ul></span></a>{% else %}<span'+
+            'class="link">'+fname +'  '+lname+' <a href="#" class="pull-right" data-toggle="dropdown"><i class="fa fa-ellipsis-h fa-2x"></i></a>'+
+            '<ul class="dropdown-menu" role="menu">'+
+            '<li onclick="functionDeleteChatSMS('+msg_id+', \''+ message +'\', '+direct_chat_id2+', '+client_id+', \''+username2 +'\', \''+ fullname +'\')"><a href="#">Delete</a></li>'+
+            '</ul></span>{% endif %}<div>'+
+            '<span class="m-t-10">'+message+'</span> <span class="sl-date text-info" style="float: right !important;">'+created_time+'</span></div>'+
+            '</div></div><hr></div>'
+            );
+        var scrollDiv2 = document.getElementById("scrollDiv");
+        scrollDiv2.scrollTop = scrollDiv2.scrollHeight;
+    };
+
+    chatSocket.onclose = function(e) {
+        console.error('Chat socket closed unexpectedly');
+    };
+
+    document.querySelector('#chat-message-input2').focus();
+    document.querySelector('#chat-message-input2').onkeyup = function(e) {
+        if (e.keyCode === 13) {  // enter, return
+            document.querySelector('#chat-message-submit2').click();
+        }
+    };
+
+    document.querySelector('#chat-message-submit2').onclick = function(e) {
+        var messageInputDom = document.querySelector('#chat-message-input2');
+        var message = messageInputDom.value;
+        chatSocket.send(JSON.stringify({'message': message}));
+
+        messageInputDom.value = '';
+    };
+
+    function functionDeleteChatSMS(chat_id, message, direct_chat_id, receiver_uid, receiver_username, receiver_fullname) {
+        url_data3 = "{% url 'deleteDirectChatMessage'%}";
+        $.confirm({
+            title: '<h4><span class="font-weight-bold">Are you sure you want to delete Message:</span> <br> <span class="text-info">' + message + ' </span>!</h4>',
+            content: '',
+            type: 'red',
+            typeAnimated: true,
+            boxWidth: '50%',
+            useBootstrap: false,
+            theme: 'modern',
+            icon: 'fa fa-exclamation-circle',
+            closeIcon: true,
+            buttons: {
+                formSubmit: {
+                    text: 'Delete',
+                    btnClass: 'btn-red',
+                    action: function () {
+                        $.ajax({
+                            type: "GET",
+                            cache: false,
+                            data: {
+                                chat_id: chat_id,
+                                direct_chat_id: direct_chat_id,
+                                receiver_uid: receiver_uid,
+                                receiver_username: receiver_username,
+                                receiver_fullname: receiver_fullname,
+                            },
+                            url: url_data3,
+                            success: function (resp) {
+                                $('.page-wrapper').html(resp);
+                            }
+                        });
+                    }
+                },
+                close: {
+                    text: 'Cancel',
+                    btnClass: 'btn-gray',
+                    action: function () {
+                    }
+                }
+            }
+        });
+    }
+</script>
