@@ -61,6 +61,7 @@ class Project(models.Model):
     actual_end_date = models.DateField(null=True, blank=True)
     created_time = models.DateTimeField(auto_now_add=True)
     modified_time = models.DateTimeField(auto_now=True)
+    created_by = models.ForeignKey(User, null=True, blank=True, on_delete=models.SET_NULL)
 
     def __str__(self):
         return self.name
