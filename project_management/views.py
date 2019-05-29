@@ -1,5 +1,6 @@
 import csv, io, xlwt
 import xlsxwriter
+import datetime
 
 from django.shortcuts import render, get_object_or_404, redirect
 from django.views.generic import CreateView, ListView, DetailView, UpdateView, DeleteView
@@ -576,7 +577,31 @@ def addProject(request):
         document_form = DocumentForm(request.FILES)
 
         if project_form.is_valid():
-            project = project_form.save()
+            data = request.POST.copy()
+            name = data.get('name')
+            description = data.get('description')
+            project_code = data.get('project_code')
+            estimated_cost = data.get('estimated_cost')
+            logo = request.FILES['logo']
+            thumbnail = data.get('thumbnail')
+            start_date = data.get('estimated_start_date')
+            end_date = data.get('estimated_end_date')
+            project_status = data.get('project_status')
+            created_by = request.user.id
+
+            # converting date to yyyy-mm-dd format to save to db
+            estimated_start_date = datetime.datetime.strptime(start_date, "%m/%d/%Y").strftime("%Y-%m-%d")
+            estimated_end_date = datetime.datetime.strptime(end_date, "%m/%d/%Y").strftime("%Y-%m-%d")
+
+            status = Status.objects.get(id=project_status)
+            user_id = User.objects.get(id=created_by)
+
+            project = Project(name=name, description=description, project_code=project_code, estimated_cost=estimated_cost,
+            logo=logo, thumbnail=thumbnail, estimated_start_date=estimated_start_date, estimated_end_date=estimated_end_date,
+            project_status=status, created_by=user_id)
+
+            project.save()
+
             project_id = Project.objects.get(pk=project.id)
 
             if project:
@@ -584,12 +609,9 @@ def addProject(request):
                 form = request.POST.copy()
                 title = form.get('title')
                 description = form.get('description')
-                creator = form.get('created_by')
+                creator = request.user.id
                 user = User.objects.get(id=creator)
-
-                # saving single document
-                document = request.FILES['document'];
-
+                document = request.FILES['document']
                 doc = ProjectDocument(title=title, description=description, project=project_id, document=document, created_by=user)
                 doc.save()
 
