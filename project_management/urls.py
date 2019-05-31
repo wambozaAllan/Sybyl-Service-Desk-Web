@@ -51,11 +51,12 @@ urlpatterns = [
     path('deleteStatus/<int:pk>/', views.DeleteStatus.as_view(), name="deleteStatus"),
     path('validateStatusName/', views.ValidateStatusName, name='validateStatusName'),
 
-    path('addProject/', views.AddProject.as_view(), name='addProject'),
+    path('addProject/', views.addProject, name='addProject'),
     path('listProjects/', views.ListProjects.as_view(), name='listProjects'),
     path('updateProject/<int:pk>', views.UpdateProject.as_view(), name='updateProject'),
     path('detailsProject/<int:pk>', views.DetailProject.as_view(), name='detailsProject'),
     path('validateProjectName/', views.validateProjectName, name='validateProjectName'),
+    path('formatProjectCode/', views.format_project_code, name='formatProjectCode'),
 
     path('addProjectTeam/', views.AddProjectTeam.as_view(), name='addProjectTeam'),
     path('listProjectTeams/', views.ListProjectTeams.as_view(), name='listProjectTeams'),
@@ -77,10 +78,14 @@ urlpatterns = [
     path('deleteRole/<int:pk>/', views.DeleteRole.as_view(), name="deleteRole"),
     path('validateRoleName/', views.ValidateRoleName, name='validateRoleName'),
 
+    path('getTeamMembers/', views.get_team_members, name='getTeamMembers'),
+    path('setColorCode/', views.set_priority_color_code, name='setColorCode'),
+
     path('projectForum/', views.project_forum, name='tabProjectForum'),
     path('createForum/', views.create_project_forum, name='createProjectForum'),
     path('forumReplies/', views.manage_forum_replies, name='manageForumReplies'),
     path('deleteChatMessage/', views.delete_forum_message, name='deleteChatMessage'),
     path('deleteReply/', views.delete_forum_reply, name='deleteChatReply'),
+
 
 ]

@@ -1,5 +1,6 @@
 import csv, io, xlwt
 import xlsxwriter
+import datetime
 
 from django.shortcuts import render, get_object_or_404, redirect
 from django.views.generic import CreateView, ListView, DetailView, UpdateView, DeleteView
@@ -13,13 +14,14 @@ from django.template.loader import get_template
 from django.core.mail import EmailMessage
 from static.fusioncharts import FusionCharts
 from django.template import loader
+from django.core import serializers
 
 from django.contrib.auth.decorators import user_passes_test, permission_required
 
 from .models import Project, Milestone, Task, ProjectDocument, Incident, Priority, Status, ProjectTeam, ProjectTeamMember, Role, ProjectForumMessages, ProjectForum, ProjectForumMessageReplies
 from user_management.models import User
-from company_management.models import Company
-from .forms import CreateProjectForm, MilestoneForm, TaskForm, DocumentForm, ProjectUpdateForm, MilestoneUpdateForm
+from company_management.models import Company, CompanyCategory
+from .forms import CreateProjectForm, MilestoneForm, TaskForm, DocumentForm, ProjectUpdateForm, MilestoneUpdateForm, ProjectForm
 from django.contrib.auth.mixins import PermissionRequiredMixin
 from django.http import JsonResponse
 from django.db.models import Count
@@ -312,14 +314,13 @@ def load_task_milestones(request):
 
 class AddIncident(CreateView):
     model = Incident
-    fields = ['project', 'milestone', 'task', 'title', 'description'
-        , 'status', 'priority', 'assignee']
-    template_name = 'project_management/addIncident.html'
+    fields = ['project', 'title', 'description', 'status', 'priority', 'assignee', 'creator', 'document', 'image']
+    template_name = 'project_management/add_incident.html'
     success_url = reverse_lazy('listIncidents')
 
 
 class ListIncidents(ListView):
-    template_name = 'project_management/listIncidents.html'
+    template_name = 'project_management/list_incidents.html'
     context_object_name = 'all_incidents'
 
     def get_queryset(self):
@@ -329,15 +330,74 @@ class ListIncidents(ListView):
 class DetailsIncident(DetailView):
     model = Incident
     context_object_name = 'incident'
-    template_name = 'project_management/detailsIncident.html'
+    template_name = 'project_management/details_incident.html'
 
 
 class UpdateIncident(UpdateView):
     model = Incident
-    fields = ['project', 'milestone', 'task', 'title', 'description'
-        , 'status', 'priority', 'assignee']
-    template_name = 'project_management/updateIncident.html'
+    fields = ['project', 'title', 'description', 'document', 'image', 'status', 'priority', 'assignee']
+    template_name = 'project_management/update_incident.html'
     success_url = reverse_lazy('listIncidents')
+
+
+def get_team_members(request):
+    """display team members on incident assigning"""
+
+    project_id = request.GET.get('project')
+
+    team = ProjectTeam.objects.filter(project_id=project_id).exists()
+
+    if team == True:
+        project_team = ProjectTeam.objects.get(project_id=project_id)
+        project_members_exist = ProjectTeamMember.objects.filter(project_team=project_team.id).exists()
+
+        if project_members_exist == True:
+            project_members = ProjectTeamMember.objects.filter(project_team=project_team.id)
+
+            new_list = []
+
+            for i in project_members:
+                new_dict = {}
+                new_dict['first_name'] = i.member.first_name
+                new_dict['last_name'] = i.member.last_name
+                new_dict['id'] = i.pk
+                new_list.append(new_dict)
+
+            data = {
+                'team_members': new_list
+            }
+            return JsonResponse(data)
+
+        else:
+            data = {
+                'team_members': ''
+            }
+
+    else:
+        data = {
+            'team_members': ''
+        }
+
+    return JsonResponse(data)
+
+
+def set_priority_color_code(request):
+    """ retrieving priority name"""
+
+    priority_id = request.GET.get('priority')
+    data = {}
+
+    if priority_id is not None:
+        priority = Priority.objects.get(id=priority_id)
+        data['name'] = priority.name
+        data['color'] = priority.color
+
+    else:
+        data['name'] = ''
+        data['color'] = ''
+
+
+    return JsonResponse(data)
 
 
 def Milestone_progress():
@@ -387,14 +447,14 @@ class ListAllPriorities(ListView):
 
 class AddPriority(CreateView):
     model = Priority
-    fields = ['name', 'description']
+    fields = ['name', 'description', 'color']
     template_name = 'project_management/add_priority.html'
     success_url = reverse_lazy('listAllPriorities')
 
 
 class UpdatePriority(UpdateView):
     model = Priority
-    fields = ['name', 'description']
+    fields = ['name', 'description', 'color']
     template_name = 'project_management/update_priority.html'
     success_url = reverse_lazy('listAllPriorities')
 
@@ -511,12 +571,59 @@ def ValidateRoleName(request):
 
 
 # PROJECT LIST
-class AddProject(CreateView):
-    model = Project
-    template_name = 'project_management/add_project.html'
-    fields = ['name', 'project_status', 'description', 'project_code', 'estimated_cost', 'final_cost', 'start_date',
-              'end_date', 'actual_start_date', 'actual_end_date', 'logo', 'thumbnail']
-    success_url = reverse_lazy('listProjects')
+def addProject(request):
+    if request.method == 'POST':
+        project_form = ProjectForm(request.POST, request.FILES)
+        document_form = DocumentForm(request.FILES)
+
+        if project_form.is_valid():
+            data = request.POST.copy()
+            name = data.get('name')
+            description = data.get('description')
+            project_code = data.get('project_code')
+            estimated_cost = data.get('estimated_cost')
+            logo = request.FILES['logo']
+            thumbnail = data.get('thumbnail')
+            start_date = data.get('estimated_start_date')
+            end_date = data.get('estimated_end_date')
+            project_status = data.get('project_status')
+            created_by = request.user.id
+
+            # converting date to yyyy-mm-dd format to save to db
+            estimated_start_date = datetime.datetime.strptime(start_date, "%m/%d/%Y").strftime("%Y-%m-%d")
+            estimated_end_date = datetime.datetime.strptime(end_date, "%m/%d/%Y").strftime("%Y-%m-%d")
+
+            status = Status.objects.get(id=project_status)
+            user_id = User.objects.get(id=created_by)
+
+            project = Project(name=name, description=description, project_code=project_code, estimated_cost=estimated_cost,
+            logo=logo, thumbnail=thumbnail, estimated_start_date=estimated_start_date, estimated_end_date=estimated_end_date,
+            project_status=status, created_by=user_id)
+
+            project.save()
+
+            project_id = Project.objects.get(pk=project.id)
+
+            if project:
+                # save project document information
+                form = request.POST.copy()
+                title = form.get('title')
+                description = form.get('description')
+                creator = request.user.id
+                user = User.objects.get(id=creator)
+                document = request.FILES['document']
+                doc = ProjectDocument(title=title, description=description, project=project_id, document=document, created_by=user)
+                doc.save()
+
+            return redirect('listProjects')
+    else:
+        project_form = ProjectForm()
+        document_form = DocumentForm()
+
+    return render(request, 'project_management/add_project.html', {
+            'project_form': project_form,
+            'document_form': document_form
+    })
 
 
 class ListProjects(ListView):
@@ -529,7 +636,7 @@ class ListProjects(ListView):
 
 class UpdateProject(UpdateView):
     model = Project
-    fields = ['name', 'project_status', 'project_code', 'final_cost', 'actual_start_date', 'actual_end_date']
+    fields = ['name', 'project_status', 'company', 'project_code', 'final_cost', 'estimated_start_date', 'estimated_end_date', 'actual_start_date', 'actual_end_date', 'description', 'logo']
     template_name = 'project_management/update_project.html'
     success_url = reverse_lazy('listProjects')
 
@@ -564,6 +671,49 @@ def validateProjectName(request):
         'is_taken': Project.objects.filter(name=project_name).exists()
     }
     return JsonResponse(data)
+
+
+def format_project_code(request):
+    companies = request.GET.get('companies')
+    company_values = json.loads(companies)
+    empty_list = []
+    category_list = []
+    client_company = []
+    company_name = []
+
+    for val in company_values:
+        company = Company.objects.get(id=val)
+        empty_list.append(company)
+
+    for c in empty_list:
+        category = CompanyCategory.objects.get(id=c.category_id)
+        category_list.append(category)
+
+    for v in category_list:
+        if v.category_value == 'Client':
+            for val in company_values:
+                new_company = Company.objects.filter(id=val, category=v.id)
+                lst = list(new_company)
+                client_company.append(lst)
+
+    # returning client company
+    for final in client_company:
+        if final != []:
+            for check in final:
+                company_name.append(check.name)
+
+            if company_name:
+                data = {
+                    "name": company_name[0]
+                }
+
+                return JsonResponse(data)
+    else:
+        data = {
+            "name": ""
+        }
+
+        return JsonResponse(data)
 
 
 # PROJECT TEAMS
@@ -612,8 +762,10 @@ def validateProjectTeamName(request):
 
 
 def validateProjectAssigned(request):
+    """check to see if project already assigned team"""
+
     project = request.GET.get('project', None)
-    print(project)
+    team = ProjectTeam.objects.filter(project=project).exists()
     data = {
         'is_assigned': ProjectTeam.objects.filter(project=project).exists()
     }
@@ -626,12 +778,12 @@ class AddProjectTeamMember(CreateView):
     model = ProjectTeamMember
     template_name = 'project_management/add_team_member.html'
     fields = ['member', 'project_team', 'responsibility']
-    success_url = reverse_lazy('listProjectTeamMembers')
+    success_url = reverse_lazy('listProjectTeams')
 
 
 class ListProjectTeamMembers(ListView):
-    template_name = 'project_management/list_team_members.html'
-    context_object_name = 'teams'
+    template_name = 'project_management/list_project_teams.html'
+    context_object_name = 'project_teams'
 
     def get_queryset(self):
         return ProjectTeam.objects.annotate(num_members=Count('projectteammember'))
@@ -641,7 +793,7 @@ class UpdateProjectTeamMember(UpdateView):
     model = ProjectTeamMember
     fields = ['responsibility']
     template_name = 'project_management/update_project_team_member.html'
-    success_url = reverse_lazy('listProjectTeamMembers')
+    success_url = reverse_lazy('listProjectTeams')
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -664,28 +816,38 @@ def detail_team_member(request):
 
     return render(request, 'project_management/details_team_member.html', context)
 
-
 def validateProjectTeamAssigned(request):
-    member_name = request.GET.get('member')
-    project_team = request.GET.get('projectTeam')
-    print(member_name)
-    print(project_team)
+    """ Assign members not already in team """
+    project_team_id = request.GET.get('project_team')
+    projectteam = ProjectTeam.objects.get(id=project_team_id)
 
-    projectteam = ProjectTeam.objects.get(id=project_team)
-    membername = ProjectTeamMember.objects.filter(id=member_name).exists()
-    print("member name exists as '{}'".format(membername))
+    members = ProjectTeamMember.objects.filter(project_team=projectteam)
+    member_list = list(members)
 
-    if membername == 'True':
-        print("member name is '{}'".format(membername))
+    old = []
+    new_users = set()
 
+    if len(member_list) != 0:
+        for member in member_list:
+            old_user = User.objects.get(id=member.member_id)
+            old.append(old_user)
+
+        all_users = User.objects.filter()
+
+        new_users = set(all_users).difference(set(old))
         data = {
-
-            'is_assigned': ProjectTeamMember.objects.filter(project_team=project_team).exists()
+            'users': serializers.serialize("json", new_users)
         }
-        print(data)
 
         return JsonResponse(data)
 
+    else:
+        new_users = User.objects.all().filter()
+        data = {
+            'users': serializers.serialize("json", new_users)
+        }
+
+        return JsonResponse(data)
 
 def remove_project_team_member(request):
     team_id = request.GET.get('teamid')
@@ -693,11 +855,12 @@ def remove_project_team_member(request):
     member_id = request.GET.get('memberid')
 
     teamid = ProjectTeam.objects.get(id=int(team_id))
-    memberid = ProjectTeamMember.objects.get(member=int(member_id))
+    memberid = ProjectTeamMember.objects.get(id=int(member_id))
     memberid.project_team.remove(teamid)
 
+
     team = ProjectTeamMember.objects.filter(project_team=int(team_id))
-    template = loader.get_template('user_management/details_team_member.html')
+    template = loader.get_template('project_management/details_team_member.html')
     context = {
         'team': team,
         'team_name': team_name,
@@ -705,7 +868,6 @@ def remove_project_team_member(request):
     }
 
     return HttpResponse(template.render(context, request))
-
 
 def project_forum(request):
     project_name = request.GET.get('projectname')

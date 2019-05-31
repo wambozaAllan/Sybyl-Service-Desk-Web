@@ -33,6 +33,8 @@
 </div>
 
 <script>
+
+    $("#id_name").attr('autocomplete', 'off');
     $('#id_name').on('input', function () {
         var team_name = $(this).val();
 
@@ -55,6 +57,13 @@
             }
         });
     });
+
+    $('#id_project').removeAttr('multiple', "");
+    $('#id_project').attr('data-live-search', "true"); 
+    $('#id_project').selectpicker({
+        size: 3,
+    });
+
 
     $('#id_project').on('change', function () {
         var project = $(this).val();

@@ -12,7 +12,9 @@
                         </font>
                     </medium>
                 </div>
+            </div>
 
+            <div class="row col-12">
                 <div class="col-6">
                     {{ form.project|as_crispy_field }}
                     <medium id="validate_project_name" class="text-muted hidden">
@@ -23,8 +25,8 @@
                 </div>
             </div>
 
-            <div class="">
-                <div class="col-md-12">
+            <div class="row col-12">
+                <div class="col-6">
                     <button id="btnAddProjectTeam" class="btn btn-success pull-right">
                         <i class="fa fa-fw fa-lg fa-save"></i>Save
                     </button>
@@ -36,6 +38,8 @@
 
 <script>
     $("#id_name").attr("placeholder", "Enter Project Team Name");
+
+    $("#id_name").attr('autocomplete', 'off');
 
     $('#id_name').on('input', function () {
         var team_name = $(this).val();
@@ -60,9 +64,17 @@
         });
     });
 
+    // PROJECT 
+
+    $('#id_project').removeAttr('multiple', "");
+    $('#id_project').attr('data-live-search', "true"); 
+    $('#id_project').selectpicker({
+        size: 3,
+    });
+
     $('#id_project').on('change', function () {
         var project = $(this).val();
-
+        
         $.ajax({
             url: '{% url 'validateProjectAssigned' %}',
             data: {
@@ -70,7 +82,6 @@
             },
             dataType: 'json',
             success: function (data) {
-                console.log(project)
                 if (data.is_assigned) {
                     $("#validate_project_name").show();
                     document.getElementById('id_project').style.borderColor = "red";

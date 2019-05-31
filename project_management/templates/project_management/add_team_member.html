@@ -30,33 +30,58 @@
 </div>
 
 <script>
+    $('#id_member').html("");
+    $('#id_project_team').prop("selectedIndex", -1);
     $("#id_project_team").removeAttr("multiple", "");
+    $('#id_project_team').attr( 'readOnly' , 'true' );
+    $('#id_project_team').attr('data-live-search', "true");
+    $('#id_project_team').selectpicker({
+        size: 3
+    });
+    
 
+    // member    
+    $('#id_member').attr('data-live-search', "true"); 
+    $('#id_member').selectpicker({
+        size: 3
+    });
 
-    $('#id_member').on('input', function () {
-        var member = $(this).val();
+    // responsibility
+    $('#id_responsibility').attr('data-live-search', "true"); 
+    $('#id_responsibility').selectpicker({
+        size: 3
+    });
 
-        var projectTeam = document.getElementById('id_project_team').value;
-        console.log(projectTeam)
+    $("#id_project_team").prop("selectedIndex", -1);
+    $("#id_project_team").prepend('<option value="-1"> -----Select Team----- </option>');
+    $("#id_project_team").selectpicker('refresh');
+
+    // on selecting project team
+    $('#id_project_team').on('change', function () {
+    
+        var projectTeam = $(this).val();
 
         $.ajax({
             url: '{% url 'validateProjectTeamAssigned' %}',
 
             data: {
-                'projectTeam': projectTeam,
-                'member': member
+               project_team: projectTeam
             },
             dataType: 'json',
             success: function (data) {
-                if (data.is_assigned) {
-                    $("#validate_member_name").show();
-                    document.getElementById('id_member').style.borderColor = "red";
-                    document.getElementById("btnAddProjectMember").disabled = true;
-                } else {
-                    $("#validate_member_name").hide();
-                    document.getElementById('id_member').style.borderColor = "#e7e7e7";
-                    document.getElementById("btnAddProjectMember").disabled = false;
+
+                var newData = JSON.parse(data.users);
+                console.log(newData);
+                let actual = '';
+                $("#id_member").html("");
+                $("#id_member").prepend('<option value="-1"> -----Select Member----- </option>');
+                for(i=0; i<newData.length; i++){
+                    actual = newData[i];
+                    
+                    $('#id_member').append('<option value="' + actual["pk"] + '">' + actual["fields"]["first_name"] + " " + actual["fields"]["last_name"] + '</option>');
+                    $("#id_member").selectpicker('refresh');
                 }
+                    
             }
         });
     });
