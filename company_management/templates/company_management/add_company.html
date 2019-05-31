@@ -6,7 +6,25 @@
             {% csrf_token %}
             <div class="row col-12">
                 <div class="col-6">
-                    {{ form.domain|as_crispy_field }}
+
+                    <div class="checkbox">
+                        <label>
+                            <input id="domainCheck" type="checkbox"> Has Domain
+                        </label>
+                    </div>
+
+                    <div id="div_id_domain" class="form-group">
+
+                         <label for="id_domain" class="col-form-label">Domain <a href="#" onclick="AddDomain2();">
+                             <i style="font-size: 151%; color: #5d5de6;" class="fa fa-plus"></i></a>
+                         </label>
+                        <div class="">
+                          <select name="domain" class="select form-control" id="id_domain">
+                              <option selected="" value="" disabled>-----Select Domain----</option>
+
+                            </select>
+                        </div>
+                    </div>
 
                     {{ form.category|as_crispy_field }}
                     {{ form.name|as_crispy_field }}
@@ -25,13 +43,46 @@
                         </button>
                     </div>
                 </div>
-
             </div>
         </form>
     </div>
 </div>
 
 <script>
+    $(document).ready(function () {
+
+
+        $('#id_domain').click(function () {
+            $.ajax({
+                url: '{% url 'fetchDomainList' %}',
+                data: {},
+                dataType: 'json',
+                success: function (data) {
+                    var res = JSON.parse(data.perm);
+                    if (res !== '' && res.length > 0) {
+                        $('#id_domain').html('');
+
+                        for (i in res) {
+                            $('#id_domain').append('<option value="' + res[i].pk + '">' + res[i].fields.name + '</option>');
+                        }
+                    }
+                }
+            });
+        });
+    });
+
+    var ckbox = $('#domainCheck');
+
+    $('input').on('click',function () {
+        if (ckbox.is(':checked')) {
+            alert('You have Checked it');
+            $('#div_id_domain').show();
+        } else {
+            $('#div_id_domain').hide();
+        }
+     });
+
+
 
     $("#id_category_value").attr("placeholder", "Enter Company Category");
     $("#id_description").attr("placeholder", "Enter Description");
@@ -60,4 +111,50 @@
             }
         });
     });
+
+    function AddDomain2() {
+        $.confirm({
+            title: 'Add Domain!',
+            content: '' +
+            '<div class="form-group">' +
+            '<label>Domain Name<span class="asteriskField text-danger">*</span></label>' +
+            '<input type="text" placeholder="Your name" class="dname form-control" required />' +
+            '</div>'+
+            '<div class="form-group">' +
+            '<label>Description</label>' +
+            '<input type="text" placeholder="Domain Description" class="desc form-control"/>' +
+            '</div>',
+            buttons: {
+                formSubmit: {
+                    text: 'Submit',
+                    btnClass: 'btn-blue',
+                    action: function () {
+                        var name = this.$content.find('.dname').val();
+                        var desc = this.$content.find('.desc').val();
+                        if(!name){
+                            $.alert('Please provide a valid Domain name');
+                            return false;
+                        }
+                        else{
+                            $.ajax({
+                                type: "GET",
+                                cache: false,
+                                data: {
+                                    dname: name,
+                                    desc: desc
+                                },
+                                url: '{% url 'addDomains2' %}',
+                                success: function (resp) {
+
+                                }
+                            });
+                        }
+                    }
+                },
+                cancel: function () {
+                    //close
+                },
+            }
+        });
+    }
 </script>

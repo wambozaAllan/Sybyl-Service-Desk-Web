@@ -152,9 +152,8 @@
                     </li>
 
                     <li>
-                        <a class="has-arrow  " href="#" aria-expanded="false"><i class="fa fa-bar-chart"></i><span
-                                class="hide-menu">User
-              Teams</span></a>
+                        <a class="has-arrow  " href="#" aria-expanded="false"><i class="fa fa-bar-chart"></i>
+                            <span class="hide-menu">User Teams</span></a>
                         <ul aria-expanded="false" class="collapse">
                             <li><a href="{% url 'listTeams' %}">List of User Teams</a></li>
                             <li><a href="{% url 'addTeam' %}">Add User Team</a></li>
@@ -170,8 +169,8 @@
                         <a class="has-arrow  " href="#" aria-expanded="false"><i class="fa fa-suitcase"></i><span
                                 class="hide-menu">Companies</span></a>
                         <ul aria-expanded="false" class="collapse">
-                            <li><a href="{% url 'listCompanies' %}">List of Companies</a></li>
-                            <li><a href="{% url 'addCompany' %}">Add Company</a></li>
+                            <li><a href="{% url 'listCompanies' %}"><i class="fa fa-tasks"></i> List of Companies</a></li>
+                            <li><a href="{% url 'listDomains' %}"><i class="fa fa-tasks"></i> Company Domains</a></li>
                         </ul>
                     </li>
 
@@ -212,9 +211,7 @@
                         <a class="has-arrow" href="#" aria-expanded="false"><i class="fa fa-cogs"></i><span
                                 class="hide-menu">SETTINGS</span></a>
                         <ul aria-expanded="false" class="collapse">
-                            <li><a href="{% url 'listDomains' %}"><i class="fa fa-tasks"></i> Company Domains</a></li>
-                            <li><a href="{% url 'listCategories' %}"><i class="fa fa-list-alt"></i> Company
-                                Categories</a></li>
+                            <li><a href="{% url 'listCategories' %}"><i class="fa fa-list-alt"></i> Company Categories</a></li>
                             <li><a href="{% url 'listAllPriorities' %}"><i class="fa fa-list"></i> Priorities</a></li>
                             <li><a href="{% url 'listAllStatuses' %}"><i class="fa fa-list"></i> Statuses</a></li>
                             <li><a href="{% url 'listAllRoles' %}"><i class="fa fa-list"></i> Member Roles</a></li>

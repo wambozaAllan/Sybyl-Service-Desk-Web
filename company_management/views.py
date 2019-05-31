@@ -8,7 +8,10 @@ from django.shortcuts import redirect
 
 from .forms import CompanyForm, DepartmentForm, BranchForm, BranchContactForm, BranchEmailForm
 
-from .models import Company, Department, Branch, CompanyDomain, CompanyCategory, BranchPhoneContact, BranchEmailAddresses
+from .models import Company, Department, Branch, CompanyDomain, CompanyCategory, BranchPhoneContact, \
+    BranchEmailAddresses
+
+from django.core import serializers
 
 
 class AddCompanyDomain(CreateView):
@@ -259,8 +262,6 @@ class ListBranches(generic.ListView):
         return Branch.objects.all()
 
 
-
-
 # Detailed view of a specific branch
 class DetailsBranch(generic.DetailView):
     model = Branch
@@ -374,3 +375,25 @@ class UpdateBranchEmails(UpdateView):
     fields = ['email_address', 'secondary_email', 'branch']
     template_name = 'company_management/update_branch_email.html'
     success_url = reverse_lazy('listBranchEmails')
+
+
+def fetch_domain_list(request):
+    domain_list = CompanyDomain.objects.all()
+
+    data = {
+        'perm': serializers.serialize("json", domain_list)
+    }
+    return JsonResponse(data)
+
+
+def add_select_company_domain(request):
+    dname = request.GET.get('dname')
+    desc = request.GET.get('description')
+
+    if desc != "":
+        company_domain = CompanyDomain(name=dname, description=desc)
+    else:
+        company_domain = CompanyDomain(name=dname)
+    company_domain.save()
+
+    return JsonResponse({})

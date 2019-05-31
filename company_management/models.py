@@ -6,7 +6,7 @@ from django.urls import reverse
 
 class CompanyDomain(models.Model):
     name = models.CharField(max_length=250)
-    description = models.CharField(max_length=255, blank=True)
+    description = models.CharField(max_length=255, blank=True, null=True)
     created_time = models.DateTimeField(auto_now_add=True)
     modified_time = models.DateTimeField(auto_now=True)
 
