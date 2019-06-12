@@ -1,8 +1,10 @@
-{% load crispy_forms_tags %}
+<!-- {% load crispy_forms_tags %}
+
 <div class="card-body">
     <div class="basic-form">
-        <form class="form-horizontal" action="{% url 'addProjectTeam' %}" method="post" enctype="multipart/form-data">
+        <form class="form-horizontal" action="" method="post" enctype="multipart/form-data">
             {% csrf_token %}
+
             <div class="row col-12">
                 <div class="col-6">
                     {{ form.name|as_crispy_field }}
@@ -13,18 +15,7 @@
                     </medium>
                 </div>
             </div>
-
-            <div class="row col-12">
-                <div class="col-6">
-                    {{ form.project|as_crispy_field }}
-                    <medium id="validate_project_name" class="text-muted hidden">
-                        <font color="red">
-                            Project already assigned team
-                        </font>
-                    </medium>
-                </div>
-            </div>
-
+d
             <div class="row col-12">
                 <div class="col-6">
                     <button id="btnAddProjectTeam" class="btn btn-success pull-right">
@@ -95,4 +86,4 @@
         });
     });
 
-</script>
+</script> -->
