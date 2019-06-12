@@ -10,7 +10,7 @@
 		<!-- Bread crumb -->
 		<div class="row page-titles">
 			<div class="col-md-5 align-self-center">
-				<h3 class="text-primary">Dashboard</h3>
+				<h3 class="text-primary">Incidents</h3>
 			</div>
 			<div class="col-md-7 align-self-center">
 				<ol class="breadcrumb">
@@ -60,23 +60,22 @@
 											<td>{{ incident.title }}</td>
 											<td>{{ incident.status }}</td>
 											<td>{{ incident.priority}}</td>
-											<td><input type="text" style="background-color: {{ incident.priority.color }}; border: 0;"></input></td>
+											<td>
+												<input type="text" style="background-color: {{ incident.priority.color }}; border: 0;"></input>
+											</td>
 											<td>{{ incident.creator }}</td>
 											
-											<td>
-												<select class="form-control" id="list_select">
-													{% for assigned in incident.assignee.all%}
-														<option value="{{assigned.id}}">{{ assigned }}</option>
-													{% endfor %}
-												</select> 
+											<td class="text-center">
+												<span class="badge badge-pill badge-success">{{ incident.assigned }}</span>
 											</td>
 											
-											<td><a
-												href="{% url 'detailsIncident' incident.id %}">View</a>
-												&nbsp; <a
-												href="{% url 'updateIncident' incident.id %}">Update</a>
-												&nbsp; <a href="#"><i
-													class="mdi mdi-delete font-30 align-middle mr-2"></i></a></td>
+											<td>
+												<a href="{% url 'detailsIncident' incident.id %}">View</a>
+												&nbsp; 
+												<a href="{% url 'updateIncident' incident.id %}">Update</a>
+												&nbsp; 
+												<a href="#"><i class="mdi mdi-delete font-30 align-middle mr-2"></i></a>
+											</td>
 										</tr>
 										{% endfor %}
 									</tbody>
