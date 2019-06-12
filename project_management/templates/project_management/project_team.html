@@ -1,0 +1,199 @@
+{% load crispy_forms_tags %}
+{% csrf_token %}
+
+<div class="project_team">
+    <input id="project_id" type="hidden" value="{{ project_id }}"/>
+    <input id="team_id" type="hidden" value="{{ team_id }}"/>
+    <input id="project_name" type="hidden" value="{{ project_name }}"/>
+    <input id="team_name" type="hidden" value="{{ team_name }}"/>
+
+
+{% if state %}
+<div class="card-body">
+    <h4 class="card-title">{{ team_name }} </h4>
+    <div class="row">
+        <div class="col-md-12">
+            <button id="" class="btn btn-info pull-right" onclick="addProjectTeamMember('{{ team_id }}', '{{ team_name }}', '{{ project_id }}', '{{project_name}}');">
+                <i class="fa fa-fw fa-lg fa-plus"></i>Add Project Team Members
+            </button>
+        </div>
+    </div>
+    <div class="table-responsive" >
+        <table id="table_teams" class="display nowrap table table-hover"
+                cellspacing="0"
+                width="100%">
+            <thead>
+
+            <tr>
+                <th>#</th>
+                <th>Member Name</th>
+                <th>Role</th>
+                <th class="text-center">Action</th>
+            </tr>
+            </thead>
+            <tbody>
+            {% for member in members %}
+            <tr>
+                <td>
+                    {{forloop.counter}}
+                </td>
+                <td>
+                    {{ member.member }}
+                </td>
+                <td>
+                    <span class="badge badge-pill badge-success">{{ member.responsibility }}</span>
+                </td>
+                <td class="text-center">
+                    <button class="btn btn-outline-success btn-sm"
+                            onclick="editProjectTeamMember('{{ member.id }}', '{{ member }}')">
+                        <i title="Edit Team Member" class="fa fa-edit"></i>
+                    </button>
+
+                    <button onclick="deleteProjectTeamMember({{ member.id }}, '{{ member.member }}', '{{ team.id }}', '{{ team.name }}')"
+                            class="btn btn-outline-danger btn-sm" type="button">
+                        <i title="Delete Team Member" class="fa fa-remove"></i>
+                    </button>
+                </td>
+            </tr>
+            {% endfor %}
+            
+            </tbody>
+        </table>
+    </div>
+</div>
+
+
+{% else %}
+    <h3 class="font-weight-bold">Add Project Team: </h3>
+    <button id="" class="btn btn-info " onclick="functAddProjectTeam('{{ project_id}}', '{{ project_name }}');">
+        <i class="fa fa-fw fa-lg fa-plus"></i>Create Project Team 
+    </button>    
+
+{% endif %}
+</div>
+
+<script>
+    $('#table_teams').DataTable();
+
+    var team_id = $('#team_id').val();
+    var project_id = $('#project_id').val();
+    var project_name = $('#project_name').val();
+    var team_name = $('#team_name').val();
+
+    function functAddProjectTeam(project_id, project_name){
+        url_data = "{% url 'addProjectTeam'%}";
+        $.confirm({
+            title: '<h3>Add Project Team</h3>',
+                content: '' +
+                '<form action="" class="formName">' +
+                '<div class="form-group">' +
+                '<label>Project Team Name<span class="asteriskField">*</span></label>' +
+                '<input type="text" placeholder="Enter Team Name" class="team_name form-control" id="id_team" required />' +
+                '<medium id="validate_team_name" class="text-muted hidden">' +
+                        '<font color="red">Team name already created</font>' +
+                '</medium>'+
+                '</div>' +
+                '</form>',
+            type: 'blue',
+            typeAnimated: true,
+            boxWidth: '35%',
+            useBootstrap: false,
+            closeIcon: true,
+                buttons: {
+                    
+                    formSubmit: {
+                        text: 'Submit',
+                        btnClass: 'btn-blue',
+                        action: function () {
+                            
+                            var teamName = this.$content.find('.team_name').val();
+                            
+                            if(!teamName){
+                                $.alert('Please provide a valid name');
+                                return false;
+                            }
+
+                            $.ajax({
+                                url: '{% url 'validateProjectTeamName' %}',
+                                data: {
+                                    'teamname': teamName
+                                },
+                                dataType: 'json',
+                                success: function (data) {
+                                    if (data.is_taken) {
+                                        $.alert('Name already assigned');
+                                    } else {
+
+
+                                        $.ajax({
+                                            type: "GET",
+                                            cache: false,
+                                            data: {
+                                                project_id: project_id,
+                                                team_name: teamName,
+                                                project_name: project_name
+                                            },
+                                            url: url_data,
+                                            success: function (resp) {
+                                                $.alert({
+                                                    title: 'Alert!',
+                                                    content: 'Project Team has been Added!',
+                                                });
+                                                $('.project_team').html(resp);
+                                            }
+                                        });
+                                    }
+                                }
+                            });
+   
+                        }
+                    },
+                    cancel: function () {
+                        //close
+                    },
+                },
+
+                
+        });
+
+         
+    }
+
+    function addProjectTeamMember(team_id, team_name, project_id, project_name) {
+            urldata = "{% url 'addProjectTeamMember'%}";
+            $.ajax({
+                type: "GET",
+                cache: false,
+                data: {
+                    team_id: team_id,
+                    team_name: team_name,
+                    project_id: project_id,
+                    project_name: project_name
+                },
+                url: urldata,
+                success: function (resp) {
+                    $.confirm({
+                        title: '<h3>Add Project Members: </h3>',
+                        content: '' + resp,
+                        type: 'blue',
+                        theme: 'material',
+                        typeAnimated: true,
+                        boxWidth: '50%',
+                        height: '40%',
+                        useBootstrap: false,
+                        closeIcon: true,
+                        buttons: {
+                            close: {
+                                text: 'Close',
+                                btnClass: 'btn-gray',
+                                action: function () {
+                                }
+                            }
+                        }
+                    });
+                }
+            });
+        }
+
+</script>
+
