@@ -1,0 +1,57 @@
+<div class="card-body">
+    <div class="card-title">
+        <div class="row">
+            <div class="col-10">
+                <h4 class="card-title">Milestones</h4>
+            </div>
+
+            <div class="col-2">
+                <a href="{% url 'new_milestone' %}" class="btn btn-info pull-right">
+                        <i class="fa fa-fw fa-lg fa-plus"></i>Add Milestones</a>
+            </div>
+        </div>
+        
+    </div>
+    <div class="table-responsive">
+        <table class="table table-hover" id="table_milestones">
+            <thead>
+                <tr>
+                    <th>#</th>
+                    <th>Name</th>
+                    <th>Start Date</th>
+                    <th>Project</th>
+                    <th>Status</th>
+                    <th>Progress</th>
+                </tr>
+            </thead>
+
+            <tbody>
+
+                {% for milestone in milestones %}
+
+                <tr>
+                    <td>{{ forloop.counter }}</td>
+                    <td><a href="{% url 'milestone_details' milestone.pk %}">{{ milestone.name }}</a></td>
+                    <td>{{ milestone.startdate }}</td>
+                    <td>{{ milestone.project }}</td>
+                    <td>{{ milestone.status }}</td>
+                    <td>{{ milestone.completion }}% </td>
+                </tr>
+                {% empty %}
+                <tr>
+                    <td colspan="4">No milestones currently. Add the first milestone.</td>
+                    </tr>
+                {% endfor %}
+
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<script>
+    $('#table_milestones').DataTable();
+</script>
+   
+
+
+
