@@ -1,0 +1,232 @@
+{% load crispy_forms_tags %}
+{% csrf_token %}
+
+<div class="project_team">
+    <input id="project_id" type="hidden" value="{{ project_id }}"/>
+    <input id="team_id" type="hidden" value="{{ team_id }}"/>
+    <input id="project_name" type="hidden" value="{{ project_name }}"/>
+    <input id="team_name" type="hidden" value="{{ team_name }}"/>
+</div>
+
+<div class="card-body">
+
+    <div class="row">
+        <div class="col-10">
+            <h4 class="card-title">Tasks</h4>
+        </div>
+
+        <div class="col-2">
+            <button id="add-task" class="btn btn-info pull-right" onclick="addTasks('{{project_id}}', '{{project_name}}');">
+                <i class="fa fa-fw fa-lg fa-plus"></i>Add Tasks
+            </button>
+        </div>
+    </div>
+    <br />
+    <div class="table-responsive">
+        <table class="table table-hover" id="table_tasks">
+            <thead>
+                <tr>
+                    <th>#</th>
+                    <th>Name</th>
+                    <th>Project</th>
+                    <th>Start-Date</th>
+                    <th>Status</th>
+                </tr>
+            </thead>
+
+            <tbody>
+                {% for task in tasks %}
+                <tr>
+                    <td>{{ forloop.counter }}</td>
+                    <td><a href="{% url 'task_details' task.pk %}">{{ task.name }}</a></td>
+                    <td>{{ task.project }}</td>
+                    <td>{{ task.end_date }}</td>
+                    <td>{{ task.status }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<form id="loginForm" style="display: none; padding: 5px;" class='col-12' >
+    <h3 style="text-align: center;">ADD TASK</h3>
+    <fieldset>
+    
+        <label> Project </label>
+        <input type="text" value="{{ project_name }}" id="project" class="form-control" style="margin-left: 0;"/> 
+
+        <input type='text' value="{{ project_id }}" class="form-control" style="display: none;" />
+
+        <label> Milestone<span class="asteriskField">*</span> </label>
+        <select id='id_milestone' class="select form-control" name="milestone"></select>
+
+        <label>Task Name <span class="asteriskField">*</span></label>
+        <input type="text" value="" class="form-control" required id="id_name"/> 
+
+        <label> Status<span class="asteriskField">*</span> </label>
+        <select id='id_status' class="select form-control" name="status"></select>
+
+        <label> Start Date </label>
+        <input type="" value="" class="form-control" id="id_startDate"/> 
+
+        <label> End Date </label>
+        <input type="" value="" class="form-control" id="id_endDate" /> 
+        
+        <label> Description</label>
+        <textarea class="form-control" id="id_description"></textarea>
+        <br>
+        <input type="submit" value="Create Task" class="form-control" id="btn-task"/>
+
+    </fieldset>
+</form>
+
+<script>
+    $("#table_tasks").DataTable();
+
+    $('#id_startDate').datepicker({
+        format: "mm/dd/yyyy",
+        autoclose: true
+    });
+
+    $('#id_endDate').datepicker({
+        format: "mm/dd/yyyy",
+        autoclose: true
+    });
+
+    $("#id_startDate").attr("placeholder", "mm/dd/yyyy");
+    $("#id_endDate").attr("placeholder", "mm/dd/yyyy");
+
+    $('#id_startDate').on('focus', function(){
+        var date = $(this).blur();
+    });
+
+    $('#id_endDate').on('focus', function(){
+        var date = $(this).blur();
+    });
+
+    function addTasks(project_id, project_name){
+        $('#loginForm').css('display', 'inline-block');
+
+        $('#project').attr( 'readOnly' , 'true' );
+
+        // milestone  
+        $('#id_milestone').attr('data-live-search', "true"); 
+        $('#id_milestone').selectpicker({
+            size: 3
+        });
+
+        alertify.genericDialog || alertify.dialog('genericDialog',function(){
+            return {
+                main:function(content){
+                    this.setContent(content);
+                },
+                setup:function(){
+                    return {
+                        focus:{
+                            element:function(){
+                                return this.elements.body.querySelector(this.get('selector'));
+                            },
+                            select:true
+                        },
+                        options:{
+                            basic:true,
+                            maximizable:false,
+                            resizable:false,
+                            padding:false
+                        }
+                    };
+                },
+                settings:{
+                    selector:undefined
+                }
+            };
+        });
+        //render form
+        alertify.genericDialog ($('#loginForm')[0]); 
+
+        urldata = "{% url 'addProjectTasks' %}";
+        $.ajax({
+            type: "GET",
+            cache: false,
+            data: {
+                project_id: project_id
+            },
+            url: urldata,
+            success: function (data) {
+                let statuses = JSON.parse(data.statuses);
+                let milestones = JSON.parse(data.milestones);
+                console.log(statuses);
+                console.log(milestones);
+
+                let actual = '';
+                $("#id_status").html("");
+                $("#id_status").prepend('<option value=""> -----Choose Status----- </option>');
+                for(i=0; i<statuses.length; i++){
+                    actual = statuses[i];
+                    
+                    $('#id_status').append('<option value="' + actual["pk"] + '">' + actual["fields"]["name"] + '</option>');
+                    $("#id_status").selectpicker('refresh');
+                }
+
+                let mile = '';
+                $("#id_milestone").html("");
+                $("#id_milestone").prepend('<option value=""> -----Choose Milestone----- </option>');
+                for(i=0; i<milestones.length; i++){
+                    mile = milestones[i];
+                    
+                    $('#id_milestone').append('<option value="' + mile["pk"] + '">' + mile["fields"]["name"] + '</option>');
+                    $("#id_milestone").selectpicker('refresh');
+                }
+
+                // on clicking submit button
+                $('#btn-task').on('click', function(){
+                    var miles = $('#id_milestone').val();
+                    var status = $('#id_status').val();
+                    var name = $('#id_name').val();
+                    var start = $('#id_startDate').val();
+                    var end = $('#id_endDate').val();
+                    var description = $('#id_description').val();
+
+                    if (miles !== ""){
+                        console.log("miles is "+miles);
+                        console.log("status is "+status);
+                        console.log("end is "+end);
+
+                        $.ajax({
+                            type: 'GET',
+                            cache: false,
+                            data: {
+                                project_id: project_id,
+                                task_name: name,
+                                status: status,
+                                milestone: miles,
+                                start_date: start,
+                                end_date: end,
+                                description: description
+                            },
+                            url: "{% url 'saveProjectTask' %}",
+                            success: function(data){
+                                let success = JSON.parse(data.success)
+                                console.log("gwe oli "+success);
+                                $.alert({
+                                    title: 'Alert!',
+                                    content: 'Simple alert!',
+                                });
+                            }
+
+                        });
+                    }  
+
+                })
+
+            }
+        });
+
+    }
+
+    
+
+       
+
+</script>
