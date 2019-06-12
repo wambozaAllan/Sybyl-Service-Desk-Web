@@ -16,12 +16,13 @@ from static.fusioncharts import FusionCharts
 from django.template import loader
 from django.core import serializers
 
+
 from django.contrib.auth.decorators import user_passes_test, permission_required
 
 from .models import Project, Milestone, Task, ProjectDocument, Incident, Priority, Status, ProjectTeam, ProjectTeamMember, Role, ProjectForumMessages, ProjectForum, ProjectForumMessageReplies
 from user_management.models import User
 from company_management.models import Company, CompanyCategory
-from .forms import CreateProjectForm, MilestoneForm, TaskForm, DocumentForm, ProjectUpdateForm, MilestoneUpdateForm, ProjectForm
+from .forms import CreateProjectForm, MilestoneForm, TaskForm, DocumentForm, ProjectUpdateForm, MilestoneUpdateForm, ProjectForm, IncidentForm
 from django.contrib.auth.mixins import PermissionRequiredMixin
 from django.http import JsonResponse
 from django.db.models import Count
@@ -198,8 +199,11 @@ class MilestoneCreateView(LoginRequiredMixin, CreateView):
         finish = form.cleaned_data['enddate']
         current_user = self.request.user
         name = current_user.username
-        form.save()
-        cxt = {
+        
+        milestone = Milestone(name=milestone_name, project=project, startdate=start, enddate=finish, creator=current_user)
+        milestone.save()
+
+        context = {
             'name': name,
             'milestone_name': milestone_name,
             'project': project,
@@ -208,7 +212,7 @@ class MilestoneCreateView(LoginRequiredMixin, CreateView):
         }
 
         subject = 'New Milestone | Action Required'
-        message = get_template('mails/new_milestone_email.html').render(cxt)
+        message = get_template('mails/new_milestone_email.html').render(context)
         email_from = settings.EMAIL_HOST_USER
         recipient_list = [current_user.email, 'ampumuzadickson@gmail.com']
         mail_to_send = EmailMessage(subject, message, to=recipient_list, from_email=email_from)
@@ -233,6 +237,40 @@ def milestone_list_by_project(request, project_id):
     return render(request, 'project_management/milestone_list.html', {'milestones': project_milestones})
 
 
+def list_project_milestones(request):
+    """
+    list project specific milestones
+    """
+    project_id = request.GET.get('project_id')
+    print(f"milestone project id is {project_id}")
+
+    project = Project.objects.get(id=project_id)
+
+    template = loader.get_template('project_management/list_project_milestones.html')
+
+    milestones_exist = Milestone.objects.filter(project_id=project.id).exists()
+    if milestones_exist:
+        milestones = Milestone.objects.filter(project_id=project.id)
+        # tasks = Task.objects.filter(milestone_id)
+
+        context = {
+            'project_id': project.id,
+            'project_name': project.name,
+            'milestones': milestones
+        }
+
+        return HttpResponse(template.render(context, request))
+
+    else:
+        context = {
+            'project_id': project.id,
+            'project_name': project.name,
+            'milestones': ''
+        }
+
+        return HttpResponse(template.render(context, request))
+        
+
 def load_milestones(request):
     projects = Project.objects.all
     return render(request, 'project_management/milestone_list.extended.html', {'projects': projects})
@@ -246,6 +284,10 @@ def load_task_milestoneI_list(request):
 
 
 class MilestoneDetailView(DetailView):
+    model = Milestone
+    context_object_name = 'milestone'
+    template_name = 'project_management/milestone_detail.html'
+
     def get_queryset(self):
         return Milestone.objects.all()
 
@@ -257,21 +299,136 @@ class MilestoneUpdateView(UpdateView):
     success_url = reverse_lazy('milestone_list')
 
 
-class TaskCreateView(CreateView):
+# TASKS
+class TaskCreateView(LoginRequiredMixin, CreateView):
     model = Task
-    form_class = TaskForm
+    fields = ('name', 'description', 'project', 'milestone', 'start_date', 'end_date', 'status')
+    template_name = 'project_management/task_form.html'
+    success_url = reverse_lazy('listTasks')
 
-    success_url = reverse_lazy('task_list')
+    def form_valid(self, form):
+        """auto registering loggedin user"""
+        form.instance.creator = self.request.user
+        return super().form_valid(form)
+
+
+def add_project_tasks(request):
+    project_id = request.GET.get('project_id')
+
+    project = get_object_or_404(Project, pk=project_id)
+    print(f"project is {project.id}")
+
+    milestones_exist = Milestone.objects.filter(project_id=project.id).exists()
+    print(milestones_exist)
+    all_statuses = Status.objects.all()
+
+    if milestones_exist:
+        milestones = Milestone.objects.filter(project_id=project.id)
+        
+        data = {
+            'milestones': serializers.serialize("json", milestones),
+            'statuses': serializers.serialize("json", all_statuses)
+        }
+        
+        return JsonResponse(data)
+
+    else:
+        data = {
+            'milestones': '',
+            'statuses': serializers.serialize("json", all_statuses)
+        }
+
+        return JsonResponse(data)
+
+
+def save_project_tasks(request):
+    """
+    save project tasks
+    """
+    project_id = request.GET.get('project_id')
+    name = request.GET.get('task_name')
+    status_id = request.GET.get('status')
+    milestone_id = request.GET.get('milestone')
+    description = request.GET.get('description')
+    start_date = request.GET.get('start_date')
+    end_date = request.GET.get('end_date')
+    created_by = request.user.id
+
+    print(f"created by {created_by}")
+
+    print(f"saved project id is {project_id}")
+    print(f"description is {description}")
+    print(f"milestone is {milestone_id}")
+    print(f"status is {status_id}")
+    print(f"name is {name}")
+    print(f"start is {start_date}")
+    print(f"end is {end_date}")
+
+    project = Project.objects.get(id=project_id)
+    status = Status.objects.get(id=status_id)
+    milestone = Milestone.objects.get(id=milestone_id, project_id=project.id)
+    start = datetime.datetime.strptime(start_date, "%m/%d/%Y").strftime("%Y-%m-%d")
+    end = datetime.datetime.strptime(end_date, "%m/%d/%Y").strftime("%Y-%m-%d")
+
+    if name != "":
+        task = Task(name=name, description=description, status_id=status.id, milestone_id=milestone.id, project_id=project.id, start_date=start, end_date=end, creator_id=created_by)
+        task.save()
+
+        data = {
+            "state": "Task created"
+        }
+    
+    else:
+        data = {
+            "state": "Failed"
+        }
+
+    return JsonResponse(data)
+
+
+def tasklist_by_project(request):
+    """
+    Tasks allocated to project
+    """
+    project_id = request.GET.get('project_id')
+    project = get_object_or_404(Project, pk=project_id)
+
+    template = loader.get_template('project_management/list_project_tasks.html')
+
+    tasks = Task.objects.filter(project_id= project_id).exists()
+    
+    if tasks:
+        project_tasks = Task.objects.filter(project_id=project.id)
+
+        context = {
+            'project_name': project.name,
+            'project_id': project.id,
+            'tasks': project_tasks
+        }
+
+        return HttpResponse(template.render(context, request))
+
+    else:
+        context = {
+            'project_name': project.name,
+            'project_id': project.id,
+            'tasks': ''
+        }
+
+        return HttpResponse(template.render(context, request))
 
 
 class TaskListView(ListView):
-    model = Task
+    template_name = 'project_management/task_list.html'
     context_object_name = 'tasks'
 
+    def get_queryset(self):
+        return Task.objects.all()
 
-def task_list_by_project(request, project_id):
-    project_tasks = Task.objects.filter(project_id=project_id)
-    return render(request, 'project_management/task_list.html', {'tasks': project_tasks})
+
+# def task_list_by_project(request, project_id):
+#     project_tasks = Task.objects.filter(project_id=project_id)
+#     return render(request, 'project_management/task_list.html', {'tasks': project_tasks})
 
 
 def task_list_by_milestone(request, milestone_id):
@@ -302,6 +459,7 @@ class TaskUpdateView(UpdateView):
 
 
 class TaskDetailView(DetailView):
+
     def get_queryset(self):
         return Task.objects.all()
 
@@ -312,11 +470,94 @@ def load_task_milestones(request):
     return render(request, 'project_management/task_milestone_dropdown_list_options.html', {'milestones': milestones})
 
 
-class AddIncident(CreateView):
+def change_status_on_task(request, pk):
+    """update incident status if incident is linked to task"""
+    task_status = request.GET.get('status')
+    
+    print("task status is "+task_status)
+    print("task id is "+str(pk))
+
+    incident_exists = Incident.objects.filter(task_id=pk).exists()
+    
+    if incident_exists == True:
+        incident = Incident.objects.get(task_id=pk)
+        updateIncidentStatus = Incident.objects.filter(pk=incident.id).update(status=task_status)
+    else:
+        print("no about to reach there")
+
+
+
+class AddIncident(LoginRequiredMixin, CreateView):
     model = Incident
-    fields = ['project', 'title', 'description', 'status', 'priority', 'assignee', 'creator', 'document', 'image']
+    fields = ['project', 'title', 'description', 'status', 'priority', 'assignee', 'document', 'image', 'task']
     template_name = 'project_management/add_incident.html'
     success_url = reverse_lazy('listIncidents')
+
+    def form_valid(self, form):
+        """auto registering loggedin user"""
+        form.instance.creator = self.request.user
+        return super().form_valid(form)
+
+
+def list_project_incidents(request):
+    """
+    incident for specific project
+    """
+    project_id = request.GET.get('project_id')
+    print(f"incident project id is {project_id}")
+    
+    template = loader.get_template('project_management/list_project_incidents.html')
+
+    project = Project.objects.get(id=project_id)
+    state = True
+
+    if ProjectTeam.objects.filter(project_id=project_id).exists():
+        team = ProjectTeam.objects.get(project_id=project.id)
+        team_id = team.id
+        team_members = ProjectTeamMember.objects.filter(project_team=int(team_id))
+        if team_members:
+            if Incident.objects.filter(project_id=project.id).exists():
+                team_member = ProjectTeamMember.objects.filter(member=request.user)
+                
+                incidents = Incident.objects.filter(Q(creator=request.user)|Q(assignee__in=team_member), project_id=project.id).annotate(assigned=Count('assignee', distinct=True))
+                state = True
+                context = {
+                    'project_id': project.id,
+                    'project_name': project.name,
+                    'incidents': incidents,
+                    'state': state
+                }
+
+                print(f"context object is {context}")
+
+                return HttpResponse(template.render(context, request))
+        
+            else:
+                state=True
+                context={
+                    'project_id': project.id,
+                    'project_name': project.name,
+                    'incidents': '',
+                    'state': state
+                }
+                return HttpResponse(template.render(context, request))
+
+        else:
+            state = False
+            context={
+                    'project_id': project.id,
+                    'project_name': project.name,
+                    'state':state
+                }
+            return HttpResponse(template.render(context, request))
+    else:
+            state = False
+            context={
+                    'project_id': project.id,
+                    'project_name': project.name,
+                    'state':state
+                }
+            return HttpResponse(template.render(context, request))
 
 
 class ListIncidents(ListView):
@@ -324,7 +565,10 @@ class ListIncidents(ListView):
     context_object_name = 'all_incidents'
 
     def get_queryset(self):
-        return Incident.objects.all()
+        team_members = ProjectTeamMember.objects.filter(member=self.request.user)
+        # return Incident.objects.filter(Q(assignee__in=team_members)|Q(creator=self.request.user)).annotate(assigned=Count('assignee'))
+        return Incident.objects.annotate(assigned=Count('assignee', distinct=True)).filter(Q(assignee__in=team_members)|Q(creator=self.request.user))
+        # return Incident.objects.annotate(assigned=Count('assignee')).filter(creator=self.request.user)
 
 
 class DetailsIncident(DetailView):
@@ -409,24 +653,12 @@ def ongoingProjects(request):
     return render(request, 'project_management/ongoingprojects.html')
 
 
-def listOfIncidents(request):
-    return render(request, 'project_management/incidents.html')
-
-
 def listOfMilesoneIncidents(request):
     return render(request, 'project_management/milestoneincidents.html')
 
 
 def listOfTaskIncidents(request):
     return render(request, 'project_management/taskincidents.html')
-
-
-def incident(request):
-    return render(request, 'project_management/incident.html')
-
-
-def newIncident(request):
-    return render(request, 'project_management/newincident.html')
 
 
 def previousProjects(request):
@@ -717,11 +949,70 @@ def format_project_code(request):
 
 
 # PROJECT TEAMS
-class AddProjectTeam(CreateView):
-    model = ProjectTeam
-    template_name = 'project_management/add_project_team.html'
-    fields = ['name', 'project']
-    success_url = reverse_lazy('listProjectTeams')
+def add_project_team(request):
+    """
+    view to add a project_team
+    """
+
+    project_id = request.GET.get('project_id')
+    project_name = request.GET.get('project_name')
+    team_name = request.GET.get('team_name')
+
+    template = loader.get_template('project_management/project_team.html')
+
+    team = ProjectTeam(name=team_name, project_id=project_id)
+    team.save()
+    team_id = team.id
+
+    context = {
+        'team_name': team_name,
+        'project_name': project_name,
+        'project_id': project_id,
+        'team_id': team_id,
+        'state': True
+    }
+
+    return HttpResponse(template.render(context, request))
+
+
+def list_project_team(request):
+    """
+    list team members on choosing project
+    """
+    project_id = request.GET.get('project_id')
+    
+    template = loader.get_template('project_management/project_team.html')
+
+    project = Project.objects.get(id=project_id)
+
+    if ProjectTeam.objects.filter(project_id=project.id).exists():
+        team = ProjectTeam.objects.get(project_id=project.id)
+        state = True
+        project_team_id = team.id
+
+        team_members = ProjectTeamMember.objects.filter(project_team=team.id)
+
+        context = {
+            'project_id': project.id,
+            'project_name': project.name,
+            'team_name': team.name,
+            'team_id': project_team_id,
+            'state': state,
+            'members': team_members
+        }
+
+        return HttpResponse(template.render(context, request))
+        
+    else:
+        state = False
+        context = {
+            'project_id': project.id,
+            'project_name': project.name,
+            'state': state
+        }
+        return render(request, 'project_management/project_team.html', context=context)
+
+    return render(request, 'project_management/project_team.html', context=None)
 
 
 class ListProjectTeams(ListView):
@@ -773,12 +1064,59 @@ def validateProjectAssigned(request):
     return JsonResponse(data)
 
 
+def check_project_team(request):
+    project_name = request.GET.get('projectname')
+    project_id = request.GET.get('projectid')
+    template = loader.get_template('project_management/project_team.html')
+
+
 # PROJECT TEAM MEMBERS
-class AddProjectTeamMember(CreateView):
-    model = ProjectTeamMember
-    template_name = 'project_management/add_team_member.html'
-    fields = ['member', 'project_team', 'responsibility']
-    success_url = reverse_lazy('listProjectTeams')
+def add_project_team_member(request):
+    team_id = request.GET.get('team_id')
+    team_name = request.GET.get('team_name')
+    project_id = request.GET.get('project_id')
+    project_name = request.GET.get('project_name')
+    
+    
+    template = loader.get_template('project_management/add_team_member.html')
+    context = {
+        'team_name': team_name,
+        'team_id': team_id,
+        'project_id': project_id,
+        'project_name': project_name
+    }
+
+    return HttpResponse(template.render(context, request))
+
+
+def save_team_member(request):
+    team_id = request.GET.get('project_team')
+    member = request.GET.get('member')
+    role_id = request.GET.get('responsibility')
+
+    user = User.objects.get(id=member)
+    role = Role.objects.get(id=role_id)
+    team = ProjectTeam.objects.get(id=team_id)
+
+    team_member = ProjectTeamMember(member=user, responsibility=role)
+    team_member.save()
+    team_member.project_team.add(team)
+
+    if team_member:
+
+        data = {
+            'team_member': team_member
+        }
+
+    else:
+        data = {
+            'team_member': ''
+        }
+
+    print(f"data is {data}")
+
+    
+    return JsonResponse(data)
 
 
 class ListProjectTeamMembers(ListView):
@@ -793,7 +1131,7 @@ class UpdateProjectTeamMember(UpdateView):
     model = ProjectTeamMember
     fields = ['responsibility']
     template_name = 'project_management/update_project_team_member.html'
-    success_url = reverse_lazy('listProjectTeams')
+    success_url = reverse_lazy('listProjectTeamMembers')
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -816,6 +1154,7 @@ def detail_team_member(request):
 
     return render(request, 'project_management/details_team_member.html', context)
 
+
 def validateProjectTeamAssigned(request):
     """ Assign members not already in team """
     project_team_id = request.GET.get('project_team')
@@ -826,6 +1165,7 @@ def validateProjectTeamAssigned(request):
 
     old = []
     new_users = set()
+    roles = Role.objects.all()
 
     if len(member_list) != 0:
         for member in member_list:
@@ -833,10 +1173,12 @@ def validateProjectTeamAssigned(request):
             old.append(old_user)
 
         all_users = User.objects.filter()
+        
 
         new_users = set(all_users).difference(set(old))
         data = {
-            'users': serializers.serialize("json", new_users)
+            'users': serializers.serialize("json", new_users),
+            'roles': serializers.serialize("json", roles)
         }
 
         return JsonResponse(data)
@@ -844,10 +1186,12 @@ def validateProjectTeamAssigned(request):
     else:
         new_users = User.objects.all().filter()
         data = {
-            'users': serializers.serialize("json", new_users)
+            'users': serializers.serialize("json", new_users),
+            'roles': serializers.serialize("json", roles)
         }
 
         return JsonResponse(data)
+
 
 def remove_project_team_member(request):
     team_id = request.GET.get('teamid')
@@ -868,6 +1212,7 @@ def remove_project_team_member(request):
     }
 
     return HttpResponse(template.render(context, request))
+
 
 def project_forum(request):
     project_name = request.GET.get('projectname')
