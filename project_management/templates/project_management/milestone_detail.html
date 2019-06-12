@@ -263,14 +263,6 @@
                                             </div>
                                             <div class="row col-8 mt-2">
                                                 <div class="col-4">
-                                                    Description
-                                                </div>
-                                                <div class="col-8">
-                                                    <h4>{{ object.description }} </h4>
-                                                </div>
-                                            </div>
-                                            <div class="row col-8 mt-2">
-                                                <div class="col-4">
                                                     Project
                                                 </div>
                                                 <div class="col-8">
@@ -353,6 +345,15 @@
                                                 </div>
                                                 <div class="col-8">
                                                     <h4>{{ object.enddate|timeuntil:object.time_now }}</h4>
+                                                </div>
+                                            </div>
+
+                                            <div class="row col-8 mt-2">
+                                                <div class="col-4">
+                                                    Description
+                                                </div>
+                                                <div class="col-8">
+                                                    <h4>{{ object.description|striptags }} </h4>
                                                 </div>
                                             </div>
                                         </div>
