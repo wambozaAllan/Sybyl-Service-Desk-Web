@@ -233,8 +233,9 @@
             </div>
             <div class="col-md-7 align-self-center">
                 <ol class="breadcrumb">
-                    <li class="breadcrumb-item"><a href="javascript:void(0)">Incidents</a></li>
-                    <li class="breadcrumb-item active">New</li>
+                    <li class="breadcrumb-item"><a href="javascript:void(0)">Home</a></li>
+                    <li class="breadcrumb-item"><a href="{% url 'milestone_list' %}">Milestones</a></li>
+                    <li class="breadcrumb-item active">Update Milestone</li>
                 </ol>
             </div>
         </div>
@@ -255,6 +256,9 @@
                                     <div class="col-6">
                                         {{ form.name|as_crispy_field }}
                                     </div>
+                                </div>
+
+                                <div class="row">
                                     <div class="col-6">
                                         {{ form.description|as_crispy_field }}
                                     </div>
@@ -307,4 +311,28 @@
     </div>
     <!-- End Page wrapper  -->
 </div>
+
+<script>
+        $(document).ready(function(){
+            $("#id_name").keypress(function(event) {
+                return /\D/.test(String.fromCharCode(event.keyCode));
+            });
+    
+            $('#id_project').removeAttr('multiple', "");
+            $('#id_project').attr('data-live-search', "true");
+            $('#id_project').selectpicker();
+            $('#id_project').selectpicker({
+                size: 4,
+            });
+    
+            $('#id_status').removeAttr('multiple', "");
+            $('#id_status').attr('data-live-search', "true");
+            $('#id_status').selectpicker();
+            $('#id_status').selectpicker({
+                size: 4,
+            });
+        })
+        
+    </script>
+    
 {% endblock %}
