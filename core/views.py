@@ -12,8 +12,10 @@ from django.http import HttpResponseRedirect
 
 from .forms import LoginForm
 from user_management.forms import CustomUserCreationForm
-from project_management.models import Project, Milestone, Incident, Company, Task
+from project_management.models import Project, Milestone, Incident, Company, Task, User
 from static.fusioncharts import FusionCharts
+from django.contrib.auth.hashers import make_password
+import datetime
 
 
 class SignUp(generic.CreateView):
@@ -54,10 +56,16 @@ class Login(LoginView):
         return render(request, self.template_name, {'form': form})
 
     def post(self, request):
+        user_login_state = False
         form = LoginForm()
         username = request.POST['username']
         password = request.POST['password']
-
+        user_exists = User.objects.get(username=username)
+        if user_exists is not None:
+            if user_exists.last_login is not None:
+                user_login_state = True
+            else:
+                user_login_state = False
         # Authenticate user
         user = authenticate(username=username, password=password)
         if user is not None:
@@ -73,7 +81,11 @@ class Login(LoginView):
                 request.session['company_id'] = user.company.id
                 request.session['branch'] = user.branch.name
                 request.session['department'] = user.department.name
-                return redirect("/home/")
+                if user_login_state:
+                    return redirect("/home/")
+                else:
+                    User.objects.filter(id=user.pk).update(last_login=None)
+                    return render(request, 'core/change_password.html', {'user_name': username, 'user_id': user.pk})
         return render(request, self.template_name, {'form': form})
 
 
@@ -131,3 +143,14 @@ def home(request):
                                               'total_milestones': total_milestones,
                                               'output': colchart.render()})
 
+
+def save_new_password(request):
+    template_name = 'core/login.html'
+    new_password = request.GET.get('new_password')
+    user_name = request.GET.get('user_name')
+    user_id = request.GET.get('user_id')
+    now = datetime.datetime.utcnow()
+    print('xxxxxxxxxxxxxx')
+    print(user_id)
+    User.objects.filter(id=int(user_id)).update(username=user_name, password=make_password(new_password), last_login=now.strftime('%Y-%m-%d %H:%M:%S'))
+    return redirect("/login/")

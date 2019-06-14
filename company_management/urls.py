@@ -10,6 +10,8 @@ urlpatterns = [
     path('companyBranchList/<int:pk>', views.companyBranchList.as_view(), name="companyBranchList"),
     path('validateCompanyName', views.validatCompanyName, name='validateCompanyName'),
     path('listCompanyBranches/<int:pk>/', views.ListCompanyBranches.as_view(), name='listCompanyBranches'),
+    path('saveCompany', views.save_company, name='saveCompany'),
+    path('saveCompanyUpdate', views.save_company_update, name='saveCompanyUpdate'),
 
     path('addDepartment/', views.AddDepartment.as_view(), name='addDepartment'),
     path('listDepartments/', views.ListDepartments.as_view(), name='listDepartments'),
@@ -46,4 +48,5 @@ urlpatterns = [
     path('deleteCategory/<int:pk>', views.DeleteCategory.as_view(), name="deleteCategory"),
     path('categoryCompany/<int:pk>', views.CompanyCategoryList.as_view(), name="categoryCompany"),
     path('validateCategoryName', views.validateCategoryName, name='validateCategoryName'),
+
 ]

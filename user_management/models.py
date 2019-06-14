@@ -7,20 +7,8 @@ from django.contrib.sessions.models import Session
 from company_management.models import Company, Branch, Department
 from django.http import HttpRequest
 
-
-class UserCategory(models.Model):
-    CATEGORY_CHOICES = (('Self', 'Self'), ('Client', 'Client'), ('Vendor', 'Vendor'), ('Partner', 'Partner'))
-    category_value = models.CharField(max_length=20, choices=CATEGORY_CHOICES, default='Self')
-    created_time = models.DateTimeField(auto_now_add=True)
-    modified_time = models.DateTimeField(auto_now=True)
-
-    def __str__(self):
-        return self.category_value
-
-
 # CustomUser
 class User(AbstractUser):
-    category = models.ForeignKey(UserCategory, default=1, on_delete=models.CASCADE)
     group = models.ForeignKey(Group, on_delete=models.CASCADE, related_name='initialgroup', blank=True, null=True)
     company = models.ForeignKey(Company, default=1, on_delete=models.CASCADE)
     branch = models.ForeignKey(Branch, default=1, on_delete=models.CASCADE)

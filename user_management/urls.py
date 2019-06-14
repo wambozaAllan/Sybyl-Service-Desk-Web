@@ -1,5 +1,6 @@
 from django.urls import path
 from . import views
+
 urlpatterns = [
 
     path('addUserToTeam/', views.AddUserToTeam.as_view(), name='addUserToTeam'),
@@ -10,7 +11,7 @@ urlpatterns = [
     path('addUserGroup/', views.AddUserGroup.as_view(), name='addUserGroup'),
     path('addGlobalUserGroup/', views.AddGlobalUserGroup.as_view(), name='addGlobalUserGroup'),
     path('listUserGroups/', views.ListUserGroups.as_view(), name='listUserGroups'),
-    path('manageGlobalGroups/', views.GlobalUserGroups.as_view(), name='manageGlobalGroups'),
+    path('manageGlobalGroupssaveUser/', views.GlobalUserGroups.as_view(), name='manageGlobalGroups'),
     path('updateUserGroup/<int:pk>/', views.UpdateUserGroup.as_view(), name='updateUserGroup'),
     path('updateUserGlobalGroup/<int:pk>/', views.UpdateUserGlobalGroup.as_view(), name='updateUserGlobalGroup'),
     path('saveUserGroup/', views.save_user_group, name='saveUserGroup'),
@@ -34,7 +35,7 @@ urlpatterns = [
     path('listUsers/', views.ListUsers.as_view(), name='listUsers'),
     path('detailsUser/<int:pk>/', views.DetailsUser.as_view(), name='detailsUser'),
     path('updateUser/<int:pk>/', views.UpdateUser.as_view(), name='updateUser'),
-    path('saveUserUpdate/<int:uid>/', views.save_system_user_update, name='saveUserUpdate'),
+    path('saveUserUpdate/', views.save_system_user_update, name='saveUserUpdate'),
     path('validateUserName', views.validate_user_name, name='validateUserName'),
     path('searchUnAssignedUsers', views.search_unassigned_users, name='searchUnAssignedUsers'),
     path('searchUnAssignedGlobalUsers', views.search_unassigned_global_users, name='searchUnAssignedGlobalUsers'),
@@ -55,4 +56,6 @@ urlpatterns = [
     path('listModules/', views.ListSystemModules.as_view(), name='listModules'),
     path('modulePermissions/<int:pk>/', views.ListModulePermissions.as_view(), name='listModulePermissions'),
     path('filterSystemModules/', views.filter_system_modules, name='filterSystemModules'),
+
+    path('testConnection/', views.check_internet_connection, name='testConnection'),
 ]

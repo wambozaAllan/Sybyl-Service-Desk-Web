@@ -1,35 +1,50 @@
 {% load crispy_forms_tags %}
 <div class="card-body">
     <div class="basic-form">
-        <form class="form-horizontal" action="{% url 'updateCompany' companyid %}" method="post" enctype="multipart/form-data">
-            {% csrf_token %}
-            <div class="row col-12">
-                <div class="col-6">
-                    {{ form.domain|as_crispy_field }}
-                    {{ form.category|as_crispy_field }}
-                    {{ form.name|as_crispy_field }}
-                    <small id="validate_campany_name2" class="text-muted hidden">
-                        <font color="red">
-                           Can't Update. Company Name Already Exits!
-                        </font>
-                    </small>
-                </div>
-                <div class="col-6">
-                    {{ form.owner|as_crispy_field }}
-                    {{ form.description|as_crispy_field }}
-                    <div style="margin-top: 21%;">
-                        <button col-6 id="btnUpdateDomain" class="btn btn-success pull-right">
-                        <i class="fa fa-fw fa-lg fa-save"></i>Update
-                    </button>
-                    </div>
-                </div>
+        {% csrf_token %}
+        <div class="row col-12">
+            <div class="col-6">
 
+                {% if status == True %}
+                    {{form.has_domain|as_crispy_field }}
+                    {{ form.domain|as_crispy_field }}
+                {% else %}
+                    {{form.has_domain|as_crispy_field  }}
+                    <div id="div_id_domain" class="form-group" style="display: none;">
+                        <label for="id_domain2" class="col-form-label">Domain</label>
+                         <div class="">
+                            <select name="domain" class="select form-control" id="id_domain2">
+                                <option selected="" value="" disabled>-----Select Domain----</option>
+                            </select>
+                        </div>
+                    </div>
+                {% endif %}
+
+                {{ form.category|as_crispy_field }}
+                {{ form.name|as_crispy_field }}
+                <small id="validate_campany_name2" class="text-muted hidden">
+                    <font color="red">
+                       Can't Update. Company Name Already Exits!
+                    </font>
+                </small>
             </div>
-        </form>
+            <div class="col-6" style="margin-top: 7%">
+                {{ form.owner|as_crispy_field }}
+                {{ form.description|as_crispy_field }}
+                <div style="margin-top: 21%;">
+                    <button col-6 id="btnUpdateDomain" class="btn btn-success pull-right">
+                    <i class="fa fa-fw fa-lg fa-save"></i>Update
+                </button>
+                </div>
+            </div>
+        </div>
     </div>
 </div>
-
+<input value="{{pk}}" type="hidden" id="id_pk">
 <script>
+    $( "#id_domain" ).addClass( "domainSelect" );
+    $( "#id_domain2" ).addClass( "domainSelect" );
+
     $('#id_name').on('input', function () {
         var company_name = $(this).val();
 
@@ -51,5 +66,155 @@
                 }
             }
         });
+    });
+
+    var has_domain = 0;
+    $('#id_domain2').focus(function () {
+        $('.domainSelect').css({"border": 'solid #e7e7e7'});
+        $.ajax({
+            url: '{% url 'fetchDomainList' %}',
+            data: {},
+            dataType: 'json',
+            success: function (data) {
+                var res = JSON.parse(data.perm);
+                if (res !== '' && res.length > 0) {
+                    $('#id_domain2').html('');
+                    for (i in res) {
+                        $('#id_domain2').append('<option value="' + res[i].pk + '">' + res[i].fields.name + '</option>').trigger("change");
+                    }
+                }
+            }
+        });
+    });
+
+    var ckbox = $('#id_has_domain');
+
+    $('input[type="checkbox"]').click(function() {
+        if (ckbox.is(':checked')) {
+
+            $.confirm({
+                title: '<h4>Put Company Under Domain!</h4>',
+                content: '',
+                type: 'orange',
+                typeAnimated: true,
+                boxWidth: '40%',
+                useBootstrap: false,
+                theme: 'modern',
+                icon: 'fa fa-exclamation-circle',
+                buttons: {
+                    formSubmit: {
+                        text: 'OK',
+                        btnClass: 'btn-orange',
+                        action: function () {
+                            $('#div_id_domain').show();
+                            has_domain = 1;
+                        }
+                    },
+                    close: {
+                        text: 'Cancel',
+                        btnClass: 'btn-gray close-dialog',
+                        action: function () {
+                            $("#id_has_domain").prop("checked", false);
+                        }
+                    }
+                }
+            });
+        } else {
+            $.confirm({
+                title: '<h4>Remove Company From Domain!</h4>',
+                content: '',
+                type: 'orange',
+                typeAnimated: true,
+                boxWidth: '40%',
+                useBootstrap: false,
+                theme: 'modern',
+                icon: 'fa fa-exclamation-circle',
+                buttons: {
+                    formSubmit: {
+                        text: 'OK',
+                        btnClass: 'btn-orange',
+                        action: function () {
+                            $('#div_id_domain').hide();
+                            has_domain = 0;
+                        }
+                    },
+                    close: {
+                        text: 'Cancel',
+                        btnClass: 'btn-gray close-dialog',
+                        action: function () {
+                            $("#id_has_domain").prop("checked", true);
+                        }
+                    }
+                }
+            });
+        }
+    });
+
+    $('#btnUpdateDomain').click(function () {
+        var id_domain;
+        var category = $('#id_category').val();
+        var company_name = $('#id_name').val();
+        var id_owner = $('#id_owner').val();
+        var id_description = $('#id_description').val();
+        var id_pk = $('#id_pk').val();
+        if(has_domain === 0){
+            id_domain = 'none';
+        }else{
+            id_domain = $('.domainSelect').val();
+        }
+
+        if(has_domain === 1){
+            dom = $('.domainSelect').val();
+            if(dom === null || dom === ''){
+                 $('.domainSelect').css({"border": '2px solid #00635a'});
+            }
+            else{
+                data2 = {
+                    has_domain: has_domain,
+                    id_domain: id_domain,
+                    category: category,
+                    company_name: company_name,
+                    id_owner: id_owner,
+                    description: id_description,
+                    pk: id_pk
+                };
+
+                urldata = "{% url 'saveCompanyUpdate'%}";
+                $.ajax({
+                    type: "GET",
+                    cache: false,
+                    data: data2,
+                    url: urldata,
+                    success: function (resp) {
+                        $('.page-wrapper').html(resp);
+                        $('.close-dialog').click();
+                    }
+                });
+            }
+        }
+        else{
+            data2 = {
+                has_domain: has_domain,
+                id_domain: id_domain,
+                category: category,
+                company_name: company_name,
+                id_owner: id_owner,
+                description: id_description,
+                pk: id_pk
+            };
+
+            urldata = "{% url 'saveCompanyUpdate'%}";
+            $.ajax({
+                type: "GET",
+                cache: false,
+                data: data2,
+                url: urldata,
+                success: function (resp) {
+                    $('.page-wrapper').html(resp);
+                    $('.close-dialog').click();
+                }
+            });
+        }
+
     });
 </script>

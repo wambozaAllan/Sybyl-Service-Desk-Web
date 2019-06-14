@@ -12,6 +12,7 @@ from .models import Company, Department, Branch, CompanyDomain, CompanyCategory,
     BranchEmailAddresses
 
 from django.core import serializers
+from django.template import loader
 
 
 class AddCompanyDomain(CreateView):
@@ -117,7 +118,7 @@ class CompanyCategoryList(generic.ListView):
 
 class AddCompany(CreateView):
     model = Company
-    fields = ['name', 'category', 'domain', 'owner', 'description']
+    fields = ['name', 'category', 'domain', 'owner', 'description', 'has_domain']
     template_name = 'company_management/add_company.html'
     success_url = reverse_lazy('listCompanies')
 
@@ -179,13 +180,16 @@ def validateCategoryName(request):
 
 class UpdateCompany(UpdateView):
     model = Company
-    fields = ['name', 'category', 'domain', 'owner', 'description']
+    fields = ['name', 'category', 'domain', 'owner', 'description', 'has_domain']
     template_name = 'company_management/update_company.html'
     success_url = reverse_lazy('listCompanies')
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         companyid = int(self.request.GET['companyid'])
+        status = Company.objects.get(pk=int(self.kwargs['pk'])).has_domain
+        context['status'] = status
+        context['pk'] = self.kwargs['pk']
         context['companyid'] = companyid
         return context
 
@@ -397,3 +401,53 @@ def add_select_company_domain(request):
     company_domain.save()
 
     return JsonResponse({})
+
+
+def save_company(request):
+    has_domain = request.GET.get('has_domain')
+    id_domain = request.GET.get('id_domain')
+    category = request.GET.get('category')
+    company_name = request.GET.get('company_name')
+    owner = request.GET.get('id_owner')
+    description = request.GET.get('description')
+
+    if int(has_domain) == 1:
+        save_company = Company(name=company_name, domain_id=int(id_domain), category_id=int(category),
+                               description=description, owner=owner, has_domain=has_domain)
+    else:
+        save_company = Company(name=company_name, category_id=int(category), description=description, owner=owner)
+    save_company.save()
+
+    all_companies = Company.objects.all()
+    template = loader.get_template('company_management/list_companies2.html')
+    context = {
+        'all_companies': all_companies,
+    }
+
+    return HttpResponse(template.render(context, request))
+
+
+def save_company_update(request):
+    has_domain = request.GET.get('has_domain')
+
+    id_domain = request.GET.get('id_domain')
+    category = request.GET.get('category')
+    company_name = request.GET.get('company_name')
+    owner = request.GET.get('id_owner')
+    description = request.GET.get('description')
+    pk = request.GET.get('pk')
+
+    if int(has_domain) == 1:
+        Company.objects.filter(pk=int(pk)).update(name=company_name, domain_id=int(id_domain), category_id=int(category)
+        , description=description, owner=owner, has_domain=has_domain)
+    else:
+        Company.objects.filter(pk=int(pk)).update(name=company_name, domain_id=None
+        ,category_id=int(category), description=description, owner=owner, has_domain=has_domain)
+
+    all_companies = Company.objects.all()
+    template = loader.get_template('company_management/list_companies2.html')
+    context = {
+        'all_companies': all_companies,
+    }
+
+    return HttpResponse(template.render(context, request))

@@ -17,44 +17,62 @@ import json
 from django.db.models import Count
 
 from django.shortcuts import render
-
+from django.core.mail import send_mail
+from django.template.loader import get_template
+from django.template.loader import render_to_string
+from django.core.mail import EmailMultiAlternatives
+from django.template import RequestContext
+import socket
 
 # Used to add new users
 def user_createview(request):
     comp_id = request.session['company_id']
 
     all_users = User.objects.filter(company=comp_id)
-    template = loader.get_template('user_management/list_users.html')
+    template = loader.get_template('user_management/list_user_update.html')
     context = {
         'all_users': all_users,
     }
 
-    form = UserForm(request.POST)
-    if form.is_valid:
-        data = request.POST.copy()
-        first_name = data.get('first_name')
-        last_name = data.get('last_name')
-        gender = data.get('gender')
-        company = request.session['company_id']
-        branch = data.get('branch')
-        department = data.get('department')
-        category = data.get('category')
-        username = data.get('username')
-        password = make_password(data.get('password'))
-        email = data.get('email')
-        created_by = request.user.id
+    first_name = request.GET.get('first_name')
+    last_name = request.GET.get('last_name')
+    gender = request.GET.get('gender')
+    branch = request.GET.get('branch')
+    department = request.GET.get('department')
+    username = request.GET.get('username')
+    email = request.GET.get('email')
+    random_password = User.objects.make_random_password()
+    password = make_password(random_password)
+    created_by = request.user.id
+    company = request.session['company_id']
 
-        obj = User(first_name=first_name, last_name=last_name, gender=gender, company_id=company, branch_id=branch,
-                   department_id=department, category_id=category, username=username,
-                   password=password, created_by=created_by, email=email)
-        obj.save()
+    obj = User(first_name=first_name.title(), last_name=last_name.title(), gender=gender, company_id=company,
+               branch_id=branch, department_id=department, username=username,
+               password=password, created_by=created_by, email=email)
+    obj.save()
+
+    if obj.pk is not None:
+        context22 = {
+            'username': username,
+            'password': random_password,
+            'fullname': first_name + ' ' + last_name
+        }
+
+        msg = render_to_string('user_management/email_template.html', context22)
+
+        subject, from_email, to = 'SYBYL', 'from@example.com', email
+        text_content = 'SERVICE DESK.'
+        html_content = msg
+        msg = EmailMultiAlternatives(subject, text_content, from_email, [to])
+        msg.attach_alternative(html_content, "text/html")
+        msg.send()
 
     return HttpResponse(template.render(context, request))
 
 
 class AddUser(CreateView):
     model = User
-    fields = ['first_name', 'last_name', 'gender', 'category', 'username', 'email', 'password']
+    fields = ['first_name', 'last_name', 'gender', 'username', 'email', 'password']
 
     template_name = 'user_management/add_user.html'
     success_url = reverse_lazy('listUsers')
@@ -97,19 +115,19 @@ class ProfileView(ListView):
 
 # Detailed view of a specific user
 class DetailsUser(DetailView):
-    # model = User
-    # context_object_name = 'user'
-    # template_name = 'user_management/detailsUser.html'
-    queryset = User.objects.all()
+    model = User
+    context_object_name = 'user_details'
+    template_name = 'user_management/detailsUser.html'
 
 
 class UpdateUser(UpdateView):
     model = User
-    fields = ['first_name', 'last_name', 'gender', 'company', 'department', 'group', 'category', 'branch'
+    fields = ['first_name', 'last_name', 'gender', 'company', 'department', 'group', 'branch'
         , 'username', 'password', 'email', 'is_superuser', 'is_staff', 'is_active']
 
     template_name = 'user_management/update_user.html'
     success_url = reverse_lazy('listUsers')
+    context_object_name = 'user_update'
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -122,31 +140,31 @@ class UpdateUser(UpdateView):
         return context
 
 
-def save_system_user_update(request, uid):
+def save_system_user_update(request):
     comp_id = request.session['company_id']
 
     all_users = User.objects.filter(company=comp_id)
-    template = loader.get_template('user_management/list_users.html')
+    template = loader.get_template('user_management/list_user_update.html')
     context = {
         'all_users': all_users,
     }
 
-    form = UserForm(request.POST)
-    if form.is_valid:
-        data = request.POST.copy()
-        first_name = data.get('first_name')
-        last_name = data.get('last_name')
-        gender = data.get('gender')
-        branch = data.get('branch')
-        department = data.get('department')
-        category = data.get('category')
-        username = data.get('username')
-        email = data.get('email')
-        group = data.get('group')
-        active = data.get('is_active')
+    first_name = request.GET.get('first_name')
+    last_name = request.GET.get('last_name')
+    gender = request.GET.get('gender')
+    branch = request.GET.get('branch')
+    uid = request.GET.get('user_id')
+    department = request.GET.get('department')
+    username = request.GET.get('username')
+    email = request.GET.get('email')
+    group = request.GET.get('group')
+    active = request.GET.get('status')
+    company = request.GET.get('company')
 
-        User.objects.filter(pk=int(uid)).update(first_name=first_name, last_name=last_name, gender=gender, branch_id=branch,
-                   department_id=department, category_id=category, username=username, email=email, group=group, is_active=active)
+    User.objects.filter(pk=int(uid)).update(first_name=first_name.title(), last_name=last_name.title(), gender=gender,
+                                            branch_id=branch,
+                                            department_id=department, username=username, email=email, group=group,
+                                            is_active=int(active), company_id=company)
 
     return HttpResponse(template.render(context, request))
 
@@ -344,7 +362,9 @@ def search_unassigned_users(request):
     grp = request.GET.get('grp')
     grpid = request.GET.get('grpid')
     company_id = request.session['company_id']
-    users = User.objects.filter((Q(first_name__icontains=search_value) | Q(last_name__icontains=search_value)) & Q(group_id__isnull=True) & Q(company=company_id))
+    users = User.objects.filter(
+        (Q(first_name__icontains=search_value) | Q(last_name__icontains=search_value)) & Q(group_id__isnull=True) & Q(
+            company=company_id))
     template = loader.get_template('user_management/unassigned_users_search_results.html')
     context = {
         'users': users,
@@ -360,7 +380,8 @@ def search_unassigned_global_users(request):
     search_value = request.GET.get('searchValue')
     grp = request.GET.get('grp')
     grpid = request.GET.get('grpid')
-    users = User.objects.filter((Q(first_name__icontains=search_value) | Q(last_name__icontains=search_value)) & Q(group_id__isnull=True))
+    users = User.objects.filter(
+        (Q(first_name__icontains=search_value) | Q(last_name__icontains=search_value)) & Q(group_id__isnull=True))
     template = loader.get_template('user_management/unassigned_global_users_search_results.html')
     context = {
         'users': users,
@@ -501,7 +522,6 @@ class ListSystemModules(ListView):
     context_object_name = 'list_modules'
 
     def get_queryset(self):
-
         return ContentType.objects.annotate(count_permissions=Count('permission'))
 
     def get_context_data(self, **kwargs):
@@ -693,4 +713,17 @@ def add_user_to_global_group(request):
     }
 
     return HttpResponse(template.render(context, request))
+
+
+def check_internet_connection(request):
+    try:
+        socket.create_connection(("www.google.com", 80))
+        status = True
+    except OSError:
+        status = False
+
+    data = {
+        'test': status
+    }
+    return JsonResponse(data)
 

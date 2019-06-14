@@ -1,6 +1,5 @@
-{% load crispy_forms_tags %}
-<form class="form-horizontal" action="{% url 'saveUser' %}" method="post" enctype="multipart/form-data"
-      autocomplete="off">
+<div id="save-user-pane">
+    {% load crispy_forms_tags %}
     {% csrf_token %}
     <div class="row col-12">
         <div class="col-6">
@@ -11,16 +10,8 @@
                            value="{{request.session.company}}">
                 </div>
             </div>
-
-            <div class="row">
-                <div class="col-6">
-                    {{ form.first_name|as_crispy_field }}
-                </div>
-                <div class="col-6">
-                    {{ form.last_name|as_crispy_field }}
-                </div>
-            </div>
-
+            {{ form.first_name|as_crispy_field }}
+            {{ form.last_name|as_crispy_field }}
 
             <div id="div_id_branch" class="form-group">
                 <label for="id_branch" class="col-form-label  requiredField">Branch<span class="asteriskField">*</span>
@@ -35,7 +26,8 @@
             </div>
 
             <div id="div_id_department" class="form-group">
-                <label for="id_department" class="col-form-label  requiredField">Department<span class="asteriskField">*</span>
+                <label for="id_department" class="col-form-label  requiredField">Department<span
+                        class="asteriskField">*</span>
                 </label>
                 <div class="">
                     <select name="department" class="select form-control" id="id_department">
@@ -46,37 +38,149 @@
                 </div>
             </div>
 
-            {{ form.gender|as_crispy_field }}
         </div>
         <div class="col-6">
-
-            {{ form.email|as_crispy_field }}
-            {{ form.category|as_crispy_field }}
+            {{ form.gender|as_crispy_field }}
+            {{ form.email|as_crispy_field }}<br><br>
             <div class="divider">
                 <hr class="left"/>
                 Default Login Credentials
                 <hr class="right"/>
             </div>
-            <br>
+            <br><br>
             {{ form.username|as_crispy_field }}
             <medium id="validate_user_name" class="text-muted hidden">
                 <font color="red">
                     User Name Already Exits!
                 </font>
-            </medium>
-            {{ form.password|as_crispy_field }}
+            </medium><br>
             <div class="">
                 <div class="col-md-12  ">
                     <button id="btnAddUser" class="btn btn-success pull-right">
-                        <i class="fa fa-fw fa-lg fa-save"></i>Submit
+                        <span class="btn-save-user"><i class="fa fa-fw fa-lg fa-save"></i>Submit</span>
                     </button>
                 </div>
             </div>
         </div>
     </div>
-</form>
+</div>
 <script>
-    document.getElementById('id_password').type = 'password';
+    $('#btnAddUser').click(function () {
+        var first_name = $('#id_first_name').val();
+        var last_name = $('#id_last_name').val();
+        var gender = $('#id_gender').val();
+        var id_branch = $('#id_branch').val();
+        var id_department = $('#id_department').val();
+
+        var email = $('#id_email').val();
+        var username = $('#id_username').val();
+
+        if (first_name < 1 || last_name < 1 || gender < 1 || username < 1 || id_branch < 1 || id_department < 1 || email < 1) {
+             if (first_name < 1){
+                $('#id_first_name').css({"border": '2px solid #00635a'});
+             }
+
+             if (last_name < 1){
+                $('#id_last_name').css({"border": '2px solid #00635a'});
+             }
+
+             if (gender < 1){
+                $('#id_gender').css({"border": '2px solid #00635a'});
+             }
+
+             if (username < 1){
+                $('#id_username').css({"border": '2px solid #00635a'});
+             }
+
+             if (id_branch < 1){
+                $('#id_branch').css({"border": '2px solid #00635a'});
+             }
+
+             if (id_department < 1){
+                $('#id_department').css({"border": '2px solid #00635a'});
+             }
+
+             if (email < 1){
+                $('#id_email').css({"border": '2px solid #00635a'});
+             }
+        }else{
+            url_data12 = "{% url 'testConnection'%}";
+            $.ajax({
+                type: "GET",
+                cache: false,
+                data: {},
+                url: url_data12,
+                success: function (data) {
+                   if (data.test) {
+                        console.log('connected');
+                        $('.btn-save-user').html('Submit <i class="fa fa-spinner fa-spin"></i>');
+                        document.getElementById('btnAddUser').disabled = true;
+                        data3 = {
+                            first_name: first_name,
+                            last_name: last_name,
+                            gender: gender,
+                            email: email,
+                            username: username,
+                            branch: id_branch,
+                            department: id_department
+                        };
+
+                        url_data = "{% url 'saveUser'%}";
+                        $.ajax({
+                            type: "GET",
+                            cache: false,
+                            data: data3,
+                            url: url_data,
+                            success: function (resp) {
+                                window.location = '#close';
+                                $('.page-wrapper').html(resp);
+                            }
+                        });
+                    } else {
+                        $.confirm({
+                            title: 'Error!',
+                            content: 'Please Check your Internet and Proceed.',
+                            type: 'red',
+                            boxWidth: '35%',
+                            useBootstrap: false,
+                            typeAnimated: true,
+                            buttons: {
+                                close: function () {
+                                }
+                            }
+                        });
+                    }
+                }
+            });
+        }
+    });
+
+    $('#id_first_name').on('input', function () {
+        $('#id_first_name').css({"border": '1px solid #ced4da'});
+    });
+
+    $('#id_last_name').on('input', function () {
+        $('#id_last_name').css({"border": '1px solid #ced4da'});
+    });
+
+    $('#id_gender').on('input', function () {
+        $('#id_gender').css({"border": '1px solid #ced4da'});
+    });
+
+    $('#id_username').on('input', function () {
+        $('#id_username').css({"border": '1px solid #ced4da;'});
+    });
+    $('#id_branch').on('input', function () {
+        $('#id_branch').css({"border": '1px solid #ced4da;'});
+    });
+
+    $('#id_department').on('input', function () {
+        $('#id_department').css({"border": '1px solid #ced4da'});
+    });
+
+    $('#id_email').on('input', function () {
+        $('#id_email').css({"border": '1px solid #ced4da'});
+    });
 
     $('#id_username').on('input', function () {
         var id_user_name = $(this).val();

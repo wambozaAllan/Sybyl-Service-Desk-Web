@@ -22,12 +22,6 @@
             jscolor.installByClassName("jscolor");
         });
 
-        $('#id_company').attr('multiple', "multiple");
-        $('#id_company').attr('data-live-search', "true");
-        $('#id_company').selectpicker({
-            size: 2,
-        });
-
         $('#listBranchContacts').DataTable({});
         $('#listEmails').DataTable({});
         $('#listBranches').DataTable({});
@@ -342,7 +336,7 @@
                         buttons: {
                             close: {
                                 text: 'Cancel',
-                                btnClass: 'btn-gray',
+                                btnClass: 'btn-gray, close-dialog',
                                 action: function () {
                                 }
                             }
@@ -373,7 +367,7 @@
                         buttons: {
                             close: {
                                 text: 'Close',
-                                btnClass: 'btn-gray',
+                                btnClass: 'btn-gray close-dialog',
                                 action: function () {
                                 }
                             }
@@ -1548,7 +1542,7 @@
                 });
             }
         }
-        // ADD INCIDENT
+
         function functAddIncident() {
             urldata = "{% url 'addIncident'%}";
             $.ajax({

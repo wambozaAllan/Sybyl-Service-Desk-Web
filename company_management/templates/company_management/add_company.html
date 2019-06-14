@@ -2,87 +2,114 @@
 
 <div class="card-body">
     <div class="basic-form">
-        <form class="form-horizontal" action="{% url 'addCompany' %}" method="post" enctype="multipart/form-data" autocomplete="off">
-            {% csrf_token %}
-            <div class="row col-12">
-                <div class="col-6">
+        {% csrf_token %}
+        <div class="row col-12">
+            <div class="col-6">
 
-                    <div class="checkbox">
-                        <label>
-                            <input id="domainCheck" type="checkbox"> Has Domain
-                        </label>
-                    </div>
-
-                    <div id="div_id_domain" class="form-group">
-
-                         <label for="id_domain" class="col-form-label">Domain <a href="#" onclick="AddDomain2();">
-                             <i style="font-size: 151%; color: #5d5de6;" class="fa fa-plus"></i></a>
-                         </label>
-                        <div class="">
-                          <select name="domain" class="select form-control" id="id_domain">
-                              <option selected="" value="" disabled>-----Select Domain----</option>
-
-                            </select>
-                        </div>
-                    </div>
-
-                    {{ form.category|as_crispy_field }}
-                    {{ form.name|as_crispy_field }}
-                    <medium id="validate_campany_name" class="text-muted hidden">
-                        <font color="red">
-                            Company Name Already Exits!
-                        </font>
-                    </medium>
+                <div class="checkbox">
+                    <label>
+                        <input id="domainCheck" type="checkbox"> Has Domain
+                    </label>
                 </div>
-                <div class="col-6">
-                    {{ form.owner|as_crispy_field }}
-                    {{ form.description|as_crispy_field }}
-                    <div style="margin-top: 21%;">
-                        <button col-6 id="btnAddCompany" class="btn btn-success pull-right">
-                            <i class="fa fa-fw fa-lg fa-save"></i>Save
-                        </button>
+
+                <div id="div_id_domain" class="form-group" style="display: none;">
+                     <label for="id_domain" class="col-form-label">Domain <a href="#" onclick="AddDomain2();">
+                         <i style="font-size: 151%; color: #5d5de6;" class="fa fa-plus"></i></a>
+                     </label>
+                    <div class="">
+                        <select name="domain" class="select form-control" id="id_domain">
+                            <option selected="" value="" disabled>-----Select Domain----</option>
+                        </select>
                     </div>
+                </div>
+
+                {{ form.category|as_crispy_field }}
+                {{ form.name|as_crispy_field }}
+                <medium id="validate_campany_name" class="text-muted hidden">
+                    <font color="red">
+                        Company Name Already Exits!
+                    </font>
+                </medium>
+            </div>
+
+            <div class="col-6" style="margin-top: 5%">
+                {{ form.owner|as_crispy_field }}
+                {{ form.description|as_crispy_field }}
+                <div style="margin-top: 21%;">
+                    <button col-6 id="btnAddCompany" class="btn btn-success pull-right">
+                        <i class="fa fa-fw fa-lg fa-save"></i>Save
+                    </button>
                 </div>
             </div>
-        </form>
+        </div>
+
     </div>
 </div>
 
 <script>
-    $(document).ready(function () {
-
-
-        $('#id_domain').click(function () {
-            $.ajax({
-                url: '{% url 'fetchDomainList' %}',
-                data: {},
-                dataType: 'json',
-                success: function (data) {
-                    var res = JSON.parse(data.perm);
-                    if (res !== '' && res.length > 0) {
-                        $('#id_domain').html('');
-
-                        for (i in res) {
-                            $('#id_domain').append('<option value="' + res[i].pk + '">' + res[i].fields.name + '</option>');
-                        }
+    var has_domain = 0;
+    $('#id_domain').focus(function () {
+        $.ajax({
+            url: '{% url 'fetchDomainList' %}',
+            data: {},
+            dataType: 'json',
+            success: function (data) {
+                var res = JSON.parse(data.perm);
+                if (res !== '' && res.length > 0) {
+                    $('#id_domain').html('');
+                    for (i in res) {
+                        $('#id_domain').append('<option value="' + res[i].pk + '">' + res[i].fields.name + '</option>').trigger("change");
                     }
                 }
-            });
+            }
         });
     });
 
+    $('#btnAddCompany').click(function () {
+        var id_domain = $('#id_domain').val();
+        var category = $('#id_category').val();
+        var company_name = $('#id_name').val();
+        var id_owner = $('#id_owner').val();
+        var id_description = $('#id_description').val();
+        if(has_domain === 0){
+            id_domain = 'none';
+        }
+
+        data2 = {
+            has_domain: has_domain,
+            id_domain: id_domain,
+            category: category,
+            company_name: company_name,
+            id_owner: id_owner,
+            description: id_description
+        };
+
+        urldata = "{% url 'saveCompany'%}";
+        $.ajax({
+            type: "GET",
+            cache: false,
+            data: data2,
+            url: urldata,
+            success: function (resp) {
+                $('.page-wrapper').html(resp);
+                $('.close-dialog').click();
+            }
+        });
+    });
+
+
     var ckbox = $('#domainCheck');
 
-    $('input').on('click',function () {
+    $('input[type="checkbox"]').click(function(){
         if (ckbox.is(':checked')) {
-            alert('You have Checked it');
             $('#div_id_domain').show();
+            has_domain = 1;
         } else {
+            $('#id_domain').html('');
             $('#div_id_domain').hide();
+            has_domain = 0;
         }
-     });
-
-
+    });
 
     $("#id_category_value").attr("placeholder", "Enter Company Category");
     $("#id_description").attr("placeholder", "Enter Description");
