@@ -37,7 +37,7 @@
                                       enctype="multipart/form-data">
                                     {% csrf_token %}
                                     <div class="row">
-                                        <div class="col-4">
+                                        <div class="col-6">
                                             {{ form.name|as_crispy_field }}
                                             <medium id="validate_project_name" class="text-muted hidden">
                                                 <font color="red">
@@ -45,17 +45,13 @@
                                                 </font>
                                             </medium>
                                         </div>
-                                        <div class="col-4">
+                                        <div class="col-6">
                                             {{ form.company|as_crispy_field }}
-                                        </div>
-                                        
-                                        <div class="col-4">
-                                            {{ form.project_status|as_crispy_field }}
                                         </div>
                                     </div>
 
                                     <div class="row">
-                                        <div class="col-4">
+                                        <div class="col-6">
                                             {{ form.estimated_start_date|as_crispy_field }}
                                             <medium id="start_date" class="text-muted hidden">
                                                 <font color="red">
@@ -64,7 +60,7 @@
                                             </medium>
                                         </div>
                                         
-                                        <div class="col-4">
+                                        <div class="col-6">
                                             {{ form.estimated_end_date|as_crispy_field }}
                                             <medium id="end_date" class="text-muted hidden">
                                                 <font color="red">
@@ -72,8 +68,11 @@
                                                 </font>
                                             </medium>
                                         </div>
+    
+                                    </div>
 
-                                        <div class="col-4">
+                                    <div class="row">
+                                        <div class="col-6">
                                             {{ form.actual_start_date|as_crispy_field }}
                                             <medium id="actual_start" class="text-muted hidden">
                                                 <font color="red">
@@ -81,12 +80,7 @@
                                                 </font>
                                             </medium>
                                         </div>
-
-                                        
-                                    </div>
-
-                                    <div class="row">
-                                        <div class="col-4">
+                                        <div class="col-6">
                                             {{ form.actual_end_date|as_crispy_field }}
                                             <medium id="actual_end" class="text-muted hidden">
                                                 <font color="red">
@@ -95,7 +89,7 @@
                                             </medium>
                                         </div>
 
-                                        <div class="col-4">
+                                        <div class="col-6">
                                             {{ form.final_cost|as_crispy_field }}
                                             <medium id="final_cost" class="text-muted hidden">
                                                 <font color="red">
@@ -104,7 +98,7 @@
                                             </medium>
                                         </div>
 
-                                        <div class="col-4">
+                                        <div class="col-6">
                                             {{ form.project_code|as_crispy_field }}
                                             <medium id="project_code" class="text-muted hidden">
                                                 <font color="red">
@@ -112,14 +106,15 @@
                                                 </font>
                                             </medium>
                                         </div>
-                                        
-                                    </div>
-
-                                    <div>
-                                        <div class="col-3">
+                                        <div class="col-6">
+                                            {{ form.project_status|as_crispy_field }}
+                                        </div>
+                                        <div class="col-6">
                                             {{ form.logo|as_crispy_field }}
                                         </div>
                                     </div>
+                                        
+                                        
 
                                     <div class="row">
                                         <div class="col-12">
