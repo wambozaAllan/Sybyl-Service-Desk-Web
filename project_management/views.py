@@ -232,17 +232,122 @@ class MilestoneListView(ListView):
         return Milestone.objects.all()
 
 
+# class AddMilestone(LoginRequiredMixin, CreateView):
+#     model = Milestone
+#     fields = ['name', 'status', 'startdate', 'enddate', 'description',]
+#     template_name = 'project_management/add_project_milestone.html'
+#     success_url = reverse_lazy('listProjectMilestones')
+
+#     def form_valid(self, form):
+#         """auto registering loggedin user"""
+#         form.instance.creator = self.request.user
+#         return super().form_valid(form)
+
+#     def get_context_data(self, **kwargs):
+#         context = super().get_context_data(**kwargs)
+#         project_id = int(self.request.GET['project_id'])
+#         context['project_id'] = project_id
+#         print(context)
+#         return context
+
+
 def milestone_list_by_project(request, project_id):
     project_milestones = Milestone.objects.filter(project_id=project_id)
     return render(request, 'project_management/milestone_list.html', {'milestones': project_milestones})
 
 
+def populate_milestone_view(request):
+    """
+    populate project_milestone view
+    """
+    project_id = request.GET.get('project_id')
+    project_name = request.GET.get('project_name')
+      
+    template = loader.get_template('project_management/add_project_milestone.html')
+    context = {
+        'project_id': project_id,
+        'project_name': project_name
+    }
+
+    return HttpResponse(template.render(context, request))
+
+
+def populate_milestone_status(request):
+    """
+    populate status field with status
+    """
+    project_id = request.GET.get('project_id')
+    project_name = request.GET.get('project_name')    
+
+    status = Status.objects.all()
+
+    data = {
+        'status': serializers.serialize("json", status)
+    }
+
+    return JsonResponse(data)
+
+
+def validateMilestoneName(request):
+    milestone_name = request.GET.get('milestoneName', None)
+    data = {
+        'is_taken': Milestone.objects.filter(name=milestone_name).exists()
+    }
+    return JsonResponse(data)
+
+
+def save_milestone(request):
+    """
+    add milestone to database
+    """
+
+    project_id = request.GET.get('project_id')
+    project_name = request.GET.get('project_name')
+    name = request.GET.get('name')
+    description = request.GET.get('description')
+    status_id = request.GET.get('status_id')
+    start = request.GET.get('start_date')
+    end = request.GET.get('end_date')
+    creator = request.user.id
+    
+    if status_id == "":
+        status_id = None
+
+    if end is not None:
+        end = datetime.datetime.strptime(end, "%m/%d/%Y").strftime("%Y-%m-%d")
+        
+    if start is not None:
+        start = datetime.datetime.strptime(start, "%m/%d/%Y").strftime("%Y-%m-%d")
+
+    if Milestone.objects.filter(name=name).exists():
+        milestone = Milestone.objects.get(name=name)
+        response_data = {
+            'error': "Name exists",
+            'name': milestone.name,
+            'state':False
+        }
+    
+    else:
+        milestone = Milestone(name=name, description=description, project_id=project_id, creator_id=creator, startdate=start, enddate=end, status_id=status_id )
+        milestone.save()
+
+        response_data ={
+            'success': "Milestone saved successfully",
+            'name': milestone.name,
+            'state':True
+        }
+
+    return HttpResponse(
+        json.dumps(response_data),
+        content_type="application/json"
+    )
+    
+    
 def list_project_milestones(request):
     """
     list project specific milestones
     """
     project_id = request.GET.get('project_id')
-    print(f"milestone project id is {project_id}")
 
     project = Project.objects.get(id=project_id)
 
@@ -251,7 +356,6 @@ def list_project_milestones(request):
     milestones_exist = Milestone.objects.filter(project_id=project.id).exists()
     if milestones_exist:
         milestones = Milestone.objects.filter(project_id=project.id)
-        # tasks = Task.objects.filter(milestone_id)
 
         context = {
             'project_id': project.id,
@@ -270,6 +374,50 @@ def list_project_milestones(request):
 
         return HttpResponse(template.render(context, request))
         
+
+def view_tasks_under_milestone(request):
+    milestone_id = request.GET.get('milestone_id')
+    project_id = request.GET.get('project_id')
+
+    template = loader.get_template('project_management/list_milestone_tasks.html')
+    project = get_object_or_404(Project, pk=project_id)
+    
+    milestone_exists = Milestone.objects.filter(id=milestone_id, project_id=project.id).exists()
+    if milestone_exists:
+        milestone = Milestone.objects.get(id=milestone_id)
+        milestone_tasks = Task.objects.filter(milestone_id=milestone.id)
+        statuses = Status.objects.all()
+
+        context = {
+            'milestone_name': milestone.name,
+            'milestone_id': milestone.id,
+            'milestone_tasks': milestone_tasks,
+            'project_id': project.id,
+            'statuses': statuses
+        }
+
+        return HttpResponse(template.render(context, request))
+
+
+def add_milestone_specific_task(request):
+    project_id = request.GET.get('project_id')
+    milestone_id = request.GET.get('milestone_id')
+
+    print(f"project id is {project_id} and milestone id is {milestone_id}")
+    project = Project.objects.get(id=project_id)
+
+    milestone = Milestone.objects.get(id=milestone_id)
+
+    template = loader.get_template('project_management/add_milestone_task.html')
+    context = {
+        'project_id': project_id,
+        'project_name':project.name,
+        'milestone_id': milestone_id,
+        'milestone_name': milestone.name   
+    }
+
+    return HttpResponse(template.render(context, request))
+
 
 def load_milestones(request):
     projects = Project.objects.all
@@ -312,16 +460,50 @@ class TaskCreateView(LoginRequiredMixin, CreateView):
         return super().form_valid(form)
 
 
+def populate_task_view(request):
+    """
+    populate project_task view
+    """
+    project_id = request.GET.get('project_id')
+    project_name = request.GET.get('project_name')
+    
+    
+    template = loader.get_template('project_management/add_project_tasks.html')
+    context = {
+        'project_id': project_id,
+        'project_name': project_name
+    }
+
+    return HttpResponse(template.render(context, request))
+
+
+def populate_status_milestone(request):
+    """
+    populate status and milestone in task view
+    """
+    project_id = request.GET.get('project_id')
+    project_name = request.GET.get('project_name')
+    
+    project = Project.objects.get(id=project_id)
+
+    status = Status.objects.all()
+    milestones = Milestone.objects.filter(project_id=project.id)
+
+    data = {
+        'status': serializers.serialize("json", status),
+        'milestones': serializers.serialize("json", milestones)
+    }
+
+    return JsonResponse(data)
+    
+
 def add_project_tasks(request):
     project_id = request.GET.get('project_id')
 
     project = get_object_or_404(Project, pk=project_id)
-    print(f"project is {project.id}")
 
     milestones_exist = Milestone.objects.filter(project_id=project.id).exists()
-    print(milestones_exist)
     all_statuses = Status.objects.all()
-
     if milestones_exist:
         milestones = Milestone.objects.filter(project_id=project.id)
         
@@ -339,6 +521,18 @@ def add_project_tasks(request):
         }
 
         return JsonResponse(data)
+
+
+def validateTaskName(request):
+    """
+    check if name already exists
+    """
+    task_name = request.GET.get('task_name', None)
+    print(task_name)
+    data = {
+        'is_taken': Task.objects.filter(name=task_name).exists()
+    }
+    return JsonResponse(data)
 
 
 def save_project_tasks(request):
@@ -364,26 +558,25 @@ def save_project_tasks(request):
     print(f"start is {start_date}")
     print(f"end is {end_date}")
 
+
+    template = loader.get_template('project_management/list_project_tasks.html')
+
     project = Project.objects.get(id=project_id)
     status = Status.objects.get(id=status_id)
     milestone = Milestone.objects.get(id=milestone_id, project_id=project.id)
     start = datetime.datetime.strptime(start_date, "%m/%d/%Y").strftime("%Y-%m-%d")
     end = datetime.datetime.strptime(end_date, "%m/%d/%Y").strftime("%Y-%m-%d")
 
-    if name != "":
+    if name != '':
+        print("Empty string")
+        print(name)
         task = Task(name=name, description=description, status_id=status.id, milestone_id=milestone.id, project_id=project.id, start_date=start, end_date=end, creator_id=created_by)
         task.save()
-
-        data = {
-            "state": "Task created"
-        }
     
-    else:
-        data = {
-            "state": "Failed"
-        }
 
-    return JsonResponse(data)
+    context = None
+
+    return HttpResponse(template.render(context, request))
 
 
 def tasklist_by_project(request):
@@ -517,7 +710,7 @@ def list_project_incidents(request):
         team_members = ProjectTeamMember.objects.filter(project_team=int(team_id))
         if team_members:
             if Incident.objects.filter(project_id=project.id).exists():
-                team_member = ProjectTeamMember.objects.filter(member=request.user)
+                team_member = ProjectTeamMember.objects.filter(member=request.user, project_team=team_id)
                 
                 incidents = Incident.objects.filter(Q(creator=request.user)|Q(assignee__in=team_member), project_id=project.id).annotate(assigned=Count('assignee', distinct=True))
                 state = True
@@ -882,18 +1075,29 @@ class DetailProject(DetailView):
         context = super().get_context_data(**kwargs)
         project_id = self.kwargs['pk']
 
+        if Milestone.objects.filter(project_id=project_id).exists():
+            milestone_status = True
+        else:
+            milestone_status = False
+        
+        context['milestone_status'] = milestone_status
+
         if ProjectTeam.objects.filter(project_id=project_id).exists():
             obj1 = ProjectTeam.objects.filter(project_id=project_id).values('id').first()
             project_team_id = obj1['id']
 
             if ProjectTeamMember.objects.filter(project_team=project_team_id, member_id=self.request.user.id).exists():
                 forum_status = True
+                incident_status = True
             else:
                 forum_status = False
+                incident_status = False
         else:
             forum_status = False
+            incident_status = False
 
         context['forum_status'] = forum_status
+        context['incident_status'] = incident_status
         return context
 
 
@@ -1093,6 +1297,9 @@ def save_team_member(request):
     team_id = request.GET.get('project_team')
     member = request.GET.get('member')
     role_id = request.GET.get('responsibility')
+    project_id = request.GET.get('project_id')
+
+    template = loader.get_template('project_management/project_team.html')
 
     user = User.objects.get(id=member)
     role = Role.objects.get(id=role_id)
@@ -1102,21 +1309,23 @@ def save_team_member(request):
     team_member.save()
     team_member.project_team.add(team)
 
-    if team_member:
 
-        data = {
-            'team_member': team_member
-        }
+    context = {
+        'team_id': team_id,
+        'project_id': project_id
+    }
 
-    else:
-        data = {
-            'team_member': ''
-        }
+    return HttpResponse(template.render(context, request))
 
-    print(f"data is {data}")
 
-    
-    return JsonResponse(data)
+class AddProjectTeamMember(CreateView):
+    """
+    admin view for adding project team member
+    """
+    model = ProjectTeamMember
+    template_name = 'project_management/add_team_member.html'
+    fields = ['member', 'project_team', 'responsibility']
+    success_url = reverse_lazy('listProjectTeams')
 
 
 class ListProjectTeamMembers(ListView):
