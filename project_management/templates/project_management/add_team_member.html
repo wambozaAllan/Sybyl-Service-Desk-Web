@@ -1,5 +1,7 @@
 {% load crispy_forms_tags %}
-
+<div>
+    <input type="text" value="{{project_id}}" style="display: none;" id='id_project'/>
+</div>
 <div class="card-body">
     <div class="basic-form">
         <form class="form-horizontal" method='GET'>
@@ -41,7 +43,7 @@
             
             <!-- <div class="col-md-6"> -->
                 <button id="id_btnAddProjectMember" class="btn btn-success pull-right" onclick="saveMember()">
-                    <i class="fa fa-fw fa-lg fa-save"></i>Save
+                    <i class="fa fa-fw fa-lg fa-save"></i>Add Member
                 </button>
             <!-- </div> -->
             
@@ -112,7 +114,7 @@
 
     // adding chosen member to team
     function saveMember(){
-        
+        let project_id = $('#id_project').val();
         let team_id = $('#id_project_team').val();
         let member = $('#id_member').val();
         let responsibility = $('#id_responsibility').val();
@@ -126,9 +128,10 @@
                 url: '{% url 'saveTeamMember' %}',
 
                 data: {
-                project_team: team_id,
-                member: member, 
-                responsibility: responsibility
+                    project_id: project_id,
+                    project_team: team_id,
+                    member: member, 
+                    responsibility: responsibility
                 },
                 dataType: 'json',
                 success: function (data) {
@@ -149,12 +152,9 @@
             });
         }
 
-        else{
-            $.alert("Please select member and responsibility");
-            window.stop();
-        }
         
-        // alert('Button was clicked!');        
+        
+        alert('Button was clicked!');        
     }
 
 </script>
