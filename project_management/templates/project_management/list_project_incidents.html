@@ -1,12 +1,10 @@
 {% load crispy_forms_tags %}
 {% csrf_token %}
 
-{% if state %}
 <div class="card-body">
     <div class="row">
         <div class="col-10">
-            <h4 class="card-title">Incidents</h4>
-            <h6 class="card-subtitle">Export data to Copy, CSV, Excel, PDF & Print</h6>
+            <!-- <h4 class="card-title">Incidents</h4> -->
         </div>
 
         <div class="col-2">
@@ -47,11 +45,15 @@
                     </td>
                     
                     <td>
-                        <a href="{% url 'detailsIncident' incident.id %}">View</a>
-                        &nbsp; 
-                        <a href="{% url 'updateIncident' incident.id %}">Update</a>
-                        &nbsp; 
-                        <a href="#"><i class="mdi mdi-delete font-30 align-middle mr-2"></i></a>
+                        <button class="btn btn-outline-success btn-sm"
+                            onclick="editIncident('{{ incident.id }}', '{{ incident.name }}')">
+                            <i title="Manage Incident" class="fa fa-edit"></i>
+                        </button>
+
+                        <button onclick="deleteIncident('{{ incident.id }}', '{{ incident.name }}')"
+                                class="btn btn-outline-danger btn-sm" type="button">
+                            <i title="Delete Incident" class="fa fa-remove"></i>
+                        </button>
                     </td>
                 </tr>
                 {% endfor %}
@@ -68,7 +70,7 @@
         <div>
             <div id="head">
                 <a href="#close" title="Close" class="close2">X</a>
-                <h5 class="modalDialog-title">Add Incident</h5>
+                <h4 class="modalDialog-title" style="text-align: center;">ADD INCIDENT</h4>
             </div>
             <hr>
 
@@ -86,40 +88,24 @@
 </div>
 <!-- END The Modal -->
 
-{% else %}
-    <h3 class="font-weight-bold">Alert: </h3>
-    
-    <p>Click on the "x" symbol to close the alert message.</p>
-    <div class="alert">
-    <span class="closebtn" onclick="this.parentElement.style.display='none';">&times;</span> 
-    <strong>Info!</strong> Please Click on Tab Team and Add Team or Team Members Before Creating Incident
-    </div>
-
-{% endif %}
-
-<style>
-    .alert {
-        padding: 20px;
-        background-color: #24a7be;
-        color: white;
-    }
-
-    .closebtn {
-        margin-left: 15px;
-        color: white;
-        font-weight: bold;
-        float: right;
-        font-size: 22px;
-        line-height: 20px;
-        cursor: pointer;
-        transition: 0.3s;
-    }
-
-    .closebtn:hover {
-        color: black;
-    }
-</style>
 
 <script>
     $('#table_incidents').DataTable();
+
+    function functAddIncident() {
+        urldata = "{% url 'addIncident'%}";
+        $.ajax({
+            type: "GET",
+            cache: false,
+            data: {},
+            url: urldata,
+            success: function (resp) {
+                $('#dialog_create_incident').html(resp);
+
+                window.location = '#incidentFormModalDialog';
+                initDialog('modalDialog');
+            }
+        });
+    }
+
 </script>
