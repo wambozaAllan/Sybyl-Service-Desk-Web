@@ -27,7 +27,13 @@ urlpatterns = [
     path('milestone/update/<int:pk>/', views.MilestoneUpdateView.as_view(), name='update_milestone'),
     path('ajax/load-task-milestones/', views.load_task_milestones, name='load-task-milestones'),
     path('listProjectMilestones/', views.list_project_milestones, name='listProjectMilestones'),
-
+    path('populateMilestone/', views.populate_milestone_view, name='populateMilestone'),
+    path('populateMilestoneStatus/', views.populate_milestone_status, name='populateMilestoneStatus'),
+    path('saveMilestone', views.save_milestone, name='saveMilestone'),
+    path('validateMilestoneName', views.validateMilestoneName, name='validateMilestoneName'),
+    
+    path('populateTaskView', views.populate_task_view, name='populateTaskView'),
+    path('populateStatusMilestone', views.populate_status_milestone, name='populateStatusMilestone'),
     path('tasks/', views.TaskListView.as_view(), name='listTasks'),
     path('tasks/', views.TaskListView.as_view(), name='task_list'),
     path('task/<int:pk>/', views.TaskDetailView.as_view(), name='task_details'),
@@ -37,7 +43,10 @@ urlpatterns = [
     path('task-update/<int:pk>/', views.TaskUpdateView.as_view(), name='update_task'),
     path('listProjectTasks', views.tasklist_by_project, name='listProjectTasks'),
     path('addProjectTasks', views.add_project_tasks, name='addProjectTasks'),
+    path('validateTaskName/', views.validateTaskName, name='validateTaskName'),
     path('saveProjectTask', views.save_project_tasks, name='saveProjectTask'),
+    path('milestoneTasks', views.view_tasks_under_milestone, name='milestoneTasks'),
+    path('addMilestoneTask', views.add_milestone_specific_task, name='addMilestoneTask'),
 
     path('addIncident/', views.AddIncident.as_view(), name='addIncident'),
     path('listIncidents/', views.ListIncidents.as_view(), name='listIncidents'),
@@ -72,11 +81,13 @@ urlpatterns = [
     path('validateProjectAssigned/', views.validateProjectAssigned, name='validateProjectAssigned'),
 
     path('addProjectTeamMember/', views.add_project_team_member, name='addProjectTeamMember'),
+    path('adminAddProjectTeamMember/', views.AddProjectTeamMember.as_view(), name='adminAddProjectTeamMember'),
     path('listProjectTeamMembers/', views.ListProjectTeamMembers.as_view(), name='listProjectTeamMembers'),
     path('updateProjectTeamMember/<int:pk>', views.UpdateProjectTeamMember.as_view(), name='updateProjectTeamMember'),
     path('detailProjectTeamMembers/', views.detail_team_member, name='detailProjectTeamMembers'),
     path('deleteProjectTeamMember/', views.remove_project_team_member, name='deleteProjectTeamMember'),
     path('validateProjectTeamAssigned/', views.validateProjectTeamAssigned, name='validateProjectTeamAssigned'),
+    path('saveTeamMember/', views.save_team_member, name='saveTeamMember'),
 
     path('listAllRoles/', views.ListAllRoles.as_view(), name='listAllRoles'),
     path('addRole/', views.AddRole.as_view(), name='addRole'),
@@ -95,6 +106,6 @@ urlpatterns = [
     path('deleteReply/', views.delete_forum_reply, name='deleteChatReply'),
 
     path('listTeam/', views.list_project_team, name='tabListTeam'),
-    path('saveTeamMember/', views.save_team_member, name='saveTeamMember'),
+    
 
 ]
