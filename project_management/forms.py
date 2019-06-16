@@ -167,3 +167,4 @@ class IncidentForm(forms.ModelForm):
     class Meta:
         model = Incident
         fields = ('status',)
+
