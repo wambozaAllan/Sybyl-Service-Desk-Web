@@ -1,0 +1,121 @@
+<div class="card-body">
+    <div class="row page-titles">
+        <div class="col-md-5 align-self-center">
+            <h5 class="text-primary">MILESTONE: {{ milestone_name }}</h3>
+        </div>
+        <div class="col-md-7 align-self-center">
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item"><a href="#" onclick="listMilestones('{{project_id}}')">Milestones</a></li>
+                <li class="breadcrumb-item active">Task List</li>
+            </ol>
+        </div>
+        <div>
+            <input type="text" value="{{ project_id }}" style="display: none;" />
+        </div>
+
+    </div>
+    <div class="card-title">
+        <div class="row">
+            <div class="col-10">
+                <h4 class="card-title">Tasks</h4>
+            </div>
+
+            <div class="col-2">
+                <a href="#" onclick="functAddMilestoneTask('{{ project_id }}', '{{ milestone_id}}')" class="btn btn-info pull-right">
+                        <i class="fa fa-fw fa-lg fa-plus"></i>Add Task</a>
+            </div>
+        </div>
+        
+    </div>
+    <div class="table-responsive">
+        <table class="table table-hover" id="table_milestones">
+            <thead>
+                <tr>
+                    <th>#</th>
+                    <th>Name</th>
+                    <th>Start Date</th>
+                    <th>Status</th>
+                    <th>Progress</th>
+                </tr>
+            </thead>
+
+            <tbody>
+
+                {% for task in milestone_tasks %}
+                <tr>
+                    <td>{{ forloop.counter }}</td>
+                    <td>{{ task.name }}</td>
+                    <td>{{ task.start_date }}</td>
+                    <td>{{ task.status }}</td>
+                    <td>{{ task.completion }}% </td>
+                </tr>
+                {% empty %}
+                <tr>
+                    <td colspan="4">No tasks currently. Add the first task.</td>
+                    </tr>
+                {% endfor %}
+
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<script>
+    function listMilestones(project_id){
+        urldata = "{% url 'listProjectMilestones' %}";
+        $.ajax({
+            type: "GET",
+            cache: false,
+            data: {
+                project_id: project_id
+            },
+            url: urldata,
+            success: function (resp) {
+                $('.milestone-card').html(resp);
+            }
+        });
+    }
+
+    function functAddMilestoneTask(project_id, milestone_id){
+        urldata = "{% url 'addMilestoneTask' %}"
+        $.ajax({
+            type: "GET",
+            cache: false,
+            data:{
+                project_id: project_id,
+                milestone_id: milestone_id
+            },
+            url: urldata,
+            success: function(resp){
+                $.confirm({
+                        title: '<h3>Add Task: </h3>',
+                        content: '' + resp,
+                        type: 'blue',
+                        theme: 'material',
+                        typeAnimated: true,
+                        // boxWidth: '50%',
+                        height: '40%',
+                        useBootstrap: false,
+                        closeIcon: true,
+                        buttons: {
+                            close: {
+                                text: 'Close',
+                                btnClass: 'btn-gray',
+                                action: function () {
+                                }
+                            }
+                        }
+                    });
+            }
+
+        })
+    }
+
+</script>
+    
+  
+       
+    
+    
+    
+    
