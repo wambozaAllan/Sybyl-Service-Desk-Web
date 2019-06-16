@@ -1486,24 +1486,20 @@
             }
         }
 
-        // ADD INCIDENT
-        function functAddIncident() {
-            urldata = "{% url 'addIncident'%}";
-            $.ajax({
-                type: "GET",
-                cache: false,
-                data: {},
-                url: urldata,
-                success: function (resp) {
-                    $('#dialog_create_incident').html(resp);
+    //     function functAddIncident() {
+    //     urldata = "{% url 'addIncident'%}";
+    //     $.ajax({
+    //         type: "GET",
+    //         cache: false,
+    //         data: {},
+    //         url: urldata,
+    //         success: function (resp) {
+    //             $('#dialog_create_incident').html(resp);
 
-                    window.location = '#incidentFormModalDialog';
-                    initDialog('modalDialog');
-                }
-            });
-        }
-
-    
-
+    //             window.location = '#incidentFormModalDialog';
+    //             initDialog('modalDialog');
+    //         }
+    //     });
+    // }
         
     </script>
