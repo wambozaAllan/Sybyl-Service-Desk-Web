@@ -3,11 +3,7 @@
 	{% csrf_token %}
 	{{form.media}}
 	<div class="row">
-		<div class="col-6">{{ form.title|as_crispy_field }}</div>
-	</div>
-	
-	<div class="row">
-		<div class="col-4">
+		<div class="col-6">
 			{{ form.project|as_crispy_field }}
 			<medium id="project_has_team" class="text-muted hidden">
 				<font color="red">
@@ -15,17 +11,22 @@
 				</font>
 			</medium>
 		</div>
-		<div class="col-4">{{ form.assignee|as_crispy_field }}</div>
-		<div class="col-4">{{ form.task|as_crispy_field}}</div>
+		<div class="col-6">{{ form.title|as_crispy_field }}</div>
+		
 	</div>
 	<br>
 	<div class="row">
-		<div class="col-4">{{ form.priority|as_crispy_field }}</div>
-		<div class="col-4">
+		<div class="col-6">{{ form.task|as_crispy_field}}</div>
+		<div class="col-6">{{ form.assignee|as_crispy_field }}</div>
+	</div>
+	<br>
+	<div class="row">
+		<div class="col-6">{{ form.priority|as_crispy_field }}</div>
+		<div class="col-6">
 			<div><label>Color Code</label></div>
-			<div><input type="text" id="priority_color" class="form-control" style="width: 50%;"></div>
+			<div><input type="text" id="priority_color" class="form-control" style="width: 50%; border-radius: 0.5px;"></div>
 		</div>
-		<div class="col-4">{{ form.status|as_crispy_field }}</div>
+		<div class="col-6">{{ form.status|as_crispy_field }}</div>
 	</div>
 	<br>
 	<div class="row">
