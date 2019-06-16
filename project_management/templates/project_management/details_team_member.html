@@ -77,3 +77,36 @@
     </div>
     <!-- End Page wrapper  -->
 </div>
+
+<script>
+    function addProjectTeamMember() {
+        urldata = "{% url 'addProjectTeamMember'%}";
+        $.ajax({
+            type: "GET",
+            cache: false,
+            data: {},
+            url: urldata,
+            success: function (resp) {
+                $.confirm({
+                    title: '<h3>Add New Project Team Member</h3>',
+                    content: '' + resp,
+                    type: 'blue',
+                    typeAnimated: true,
+                    boxWidth: '50%',
+                    useBootstrap: false,
+                    closeIcon: true,
+                    buttons: {
+                        close: {
+                            text: 'Cancel',
+                            btnClass: 'btn-gray',
+                            action: function () {
+                            }
+                        }
+                    }
+                });
+            }
+        });
+    }
+    
+
+</script>
