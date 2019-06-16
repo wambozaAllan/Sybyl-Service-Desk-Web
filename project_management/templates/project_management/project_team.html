@@ -122,9 +122,8 @@
                                 success: function (data) {
                                     if (data.is_taken) {
                                         $.alert('Name already assigned');
-                                    } else {
-
-
+                                    } 
+                                    else {
                                         $.ajax({
                                             type: "GET",
                                             cache: false,
@@ -136,7 +135,7 @@
                                             url: url_data,
                                             success: function (resp) {
                                                 $.alert({
-                                                    title: 'Alert!',
+                                                    title: 'Success',
                                                     content: 'Project Team has been Added!',
                                                 });
                                                 $('.project_team').html(resp);
