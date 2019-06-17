@@ -1,6 +1,6 @@
 from django import forms
 from django.db import models
-from .models import Project, Milestone, Task, ProjectDocument, Priority, Status, ProjectTeamMember, ProjectTeam
+from .models import Project, Milestone, Task, ProjectDocument, Priority, Status, ProjectTeamMember, ProjectTeam, Incident
 from company_management.models import Company
 from crispy_forms.helper import FormHelper
 from crispy_forms.layout import Submit
@@ -151,7 +151,7 @@ class ProjectForm(forms.ModelForm):
     class Meta:
         model = Project
         fields = ('name', 'company', 'description', 'estimated_start_date', 'estimated_end_date', 'actual_start_date', 'actual_end_date',
-                  'project_status', 'logo', 'thumbnail', 'estimated_cost', 'project_code')
+                  'project_status', 'logo', 'estimated_cost', 'project_code')
        
 
 
@@ -160,3 +160,11 @@ class ProjectTeamMemberForm(forms.ModelForm):
     class Meta:
         model = ProjectTeamMember
         fields = ('member', 'responsibility', 'project_team', )
+
+
+class IncidentForm(forms.ModelForm):
+
+    class Meta:
+        model = Incident
+        fields = ('status',)
+

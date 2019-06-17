@@ -233,7 +233,7 @@
             </div>
             <div class="col-md-7 align-self-center">
                 <ol class="breadcrumb">
-                    <li class="breadcrumb-item"><a href="javascript:void(0)">Tasks</a></li>
+                    <li class="breadcrumb-item"><a href="{% url 'listTasks' %}">Tasks</a></li>
                     <li class="breadcrumb-item active">New</li>
                 </ol>
             </div>
@@ -252,14 +252,19 @@
                             <form method="post" id="taskForm" data-milestones-url="{% url 'load-task-milestones' %}" novalidate>
                                 {% csrf_token %}
                                 <div class="row">
-                                    <div class="col-4">
+                                    <div class="col-6">
                                         {{ form.name|as_crispy_field }}
                                     </div>
-                                    <div class="col-4">
+                                    <div class="col-6">
                                         {{ form.project|as_crispy_field }}
                                     </div>
-                                    <div class="col-4">
+                                </div>
+                                <div class="row">
+                                    <div class="col-6">
                                         {{ form.milestone|as_crispy_field }}
+                                    </div>
+                                    <div class="col-6">
+                                        {{ form.status|as_crispy_field }}
                                     </div>
                                 </div>
                                 <div class="row">
@@ -270,10 +275,7 @@
                                         {{ form.end_date|as_crispy_field }}
                                     </div>
                                 </div>
-                                <div class="row">
-                                    <div class="col-6">
-                                            {{ form.status|as_crispy_field }}
-                                        </div>
+                                <div class="row"> 
                                     <div class="col-6">
                                         {{ form.description|as_crispy_field }}
                                     </div>
@@ -291,6 +293,25 @@
                                     /*$("#id_startdate").focus(function () {
                                         $(this).prop('type', 'date');
                                     });*/
+
+                                    $('#id_status').removeAttr('multiple', "");
+                                    $('#id_status').attr('data-live-search', "true");
+                                    $('#id_status').selectpicker({
+                                        size: 3,
+                                    });
+
+                                    $('#id_milestone').removeAttr('multiple', "");
+                                    $('#id_milestone').attr('data-live-search', "true");
+                                    $('#id_milestone').selectpicker({
+                                        size: 3,
+                                    });
+
+                                    $('#id_project').removeAttr('multiple', "");
+                                    $('#id_project').attr('data-live-search', "true");
+                                    $('#id_project').selectpicker({
+                                        size: 3,
+                                    });
+
                                     $("#id_start_date").prop('type', 'date');
                                     $("#id_end_date").prop('type', 'date');
 

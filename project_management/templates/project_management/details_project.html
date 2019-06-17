@@ -10,12 +10,13 @@
         <!-- Bread crumb -->
         <div class="row page-titles">
             <div class="col-md-5 align-self-center">
-                <h3 class="text-primary">Dashboard</h3>
+                <h3 class="text-primary">Project: {{ project.name }}</h3>
             </div>
             <div class="col-md-7 align-self-center">
                 <ol class="breadcrumb">
                     <li class="breadcrumb-item"><a href="javascript:void(0)">Home</a></li>
-                    <li class="breadcrumb-item active">List of Branches</li>
+                    <li class="breadcrumb-item"><a href="{% url 'listProjects' %}">Projects List</a></li>
+                    <li class="breadcrumb-item active">Project Details</li>
                 </ol>
             </div>
         </div>
@@ -38,9 +39,36 @@
                             </li>
                             {% else %}{% endif %}
 
-                            <li class="nav-item"><a class="nav-link" data-toggle="tab" href="#messages" role="tab">
-                                <span class="hidden-sm-up"><i class="ti-user"></i></span> <span class="hidden-xs-down">Milestones</span></a>
+                            <li class="nav-item" onclick="listMilestones({{ project.id }})">
+                                <a class="nav-link" data-toggle="tab" href="#milestones" role="tab">
+                                <span class="hidden-sm-up"><i class="ti-user"></i></span> 
+                                <span class="hidden-xs-down">Milestones</span></a>
                             </li>
+
+                            {% if milestone_status%}
+                            <li class="nav-item"  onclick="listTasks({{ project.id }})">
+                                <a class="nav-link" data-toggle="tab" href="#tasks" >
+                                    <span class="hidden-sm-up"><i class="fas fa-users"></i></span>
+                                    <span class="hidden-xs-down">Tasks</span></a>
+                            </li>
+                            {% else %}{% endif %}
+
+                            
+
+                            {% if incident_status%}
+                            <li class="nav-item"  onclick="listProjectIncidents({{ project.id }})">
+                                <a class="nav-link" data-toggle="tab" href="#incidents" >
+                                    <span class="hidden-sm-up"><i class="fas fa-users"></i></span>
+                                    <span class="hidden-xs-down">Incidents</span></a>
+                            </li>
+                            {% else %}{% endif %}
+
+                            <li class="nav-item"  onclick="listTeam({{ project.id }})">
+                                <a class="nav-link" data-toggle="tab" href="#teams" >
+                                    <span class="hidden-sm-up"><i class="fas fa-users"></i></span>
+                                    <span class="hidden-xs-down">Team</span></a>
+                            </li>
+                            
                         </ul>
                         <!-- Tab panes -->
                         <div class="tab-content tabcontent-border">
@@ -52,32 +80,32 @@
                                     <div class="card-body">
                                         <div class="basic-form">
                                             <div class="row">
-                                                <div class="col-sm-2">
+                                                <div class="col-6">
                                                     <p class="text-muted m-b-15 f-s-12">Name</p>
                                                     <input type="text" class="form-control input-flat"
                                                            value="{{ project.name }}" disabled>
                                                 </div>
-                                                <div class="col-sm">
+                                                <div class="col-6">
                                                     <p class="text-muted m-b-15 f-s-12">Status</p>
                                                     <input type="text" class="form-control input-flat"
                                                            value="{{ project.project_status }}" disabled>
                                                 </div>
-                                                <div class="col-sm">
+                                                <div class="col-6">
                                                     <p class="text-muted m-b-15 f-s-12">Project Code</p>
                                                     <input type="text" class="form-control input-flat"
                                                            value="{{ project.project_code }}" disabled>
                                                 </div>
-                                                <div class="col-sm">
+                                                <div class="col-6">
                                                     <p class="text-muted m-b-15 f-s-12">Estimated Cost</p>
                                                     <input type="text" class="form-control input-flat"
                                                            value="{{ project.estimated_cost }}" disabled>
                                                 </div>
-                                                <div class="col-sm">
+                                                <div class="col-6">
                                                     <p class="text-muted m-b-15 f-s-12">Start Date</p>
                                                     <input type="text" class="form-control input-flat"
                                                            value="{{ project.start_date }}" disabled>
                                                 </div>
-                                                <div class="col-sm">
+                                                <div class="col-6">
                                                     <p class="text-muted m-b-15 f-s-12">End Date</p>
                                                     <input type="text" class="form-control input-flat"
                                                            value="{{ project.end_date }}" disabled>
@@ -93,9 +121,91 @@
                                     <i class="fa fa-spinner fa-spin fa-4x "></i>
                                 </div>
                             </div>
-                            <div class="tab-pane p-20" id="messages" role="tabpanel">
-                                3
+
+                            <!-- PROJECT MILESTONES -->
+                            <div class="tab-pane p-20" id="milestones" role="tabpanel">
+                                <ul class="nav nav-tabs customtab" role="tablist">
+                                    <li class="nav-item"> <a class="nav-link active" data-toggle="tab" href="#home1" role="tab"><span class="hidden-sm-up"><i class="ti-home"></i></span> <span class="hidden-xs-down">Open <span class="label label-rounded label-info">3</span></span></a> </li>
+                                    <li class="nav-item"> <a class="nav-link" data-toggle="tab" href="#profile1" role="tab"><span class="hidden-sm-up"><i class="ti-user"></i></span> <span class="hidden-xs-down">Onhold <span class="label label-rounded label-info">5</span></span></a> </li>
+                                    <li class="nav-item"> <a class="nav-link" data-toggle="tab" href="#profile1" role="tab"><span class="hidden-sm-up"><i class="ti-user"></i></span> <span class="hidden-xs-down">Completed <span class="label label-rounded label-success">10</span></span></a> </li>
+                                    <li class="nav-item"> <a class="nav-link" data-toggle="tab" href="#messages1" role="tab"><span class="hidden-sm-up"><i class="ti-email"></i></span> <span class="hidden-xs-down">Terminated <span class="label label-rounded label-danger">2</span></span></a> </li>
+                                </ul>
+                                <!-- Tab panes -->
+                                <div class="tab-content">
+                                    <div class="tab-pane active" id="home1" role="tabpanel">
+                                        <div class="p-20">
+                                            <div class="card-body milestone-card">
+                                                <div class="text-center">
+                                                    <i class="fa fa-spinner fa-spin fa-5x "></i>
+                                                </div>
+                                            </div>
+                                        </div> 
+                                    </div>
+                                <div class="tab-pane  p-20" id="profile1" role="tabpanel">2</div>
+                                <div class="tab-pane p-20" id="messages1" role="tabpanel">3</div>
+                                </div>
+                                 
                                 <!-- tab 3 -->
+                            </div>
+                            
+                            <!-- PROJECT TASKS -->
+                            <div class="tab-pane p-20" id="tasks" role="tabpanel">
+                                <ul class="nav nav-tabs customtab" role="tablist">
+                                    <li class="nav-item"> <a class="nav-link active" data-toggle="tab" href="#home2" role="tab"><span class="hidden-sm-up"><i class="ti-home"></i></span> <span class="hidden-xs-down">Open <span class="label label-rounded label-info">3</span></span></a> </li>
+                                    <li class="nav-item"> <a class="nav-link" data-toggle="tab" href="#profile2" role="tab"><span class="hidden-sm-up"><i class="ti-user"></i></span> <span class="hidden-xs-down">Onhold <span class="label label-rounded label-info">5</span></span></a> </li>
+                                    <li class="nav-item"> <a class="nav-link" data-toggle="tab" href="#profile2" role="tab"><span class="hidden-sm-up"><i class="ti-user"></i></span> <span class="hidden-xs-down">Completed <span class="label label-rounded label-success">10</span></span></a> </li>
+                                    <li class="nav-item"> <a class="nav-link" data-toggle="tab" href="#messages2" role="tab"><span class="hidden-sm-up"><i class="ti-email"></i></span> <span class="hidden-xs-down">Terminated <span class="label label-rounded label-danger">2</span></span></a> </li>
+                                </ul>
+                                    <!-- Tab panes -->
+                                <div class="tab-content">
+                                    <div class="tab-pane active" id="home2" role="tabpanel">
+                                        <div class="p-20">
+                                            <div class="card-body task-card">
+                                                <div class="text-center">
+                                                    <i class="fa fa-spinner fa-spin fa-5x "></i>
+                                                </div>
+                                            </div>
+                                        </div>  
+                                    </div>
+                                    <div class="tab-pane  p-20" id="profile2" role="tabpanel">2</div>
+                                    <div class="tab-pane p-20" id="messages2" role="tabpanel">3</div>
+                                </div>   
+                            </div>
+
+                            <!-- PROJECT INCIDENTS -->
+                            <div class="tab-pane p-20" id="incidents" role="tabpanel">
+                                <ul class="nav nav-tabs customtab" role="tablist">
+                                    <li class="nav-item"> <a class="nav-link active" data-toggle="tab" href="#home3" role="tab"><span class="hidden-sm-up"><i class="ti-home"></i></span> <span class="hidden-xs-down">Open <span class="label label-rounded label-info">3</span></span></a> </li>
+                                    <li class="nav-item"> <a class="nav-link" data-toggle="tab" href="#profile3" role="tab"><span class="hidden-sm-up"><i class="ti-user"></i></span> <span class="hidden-xs-down">On hold <span class="label label-rounded label-info">5</span></span></a> </li>
+                                    <li class="nav-item"> <a class="nav-link" data-toggle="tab" href="#profile3" role="tab"><span class="hidden-sm-up"><i class="ti-user"></i></span> <span class="hidden-xs-down">Completed <span class="label label-rounded label-success">10</span></span></a> </li>
+                                    <li class="nav-item"> <a class="nav-link" data-toggle="tab" href="#messages3" role="tab"><span class="hidden-sm-up"><i class="ti-email"></i></span> <span class="hidden-xs-down">Terminated <span class="label label-rounded label-danger">2</span></span></a> </li>
+                                </ul>
+                                <!-- Tab panes -->
+                                <div class="tab-content">
+                                    <div class="tab-pane active" id="home3" role="tabpanel">
+                                        <div class="p-20">
+                                            <div class="card-body incident-card">
+                                                <div class="text-center">
+                                                    <i class="fa fa-spinner fa-spin fa-5x "></i>
+                                                </div>
+                                            </div>
+                                        </div>  
+                                    </div>
+                                    <div class="tab-pane  p-20" id="profile3" role="tabpanel">2</div>
+                                    <div class="tab-pane p-20" id="messages3" role="tabpanel">3</div>
+                                </div>
+                                  
+                            </div>
+
+                            <!-- PROJECT TEAM -->
+                            <div class="tab-pane p-20" id="teams" role="tabpanel">
+                                <div class="p-20">
+                                    <div class="card-body team-card">
+                                        <div class="text-center">
+                                            <i class="fa fa-spinner fa-spin fa-5x "></i>
+                                        </div>
+                                    </div>
+                                </div>    
                             </div>
                         </div>
                     <!-- End Page Content -->
@@ -106,4 +216,68 @@
         </div>
     </div>
 </div>
+
+<script>
+    function listTeam(project_id){
+        urldata = "{% url 'tabListTeam' %}";
+        $.ajax({
+            type: "GET",
+            cache: false,
+            data: {
+                project_id: project_id
+            },
+            url: urldata,
+            success: function (resp) {
+                $('.team-card').html(resp);
+            }
+        });
+    }
+
+    function listProjectIncidents(project_id){
+        urldata = "{% url 'listProjectIncidents' %}";
+        $.ajax({
+            type: "GET",
+            cache: false,
+            data: {
+                project_id: project_id
+            },
+            url: urldata,
+            success: function (resp) {
+                $('.incident-card').html(resp);
+            }
+        });
+    }
+
+    function listTasks(project_id){
+        urldata = "{% url 'listProjectTasks' %}";
+        $.ajax({
+            type: "GET",
+            cache: false,
+            data: {
+                project_id: project_id
+            },
+            url: urldata,
+            success: function (resp) {
+                $('.task-card').html(resp);
+            }
+        });
+    }
+
+
+    function listMilestones(project_id){
+        urldata = "{% url 'listProjectMilestones' %}";
+        $.ajax({
+            type: "GET",
+            cache: false,
+            data: {
+                project_id: project_id
+            },
+            url: urldata,
+            success: function (resp) {
+                $('.milestone-card').html(resp);
+            }
+        });
+    }
+
+</script>
 {% endblock %}

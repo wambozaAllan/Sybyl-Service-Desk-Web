@@ -252,15 +252,20 @@
                             <form method="post" id="taskForm" data-milestones-url="{% url 'load-task-milestones' %}" novalidate>
                                 {% csrf_token %}
                                 <div class="row">
-                                    <div class="col-4">
+                                    <div class="col-6">
                                         {{ form.name|as_crispy_field }}
                                     </div>
-                                    <div class="col-4">
+                                    <div class="col-6">
                                         {{ form.project|as_crispy_field }}
                                     </div>
-                                    <div class="col-4">
+                                </div>
+                                <div class="row">
+                                    <div class="col-6">
                                         {{ form.milestone|as_crispy_field }}
                                     </div>
+                                    <div class="col-6">
+                                            {{ form.status|as_crispy_field }}
+                                        </div>
                                 </div>
                                 <div class="row">
                                     <div class="col-6">
@@ -271,39 +276,15 @@
                                     </div>
                                 </div>
                                 <div class="row">
-                                    <div class="col-6">
-                                            {{ form.status|as_crispy_field }}
-                                        </div>
-                                    <div class="col-6">
+                                    
+                                    <div class="col-8">
                                         {{ form.description|as_crispy_field }}
                                     </div>
                                 </div>
                                 <a href="{% url 'task_list' %}" class="btn btn-inverse col-md-3 col-md-3">Cancel</a>
                                 <button type="submit" class="btn btn-success col-md-3 col-md-3">Save</button>
                             </form>
-                            <script>
-                                $(document).ready(function () {
-                                    $("#id_start_date").prop('type', 'date');
-                                    $("#id_end_date").prop('type', 'date');
-
-                                    $("#id_project").change(function () {
-                                        var url = $("#taskForm").attr("data-milestones-url");
-                                        var projectId = $(this).val();                                    
-                                        $.ajax({
-                                            url: url,
-                                            data: {
-                                             'project': projectId
-                                            },
-                                            success: function (data) {
-                                             $("#id_milestone").html(data);
-                                            }
-                                        });
-                                
-                                    });
-
-                                });
-                                
-                            </script>
+                            
                             <script src="https://code.jquery.com/jquery-3.3.1.min.js"></script>
                             
                         </div>
@@ -318,4 +299,65 @@
     </div>
     <!-- End Page wrapper  -->
 </div>
+<script>
+    $(document).ready(function () {
+        $("#id_start_date").prop('type', 'date');
+        $("#id_end_date").prop('type', 'date');
+
+        // project
+        $('#id_project').prop('disabled', 'disabled');
+        $('#id_project').removeAttr('multiple', "");
+        $('#id_project').attr('data-live-search', 'true');
+        $('#id_project').selectpicker({
+            size: 3,
+        });
+
+        $('#id_milestone').removeAttr('multiple', "");
+        $('#id_milestone').attr('data-live-search', 'true');
+        $('#id_milestone').selectpicker({
+            size: 3,
+        });
+
+        // STATUS
+        $('#id_status').removeAttr('multiple', "");
+        $('#id_status').attr('data-live-search', 'true');
+        $('#id_status').selectpicker({
+            size: 3,
+        });
+
+        $("#id_project").change(function () {
+            var url = $("#taskForm").attr("data-milestones-url");
+            var projectId = $(this).val();                                    
+            $.ajax({
+                url: url,
+                data: {
+                    'project': projectId
+                },
+                success: function (data) {
+                    $("#id_milestone").html(data);
+                }
+            });
+    
+        });
+
+        $("#id_status").change(function(){
+            let status = $(this).val();
+            console.log("status is "+status);
+            $.ajax({
+                url: '{% url 'changeIncidentStatus' task.id %}',
+                data: {
+                    status: status
+                },
+                dataType: 'json',
+                success: function(data){
+
+                }
+            })
+        });
+
+        
+
+    });
+        
+    </script>
 {% endblock %}

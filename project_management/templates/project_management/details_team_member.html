@@ -1,11 +1,12 @@
 <!-- Bread crumb -->
 <div class="row page-titles">
     <div class="col-md-5 align-self-center">
-        <h3 class="text-primary">Dashboard</h3>
+        <h3 class="text-primary">Team Members</h3>
     </div>
     <div class="col-md-7 align-self-center">
         <ol class="breadcrumb">
             <li class="breadcrumb-item"><a href="javascript:void(0)">Home</a></li>
+            <li class="breadcrumb-item"><a href="{% url 'listProjectTeams' %}">ProjectTeam</a></li>
             <li class="breadcrumb-item active">Add Project Team Members</li>
         </ol>
     </div>
@@ -76,3 +77,36 @@
     </div>
     <!-- End Page wrapper  -->
 </div>
+
+<script>
+    function addProjectTeamMember() {
+        urldata = "{% url 'addProjectTeamMember'%}";
+        $.ajax({
+            type: "GET",
+            cache: false,
+            data: {},
+            url: urldata,
+            success: function (resp) {
+                $.confirm({
+                    title: '<h3>Add New Project Team Member</h3>',
+                    content: '' + resp,
+                    type: 'blue',
+                    typeAnimated: true,
+                    boxWidth: '50%',
+                    useBootstrap: false,
+                    closeIcon: true,
+                    buttons: {
+                        close: {
+                            text: 'Cancel',
+                            btnClass: 'btn-gray',
+                            action: function () {
+                            }
+                        }
+                    }
+                });
+            }
+        });
+    }
+    
+
+</script>
