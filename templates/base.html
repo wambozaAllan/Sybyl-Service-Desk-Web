@@ -22,12 +22,6 @@
             jscolor.installByClassName("jscolor");
         });
 
-        $('#id_company').attr('multiple', "multiple");
-        $('#id_company').attr('data-live-search', "true");
-        $('#id_company').selectpicker({
-            size: 2,
-        });
-
         $('#listBranchContacts').DataTable({});
         $('#listEmails').DataTable({});
         $('#listBranches').DataTable({});
@@ -922,34 +916,6 @@
             });
         }
 
-        function functAddProjectTeam() {
-            urldata = "{% url 'addProjectTeam'%}";
-            $.ajax({
-                type: "GET",
-                cache: false,
-                data: {},
-                url: urldata,
-                success: function (resp) {
-                    $.confirm({
-                        title: '<h3>Add New Project Team</h3>',
-                        content: '' + resp,
-                        type: 'blue',
-                        typeAnimated: true,
-                        boxWidth: '50%',
-                        useBootstrap: false,
-                        closeIcon: true,
-                        buttons: {
-                            close: {
-                                text: 'Cancel',
-                                btnClass: 'btn-gray',
-                                action: function () {
-                                }
-                            }
-                        }
-                    });
-                }
-            });
-        }
 
         function functionManageGroupPermissions(grp, grpid) {
             urldata = "{% url 'manageGroupPermissions'%}";
@@ -1090,7 +1056,7 @@
 
         }
 
-         function functionDeleteGroupPermission(pid, pname, grpid, groupname) {
+        function functionDeleteGroupPermission(pid, pname, grpid, groupname) {
             urldata = "{% url 'deleteGroupPermission'%}";
             $.confirm({
                 title: '<h4>Remove Group Permission: <strong class="text-danger">"' + pname + ' "</strong>!</h4>',
@@ -1127,35 +1093,6 @@
                         action: function () {
                         }
                     }
-                }
-            });
-        }
-
-        function addProjectTeamMember() {
-            urldata = "{% url 'addProjectTeamMember'%}";
-            $.ajax({
-                type: "GET",
-                cache: false,
-                data: {},
-                url: urldata,
-                success: function (resp) {
-                    $.confirm({
-                        title: '<h3>Add New Project Team Member</h3>',
-                        content: '' + resp,
-                        type: 'blue',
-                        typeAnimated: true,
-                        boxWidth: '50%',
-                        useBootstrap: false,
-                        closeIcon: true,
-                        buttons: {
-                            close: {
-                                text: 'Cancel',
-                                btnClass: 'btn-gray',
-                                action: function () {
-                                }
-                            }
-                        }
-                    });
                 }
             });
         }
@@ -1295,7 +1232,7 @@
             });
         }
 
-              function deleteRole(roleId, roleName) {
+        function deleteRole(roleId, roleName) {
             urldata = "{% url 'deleteRole' 999%}".replace(999, roleId);
             $.confirm({
                 title: '<h4>Delete Role: <strong class="text-danger">' + roleName + ' </strong>!</h4>',
@@ -1548,20 +1485,21 @@
                 });
             }
         }
-        // ADD INCIDENT
-        function functAddIncident() {
-            urldata = "{% url 'addIncident'%}";
-            $.ajax({
-                type: "GET",
-                cache: false,
-                data: {},
-                url: urldata,
-                success: function (resp) {
-                    $('#dialog_create_incident').html(resp);
 
-                    window.location = '#incidentFormModalDialog';
-                    initDialog('modalDialog');
-                }
-            });
-        }
+    //     function functAddIncident() {
+    //     urldata = "{% url 'addIncident'%}";
+    //     $.ajax({
+    //         type: "GET",
+    //         cache: false,
+    //         data: {},
+    //         url: urldata,
+    //         success: function (resp) {
+    //             $('#dialog_create_incident').html(resp);
+
+    //             window.location = '#incidentFormModalDialog';
+    //             initDialog('modalDialog');
+    //         }
+    //     });
+    // }
+        
     </script>

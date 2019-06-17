@@ -1,0 +1,139 @@
+{% load crispy_forms_tags %}
+
+<div class="col-12">
+        <input id="project_id" type="text" value="{{ project_id }}" style="display: none;"/>
+        <input id="project_name" type="text" value="{{ project_name }}" style="display: none;"/>
+        <input id="id_milestone" type="text" value="{{ milestone_id }}" style="display: none;"/>
+        <input id="milestone_name" type="text" value="{{ milestone_name }}" style="display: none;"/>
+
+<div class="card-body">
+    <div class="basic-form">
+        <form class="form-horizontal" method='GET'>
+            {% csrf_token %}
+
+            <div class="row">
+                <div class="col-12">
+                    <label class="col-form-label  requiredField">Milestone</label>
+                    <input type="text" value="{{ milestone_name }}" class="form-control" id="id_milestone_name"/>
+                </div>
+            </div>
+            <br>
+
+            <div class="row">
+                <div class="col-6">
+                    <label class="col-form-label  requiredField">Task Name<span
+                        class="asteriskField">*</span></label>
+                    <input type="text" id='task_name' class="form-control" name="name" required/>
+                </div>
+            
+                <div class="col-6">
+                    <label class="col-form-label  requiredField">Status</label>
+                    <select id='id_status' class="select form-control"></select>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-6">
+                    <label class="col-form-label  requiredField">Start Date<span
+                        class="asteriskField">*</span></label>
+                    <input type="" id='id_startDate' class="form-control" value="" />
+                </div>
+
+                <div class="col-6">
+                    <label class="col-form-label  requiredField">End Date<span
+                        class="asteriskField">*</span></label>
+                    <input type="" id='id_endDate' class="form-control" value="" />      
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-12">
+                    <label class="col-form-label  requiredField">Description</label>
+                    <textarea class="form-control"></textarea>
+                </div>
+            </div>
+            <br>
+            <div class="row">
+                <button id="id_btnAddMilestoneTask" class="btn btn-success" onclick="saveMilestoneTask()">
+                    <i class="fa fa-fw fa-lg fa-save"></i>Add Task
+                </button>
+                
+            </div>
+            
+
+        </form>
+    </div>
+</div>
+
+</div>
+
+
+<script>
+    $('#id_startDate').datepicker({
+        format: "mm/dd/yyyy",
+        autoclose: true
+    });
+
+    $('#id_endDate').datepicker({
+        format: "mm/dd/yyyy",
+        autoclose: true
+    });
+
+    $("#id_startDate").attr("placeholder", "mm/dd/yyyy");
+    $("#id_endDate").attr("placeholder", "mm/dd/yyyy");
+
+    $('#id_startDate').on('focus', function(){
+        var date = $(this).blur();
+    });
+
+    $('#id_endDate').on('focus', function(){
+        var date = $(this).blur();
+    });
+
+    $('#id_project_name').attr( 'readOnly' , 'true' );
+
+    $('#id_milestone_name').attr('readOnly', 'true');
+
+    $('#id_status').attr('data-live-search', "true"); 
+    $('#id_status').selectpicker({
+        size: 3
+    });
+
+    $(function(){
+        
+        let project_id = $('#project_id').val();
+        let milestone_id = $('#id_milestone').val();
+        let start_date = $('#id_startDate').val();
+        let end_date = $('#id_endDate');
+
+        console.log("we made it mehn!!!"+ project_id);
+
+        urldata = "{% url 'addProjectTasks' %}";
+        $.ajax({
+            type: "GET",
+            cache: false,
+            data: {
+                project_id: project_id
+            },
+            url: urldata,
+            success: function (data) {
+                let statuses = JSON.parse(data.statuses);
+                let milestones = JSON.parse(data.milestones);
+                console.log(statuses);
+                console.log(milestones);
+
+                let actual = '';
+                $("#id_status").html("");
+                $("#id_status").prepend('<option value=""> -----Choose Status----- </option>');
+                for(i=0; i<statuses.length; i++){
+                    actual = statuses[i];
+                    
+                    $('#id_status').append('<option value="' + actual["pk"] + '">' + actual["fields"]["name"] + '</option>');
+                    $("#id_status").selectpicker('refresh');
+                }
+            }
+        })
+               
+    })
+
+</script>

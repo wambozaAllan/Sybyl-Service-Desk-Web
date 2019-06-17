@@ -261,14 +261,7 @@
                                                    <h4>{{ object.name }}</h4> 
                                                 </div>
                                             </div>
-                                            <div class="row col-8 mt-2">
-                                                <div class="col-4">
-                                                    Description
-                                                </div>
-                                                <div class="col-8">
-                                                    <h4>{{ object.description }} </h4>
-                                                </div>
-                                            </div>
+                                            
                                             <div class="row col-8 mt-2">
                                                 <div class="col-4">
                                                     Status
@@ -301,6 +294,14 @@
                                                 </div>
                                                 <div class="col-8 text-success">
                                                     <h4>{{ object.start_date|timesince }}</h4>
+                                                </div>
+                                            </div>
+                                            <div class="row col-8 mt-2">
+                                                <div class="col-4">
+                                                    Description
+                                                </div>
+                                                <div class="col-8">
+                                                    {{ object.description|striptags }}
                                                 </div>
                                             </div>
                                     </div>

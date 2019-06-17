@@ -47,15 +47,6 @@
                 {% endif %}
 
                 <ul aria-expanded="false" class="collapse">
-
-                    {% if perms.project_management.view_project %}
-                        <li><a href="{% url 'full_project_list' %}">Projects</a></li>
-                    {% endif %}
-
-                    {% if perms.project_management.add_project %}
-                        <li><a href="{% url 'new_project' %}">New</a></li>
-                    {% endif %}
-
                     {% if perms.project_management.view_project %}
                         <li><a href="{% url 'listProjects' %}">Projects List</a></li>
                     {% endif %}
@@ -88,7 +79,7 @@
                 {% endif %}
                 <ul aria-expanded="false" class="collapse">
                     {% if perms.project_management.view_task %}
-                        <li><a href="{% url 'task_list' %}">Task List</a></li>
+                        <li><a href="{% url 'listTasks' %}">Task List</a></li>
                     {% endif %}
                     {% if perms.project_management.add_task %}
                         <li><a href="{% url 'new_task' %}">New</a></li>
@@ -104,9 +95,6 @@
                 <ul aria-expanded="false" class="collapse">
                     {% if perms.project_management.view_incident %}
                         <li><a href="{% url 'listIncidents' %}">List of Incidents</a></li>
-                    {% endif %}
-                    {% if perms.project_management.add_incident %}
-                        <li><a href="{% url 'addIncident' %}">Add New Incident</a></li>
                     {% endif %}
                 </ul>
                 </li>

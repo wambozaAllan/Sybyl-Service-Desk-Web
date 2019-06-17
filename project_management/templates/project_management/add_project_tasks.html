@@ -1,0 +1,168 @@
+{% load crispy_forms_tags %}
+
+<div class="col-12">
+        <input id="id_project" type="text" value="{{ project_id }}" style="display: none;"/>
+
+<div class="card-body">
+    <div class="basic-form">
+        <form class="form-horizontal" method='GET'>
+            {% csrf_token %}
+            <div class="row">
+                <div class="col-6">
+                    <label> Project </label>
+                    <input type="text" value="{{ project_name }}" id="id_project_name" class="form-control" style="margin-left: 0;"/> 
+                    <input type='text' value="{{ project_id }}" class="form-control" style="display: none;" />
+                </div>
+                
+                <div class="col-6">
+                    <label> Milestone<span class="asteriskField">*</span> </label>
+                    <select id='id_milestone' class="select form-control" name="milestone" required></select>
+                </div>
+            </div> 
+            
+            <div class="row">
+                <div class="col-6">
+                    <label>Task Name <span class="asteriskField">*</span></label>
+                    <input type="text" value="" class="form-control" required id="id_name"/> 
+                </div>
+            
+                <div class="col-6">
+                    <label> Status<span class="asteriskField">*</span> </label>
+                    <select id='id_status' class="select form-control" name="status"></select>
+                </div>
+            </div>
+            
+            <div class="row">
+                <div class="col-6">
+                    <label> Start Date </label>
+                    <input type="" value="" class="form-control" id="id_startDate"/> 
+                </div> 
+            
+                <div class="col-6">
+                    <label> End Date </label>
+                    <input type="" value="" class="form-control" id="id_endDate" /> 
+                </div> 
+            </div>
+            
+            <div class="row">
+                <div class="col-12">
+                    <label> Description</label>
+                    <textarea class="form-control" id="id_description"></textarea>
+                </div>
+            </div>
+            <br>
+            <div class="row">
+                <div class="col-12">
+                    <button value="Create Task" class="form-control btn btn-success pull-right" id="btn-task" onclick="addTask()">
+                        <i class="fa fa-fw fa-lg fa-save"></i>Add Task
+                    </button>
+                </div>   
+            </div>
+            
+            
+
+        </form>
+    </div>
+</div>
+
+</div>
+
+
+<script>
+    $('#id_startDate').datepicker({
+        format: "mm/dd/yyyy",
+        autoclose: true
+    });
+
+    $('#id_endDate').datepicker({
+        format: "mm/dd/yyyy",
+        autoclose: true
+    });
+
+    $("#id_startDate").attr("placeholder", "mm/dd/yyyy");
+    $("#id_endDate").attr("placeholder", "mm/dd/yyyy");
+
+    $('#id_startDate').on('focus', function(){
+        var date = $(this).blur();
+    });
+
+    $('#id_endDate').on('focus', function(){
+        var date = $(this).blur();
+    });
+
+    $('#id_project_name').attr( 'readOnly' , 'true' );
+
+    $('#id_status').attr('data-live-search', "true"); 
+    $('#id_status').selectpicker({
+        size: 3
+    });
+
+    $('#id_milestone').attr('data-live-search', "true"); 
+    $('#id_milestone').selectpicker({
+        size: 3
+    });
+
+    var project_id = $('#id_project').val();
+    var project_name =$('#id_project_name').val();
+
+    $(function(){
+        var project_id = $('#id_project').val();
+        var project_name =$('#id_project_name').val();
+
+        $.ajax({
+            type:"GET",
+            cache: false,
+            url: "{% url 'populateStatusMilestone' %}",
+            data: {
+               project_id: project_id,
+               project_name: project_name
+            },
+            dataType: 'json',
+            success: function (data) {
+
+                let newMilestone = JSON.parse(data.milestones);
+                console.log(newMilestone)
+                let actual = '';
+                $("#id_milestone").html("");
+                $("#id_milestone").prepend('<option value="-1"> -----Choose Milestone----- </option>');
+                for(i=0; i<newMilestone.length; i++){
+                    actual = newMilestone[i];
+                    
+                    $('#id_milestone').append('<option value="' + actual["pk"] + '">' + actual["fields"]["name"] + '</option>');
+                    $("#id_milestone").selectpicker('refresh');
+                }
+                
+                let newStatus = JSON.parse(data.status);
+                console.log(newStatus)
+                let assign = '';
+                // $("#id_status").html("");
+                $("#id_status").prepend('<option value="-1"> -----Choose Status----- </option>');
+                for(i=0; i<newStatus.length; i++){
+                    assign = newStatus[i];
+                    
+                    $('#id_status').append('<option value="' + assign["pk"] + '">' + assign["fields"]["name"] + '</option>');
+                    $("#id_status").selectpicker('refresh');
+                }
+
+            }
+        });
+    });
+
+    // function addTask(){
+    //     event.preventDefault();
+    //     console.log(project_id +" "+ project_name);
+    //     urlData = "{% url 'saveTask'%}"
+    //     $.ajax({
+    //         type: "GET",
+    //         dataType: 'json',
+    //         data: {
+    //             project_id: project_id,
+    //             project_name: project_name
+    //         },
+    //         success: function(){
+
+    //         }
+    //     });
+    // }
+
+</script>

@@ -1,0 +1,122 @@
+<div class="card-body milestone-task">
+    <div class="card-title">
+        <div class="row">
+            <div class="col-10">
+                <h4 class="card-title">Milestones</h4>
+            </div>
+
+            <div class="col-2">
+                <a href="#" onclick="addMilestone('{{ project_id}}', '{{ project_name }}')" class="btn btn-info pull-right">
+                        <i class="fa fa-fw fa-lg fa-plus"></i>Add Milestones</a>
+            </div>
+        </div>
+        
+    </div>
+    <div class="table-responsive">
+        <table class="table table-hover" id="table_milestones">
+            <thead>
+                <tr>
+                    <th>#</th>
+                    <th>Name</th>
+                    <th>Task count</th>
+                    <th>Start Date</th>
+                    <th>Status</th>
+                    <th>Progress</th>
+                    <th>Action</th>
+                </tr>
+            </thead>
+
+            <tbody>
+
+                {% for milestone in milestones %}
+                <tr>
+                    <td>{{ forloop.counter }}</td>
+                    <td>{{ milestone.name }}</td>
+                    <td class="text-center">
+                        <a href="#" style="color: #fff" onclick="functionSpecificTask('{{ milestone.id }}', '{{ project_id }}')">
+                                <span class="badge badge-pill badge-success">{{milestone.task_set.count}}</span>
+                        </a>
+                    </td>
+                    <td>{{ milestone.startdate }}</td>
+                    <td>{{ milestone.status }}</td>
+                    <td>{{ milestone.completion }}% </td>
+                    <td class="text-center">
+                        <button class="btn btn-outline-success btn-sm"
+                            onclick="editMilestone('{{ milestone.id }}', '{{ milestone.name }}')">
+                            <i title="Manage Milestone" class="fa fa-edit"></i>
+                        </button>
+
+                        <button onclick="deleteMilestone({{ milestone.id }}, '{{ milestone.name }}', '{{ team.id }}', '{{ team.name }}')"
+                                class="btn btn-outline-danger btn-sm" type="button">
+                            <i title="Delete Milestone" class="fa fa-remove"></i>
+                        </button>
+                    </td>
+                </tr>
+                {% empty %}
+                <tr>
+                    <td colspan="4">No milestones currently. Add the first milestone.</td>
+                    </tr>
+                {% endfor %}
+
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<script>
+    $('#table_milestones').DataTable();
+
+    function functionSpecificTask(milestone_id, project_id){
+        urlData = "{% url 'milestoneTasks' %}";
+        $.ajax({
+            type: "GET",
+            cache: false,
+            data: {
+                milestone_id: milestone_id,
+                project_id: project_id,
+            },
+            url: urlData,
+            success: function (resp) {
+                $('.milestone-task').html(resp);
+            }
+        });
+    }
+
+    function addMilestone(project_id, project_name){
+        urldata = "{% url 'populateMilestone' %}";
+            $.ajax({
+                type: "GET",
+                cache: false,
+                data: {
+                    project_id: project_id,
+                    project_name: project_name
+                },
+                url: urldata,
+                success: function (resp) {
+                    $.confirm({
+                        title: '<h3>Add Milestone: </h3>',
+                        content: '' + resp,
+                        type: 'blue',
+                        theme: 'material',
+                        typeAnimated: true,
+                        height: '40%',
+                        useBootstrap: false,
+                        closeIcon: true,
+                        buttons: {
+                            close: {
+                                text: 'Close',
+                                btnClass: 'btn-gray',
+                                action: function () {
+                                }
+                            }
+                        }
+                    });
+                }
+            });
+    }
+
+</script>
+   
+
+
+
