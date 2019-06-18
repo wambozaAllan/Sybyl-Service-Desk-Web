@@ -11,7 +11,7 @@
         <!-- Bread crumb -->
         <div class="row page-titles">
             <div class="col-md-5 align-self-center">
-                <h3 class="text-primary">Dashboard</h3> </div>
+                <h3 class="text-primary">Incidents</h3> </div>
             <div class="col-md-7 align-self-center">
                 <ol class="breadcrumb">
                     <li class="breadcrumb-item"><a href="{% url 'home' %}">Home</a></li>
@@ -35,10 +35,8 @@
 									{% csrf_token %}
 									<div class="row">
 										<div class="col-12">{{ form.title|as_crispy_field }}</div>
-									</div>
-									<div class="row">
-										<div class="col-12">{{ form.description|as_crispy_field }}</div>
-									</div>
+                                    </div>
+                                    <br>
 									<div class="row">
                                         <div class="col-4">
                                             {{ form.project|as_crispy_field }}
@@ -49,15 +47,20 @@
                                             </medium>
                                         </div>
                                         <div class="col-4">{{ form.status|as_crispy_field }}</div>
-									</div>
+                                    </div>
+                                    <br>
 									<div class="row">
                                         <div class="col-4">{{ form.priority|as_crispy_field }}</div>
                                         <div class="col-4">
                                             <div><label>Color Code</label></div>
-                                            <div><input type="text" id="priority_color" class="form-control" style="width: 50%;">{{form.priority.color}}</div>
+                                            <div><input type="text" id="priority_color" class="form-control" style="width: 50%; background-color: {{ form.priority.color }}; border: 0;"></input></div>
                                         </div>
 										<div class="col-4">{{ form.assignee|as_crispy_field }}</div>
-									</div>
+                                    </div>
+                                    <br>
+                                    <div class="row">
+                                        <div class="col-12">{{ form.description|as_crispy_field }}</div>
+                                    </div>
 								<div class="row">
 									<div class="col-5"></div>
 									<div class="col-1"><a href="{% url 'listIncidents' %}" class="btn btn-inverse">Cancel</a></div>
@@ -102,6 +105,8 @@
         $('#id_project').selectpicker({
             size: 3,
         });
+
+        $("#id_project").prop("disabled", "disabled");
     
         // PRIORITY
         $('#id_priority').removeAttr('multiple', "");
@@ -118,11 +123,10 @@
         });
     
         // selecting project
-        $('#id_project').on('change', function(){
-            var project_name = $(this).val();
+        $('#id_assignee').on('focus', function(){
+            var project_name = document.getElementById('id_project').value;
+            
             $("#id_assignee").html("");
-            $("#id_creator").html("");
-    
     
             $.ajax({
                 url: '{% url 'getTeamMembers' %}',
@@ -135,21 +139,17 @@
                     
                     if (teamList.length > 0 && teamList.length !== ''){
                         $("#id_assignee").html("");
-                        $("#id_creator").html("");
     
                         for(i in teamList){	
                             $("#project_has_team").hide();
                             $('#id_assignee').append('<option value="' + teamList[i].id + '">' + teamList[i].first_name + " " + teamList[i].last_name + '</option>');
-                            $('#id_creator').append('<option value="' + teamList[i].id + '">' + teamList[i].first_name + " " + teamList[i].last_name + '</option>');
                             $('#id_assignee').selectpicker('refresh');
-						    $('#id_creator').selectpicker('refresh');
                         }
                     }
                     else{
                         
                         $("#id_assignee").html("");
-                        $("#id_creator").html("");
-                        $('.selectpicker').selectpicker('refresh');
+                        $('#id_assignee').selectpicker('refresh');
                         $("#project_has_team").show();
                     }
                     

@@ -227,12 +227,12 @@
         <!-- Bread crumb -->
         <div class="row page-titles">
             <div class="col-md-5 align-self-center">
-                <h3 class="text-primary">Dashboard</h3>
+                <h3 class="text-primary">Milestones</h3>
             </div>
             <div class="col-md-7 align-self-center">
                 <ol class="breadcrumb">
                     <li class="breadcrumb-item"><a href="{% url 'home' %}">Home</a></li>
-                    <li class="breadcrumb-item active">Dashboard</li>
+                    <li class="breadcrumb-item active">List of Milestones</li>
                 </ol>
             </div>
         </div>
@@ -254,16 +254,10 @@
                                 </div>
                             </div>
                             <br />
-
-                            <div class="">
-                                <select name="project" class="select form-control" required id="id_project">
-                                    <option value="" selected>---------</option>
-                                </select>
-                            </div>
                         </div>
                         <div class="card-body">
                             <div class="table-responsive">
-                                <table class="table table-hover">
+                                <table class="table table-hover" id="table_priorities">
                                     <thead>
                                         <tr>
                                             <th>Name</th>

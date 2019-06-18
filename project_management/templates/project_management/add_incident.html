@@ -3,13 +3,7 @@
 	{% csrf_token %}
 	{{form.media}}
 	<div class="row">
-		<div class="col-12">{{ form.title|as_crispy_field }}</div>
-	</div>
-	<div class="row">
-		<div class="col-12">{{ form.description|as_crispy_field }}</div>
-	</div>
-	<div class="row">
-		<div class="col-4">
+		<div class="col-6">
 			{{ form.project|as_crispy_field }}
 			<medium id="project_has_team" class="text-muted hidden">
 				<font color="red">
@@ -17,19 +11,36 @@
 				</font>
 			</medium>
 		</div>
-		<div class="col-4">{{ form.creator|as_crispy_field }}</div>
-		<div class="col-4">{{ form.assignee|as_crispy_field }}</div>
-		<div class="col-4">{{ form.priority|as_crispy_field }}</div>
-		<div class="col-4">
-			<div><label>Color Code</label></div>
-			<div><input type="text" id="priority_color" class="form-control" style="width: 50%;"></div>
-		</div>
+		<div class="col-6">{{ form.title|as_crispy_field }}</div>
+		
 	</div>
+	<br>
 	<div class="row">
-		<div class="col-4">{{ form.status|as_crispy_field }}</div>
-		<div class="col-4">{{ form.document|as_crispy_field }}</div>
-		<div class="col-4">{{ form.image|as_crispy_field }}</div>
+		<div class="col-6">{{ form.task|as_crispy_field}}</div>
+		<div class="col-6">{{ form.assignee|as_crispy_field }}</div>
 	</div>
+	<br>
+	<div class="row">
+		<div class="col-6">{{ form.priority|as_crispy_field }}</div>
+		<div class="col-6">
+			<div><label>Color Code</label></div>
+			<div><input type="text" id="priority_color" class="form-control" style="width: 50%; border-radius: 0.5px;"></div>
+		</div>
+		<div class="col-6">{{ form.status|as_crispy_field }}</div>
+	</div>
+	<br>
+	<div class="row">
+		
+		<div class="col-12 fallback">{{ form.document|as_crispy_field }}</div>
+		<div class="col-12 fallback">{{ form.image|as_crispy_field }}</div>
+	</div>
+
+	
+	<br>
+	<div class="row">
+		<div class="col-6">{{ form.description|as_crispy_field }}</div>
+	</div>
+	<br>
 	<div class="row">
 		<div class="col-5"></div>
 		<div class="col-1">
@@ -41,16 +52,9 @@
 	</div>
 </form>
 
+
 <script>
 	$("#id_assignee").html("");
-	$("#id_creator").html("");
-
-	
-	$('#id_creator').removeAttr('multiple', "");
-	$('#id_creator').attr('data-live-search', 'true');
-	$('#id_creator').selectpicker({
-		size: 3,
-	});
 
 	$('#id_assignee').attr('multiple', "");
 	$('#id_assignee').attr('data-live-search', 'true');
@@ -82,7 +86,16 @@
 		size: 3,
 	});
 
-	
+	// TASK
+	$('#id_task').removeAttr('multiple', "");
+	$('#id_task').attr('data-live-search', 'true');
+	$('#id_task').selectpicker({
+		size: 3,
+	});
+
+	$('#id_document').addClass('dropzone');
+	$('#id_image').addClass('dropzone');
+
 	// hide project elements
 	$('#id_assignee').hide();
 	$('#id_creator').hide();
@@ -106,20 +119,16 @@
 				
 				if (teamList.length > 0 && teamList.length !== ''){
 					$("#id_assignee").html("");
-					$("#id_creator").html("");
 
 					for(i in teamList){
 						$("#project_has_team").hide();
 						$('#id_assignee').append('<option value="' + teamList[i].id + '">' + teamList[i].first_name + " " + teamList[i].last_name + '</option>');
-						$('#id_creator').append('<option value="' + teamList[i].id + '">' + teamList[i].first_name + " " + teamList[i].last_name + '</option>');
 						$('#id_assignee').selectpicker('refresh');
-						$('#id_creator').selectpicker('refresh');
 					}
 				}
 				else{
 					$("#project_has_team").show();
 					$('#id_assignee').selectpicker('refresh');
-					$('#id_creator').selectpicker('refresh');
 				}
 				
 			}

@@ -45,6 +45,36 @@ INSTALLED_APPS = [
     'chat',
 ]
 
+CKEDITOR_CONFIGS = {
+    # django-ckeditor defaults
+    'default': {
+        # Editor Width Adaptation
+        'width':'600px',
+        'height':'150px',
+        # tab key conversion space number
+        'tabSpaces': 4,
+        # Toolbar Style
+        'toolbar': 'Custom',
+        # Toolbar buttons
+        'toolbar_Custom': [
+            # Emotional Code Block
+            ['Smiley', 'CodeSnippet'], 
+            # Font Style
+            ['Bold', 'Italic', 'Underline', 'RemoveFormat', 'Blockquote'],
+            # Font color
+            ['TextColor', 'BGColor'],
+            # Link link
+            ['Link', 'Unlink'],
+            # List of items
+            ['NumberedList', 'BulletedList'],
+            # Maximization
+            ['Maximize']
+        ],
+        # Add Code Block Plug-ins
+        'extraPlugins': ','.join(['codesnippet']),
+    }
+}
+
 LOGIN_REDIRECT_URL = 'home'
 
 LOGOUT_REDIRECT_URL = 'login'
