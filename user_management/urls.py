@@ -58,4 +58,5 @@ urlpatterns = [
     path('filterSystemModules/', views.filter_system_modules, name='filterSystemModules'),
 
     path('testConnection/', views.check_internet_connection, name='testConnection'),
+    path('resendEmail/', views.update_resend_user_email, name='resendEmail'),
 ]

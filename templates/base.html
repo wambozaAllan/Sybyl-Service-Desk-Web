@@ -18,7 +18,7 @@
     <script>
 
         // update project attributes
-        $(document).ready(function() {
+        $(document).ready(function () {
             jscolor.installByClassName("jscolor");
         });
 
@@ -632,7 +632,7 @@
                     var modelList2 = [];
                     $('.model_row_class').each(function () {
                         var mid = $(this).data('modelid');
-                        modelList2.push({id: mid});
+                        modelList2.push({ id: mid });
                     });
 
                     for (var i = 0; i < modelList2.length; i++) {
@@ -985,7 +985,7 @@
             $.ajax({
                 type: "GET",
                 cache: false,
-                data: {grpid: grpid, grp: grp},
+                data: { grpid: grpid, grp: grp },
                 url: urldata,
                 success: function (resp) {
                     $.confirm({
@@ -1011,34 +1011,34 @@
 
         function deleteProjectTeam(teamId, teamName, teamNum) {
             urldata = "{% url 'deleteProjectTeam' 999%}".replace(999, teamId);
-            if (teamNum == 0){
+            if (teamNum == 0) {
                 $.confirm({
-                title: '<h4>Delete ProjectTeam: <strong class="text-danger">' + teamName + ' </strong>!</h4>',
-                content: '',
-                type: 'red',
-                typeAnimated: true,
-                boxWidth: '40%',
-                useBootstrap: false,
-                theme: 'modern',
-                icon: 'fa fa-exclamation-circle',
-                buttons: {
-                    formSubmit: {
-                        text: 'OK',
-                        btnClass: 'btn-blue',
-                        action: function () {
-                            location.href = urldata;
-                        }
-                    },
-                    close: {
-                        text: 'Cancel',
-                        btnClass: 'btn-gray',
-                        action: function () {
+                    title: '<h4>Delete ProjectTeam: <strong class="text-danger">' + teamName + ' </strong>!</h4>',
+                    content: '',
+                    type: 'red',
+                    typeAnimated: true,
+                    boxWidth: '40%',
+                    useBootstrap: false,
+                    theme: 'modern',
+                    icon: 'fa fa-exclamation-circle',
+                    buttons: {
+                        formSubmit: {
+                            text: 'OK',
+                            btnClass: 'btn-blue',
+                            action: function () {
+                                location.href = urldata;
+                            }
+                        },
+                        close: {
+                            text: 'Cancel',
+                            btnClass: 'btn-gray',
+                            action: function () {
+                            }
                         }
                     }
-                }
-            });
+                });
             }
-            else{
+            else {
                 $.alert({
                     type: 'red',
                     typeAnimated: true,
@@ -1048,7 +1048,7 @@
                     title: 'Alert!',
                     icon: 'fa fa-exclamation-circle',
                     content: 'Cannot delete project team since it has members!',
-                    confirm: function(){
+                    confirm: function () {
                         alert('Confirmed!');
                     }
                 });
@@ -1485,5 +1485,150 @@
                 });
             }
         }
-        
+
+        function functionResendEmail(uid, username, email, fname, lname) {
+            document.getElementsByClassName('btn-resend-email').disabled = false;
+            $.confirm({
+                title: 'Send Email!',
+                content: '' +
+                    '<div class="form-group">' +
+                    '<label>User Name</label>' +
+                    '<div class="row col-12"><input id="id_username" type="text" placeholder="' + username + '" class="name form-control col-10" required value=' + username + ' disabled=""> <span class="col-2"><a onclick="functUserNameEmail()" href="#!"> <i style="margin-top: 52%; margin-left: -32%;" class="fa fa-fw fa-lg fa-edit"></i></a></span></div>' +
+                    '</div>' +
+                    '<div class="form-group">' +
+                    '<label>Email Address</label>' +
+                    '<div class="row col-12"><input id="id_email" type="text" placeholder="' + email + '" class="name form-control col-10" required value=' + email + ' disabled=""> <span class="col-2"> <a href="#!"> <i onclick="functEditEmail()" style="margin-top: 52%; margin-left: -32%;" class="fa fa-fw fa-lg fa-edit"></i> </a></span></div>' +
+                    '</div>',
+                closeIcon: true,
+                type: 'blue',
+                typeAnimated: true,
+                boxWidth: '30%',
+                useBootstrap: false,
+                buttons: {
+                    formSubmit: {
+                        text: 'Send Email',
+                        btnClass: 'btn-green btn-resend-email',
+                        action: function () {
+                            var uname = this.$content.find('#id_username').val();
+                            var emailadd = this.$content.find('#id_email').val();
+
+                            if (!uname || !emailadd) {
+                                if (!uname) {
+                                    $.alert('Please provide a User Name!');
+                                    return false;
+                                }
+
+                                if (!emailadd) {
+                                    $.alert('Please provide an Email Address!');
+                                    return false;
+                                }
+                            } else {
+                                if (validateEmail(emailadd)) {
+                                    url_data12 = "{% url 'testConnection'%}";
+                                    $.ajax({
+                                        type: "GET",
+                                        cache: false,
+                                        data: {},
+                                        url: url_data12,
+                                        success: function (data) {
+                                            if (data.test) {
+                                                $('.btn-resend-email').html('Submit <i class="fa fa-spinner fa-spin"></i>');
+                                                document.getElementsByClassName('btn-resend-email').disabled = true;
+
+                                                $.confirm({
+                                                    title: 'Sending Email...',
+                                                    content: '<i class="fa fa-spinner fa-spin fa-4x "></i>',
+                                                    type: 'blue',
+                                                    useBootstrap: false,
+                                                    typeAnimated: true,
+                                                    boxWidth: '20%',
+                                                    buttons: {
+                                                        somethingElse: {
+                                                            text: 'OK',
+                                                            btnClass: 'btn-gray close30-dialog',
+                                                            confirm: function () {
+
+                                                            }
+                                                        }
+                                                    }
+                                                });
+                                                data3 = {
+                                                    email: emailadd,
+                                                    username: uname,
+                                                    uid: uid,
+                                                    fname,
+                                                    lname
+                                                };
+
+                                                url_data = "{% url 'resendEmail'%}";
+                                                $.ajax({
+                                                    type: "GET",
+                                                    cache: false,
+                                                    data: data3,
+                                                    url: url_data,
+                                                    success: function (resp) {
+                                                        $('.close-dialog').click();
+                                                        $('.close30-dialog').click();
+                                                        $('.page-wrapper').html(resp);
+
+                                                        $.confirm({
+                                                            title: 'Success!',
+                                                            content: 'An Email Has been sent to <span class="text-info">' + emailadd + '.</span> User should get his/her credentials from the sent mail to login on to the system.',
+                                                            type: 'green',
+                                                            boxWidth: '35%',
+                                                            useBootstrap: false,
+                                                            typeAnimated: true,
+                                                            buttons: {
+                                                                ok: function () {
+
+                                                                }
+                                                            }
+                                                        });
+
+                                                    }
+                                                });
+
+                                            } else {
+                                                $.confirm({
+                                                    title: 'Alert!',
+                                                    content: 'Please Check your Internet to Proceed.',
+                                                    type: 'red',
+                                                    boxWidth: '35%',
+                                                    useBootstrap: false,
+                                                    typeAnimated: true,
+                                                    buttons: {
+                                                        close: function () {
+
+                                                        }
+                                                    }
+                                                });
+                                            }
+                                        }
+                                    });
+                                } else {
+                                    $.alert('Please provide a Valid Email Address!');
+                                    return false;
+                                }
+                            }
+                        }
+                    },
+                    close: {
+                        text: 'Cancel',
+                        btnClass: 'btn-gray close-dialog',
+                        action: function () {
+                        }
+                    }
+                }
+            });
+        }
+
+        function functEditEmail() {
+            $("#id_email").prop("disabled", false);
+            $("#id_email").focus();
+        }
+
+        function functUserNameEmail() {
+            $("#id_username").prop("disabled", false);
+            $("#id_username").focus();
+        } 
     </script>

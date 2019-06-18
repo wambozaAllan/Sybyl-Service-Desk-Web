@@ -150,7 +150,5 @@ def save_new_password(request):
     user_name = request.GET.get('user_name')
     user_id = request.GET.get('user_id')
     now = datetime.datetime.utcnow()
-    print('xxxxxxxxxxxxxx')
-    print(user_id)
     User.objects.filter(id=int(user_id)).update(username=user_name, password=make_password(new_password), last_login=now.strftime('%Y-%m-%d %H:%M:%S'))
     return redirect("/login/")

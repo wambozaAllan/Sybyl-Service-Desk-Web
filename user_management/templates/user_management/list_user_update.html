@@ -37,12 +37,12 @@
                             </tr>
                             </thead>
                             <tbody>
-                            {% for user in all_users %}
+                            {% for userdetails in all_users %}
                             <tr>
-                                <td>{{ user.first_name | title }} {{ user.last_name | title}}</td>
-                                <td>{{ user.gender }}</td>
-                                <td>{{ user.department }}</td>
-                                {% if user.is_active %}
+                                <td>{{ userdetails.first_name | title }} {{ userdetails.last_name | title}}</td>
+                                <td>{{ userdetails.gender }}</td>
+                                <td>{{ userdetails.department }}</td>
+                                {% if userdetails.is_active %}
                                 <td class="text-center"><span
                                         class="badge badge-success"><strong>Active</strong></span>
                                 </td>
@@ -52,7 +52,7 @@
                                 </td>
                                 {% endif %}
 
-                                {% if user.is_superuser %}
+                                {% if userdetails.is_superuser %}
                                 <td class="text-center"><span class="badge badge-success">
                                     <strong>Super User</strong></span>
                                 </td>
@@ -61,9 +61,9 @@
                                         class="badge badge-secondary"><strong>Normal User</strong></span>
                                 </td>
                                 {% endif %}
-                                {% if user.group %}
+                                {% if userdetails.group %}
                                 <td class="text-center"><span
-                                        class="badge badge-success"><strong>{{ user.group }}</strong></span>
+                                        class="badge badge-success"><strong>{{ userdetails.group }}</strong></span>
                                 </td>
                                 {% else %}
                                 <td class="text-center"><span
@@ -71,6 +71,11 @@
                                 </td>
                                 {% endif %}
                                 <td>
+                                    {% if userdetails.last_login %}
+                                        <a href="#!" class="isDisabled">Resend-Email</a>
+                                    {% else %}
+                                        <a href="#!" onclick="functionResendEmail({{userdetails.pk}}, '{{ userdetails.username}}', '{{ userdetails.email}}', '{{userdetails.first_name}}', '{{ userdetails.last_name}}')">Resend-Email</a>
+                                    {% endif %}
                                     <a href="{% url 'detailsUser' user.id %}">View</a>
                                     <a href="{% url 'updateUser' user.id %}">Update</a>
                                 </td>
