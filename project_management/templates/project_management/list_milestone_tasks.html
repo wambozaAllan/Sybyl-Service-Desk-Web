@@ -1,4 +1,4 @@
-<div class="card-body">
+<div class="card-body task-milestone">
     <div class="row page-titles">
         <div class="col-md-5 align-self-center">
             <h5 class="text-primary">MILESTONE: {{ milestone_name }}</h3>
@@ -28,14 +28,14 @@
         
     </div>
     <div class="table-responsive">
-        <table class="table table-hover" id="table_milestones">
+        <table class="table table-hover" id="table_tasks">
             <thead>
                 <tr>
                     <th>#</th>
                     <th>Name</th>
                     <th>Start Date</th>
                     <th>Status</th>
-                    <th>Progress</th>
+                    <th class="text-center">Action</th>
                 </tr>
             </thead>
 
@@ -47,7 +47,17 @@
                     <td>{{ task.name }}</td>
                     <td>{{ task.start_date }}</td>
                     <td>{{ task.status }}</td>
-                    <td>{{ task.completion }}% </td>
+                    <td class="text-center">
+                        <button class="btn btn-outline-success btn-sm"
+                            onclick="editMilestone('{{ milestone.id }}', '{{ milestone.name }}')">
+                            <i title="Manage Milestone" class="fa fa-edit"></i>
+                        </button>
+
+                        <button onclick="deleteMilestone('{{ milestone.id }}', '{{ milestone.name }}', '{{ team.id }}', '{{ team.name }}')"
+                                class="btn btn-outline-danger btn-sm" type="button">
+                            <i title="Delete Milestone" class="fa fa-remove"></i>
+                        </button>
+                    </td>
                 </tr>
                 {% empty %}
                 <tr>
@@ -61,6 +71,8 @@
 </div>
 
 <script>
+
+    $('#table_tasks').DataTable();
     function listMilestones(project_id){
         urldata = "{% url 'listProjectMilestones' %}";
         $.ajax({
@@ -93,14 +105,13 @@
                         type: 'blue',
                         theme: 'material',
                         typeAnimated: true,
-                        // boxWidth: '50%',
                         height: '40%',
                         useBootstrap: false,
                         closeIcon: true,
                         buttons: {
                             close: {
                                 text: 'Close',
-                                btnClass: 'btn-gray',
+                                btnClass: 'btn-gray close-dialog',
                                 action: function () {
                                 }
                             }
@@ -112,10 +123,3 @@
     }
 
 </script>
-    
-  
-       
-    
-    
-    
-    
