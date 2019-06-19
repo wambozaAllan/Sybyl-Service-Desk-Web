@@ -276,6 +276,14 @@
                                     </div>
                                 </div>
                                 <div class="row">
+                                    <div class="col-6">
+                                        {{ form.actual_start_date|as_crispy_field }}
+                                    </div>
+                                    <div class="col-6">
+                                        {{ form.actual_end_date|as_crispy_field }}
+                                    </div>
+                                </div>
+                                <div class="row">
                                     
                                     <div class="col-8">
                                         {{ form.description|as_crispy_field }}
@@ -304,13 +312,15 @@
         $("#id_start_date").prop('type', 'date');
         $("#id_end_date").prop('type', 'date');
 
+        $("#id_actual_start_date").prop('type', 'date');
+        $("#id_actual_end_date").prop('type', 'date');
+
         // project
-        $('#id_project').prop('disabled', 'disabled');
-        $('#id_project').removeAttr('multiple', "");
-        $('#id_project').attr('data-live-search', 'true');
-        $('#id_project').selectpicker({
-            size: 3,
-        });
+        // $('#id_project').removeAttr('multiple', "");
+        // $('#id_project').attr('data-live-search', 'true');
+        // $('#id_project').selectpicker({
+        //     size: 3,
+        // });
 
         $('#id_milestone').removeAttr('multiple', "");
         $('#id_milestone').attr('data-live-search', 'true');
