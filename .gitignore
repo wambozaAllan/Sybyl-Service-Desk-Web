@@ -17,3 +17,13 @@ ven5/
 .idea/
 .directory
 .gitignore
+media/documents/projects/
+media/images/incidents/
+media/logos/
+media/documents/incidents/
+chat/__pycache__/
+core/__pycache__/
+
+
+
+
