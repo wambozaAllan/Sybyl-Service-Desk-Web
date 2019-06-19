@@ -1,0 +1,151 @@
+{% load crispy_forms_tags %}
+<form method="post"  action="{% url 'addProjectIncident' %}" method="post" enctype="multipart/form-data">
+	{% csrf_token %}
+	{{form.media}}
+	<div class="row">
+		<div class="col-6">
+			<div id="div_id_project" class="form-group">
+				<label for="id_project" class="col-form-label  requiredField">
+					Project<span class="asteriskField">*</span>
+				</label>
+				<div class="">
+					<input name="project" class="textinput textInput form-control" required="" id="id_project" value="{{project_id}}" type="hidden">
+					<input type="text" name="" class="textinput textInput form-control" required="" value="{{project_name}}" placeholder="" disabled="">
+				</div>
+			</div>
+		</div>
+		<div class="col-6">{{ form.title|as_crispy_field }}</div>
+		
+	</div>
+	<br>
+	<div class="row">
+		<div class="col-6">
+			<div id="div_id_task" class="form-group">
+				<label for="id_task" class="col-form-label ">
+					Task
+				</label>
+				<div class="">
+					<select name="task" class="select form-control" id="id_task">
+						{% for t in tasks %}
+							<option value="{{t.id}}">{{t.name}}</option>
+                        {% endfor %}
+					</select>
+				</div>
+			</div>
+		</div>
+		<div class="col-6">
+			<div id="div_id_assignee" class="form-group">
+        		<label for="id_assignee" class="col-form-label  requiredField">
+					Assignee<span class="asteriskField">*</span>
+				</label>
+				<div class="">
+					<select name="assignee" class="selectmultiple form-control" required="" id="id_assignee" multiple="">
+						{% for member in members%}
+							<option value="{{member.id}}"> {{member.first_name}}{{member.last_name}}</option>
+						{% endfor %}
+					</select>
+				</div>
+			</div>
+		</div>
+	</div>
+	<br>
+	<div class="row">
+		<div class="col-6">{{ form.priority|as_crispy_field }}</div>
+		<div class="col-6">
+			<div><label>Color Code</label></div>
+			<div><input type="text" id="priority_color" class="form-control" style="width: 50%; border-radius: 0.5px;"></div>
+		</div>
+		<div class="col-6">{{ form.status|as_crispy_field }}</div>
+	</div>
+	<br>
+	<div class="row">
+		
+		<div class="col-12 fallback">{{ form.document|as_crispy_field }}</div>
+		<div class="col-12 fallback">{{ form.image|as_crispy_field }}</div>
+	</div>
+
+	
+	<br>
+	<div class="row">
+		<div class="col-6">{{ form.description|as_crispy_field }}</div>
+	</div>
+	<br>
+	<div class="row">
+		<div class="col-5"></div>
+		<div class="col-1">
+			<a href="{% url 'listIncidents' %}" class="btn btn-inverse">Cancel</a>
+		</div>
+		<div class="col-1">
+			<button type="submit" class="btn btn-success">Add Incident</button>
+		</div>
+	</div>
+</form>
+
+
+<script>
+	
+		$('#id_assignee').attr('multiple', "");
+		$('#id_assignee').attr('data-live-search', 'true');
+		$('#id_assignee').selectpicker({
+			size: 3,
+		});
+	
+	
+		$('#id_title').attr('autocomplete', 'off');
+	
+		// project
+		$('#id_project').removeAttr('multiple', "");
+		$('#id_project').attr('data-live-search', 'true');
+		$('#id_project').selectpicker({
+			size: 3,
+		});
+	
+		// PRIORITY
+		$('#id_priority').removeAttr('multiple', "");
+		$('#id_priority').attr('data-live-search', 'true');
+		$('#id_priority').selectpicker({
+			size: 3,
+		});
+	
+		// STATUS
+		$('#id_status').removeAttr('multiple', "");
+		$('#id_status').attr('data-live-search', 'true');
+		$('#id_status').selectpicker({
+			size: 3,
+		});
+	
+		// TASK
+		$('#id_task').removeAttr('multiple', "");
+		$('#id_task').attr('data-live-search', 'true');
+		$('#id_task').selectpicker({
+			size: 3,
+		});
+	
+		$('#id_document').addClass('dropzone');
+		$('#id_image').addClass('dropzone');
+	
+		$('#priority_color').attr( 'readOnly' , 'true' );
+	
+		// setting incident color code
+		$('#id_priority').on('change', function(){
+			var priority_name = $(this).val();
+	
+			$.ajax({
+				url: "{% url 'setColorCode' %}",
+				data: {
+					priority: priority_name
+				},
+				dataType: 'json',
+				success: function(data){
+					var name = data.name;
+					var color = data.color;
+					
+					if (data !== ''){
+						$('#priority_color').css("background-color", data.color);
+					}
+					
+				}
+			})
+		})
+	
+	</script>
