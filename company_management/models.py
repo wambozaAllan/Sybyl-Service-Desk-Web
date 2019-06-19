@@ -6,7 +6,7 @@ from django.urls import reverse
 
 class CompanyDomain(models.Model):
     name = models.CharField(max_length=250)
-    description = models.CharField(max_length=255, blank=True)
+    description = models.CharField(max_length=255, blank=True, null=True)
     created_time = models.DateTimeField(auto_now_add=True)
     modified_time = models.DateTimeField(auto_now=True)
 
@@ -34,13 +34,14 @@ class CompanyCategory(models.Model):
 # Company
 class Company(models.Model):
     name            = models.CharField(max_length=100)
-    domain          = models.ForeignKey(CompanyDomain, on_delete=models.CASCADE, default=1)
+    domain          = models.ForeignKey(CompanyDomain, on_delete=models.CASCADE, null=True, blank=True)
     category        = models.ForeignKey(CompanyCategory, on_delete=models.CASCADE, default=1)
     created_time    = models.DateTimeField(auto_now_add=True)
     modified_time   = models.DateTimeField(auto_now=True)
     logo            = models.ImageField(upload_to='logos', max_length=255, null=True, blank=True)
     owner = models.CharField(max_length=255, blank=True)
     description = models.CharField(max_length=255, blank=True)
+    has_domain = models.BooleanField(default=False)
 
     def get_branch_count(self):
         return Branch.objects.filter(company=self).count()

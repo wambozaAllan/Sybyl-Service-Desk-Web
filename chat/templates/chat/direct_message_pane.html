@@ -61,27 +61,27 @@
 
 <script>
     function searchChatClient() {
-            urldata = "{% url 'searchChatClient'%}";
-            var staff = trim($('#userSearch').val());
-            var size = staff.length;
-            if (size > 0) {
-                $.ajax({
-                    type: "GET",
-                    cache: false,
-                    url: urldata,
-                    data: {
-                        searchValue: staff,
-                    },
-                    success: function (response) {
-                        $('#myDropdown').html(response);
-                    }
-                });
-            } else {
-                $('#myDropdown').html('');
-            }
+        urldata = "{% url 'searchChatClient'%}";
+        var staff = trim($('#userSearch').val());
+        var size = staff.length;
+        if (size > 0) {
+            $.ajax({
+                type: "GET",
+                cache: false,
+                url: urldata,
+                data: {
+                    searchValue: staff,
+                },
+                success: function (response) {
+                    $('#myDropdown').html(response);
+                }
+            });
+        } else {
+            $('#myDropdown').html('');
         }
+    }
 
-        function sendChatMessage2(uid, name, username) {
+    function sendChatMessage2(uid, name, username) {
         urldata = "{% url 'sendUserChatMessage'%}";
         $.ajax({
             type: "GET",
@@ -96,6 +96,5 @@
                 $('.page-wrapper').html(resp);
             }
         });
-
     }
 </script>

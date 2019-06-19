@@ -10,6 +10,8 @@ urlpatterns = [
     path('companyBranchList/<int:pk>', views.companyBranchList.as_view(), name="companyBranchList"),
     path('validateCompanyName', views.validatCompanyName, name='validateCompanyName'),
     path('listCompanyBranches/<int:pk>/', views.ListCompanyBranches.as_view(), name='listCompanyBranches'),
+    path('saveCompany', views.save_company, name='saveCompany'),
+    path('saveCompanyUpdate', views.save_company_update, name='saveCompanyUpdate'),
 
     path('addDepartment/', views.AddDepartment.as_view(), name='addDepartment'),
     path('listDepartments/', views.ListDepartments.as_view(), name='listDepartments'),
@@ -33,10 +35,12 @@ urlpatterns = [
 
     path('listDomains/', views.ListCompanyDomains.as_view(), name='listDomains'),
     path('addDomain/', views.AddCompanyDomain.as_view(), name='addDomain'),
+    path('addDomain2/', views.add_select_company_domain, name='addDomains2'),
     path('updateDomain/<int:pk>/', views.UpdateDomain.as_view(), name='updateDomain'),
     path('deleteDomain/<int:pk>', views.DeleteDomain.as_view(), name="deleteDomain"),
     path('companies/<int:pk>', views.DomainCompanyList.as_view(), name="companies"),
     path('validateDomainName', views.validateDomainName, name='validateDomainName'),
+    path('fetchDomainList/', views.fetch_domain_list, name='fetchDomainList'),
 
     path('listCategories/', views.ListCompanyCategories.as_view(), name='listCategories'),
     path('addCategory/', views.AddCompanyCategory.as_view(), name='addCategory'),
@@ -44,4 +48,5 @@ urlpatterns = [
     path('deleteCategory/<int:pk>', views.DeleteCategory.as_view(), name="deleteCategory"),
     path('categoryCompany/<int:pk>', views.CompanyCategoryList.as_view(), name="categoryCompany"),
     path('validateCategoryName', views.validateCategoryName, name='validateCategoryName'),
+
 ]

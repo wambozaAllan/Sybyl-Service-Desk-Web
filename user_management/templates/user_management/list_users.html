@@ -2,6 +2,15 @@
 {% load static %}
 
 {% block content %}
+<style>
+    .isDisabled {
+        color: currentColor;
+        cursor: not-allowed;
+        opacity: 0.5;
+        text-decoration: none;
+    }
+</style>
+
 <!-- Main wrapper  -->
 <div id="main-wrapper">
     <!-- header header  -->
@@ -42,55 +51,62 @@
                             <div class="table-responsive">
                                 <table id="table_users" class="table table-hover">
                                     <thead>
-                                    <tr>
-                                        <th>Name</th>
-                                        <th>Gender</th>
-                                        <th>Department</th>
-                                        <th class="text-center">Status</th>
-                                        <th class="text-center">User Type</th>
-                                        <th class="text-center">User Group</th>
-                                        <th>Action</th>
-                                    </tr>
+                                        <tr>
+                                            <th>Name</th>
+                                            <th>Gender</th>
+                                            <th>Department</th>
+                                            <th class="text-center">Status</th>
+                                            <th class="text-center">User Type</th>
+                                            <th class="text-center">User Group</th>
+                                            <th>Action</th>
+                                        </tr>
                                     </thead>
                                     <tbody>
-                                    {% for user in all_users %}
-                                    <tr>
-                                        <td>{{ user.first_name }} {{ user.last_name }}</td>
-                                        <td>{{ user.gender }}</td>
-                                        <td>{{ user.department }}</td>
-                                        {% if user.is_active %}
-                                        <td class="text-center"><span
-                                                class="badge badge-success"><strong>Active</strong></span>
-                                        </td>
-                                        {% else %}
-                                        <td class="text-center"><span
-                                                class="badge badge-danger"><strong>Inactive</strong></span>
-                                        </td>
-                                        {% endif %}
+                                        {% for userdetails in all_users %}
+                                        <tr>
+                                            <td>{{ userdetails.first_name|title }} {{ userdetails.last_name |title}}
+                                            </td>
+                                            <td>{{ userdetails.gender }}</td>
+                                            <td>{{ userdetails.department }}</td>
+                                            {% if userdetails.is_active %}
+                                            <td class="text-center"><span
+                                                    class="badge badge-success"><strong>Active</strong></span>
+                                            </td>
+                                            {% else %}
+                                            <td class="text-center"><span
+                                                    class="badge badge-danger"><strong>Inactive</strong></span>
+                                            </td>
+                                            {% endif %}
 
-                                        {% if user.is_superuser %}
-                                        <td class="text-center"><span
-                                                class="badge badge-success"><strong>Super User</strong></span>
-                                        </td>
-                                        {% else %}
-                                        <td class="text-center"><span
-                                                class="badge badge-secondary"><strong>Normal User</strong></span>
-                                        </td>
-                                        {% endif %}
-                                        {% if user.group %}
-                                        <td class="text-center"><span class="badge badge-success"><strong>{{ user.group }}</strong></span>
-                                        </td>
-                                        {% else %}
-                                        <td class="text-center"><span
-                                                class="badge badge-warning"><strong>Un-assigned</strong></span>
-                                        </td>
-                                        {% endif %}
-                                        <td>
-                                            <a href="{% url 'detailsUser' user.id %}">View</a>
-                                            <a href="{% url 'updateUser' user.id %}">Update</a>
-                                        </td>
-                                    </tr>
-                                    {% endfor %}
+                                            {% if userdetails.is_superuser %}
+                                            <td class="text-center"><span class="badge badge-success"><strong>Super
+                                                        User</strong></span>
+                                            </td>
+                                            {% else %}
+                                            <td class="text-center"><span class="badge badge-secondary"><strong>Normal
+                                                        User</strong></span>
+                                            </td>
+                                            {% endif %}
+                                            {% if userdetails.group %}
+                                            <td class="text-center"><span
+                                                    class="badge badge-success"><strong>{{ userdetails.group }}</strong></span>
+                                            </td>
+                                            {% else %}
+                                            <td class="text-center"><span
+                                                    class="badge badge-warning"><strong>Un-assigned</strong></span>
+                                            </td>
+                                            {% endif %}
+                                            <td>
+                                                {% if userdetails.last_login %}
+                                                    <a href="#!" class="isDisabled">Resend-Email</a>
+                                                {% else %}
+                                                    <a href="#!" onclick="functionResendEmail({{userdetails.pk}}, '{{ userdetails.username}}', '{{ userdetails.email}}', '{{userdetails.first_name}}', '{{ userdetails.last_name}}')">Resend-Email</a>
+                                                {% endif %}
+                                                <a href="{% url 'detailsUser' userdetails.id %}">View</a>
+                                                <a href="{% url 'updateUser' userdetails.id %}">Update</a>
+                                            </td>
+                                        </tr>
+                                        {% endfor %}
                                     </tbody>
                                 </table>
                             </div>
@@ -132,6 +148,3 @@
 </div>
 <!-- END The Modal -->
 {% endblock %}
-<script>
-
-</script>
