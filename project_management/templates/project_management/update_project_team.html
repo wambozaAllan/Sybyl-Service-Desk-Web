@@ -69,7 +69,7 @@
         var project = $(this).val();
 
         $.ajax({
-            url: '{% url 'validateProjectAssigned' %}',
+            url: "{% url 'validateProjectAssigned' %}",
             data: {
                 'project': project
             },
