@@ -166,5 +166,6 @@ class IncidentForm(forms.ModelForm):
 
     class Meta:
         model = Incident
-        fields = ('status',)
+        fields = ('title', 'description', 'priority', 'task', 'status', 'project', 'assignee',
+                  'image', 'document')
 
