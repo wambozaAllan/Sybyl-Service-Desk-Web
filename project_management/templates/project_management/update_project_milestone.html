@@ -23,7 +23,15 @@
                     </div>
                 </div>
                 <div class="col-6">
-                    {{form.name|as_crispy_field}}
+                        <div id="div_id_name" class="form-group">
+                            <label for="id_name" class="col-form-label  requiredField">
+                                Name<span class="asteriskField">*</span>
+                            </label>
+                            <div class="">
+                                <input type="text" name="name" value="{{milestone_name}}" maxlength="100" class="textinput textInput form-control is-invalid" required="" id="id_name" autocomplete="off">
+                                <span id="error_1_id_name" class="invalid-feedback"><strong>This field is required.</strong></span>
+                            </div>
+                        </div>
                 </div>
                 <div class="col-6">
                     {{form.status|as_crispy_field}}
