@@ -8,7 +8,7 @@
     <input id="team_name" type="hidden" value="{{ team_name }}"/>
 
 
-<div class="card-body">
+<div class="card-body project-tasks">
 
     <div class="row">
         <div class="col-10">
@@ -67,6 +67,8 @@
 
 
 <script>
+    $('#table_tasks').DataTable();
+    
     function addTasks(project_id, project_name){
         urlData = "{% url 'populateTaskView' %}";
         $.ajax({
@@ -90,7 +92,7 @@
                         buttons: {
                             close: {
                                 text: 'Close',
-                                btnClass: 'btn-gray',
+                                btnClass: 'btn-gray close-dialog',
                                 action: function () {
                                 }
                             }
