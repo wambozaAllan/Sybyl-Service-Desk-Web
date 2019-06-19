@@ -31,6 +31,7 @@ urlpatterns = [
     path('populateMilestoneStatus/', views.populate_milestone_status, name='populateMilestoneStatus'),
     path('saveMilestone', views.save_milestone, name='saveMilestone'),
     path('validateMilestoneName', views.validateMilestoneName, name='validateMilestoneName'),
+    path('updateProjectMilestone/', views.update_project_milestone, name='updateProjectMilestone'),
     
     path('populateTaskView', views.populate_task_view, name='populateTaskView'),
     path('populateStatusMilestone', views.populate_status_milestone, name='populateStatusMilestone'),
@@ -47,8 +48,10 @@ urlpatterns = [
     path('saveProjectTask', views.save_project_tasks, name='saveProjectTask'),
     path('milestoneTasks', views.view_tasks_under_milestone, name='milestoneTasks'),
     path('addMilestoneTask', views.add_milestone_specific_task, name='addMilestoneTask'),
+    path('saveMilestoneTask', views.save_milestone_tasks, name='saveMilestoneTask'),
 
     path('addIncident/', views.AddIncident.as_view(), name='addIncident'),
+    path('addProjectIncident/', views.AddProjectIncident.as_view(), name='addProjectIncident'),
     path('listIncidents/', views.ListIncidents.as_view(), name='listIncidents'),
     path('listProjectIncidents', views.list_project_incidents, name='listProjectIncidents'),
     path('detailsIncident/<int:pk>/', views.DetailsIncident.as_view(), name='detailsIncident'),
