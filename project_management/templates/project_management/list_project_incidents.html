@@ -1,6 +1,11 @@
 {% load crispy_forms_tags %}
 {% csrf_token %}
 
+<div>
+    <input type="text" value="{{project_id}}" style="display: none;" id='id_project' />
+    <input type="text" value="{{project_name}}" style="display: none;" id='id_project_name' />
+</div>
+
 <div class="card-body">
     <div class="row">
         <div class="col-10">
@@ -8,7 +13,7 @@
         </div>
 
         <div class="col-2">
-            <button id="" class="btn btn-info pull-right" onclick="functAddIncident();">
+            <button id="btnIncident" class="btn btn-info pull-right">
                 <i class="fa fa-fw fa-lg fa-plus"></i>Add Incident
             </button>
         </div>
@@ -16,8 +21,7 @@
     <br />
     <!-- <h6 class="card-subtitle">Export data to Copy, CSV, Excel, PDF & Print</h6> -->
     <div class="table-responsive">
-        <table id="table_incidents" class="display nowrap table table-hover" cellspacing="0"
-            width="100%">
+        <table id="table_incidents" class="display nowrap table table-hover" cellspacing="0" width="100%">
             <thead>
                 <tr>
                     <th>Title</th>
@@ -39,11 +43,11 @@
                         <input type="text" style="background-color: {{ incident.priority.color }}; border: 0;"></input>
                     </td>
                     <td>{{ incident.creator }}</td>
-                    
+
                     <td class="text-center">
                         <span class="badge badge-pill badge-success">{{ incident.assigned }}</span>
                     </td>
-                    
+
                     <td>
                         <button class="btn btn-outline-success btn-sm"
                             onclick="editIncident('{{ incident.id }}', '{{ incident.name }}')">
@@ -51,7 +55,7 @@
                         </button>
 
                         <button onclick="deleteIncident('{{ incident.id }}', '{{ incident.name }}')"
-                                class="btn btn-outline-danger btn-sm" type="button">
+                            class="btn btn-outline-danger btn-sm" type="button">
                             <i title="Delete Incident" class="fa fa-remove"></i>
                         </button>
                     </td>
@@ -63,21 +67,20 @@
     <br />
 </div>
 
-
 <!-- The Modal -->
 <div class="">
-    <div id="incidentFormModalDialog" class="modalDialog">
+    <div id="incidentPane" class="modalDialog">
         <div>
             <div id="head">
                 <a href="#close" title="Close" class="close2">X</a>
-                <h4 class="modalDialog-title" style="text-align: center;">ADD INCIDENT</h4>
+                <h5 class="modalDialog-title">Add Incident</h5>
             </div>
             <hr>
 
             <div class="modal-body">
 
                 <div class="scrollbar-modal1">
-                    <div id="dialog_create_incident">
+                    <div id="incident_dialog">
 
                     </div>
                 </div>
@@ -92,20 +95,38 @@
 <script>
     $('#table_incidents').DataTable();
 
-    function functAddIncident() {
-        urldata = "{% url 'addIncident'%}";
+    $('#btnIncident').on('click', function () {
+        let project_id = $('#id_project').val();
+        let project_name = $('#id_project_name').val();
+        event.preventDefault();
+        urldata = "{% url 'addProjectIncident'%}";
         $.ajax({
             type: "GET",
             cache: false,
-            data: {},
+            data: {
+                project_id: project_id,
+                project_name: project_name,
+            },
             url: urldata,
-            success: function (resp) {
-                $('#dialog_create_incident').html(resp);
+            success: function (data) {
+                $('#incident_dialog').html(data);
 
-                window.location = '#incidentFormModalDialog';
+                window.location = '#incidentPane';
                 initDialog('modalDialog');
             }
         });
-    }
+    });
+
+    $('#toggleCheckbox').on('change', function () {
+        if ($(this).is(":checked")) {
+            $(".docs").css("display", "flex");
+        }
+        else {
+            $(".docs").css("display", "none");
+        }
+
+    });
+
+
 
 </script>

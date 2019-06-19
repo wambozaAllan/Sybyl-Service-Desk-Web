@@ -300,7 +300,6 @@ def save_milestone(request):
     """
     add milestone to database
     """
-
     project_id = request.GET.get('project_id')
     project_name = request.GET.get('project_name')
     name = request.GET.get('name')
@@ -313,11 +312,15 @@ def save_milestone(request):
     if status_id == "":
         status_id = None
 
-    if end is not None:
+    if end != "null":
         end = datetime.datetime.strptime(end, "%m/%d/%Y").strftime("%Y-%m-%d")
-        
-    if start is not None:
+    else:
+        end = None
+
+    if start != "null":
         start = datetime.datetime.strptime(start, "%m/%d/%Y").strftime("%Y-%m-%d")
+    else:
+        start = None
 
     if Milestone.objects.filter(name=name).exists():
         milestone = Milestone.objects.get(name=name)
@@ -342,7 +345,29 @@ def save_milestone(request):
         content_type="application/json"
     )
     
-    
+
+def update_project_milestone(request):
+    """
+    update project_milestone view
+    """
+    milestone_id = request.GET.get('milestone_id')
+    milestone_name = request.GET.get('milestone_name')
+    project_id = request.GET.get('project_id')
+    project_name = request.GET.get('project_name')
+
+    template = loader.get_template('project_management/update_project_milestone.html')   
+    form = MilestoneUpdateForm(request.POST)
+    context = {
+        'form': form,
+        'project_name': project_name,
+        'project_id': project_id,
+        'milestone_name': milestone_name,
+        'milestone_id': milestone_id
+    }
+
+    return HttpResponse(template.render(context, request))
+
+
 def list_project_milestones(request):
     """
     list project specific milestones
@@ -372,8 +397,8 @@ def list_project_milestones(request):
             'milestones': ''
         }
 
-        return HttpResponse(template.render(context, request))
-        
+        return HttpResponse(template.render(context, request))   
+
 
 def view_tasks_under_milestone(request):
     milestone_id = request.GET.get('milestone_id')
@@ -466,8 +491,7 @@ def populate_task_view(request):
     """
     project_id = request.GET.get('project_id')
     project_name = request.GET.get('project_name')
-    
-    
+     
     template = loader.get_template('project_management/add_project_tasks.html')
     context = {
         'project_id': project_id,
@@ -540,43 +564,117 @@ def save_project_tasks(request):
     save project tasks
     """
     project_id = request.GET.get('project_id')
-    name = request.GET.get('task_name')
-    status_id = request.GET.get('status')
+    name = request.GET.get('name')
+    status_id = request.GET.get('status_id')
     milestone_id = request.GET.get('milestone')
     description = request.GET.get('description')
     start_date = request.GET.get('start_date')
     end_date = request.GET.get('end_date')
     created_by = request.user.id
 
-    print(f"created by {created_by}")
+    response_data = {}
 
-    print(f"saved project id is {project_id}")
-    print(f"description is {description}")
-    print(f"milestone is {milestone_id}")
-    print(f"status is {status_id}")
-    print(f"name is {name}")
-    print(f"start is {start_date}")
-    print(f"end is {end_date}")
+    if status_id == "":
+        status_id = None
 
+    if description == "":
+        description = None
 
-    template = loader.get_template('project_management/list_project_tasks.html')
+    if start_date != "null":
+        start_date = datetime.datetime.strptime(start_date, "%m/%d/%Y").strftime("%Y-%m-%d")
+    else:
+        start_date = None
+
+    if end_date != "null":
+        end_date = datetime.datetime.strptime(end, "%m/%d/%Y").strftime("%Y-%m-%d")
+    else:
+        end_date = None
 
     project = Project.objects.get(id=project_id)
-    status = Status.objects.get(id=status_id)
+    
     milestone = Milestone.objects.get(id=milestone_id, project_id=project.id)
-    start = datetime.datetime.strptime(start_date, "%m/%d/%Y").strftime("%Y-%m-%d")
-    end = datetime.datetime.strptime(end_date, "%m/%d/%Y").strftime("%Y-%m-%d")
-
-    if name != '':
-        print("Empty string")
-        print(name)
-        task = Task(name=name, description=description, status_id=status.id, milestone_id=milestone.id, project_id=project.id, start_date=start, end_date=end, creator_id=created_by)
+    
+    if Task.objects.filter(name=name).exists():
+        response_data['error'] = "Name exists"
+        response_data['state'] = False
+    else:   
+        task = Task(name=name, description=description, status_id=status_id, milestone_id=milestone.id, project_id=project.id, start_date=start_date, end_date=end_date, creator_id=created_by)
         task.save()
+
+        response_data['success'] = "Task created successfully"
+        response_data['name'] = task.name
+        response_data['state'] = True
+
+
+    return HttpResponse(
+        json.dumps(response_data),
+        content_type="application/json"
+    )
     
 
-    context = None
+def save_milestone_tasks(request):
+    """
+    save tasks under specific milestone
+    """
+    project_id = request.GET.get('project_id')
+    project_name = request.GET.get('project_name')
+    name = request.GET.get('name')
+    status_id = request.GET.get('status_id')
+    milestone_id = request.GET.get('milestone')
+    description = request.GET.get('description')
+    start_date = request.GET.get('start_date')
+    end_date = request.GET.get('end_date')
+    created_by = request.user.id
 
-    return HttpResponse(template.render(context, request))
+    print(f"chineke me {created_by}")
+    print(f"descriptoin is {description}")
+    print(f"name is {name}")    
+    print(f"status is {status_id}")
+    print(f"start_date is {start_date}")
+    print(f"end_date is {end_date}")
+    print(f"milestone_id is {milestone_id}")
+    print(f"project_id is {project_id}")
+
+    response_data = {}
+
+    if status_id == "":
+        status_id = None
+
+    if description == "":
+        description = None
+
+    if start_date == "":
+        start_date = None
+
+    if end_date == "":
+        end_date = None
+
+    if start_date != "":
+        start_date = datetime.datetime.strptime(start_date, "%m/%d/%Y").strftime("%Y-%m-%d")
+
+    if end_date != "":
+        end_date = datetime.datetime.strptime(end_date, "%m/%d/%Y").strftime("%Y-%m-%d")
+
+    project = Project.objects.get(id=project_id)
+    
+    milestone = Milestone.objects.get(id=milestone_id, project_id=project.id)
+    
+    if Task.objects.filter(name=name).exists():
+        response_data['error'] = "Name exists"
+        response_data['state'] = False
+    else:   
+        task = Task(name=name, description=description, status_id=status_id, milestone_id=milestone.id, project_id=project.id, start_date=start_date, end_date=end_date, creator_id=created_by)
+        task.save()
+
+        response_data['success'] = "Task created successfully"
+        response_data['name'] = task.name
+        response_data['state'] = True
+
+
+    return HttpResponse(
+        json.dumps(response_data),
+        content_type="application/json"
+    )
 
 
 def tasklist_by_project(request):
@@ -679,6 +777,43 @@ def change_status_on_task(request, pk):
         print("no about to reach there")
 
 
+# INCIDENTS
+class AddProjectIncident(LoginRequiredMixin, CreateView):
+    model = Incident
+    fields = ['project', 'title', 'description', 'status', 'priority', 'assignee', 'document', 'image', 'task']
+    template_name = 'project_management/add_project_incident.html'
+    success_url = reverse_lazy('listProjects')
+
+    def form_valid(self, form):
+        """auto registering loggedin user"""
+        form.instance.creator = self.request.user
+        return super().form_valid(form)
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        project_id = int(self.request.GET['project_id'])
+        project_name = self.request.GET['project_name']
+        context['project_id'] = project_id
+        context['project_name'] = project_name
+
+        tasks = Task.objects.filter(project_id=project_id)
+        context['tasks'] = tasks
+
+        team = ProjectTeam.objects.get(project_id=project_id)
+        project_team = team.id
+        team_members = ProjectTeamMember.objects.filter(project_team=project_team)
+        member_list = list(team_members)
+        old = []
+
+        if len(member_list) != 0:
+            for member in member_list:
+                old_user = User.objects.get(id=member.member_id)
+                old.append(old_user)
+
+        context['members'] = old
+
+        return context
+
 
 class AddIncident(LoginRequiredMixin, CreateView):
     model = Incident
@@ -697,7 +832,6 @@ def list_project_incidents(request):
     incident for specific project
     """
     project_id = request.GET.get('project_id')
-    print(f"incident project id is {project_id}")
     
     template = loader.get_template('project_management/list_project_incidents.html')
 
@@ -720,8 +854,6 @@ def list_project_incidents(request):
                     'incidents': incidents,
                     'state': state
                 }
-
-                print(f"context object is {context}")
 
                 return HttpResponse(template.render(context, request))
         
@@ -1008,7 +1140,6 @@ def addProject(request):
             project_code = data.get('project_code')
             estimated_cost = data.get('estimated_cost')
             logo = request.FILES['logo']
-            thumbnail = data.get('thumbnail')
             start_date = data.get('estimated_start_date')
             end_date = data.get('estimated_end_date')
             project_status = data.get('project_status')
@@ -1022,7 +1153,7 @@ def addProject(request):
             user_id = User.objects.get(id=created_by)
 
             project = Project(name=name, description=description, project_code=project_code, estimated_cost=estimated_cost,
-            logo=logo, thumbnail=thumbnail, estimated_start_date=estimated_start_date, estimated_end_date=estimated_end_date,
+            logo=logo, estimated_start_date=estimated_start_date, estimated_end_date=estimated_end_date,
             project_status=status, created_by=user_id)
 
             project.save()
@@ -1299,8 +1430,6 @@ def save_team_member(request):
     role_id = request.GET.get('responsibility')
     project_id = request.GET.get('project_id')
 
-    template = loader.get_template('project_management/project_team.html')
-
     user = User.objects.get(id=member)
     role = Role.objects.get(id=role_id)
     team = ProjectTeam.objects.get(id=team_id)
@@ -1309,21 +1438,24 @@ def save_team_member(request):
     team_member.save()
     team_member.project_team.add(team)
 
-
-    context = {
-        'team_id': team_id,
-        'project_id': project_id
+    response_data = {
+        'success': 'Member added successfully',
+        'state': True,
+        "name": team_member.member_id
     }
-
-    return HttpResponse(template.render(context, request))
-
+    
+    return HttpResponse(
+        json.dumps(response_data),
+        content_type="application/json"
+    )
+    
 
 class AddProjectTeamMember(CreateView):
     """
     admin view for adding project team member
     """
     model = ProjectTeamMember
-    template_name = 'project_management/add_team_member.html'
+    template_name = 'project_management/add_project_team_member.html'
     fields = ['member', 'project_team', 'responsibility']
     success_url = reverse_lazy('listProjectTeams')
 
@@ -1332,7 +1464,7 @@ class ListProjectTeamMembers(ListView):
     template_name = 'project_management/list_project_teams.html'
     context_object_name = 'project_teams'
 
-    def get_queryset(self):
+    def get_queryset(self): 
         return ProjectTeam.objects.annotate(num_members=Count('projectteammember'))
 
 
@@ -1340,7 +1472,7 @@ class UpdateProjectTeamMember(UpdateView):
     model = ProjectTeamMember
     fields = ['responsibility']
     template_name = 'project_management/update_project_team_member.html'
-    success_url = reverse_lazy('listProjectTeamMembers')
+    success_url = reverse_lazy('tabListTeam')
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)

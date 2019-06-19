@@ -4,7 +4,7 @@
 </div>
 <div class="card-body">
     <div class="basic-form">
-        <form class="form-horizontal" method='GET'>
+        <form class="form-horizontal" method='GET' id="teamForm">
             {% csrf_token %}
 
             <div class="row col-12">
@@ -21,7 +21,7 @@
                     <label class="col-form-label  requiredField">Member<span
                         class="asteriskField">*</span></label>
                     <div class="">
-                        <select id='id_member' class="select form-control" name="member"></select>
+                        <select id='id_member' required class="select form-control" name="member"></select>
                     </div> 
                 </div>
                 <br>
@@ -29,12 +29,12 @@
                     <label class="col-form-label  requiredField">Responsibility<span
                         class="asteriskField">*</span></label>
                     <div class="">
-                        <select id='id_responsibility' class="select form-control" name="responsibility"></select>
+                        <select id='id_responsibility' class="select form-control" name="responsibility" required></select>
                     </div> 
                 </div>
                 <br>
-                <div class="col-12">
-                        <input id="project_id" type="hidden" value="{{ project_id }}"/>
+                <div class="col-12" style="display: none;">
+                        <input id="id_project" type="hidden" value="{{ project_id }}"/>
                         <input id="team_id" type="hidden" value="{{ team_id }}"/>
                         <input id="project_name" type="hidden" value="{{ project_name }}"/>
                         <input id="team_name" type="hidden" value="{{ team_name }}"/>
@@ -42,7 +42,7 @@
             </div>
             
             <!-- <div class="col-md-6"> -->
-                <button id="id_btnAddProjectMember" class="btn btn-success pull-right" onclick="saveMember()">
+                <button id="id_btnAddProjectMember" class="btn btn-success pull-right" >
                     <i class="fa fa-fw fa-lg fa-save"></i>Add Member
                 </button>
             <!-- </div> -->
@@ -87,7 +87,7 @@
                 
                 let actual = '';
                 $("#id_member").html("");
-                $("#id_member").prepend('<option value="-1"> -----Select Member----- </option>');
+                $("#id_member").prepend('<option value=""> -----Select Member----- </option>');
                 for(i=0; i<newData.length; i++){
                     actual = newData[i];
                     
@@ -99,7 +99,7 @@
                 
                 let assign = '';
                 $("#id_responsibility").html("");
-                $("#id_responsibility").prepend('<option value="-1"> -----Select Responsibility----- </option>');
+                $("#id_responsibility").prepend('<option value=""> -----Select Responsibility----- </option>');
                 for(i=0; i<newRoles.length; i++){
                     assign = newRoles[i];
                     
@@ -111,11 +111,16 @@
         });
     });
 
+    $('#teamForm').on('submit', function(){
+        event.preventDefault();
+        saveMember();
+    })
+
 
     // adding chosen member to team
     function saveMember(){
         let project_id = $('#id_project').val();
-        let team_id = $('#id_project_team').val();
+        let team_id = $('#id_project_team_id').val();
         let member = $('#id_member').val();
         let responsibility = $('#id_responsibility').val();
 
@@ -123,38 +128,56 @@
         console.log("member is "+member);
         console.log("team_Id is "+team_id)
 
-        if(member >0 && responsibility > 0){
+        if (member != ""){
             $.ajax({
-                url: '{% url 'saveTeamMember' %}',
-
+                url: "{% url 'saveTeamMember' %}",
                 data: {
                     project_id: project_id,
                     project_team: team_id,
                     member: member, 
                     responsibility: responsibility
                 },
+                cache:false,
                 dataType: 'json',
-                success: function (data) {
-                    if (data.team != ''){
-                        $.alert({
-                            title: 'Success!',
-                            content: 'Member has been Added!',
-                        });
+                success: function (response_data) {
+                    $('.close-dialog').click();
+                    if (response_data.state === true){
+                        $.confirm({
+                            title: response_data.success,
+                            content: 'Task name: ' +response_data.name,
+                            type: 'blue',
+                            typeAnimated: true,
+                            boxWidth: '35%',
+                            useBootstrap: false,
+                            closeIcon: true,
+                                buttons: {
+                                    formSubmit: {
+                                        text: 'OK',
+                                        btnClass: 'btn-blue',
+                                        action: function () {
+                                            $.ajax({
+                                                type:"GET",
+                                                cache: false,
+                                                data:{
+                                                    project_id:project_id,
+                                                },
+                                                url: "{% url 'tabListTeam' %}",
+                                                success: function(resp){
+                                                    $('.team-project').html(resp);                                                    
+                                                }
+                                            });
+                                        }
+                                    }
+                                }
+                        }); 
                     }
-                    else{
-                        $.alert({
-                            title: 'Alert',
-                            content: 'Member not Added!',
-                        })
-                    }
+                    
                         
                 }
             });
         }
-
-        
-        
-        alert('Button was clicked!');        
+            
+           
     }
 
 </script>

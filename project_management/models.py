@@ -67,8 +67,13 @@ class Project(models.Model):
 
     @property
     def completion(self):
-        started = Status.objects.filter(name='Open')
-        completed           = Milestone.objects.filter(project_id=self.id, status_id=started.id).count()
+        status_complete = Status.objects.get(id=4)
+        status_terminate = Status.objects.get(id=3)
+        
+        terminated_milestones = Milestone.objects.filter(project_id=self.id, status=status_terminate.id).count()
+        completed_milestones = Milestone.objects.filter(project_id=self.id, status=status_complete.id).count()
+        completed = terminated_milestones + completed_milestones
+        # completed           = Milestone.objects.filter(project_id=self.id, status='Completed').count()
         total_milestones    = Milestone.objects.filter(project_id=self.id).count()
         completion_level    = 0
         if total_milestones > 0:
@@ -78,9 +83,14 @@ class Project(models.Model):
     
     @property
     def task_completion(self):
-        closed = Status.objects.filter(name='Completed')
+        status_complete = Status.objects.get(id=4)
+        status_terminate = Status.objects.get(id=3)
+
+        terminated_tasks = Task.objects.filter(project_id=self.id, status=status_terminate.id).count()
+        tasks_complete = Task.objects.filter(project_id=self.id, status=status_complete.id).count()
+
         total_tasks         = Task.objects.filter(project_id=self.id).count()
-        completed_tasks     = Task.objects.filter(project_id=self.id, status_id=closed.id).count()
+        completed_tasks = terminated_tasks + tasks_complete
     
         completion_percet = 0
         if total_tasks > 0 and completed_tasks > 0:
@@ -89,9 +99,14 @@ class Project(models.Model):
     
     @property
     def incident_completion(self):
-        closed = Status.objects.filter(name='Completed')
+        status_complete = Status.objects.get(id=4)
+        status_terminate = Status.objects.get(id=3)
+
+        incidents_terminated = Incident.objects.filter(project_id=self.id, status=status_terminate.id).count()
+        incidents_complete = Incident.objects.filter(project_id=self.id, status=status_complete.id).count()
+
+        completed_incidents = incidents_terminated + incidents_complete
         total_incidents         = Incident.objects.filter(project_id=self.id).count()
-        completed_incidents     = Incident.objects.filter(project_id=self.id, status_id=closed.id).count()
     
         incident_completion_percet = 0
         if total_incidents > 0 and completed_incidents > 0:
@@ -100,26 +115,43 @@ class Project(models.Model):
     
     @property
     def milestone_count(self):
-        closed = Status.objects.filter(name='Completed')
-        milestone   = Milestone.objects.filter(project_id=self.id,status_id=closed.id).count()
-        milestone1  = Milestone.objects.filter(project_id=self.id).count()
-        milestone_str = str(milestone) + '/' +str(milestone1)
+        status_complete = Status.objects.get(id=4)
+        status_terminate = Status.objects.get(id=3)
+
+        milestones_terminate = Milestone.objects.filter(project_id=self.id, status=status_terminate.id).count()
+        milestones_complete = Milestone.objects.filter(project_id=self.id, status=status_complete.id).count()
+
+        milestone = milestones_complete + milestones_terminate
+        
+        milestone_total = Milestone.objects.filter(project_id=self.id).count()
+        milestone_str = str(milestone) + '/' +str(milestone_total)
         return milestone_str
     
     @property
     def task_count(self):
-        closed = Status.objects.filter(name='Completed')
-        task   = Task.objects.filter(project_id=self.id,status=closed.id).count()
-        task1  = Task.objects.filter(project_id=self.id).count()
-        task_str = str(task) + '/' +str(task1)
+        status_complete = Status.objects.get(id=4)
+        status_terminate = Status.objects.get(id=3)
+
+        tasks_terminate = Task.objects.filter(project_id=self.id, status=status_terminate.id).count()
+        tasks_completed = Task.objects.filter(project_id=self.id, status=status_complete.id).count()
+
+        task = tasks_terminate + tasks_complete
+
+        task_total  = Task.objects.filter(project_id=self.id).count()
+        task_str = str(task) + '/' +str(task_total)
         return task_str
     
     @property
     def incident_count(self):
-        closed = Status.objects.filter(name='Completed')
-        incident   = Incident.objects.filter(project_id=self.id,status=closed.id).count()
-        incident1  = Incident.objects.filter(project_id=self.id).count()
-        incident_str = str(incident) + '/' +str(incident1)
+        status_complete = Status.objects.get(id=4)
+        status_terminate = Status.objects.get(id=3)
+
+        incidents_terminate = Incident.objects.filter(project_id=self.id, status=status_terminate.id).count()
+        incidents_complete = Incident.objects.filter(project_id=self.id, status=status_complete.id).count()
+
+        incident = incidents_terminate + incidents_complete
+        incident_total  = Incident.objects.filter(project_id=self.id).count()
+        incident_str = str(incident) + '/' +str(incident_total)
         return incident_str
     
     @property
@@ -193,15 +225,21 @@ class Milestone(models.Model):
     def __str__(self):
         return self.name
 
-    # @property
-    # def completion(self):
-    #     completed_tasks     = Task.objects.filter(milestone_id=self.id, status=status).count()
-    #     total_tasks         = Task.objects.filter(milestone_id=self.id).count()
-    #     completion_level    = 0
-    #     if total_tasks > 0:
-    #         if completed_tasks > 0:
-    #             completion_level  = round(((completed_tasks / total_tasks) * 100),2)
-    #     return completion_level
+    @property
+    def completion(self):
+        status_complete = Status.objects.get(id=4)
+        status_terminate = Status.objects.get(id=3)
+
+        task_terminate = Task.objects.filter(project_id=self.id, status=status_terminate.id).count()
+        task_complete = Task.objects.filter(project_id=self.id, status=status_complete.id).count()
+
+        completed_tasks = task_terminate + task_complete
+        total_tasks         = Task.objects.filter(milestone_id=self.id).count()
+        completion_level    = 0
+        if total_tasks > 0:
+            if completed_tasks > 0:
+                completion_level  = round(((completed_tasks / total_tasks) * 100),2)
+        return completion_level
 
     @property
     def time_now(self):
