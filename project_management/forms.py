@@ -99,7 +99,7 @@ class MilestoneUpdateForm(forms.ModelForm):
 class TaskForm(forms.ModelForm):
     class Meta:
         model = Task
-        fields = ('name', 'description', 'project', 'milestone', 'start_date', 'end_date', 'status')
+        fields = ('name', 'description', 'project', 'milestone', 'start_date', 'end_date', 'actual_start_date', 'actual_end_date', 'status')
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
