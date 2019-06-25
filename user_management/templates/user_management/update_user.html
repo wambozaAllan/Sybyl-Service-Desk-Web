@@ -79,16 +79,26 @@
                                             <option value="{{ user_update.department_id }}">{{ user_update.department }}
                                             </option>
                                             {% for d in dept %}
-                                            <option value="{{ d.id }}">{{ d.name }}</option>
+                                                <option value="{{ d.id }}">{{ d.name }}</option>
                                             {% endfor %}
                                         </select>
                                     </div>
                                 </div>
                             </div>
-
+                            
                             <div class="row">
                                 <div class="col-4">
-                                    {{ form.group|as_crispy_field }}
+                                    <div id="div_id_groups" class="form-group ">
+                                        <label for="id_groups" class="col-form-label  requiredField">Group<span class="asteriskField">*</span></label>
+                                        <div class="">
+                                            <select name="groups" class="select form-control" id="id_groups">
+                                                <option value="{{ selected_pk }}">{{ selected_gname }}</option>
+                                                {% for g in group_detail %}
+                                                    <option value="{{ g.id }}">{{ g.name }}</option>
+                                                {% endfor %}
+                                            </select>
+                                        </div>
+                                    </div>
                                 </div>
 
                                 <div class="col-4">
@@ -110,11 +120,15 @@
                             </div>
 
                             <div class="row">
-                                <div class="col-6">
+                                <div class="col-4">
                                     {{ form.is_active|as_crispy_field }}
                                 </div>
 
-                                <div class="col-6" style="">
+                                <div class="col-4">
+                                    {{ form.is_superuser|as_crispy_field }}
+                                </div>
+
+                                <div class="col-4">
                                     <button id="updateAddUser" class="btn btn-success pull-right col-6">
                                         <i class="fa fa-fw fa-lg fa-save"></i>Update
                                     </button>
@@ -136,6 +150,7 @@
 </div>
 
 <script>
+    $('#id_groups').removeAttr('multiple', "");
     $('#updateAddUser').click(function () {
         var first_name = $('#id_first_name').val();
         var last_name = $('#id_last_name').val();
@@ -145,10 +160,11 @@
         var id_department = $('#id_department').val();
 
         var user_id = $('#user_id').val();
-        var group = $('#id_group').val();
+        var group = $('#id_groups').val();
         var email = $('#id_email').val();
         var username = $('#id_username').val();
         var status;
+        var is_superuser;
 
         var ckbox = $('#id_is_active');
         if (ckbox.is(':checked')) {
@@ -156,6 +172,14 @@
         }
         else {
             status = 0;
+        }
+
+        var ckbox2 = $('#id_is_superuser');
+        if (ckbox2.is(':checked')) {
+            is_superuser = 1;
+        }
+        else {
+            is_superuser = 0;
         }
 
         if (first_name < 1 || last_name < 1 || gender < 1 || username < 1 || id_branch < 1 || id_department < 1 || email < 1) {
@@ -199,7 +223,8 @@
                     username: username,
                     branch: id_branch,
                     department: id_department,
-                    status: status
+                    status: status,
+                    is_superuser: is_superuser
                 };
 
                 urldata = "{% url 'saveUserUpdate'%}";
@@ -217,8 +242,6 @@
                 $('#id_email').css({ "border": '2px solid #00635a' });
                 document.getElementById('updateAddUser').disabled = false;
             }
-
-
 
         }
 

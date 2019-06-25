@@ -289,7 +289,7 @@ class Task(models.Model):
 class TaskAttachment(models.Model):
     task = models.ForeignKey(Task, on_delete=models.SET_NULL, null=True, blank=True)
     attachment_name = models.CharField(max_length=200, blank=True, null=True)
-    document = models.FileField(upload_to='documents/tasks/')
+    document = models.FileField(upload_to='documents/tasks/', blank=True, null=True)
     created_time = models.DateTimeField(auto_now_add=True)
     modified_time = models.DateTimeField(auto_now=True)
 

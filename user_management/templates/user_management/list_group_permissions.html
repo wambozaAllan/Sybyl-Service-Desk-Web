@@ -30,12 +30,12 @@
                     </div>
 
                     <div class="table-responsive">
-                        <table id="tablePermissionList" class="display nowrap table table-hover" cellspacing="0"
-                               width="100%">
+                        <table id="tablePermissionList" class="display nowrap table table-hover" cellspacing="0" width="100%">
                             <thead>
                             <tr>
                                 <th>Permission</th>
                                 <th>Module</th>
+                                <th>Code</th>
                                 <th class="text-center">Action</th>
                             </tr>
                             </thead>
@@ -44,6 +44,7 @@
                                 <tr>
                                     <td>{{ p.name }}</td>
                                     <td>{{ p.content_type }}</td>
+                                    <td>{{ p.codename }}</td>
                                     <td class="text-center">
                                         <button onclick="functionDeleteGroupPermission({{ p.id }}, '{{ p.name }}', {{ grpid }}, '{{ grp }}')" class="btn btn-outline-danger btn-sm" type="button">
                                             <i title="Delete Group Permission" class="fa fa-remove"></i>
