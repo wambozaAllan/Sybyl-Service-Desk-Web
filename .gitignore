@@ -13,6 +13,7 @@ user_management/migrations/__pycache__/
 user_management/migrations/
 project_management/migrations/
 chat/migrations/
+core/migrations/
 ven4/
 ven5/
 .idea/
