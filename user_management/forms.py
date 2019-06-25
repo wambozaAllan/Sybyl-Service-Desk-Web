@@ -8,7 +8,7 @@ class CustomUserCreationForm(UserCreationForm):
     class Meta(UserCreationForm):
         model = User
         fields = ['first_name', 'last_name', 'gender', 'company'
-            , 'department'
+            , 'department', 'groups'
             , 'username', 'email']
 
 
@@ -16,7 +16,7 @@ class UserForm(forms.ModelForm):
     class Meta:
         model = User
         fields = ('first_name', 'last_name', 'gender', 'company'
-                  , 'branch', 'department', 'group'
+                  , 'branch', 'department', 'groups'
                   , 'username', 'password', 'email', 'is_superuser', 'is_staff', 'is_active',)
         widgets = {'password': forms.PasswordInput()}
 
@@ -25,7 +25,7 @@ class CustomUserChangeForm(UserChangeForm):
     class Meta:
         model = User
         fields = ['first_name', 'last_name', 'gender', 'company'
-            , 'branch', 'department', 'group'
+            , 'branch', 'department', 'groups'
             , 'username', 'password', 'email', 'is_superuser', 'is_staff', 'is_active', ]
 
 

@@ -38,7 +38,8 @@
                 {% empty %}
                 {% endfor %}
 
-                <li class="nav-label">Main Menu</li>
+                {% if perms.core %} <li class="nav-label">Main Menu</li>{% endif %}
+                
                 {% if perms.project_management.add_project or perms.project_management.view_project or perms.project_management.delete_project or perms.project_management.change_project %}
                     <li>
                     <a class="has-arrow  " href="#" aria-expanded="false"><i class="fa fa-envelope"></i><span

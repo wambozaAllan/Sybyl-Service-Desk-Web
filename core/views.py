@@ -98,8 +98,6 @@ def logout_view(request):
 # @login_required()
 def home(request):
     permission_list = list(request.user.get_all_permissions())
-    request.session['usrgrpid'] = request.user.group_id
-    usrgrpid = request.user.group_id
 
     total_projects = Project.objects.all().count()
     total_clients = Company.objects.filter(category_id=2).count()

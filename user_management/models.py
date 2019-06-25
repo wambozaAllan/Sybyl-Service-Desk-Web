@@ -1,15 +1,16 @@
 from django.db import models
-from django.contrib.auth.models import AbstractUser, Group, Permission
+from django.contrib.auth.models import AbstractBaseUser, Group, Permission, PermissionsMixin
 from django.utils import timezone
 from datetime import datetime
 from django.contrib.sessions.models import Session
 
 from company_management.models import Company, Branch, Department
 from django.http import HttpRequest
+from .managers import UserManager
 
 # CustomUser
-class User(AbstractUser):
-    group = models.ForeignKey(Group, on_delete=models.CASCADE, related_name='initialgroup', blank=True, null=True)
+class User(AbstractBaseUser, PermissionsMixin):
+    groups = models.ManyToManyField(Group, related_name='groups', blank=True, null=True)
     company = models.ForeignKey(Company, default=1, on_delete=models.CASCADE)
     branch = models.ForeignKey(Branch, default=1, on_delete=models.CASCADE)
     department = models.ForeignKey(Department, default=1, on_delete=models.CASCADE)
@@ -24,6 +25,14 @@ class User(AbstractUser):
     modified_time = models.DateTimeField(auto_now=True)
     GENDER_CHOICES = (('Male', 'Male'), ('Female', 'Female'))
     gender = models.CharField(max_length=6, choices=GENDER_CHOICES, default='Male')
+    is_active = models.BooleanField(default=True)
+    is_staff = models.BooleanField(default=True)
+
+    objects = UserManager()
+
+    USERNAME_FIELD = "username"
+    EMAIL_FIELD = 'email'
+
 
     def __str__(self):
         return self.first_name + ' ' + self.last_name
