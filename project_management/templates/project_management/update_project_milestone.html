@@ -7,7 +7,7 @@
 </div>
 <div class="card-body">
     <div class="basic-form">
-        <form class="form-horizontal" action="{% url 'updateProjectMilestone' %}" method="POST"  >
+        <form class="form-horizontal" action="{% url 'updateProjectMilestone' milestone_id %}" method="POST"  >
             {% csrf_token %}
 
             <div class="row">
@@ -23,15 +23,7 @@
                     </div>
                 </div>
                 <div class="col-6">
-                        <div id="div_id_name" class="form-group">
-                            <label for="id_name" class="col-form-label  requiredField">
-                                Name<span class="asteriskField">*</span>
-                            </label>
-                            <div class="">
-                                <input type="text" name="name" value="{{milestone_name}}" maxlength="100" class="textinput textInput form-control is-invalid" required="" id="id_name" autocomplete="off">
-                                <span id="error_1_id_name" class="invalid-feedback"><strong>This field is required.</strong></span>
-                            </div>
-                        </div>
+                        {{form.name|as_crispy_field}}
                 </div>
                 <div class="col-6">
                     {{form.status|as_crispy_field}}
