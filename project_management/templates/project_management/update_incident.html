@@ -47,6 +47,7 @@
                                             </medium>
                                         </div>
                                         <div class="col-4">{{ form.status|as_crispy_field }}</div>
+                                        <div class="col-4">{{ form.assignee|as_crispy_field }}</div>
                                     </div>
                                     <br>
 									<div class="row">
@@ -55,11 +56,11 @@
                                             <div><label>Color Code</label></div>
                                             <div><input type="text" id="priority_color" class="form-control" style="width: 50%; background-color: {{ form.priority.color }}; border: 0;"></input></div>
                                         </div>
-										<div class="col-4">{{ form.assignee|as_crispy_field }}</div>
+										<div class="col-4">{{ form.description|as_crispy_field }}</div>
                                     </div>
                                     <br>
                                     <div class="row">
-                                        <div class="col-12">{{ form.description|as_crispy_field }}</div>
+                                        
                                     </div>
 								<div class="row">
 									<div class="col-5"></div>
