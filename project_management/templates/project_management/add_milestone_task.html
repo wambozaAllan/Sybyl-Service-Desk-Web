@@ -8,19 +8,16 @@
 
 <div class="card-body">
     <div class="basic-form">
-        <form class="form-horizontal" method='GET' id="taskForm">
+        <form class="form-horizontal" method='GET' id="milestoneTaskForm">
             {% csrf_token %}
 
             <div class="row">
-                <div class="col-12">
+                <div class="col-4" style="display: none;">
                     <label class="col-form-label  requiredField">Milestone</label>
                     <input type="text" value="{{ milestone_name }}" class="form-control" id="id_milestone_name"/>
                 </div>
-            </div>
-            <br>
 
-            <div class="row">
-                <div class="col-6">
+                <div class="col-4">
                     <label class="col-form-label  requiredField">Task Name<span
                         class="asteriskField">*</span></label>
                     <input type="text" id='id_name' class="form-control" name="name" required/>
@@ -31,11 +28,25 @@
                     </medium>
                 </div>
             
-                <div class="col-6">
-                    <label class="col-form-label  requiredField">Status</label>
-                    <select id='id_status' class="select form-control"></select>
+                <div class="col-4">
+                    <label>Status</label>
+                    <select id='id_status' class="select form-control" name="status"></select>
+                </div>
+
+                <div class="col-4">
+                    <div id="div_id_assigned_to" class="form-group">
+                        <label for="id_assigned_to" class="col-form-label">
+                            Assigned to
+                        </label>
+                        <div class="">
+                            <select name="assigned_to" class="select form-control" id="id_assigned_to">
+                            </select>
+                        </div>
+                    </div>
                 </div>
             </div>
+            <br>
+            
 
             <div class="row">
                 <div class="col-6">
@@ -49,6 +60,18 @@
                         class="asteriskField">*</span></label>
                     <input type="" id='id_endDate' class="form-control" value="" />      
                 </div>
+
+                <div class="col-6 actual">
+                    <label class="col-form-label  requiredField">Actual Start Date<span
+                        class="asteriskField">*</span></label>
+                    <input type="" id='id_actual_start_date' class="form-control" value="" />
+                </div>
+
+                <div class="col-6 actual">
+                    <label class="col-form-label  requiredField">Actual End Date<span
+                        class="asteriskField">*</span></label>
+                    <input type="" id='id_actual_end_date' class="form-control" value="" />      
+                </div>
             </div>
 
             <div class="row">
@@ -61,8 +84,7 @@
             <div class="row">
                 <button id="btnAddMilestoneTask" class="btn btn-success">
                     <i class="fa fa-fw fa-lg fa-save"></i>Add Task
-                </button>
-                
+                </button>  
             </div>
             
 
@@ -76,13 +98,30 @@
 <script>
     $('#id_startDate').datepicker({
         format: "mm/dd/yyyy",
-        autoclose: true
+        autoclose: true,
+        clearBtn: true
     });
 
     $('#id_endDate').datepicker({
         format: "mm/dd/yyyy",
-        autoclose: true
+        autoclose: true,
+        clearBtn: true
     });
+
+    $('#id_actual_start_date').datepicker({
+        format: "mm/dd/yyyy",
+        autoclose: true,
+        clearBtn: true
+    });
+
+    $('#id_actual_end_date').datepicker({
+        format: "mm/dd/yyyy",
+        autoclose: true,
+        clearBtn: true
+    });
+
+    $("#id_actual_start_date").attr("placeholder", "mm/dd/yyyy");
+    $("#id_actual_end_date").attr("placeholder", "mm/dd/yyyy");
 
     $("#id_startDate").attr("placeholder", "mm/dd/yyyy");
     $("#id_endDate").attr("placeholder", "mm/dd/yyyy");
@@ -92,6 +131,14 @@
     });
 
     $('#id_endDate').on('focus', function(){
+        var date = $(this).blur();
+    });
+
+    $('#id_actual_start_date').on('focus', function(){
+        var date = $(this).blur();
+    });
+
+    $('#id_actual_end_date').on('focus', function(){
         var date = $(this).blur();
     });
 
@@ -110,7 +157,9 @@
         let start_date = $('#id_startDate').val();
         let end_date = $('#id_endDate').val();
 
-        urldata = "{% url 'addProjectTasks' %}";
+        $(".actual").css("display", "none");
+
+        urldata = "{% url 'addMilestoneTasks' %}";
         $.ajax({
             type: "GET",
             cache: false,
@@ -121,20 +170,31 @@
             success: function (data) {
                 let statuses = JSON.parse(data.statuses);
 
-                let actual = '';
-                $("#id_status").html("");
+                // let actual = '';
+                // $("#id_status").html("");
                 $("#id_status").prepend('<option value=""> -----Choose Status----- </option>');
                 for(i=0; i<statuses.length; i++){
-                    actual = statuses[i];
+                    let actual = statuses[i];
                     
                     $('#id_status').append('<option value="' + actual["pk"] + '">' + actual["fields"]["name"] + '</option>');
                     $("#id_status").selectpicker('refresh');
                 }
+
+                let members = JSON.parse(data.members);
+                console.log(members);
+                let member = '';
+                $("#id_assigned_to").prepend('<option value=""> -----Assign Member----- </option>');
+                for(i=0; i<members.length; i++){
+                    member = members[i];
+                    
+                    $('#id_assigned_to').append('<option value="' + member["pk"] + '">' + member["fields"]["first_name"] +" "+ member['fields']['last_name']+ '</option>');
+                    $("#id_assigned_to").selectpicker('refresh');
+                }
             }
-        })
+        });
                
     });
-
+   
     $('#id_name').on('input', function () {
         var task_name = $(this).val().toUpperCase();
 
@@ -159,7 +219,30 @@
         });
     });
 
-    $('#taskForm').on('submit', function(){
+    $('#id_status').on('change', function(){
+        var statusId = $(this).val();
+
+        $.ajax({
+            url: "{% url 'checkMilestoneStatus' %}",
+            data: {
+                status_id: statusId
+            },
+            dataType: 'json',
+            cache: false,
+            success: function(data){
+                var statusName = data.status_name;
+                if (statusName === "Open" || statusName === "Onhold"){
+                    $(".actual").css("display", "none");
+                }
+                else {
+                    $(".actual").css("display", "inline");
+                }
+
+            }
+        })
+    });
+
+    $('#milestoneTaskForm').on('submit', function(){
         event.preventDefault();
         console.log("task under milestone")
         saveMilestoneTask();
