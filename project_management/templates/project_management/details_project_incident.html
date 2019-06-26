@@ -1,0 +1,151 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block content %}
+<!-- Main wrapper  -->
+<div id="main-wrapper">
+	{% include 'header.html' %}
+	{% include 'left-nav.html' %}
+	<!-- Page wrapper  -->
+	<div class="page-wrapper">
+		<!-- Bread crumb -->
+		<div class="row page-titles">
+			<div class="col-md-5 align-self-center">
+				<h3 class="text-primary">Incidents</h3>
+			</div>
+			<div class="col-md-7 align-self-center">
+				<ol class="breadcrumb">
+					<li class="breadcrumb-item"><a href="{% url 'home' %}">Home</a></li>
+					<li class="breadcrumb-item active"><a href="{% url 'listIncidents'%}">List of Incidents</a></li>
+				</ol>
+			</div>
+		</div>
+		<!-- End Bread crumb -->
+		<!-- Container fluid  -->
+		<div class="container-fluid">
+			<!-- Start Page Content -->
+			<div class="row">
+				<div class="col-12">
+					<div class="card">
+						<div class="card-title">
+                            <h4>Incident Details</h4>
+                            <nav class="navbar navbar-expand-lg navbar-light bg-light">
+                                
+                                <div class="collapse navbar-collapse" id="navbarSupportedContent">
+                                    <ul class="navbar-nav mr-auto">
+                                    
+                                    <li class="nav-item">
+                                        <a class="nav-link " href="{% url 'listIncidents' %}" >Back</a>
+                                    </li>
+                                    
+                                    <li class="nav-item">
+                                        <a href="{% url 'updateIncident' incident.id %}" class=" nav-link">Update</a>
+                                    </li>
+                                    </ul>
+                                    
+                                </div>
+                            </nav>
+						</div>
+						<div class="card-body">
+							<div class="basic-form">
+                                
+                                    <div class="row">
+                                        <div class="col-1"></div>
+                                        <div class="col-1"></div>	
+                                    </div>
+                                    <div class="row">
+                                        <div class="col-4">
+                                            <p>Title</p>
+                                        </div>
+                                        <div class="col-8">
+                                            <p>{{ incident.title }}</p>
+                                        </div>
+                                        
+                                    </div>
+
+                                    <div class="row">
+                                        <div class="col-4">
+                                            <p>Project</p>
+                                        </div>
+                                        <div class="col-8">
+                                            <p>{{ incident.project }}</p>
+                                        </div>
+                                        
+                                    </div>
+
+                                    <div class="row">
+                                        <div class="col-4">
+                                            <p>Priority</p>
+                                        </div>
+                                        <div class="col-8">
+                                            <p>{{ incident.priority }}</p>
+                                        </div>
+                                        
+                                    </div>
+
+                                    <div class="row">
+                                        <div class="col-4">
+                                            <p>Task</p>
+                                        </div>
+                                        <div class="col-8">
+                                            <p>{{ incident.task }}</p>
+                                        </div>
+                                    </div>
+
+                                    <div class="row">
+                                        <div class="col-4">
+                                            <p>status</p>
+                                        </div>
+                                        <div class="col-8">
+                                            <p>{{ incident.status }}</p>
+                                        </div>
+                                    </div>
+
+                                    <div class="row">
+                                        <div class="col-4">
+                                            <p>Created By</p>
+                                        </div>
+                                        <div class="col-8">
+                                            <p>{{ incident.creator }}</p>
+                                        </div>
+                                    </div>
+
+                                    <div class="row">
+                                        <div class="col-4">
+                                            <p>Assigned To</p>
+                                        </div>
+                                        <div class="col-8">
+                                            {% for assigned in incident.assignee.all%}
+                                                {{assigned}}
+                                            {% endfor %}
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="row">
+                                        <div class="col-4">
+                                            <p>Description</p>
+                                        </div>
+                                        <div class="col-8">
+                                            <p>{{ incident.description }}</p>
+                                        </div>
+                                    </div>
+                            
+								<br>
+								
+							</div>
+						</div>
+					</div>
+					{% include 'footer.html' %}
+					<!-- End Page Content -->
+				</div>
+				<!-- End Container fluid  -->
+			</div>
+			<!-- End Page wrapper  -->
+		</div>
+		<script>
+			
+			$('#id_assignee').attr('data-live-search', 'true');
+			$('#id_assignee').selectpicker({
+				size: 3,
+			});
+		</script>
+		{% endblock %}
