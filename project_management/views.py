@@ -19,7 +19,7 @@ from django.core import serializers
 
 from django.contrib.auth.decorators import user_passes_test, permission_required
 
-from .models import Project, Milestone, Task, ProjectDocument, Incident, Priority, Status, ProjectTeam, ProjectTeamMember, Role, ProjectForumMessages, ProjectForum, ProjectForumMessageReplies
+from .models import Project, Milestone, Task, ProjectDocument, Incident, Priority, Status, ProjectTeam, ProjectTeamMember, Role, ProjectForumMessages, ProjectForum, ProjectForumMessageReplies, ServiceLevelAgreement
 from user_management.models import User
 from company_management.models import Company, CompanyCategory
 from .forms import CreateProjectForm, MilestoneForm, TaskForm, DocumentForm, ProjectUpdateForm, MilestoneUpdateForm, ProjectForm, IncidentForm
@@ -1691,3 +1691,27 @@ def delete_forum_reply(request):
     }
 
     return HttpResponse(template.render(context, request))
+
+class ProjectSLAList(ListView):
+    template_name = 'project_management/project_sla_list.html'
+    context_object_name = 'sla'
+
+    def get_queryset(self):
+        return Project.objects.all()
+
+class AddSla(CreateView):
+    model = ServiceLevelAgreement
+    fields = ['name', 'project','description', 'response_time', 'resolution_time', 'resolution_duration', 'response_duration']
+
+    template_name = 'project_management/add_sla.html'
+    success_url = reverse_lazy('projectsla')
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        # comp_id = self.request.session['company_id']
+
+        # comp_branches = Branch.objects.filter(company=comp_id)
+        # comp_department = Department.objects.filter(company=comp_id)
+        # context['branches'] = comp_branches
+        # context['dept'] = comp_department
+        return context

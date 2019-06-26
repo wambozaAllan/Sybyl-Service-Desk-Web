@@ -433,3 +433,29 @@ class ProjectForumMessageReplyAttachments(models.Model):
 
     class Meta():
         db_table = 'project_forum_message_reply_attachments'
+
+
+# Project SLA(Service Level Agreement)
+class ServiceLevelAgreement(models.Model):
+    name = models.CharField(max_length=255)
+    project = models.ForeignKey(Project, on_delete=models.CASCADE)
+    description = models.CharField(max_length=255, null=True, blank=True) 
+    response_time = models.IntegerField()
+    resolution_time = models.IntegerField()
+    created_time = models.DateTimeField(auto_now_add=True)
+    modified_time = models.DateTimeField(auto_now=True)
+    TIME_CHOICES = (('1', 'Days'), ('2', 'Weeks'), ('3', 'Months'))
+    resolution_duration = models.CharField(max_length=255, choices=TIME_CHOICES, default='Days')
+    response_duration = models.CharField(max_length=255, choices=TIME_CHOICES, default='Days')
+
+
+# Escalation Levels
+class EscalationLevel(models.Model):
+    name = models.CharField(max_length=255)
+    project = models.OneToOneField(Project, on_delete=models.CASCADE)
+    description = models.CharField(max_length=255, null=True, blank=True) 
+    escalated_to = models.ForeignKey(User, on_delete=models.CASCADE, related_name='escalated_to')
+    escalated_by = models.ForeignKey(User, on_delete=models.CASCADE, related_name='escalated_by')
+    resolution_time = models.IntegerField()
+    date_escalated = models.DateTimeField(auto_now_add=True)
+    modified_time = models.DateTimeField(auto_now=True)

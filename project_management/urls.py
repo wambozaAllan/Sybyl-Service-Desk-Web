@@ -109,6 +109,8 @@ urlpatterns = [
     path('deleteReply/', views.delete_forum_reply, name='deleteChatReply'),
 
     path('listTeam/', views.list_project_team, name='tabListTeam'),
-    
 
+    path('projectsla/', views.ProjectSLAList.as_view(), name='projectsla'),
+    
+    path('addSLA/', views.AddSla.as_view(), name='addSla'),
 ]

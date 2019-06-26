@@ -1,0 +1,57 @@
+<div id="save-sla-pane">
+    {% load crispy_forms_tags %} {% csrf_token %}
+    <div class="row col-12">
+        <div class="col-6">
+            {{ form.name | as_crispy_field }}
+            
+            <div class="form-group">
+                <label for="expiry">Response Time</label>
+                <div class="input-group">
+                    <input type="number" class="form-control select-drugtoprescribedays" placeholder="Enter Number" aria-label="Text input with segmented dropdown button">
+                    <div class="input-group-append">
+                        <button type="button" class="btn btn-outline-secondary" id="settingtogglebtn">Day(s)</button>
+                        <button type="button" class="btn btn-outline-secondary dropdown-toggle dropdown-toggle-split" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                            <span class="sr-only">Select Days</span>
+                        </button>
+                        <div class="dropdown-menu">
+                            <span class="dropdown-item icon-custom" onclick="settselectedtype(1, 'Day(s)');">Day(s)</span>
+                            <span class="dropdown-item icon-custom" onclick="settselectedtype(2, 'Week(S)');">Week(S)</span>
+                            <span class="dropdown-item icon-custom" onclick="settselectedtype(3, 'Month(s)');">Month(s)</span>
+                        </div>
+                    </div>
+                </div>   
+            </div>
+
+            {{ form.description | as_crispy_field }}
+        </div>
+            
+        <div class="col-6">
+            {{ form.project | as_crispy_field }}
+            <div class="form-group">
+                    <label for="expiry">Resolution Time</label>
+                    <div class="input-group">
+                        <input type="number" class="form-control select-drugtoprescribedays" placeholder="Enter Number" aria-label="Text input with segmented dropdown button">
+                        <div class="input-group-append">
+                            <button type="button" class="btn btn-outline-secondary" id="settingtogglebtn">Day(s)</button>
+                            <button type="button" class="btn btn-outline-secondary dropdown-toggle dropdown-toggle-split" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                <span class="sr-only">Select Days</span>
+                            </button>
+                            <div class="dropdown-menu">
+                                <span class="dropdown-item icon-custom" onclick="settselectedtype(1, 'Day(s)');">Day(s)</span>
+                                <span class="dropdown-item icon-custom" onclick="settselectedtype(2, 'Week(S)');">Week(S)</span>
+                                <span class="dropdown-item icon-custom" onclick="settselectedtype(3, 'Month(s)');">Month(s)</span>
+                            </div>
+                        </div>
+                    </div>   
+            </div><br></br>
+            
+            <div class="">
+                <div class="col-md-12  ">
+                    <button id="btnAddUser" class="btn btn-success pull-right">
+                        <span class="btn-save-user"><i class="fa fa-fw fa-lg fa-save"></i>Submit</span>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

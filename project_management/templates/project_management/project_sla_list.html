@@ -1,0 +1,139 @@
+{% extends 'base.html' %}
+{% load static %}
+{% load crispy_forms_tags %}
+{% block content %}
+    <div>
+        <!-- Main wrapper  -->
+        <div id="main-wrapper">
+            {% include 'header.html' %}
+            {% include 'left-nav.html' %}
+            <!-- Page wrapper  -->
+            <div class="page-wrapper">
+                <!-- Bread crumb -->
+                <div class="row page-titles">
+                    <div class="col-md-5 align-self-center">
+                        <h3 class="text-primary">SLA</h3>
+                    </div>
+                    <div class="col-md-7 align-self-center">
+                        <ol class="breadcrumb">
+                            <li class="breadcrumb-item"><a href="javascript:void(0)">Home</a></li>
+                            <li class="breadcrumb-item active">Project List</li>
+                        </ol>
+                    </div>
+                </div>
+                <!-- End Bread crumb -->
+                <!-- Container fluid  -->
+                <div class="container-fluid">
+                    <!-- Start Page Content -->
+                    <div class="row">
+                        <div class="col-12">
+                            <div class="card">
+                                <div class="card-body">
+                                    <h4 class="card-title">............</h4>
+                                    <div class="row">
+                                        <div class="col-md-12">
+                                            <button id="" class="btn btn-info pull-right" onclick="functAddSLA()">
+                                                <i class="fa fa-fw fa-lg fa-plus"></i>Add SLA
+                                            </button>
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="table-responsive">
+                                        <table id="table_status" class="display nowrap table table-hover" cellspacing="0" width="100%">
+                                            <thead>
+                                            <tr>
+                                                <th>#</th>
+                                                <th>Name</th>
+                                                <th>Description</th>
+                                                <th>Project</th>
+                                                <th>Response Time</th>
+                                                <th>Resolution Time</th>
+                                            </tr>
+                                            </thead>
+                                            <tbody>
+                                            {% for s in sla %}
+                                                <tr>
+                                                    <td>{{ forloop.counter }}</td>
+                                                    <td>{{ s.name }}</td>
+                                                    <td>{{ s.project }}</td>
+                                                    <td>{{ s.response_time }}</td>
+                                                    <td>{{ s.resolution_time }}</td>
+                                                </tr>
+                                            {% endfor %}
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+<!-- The Modal -->
+    <div class="">
+        <div id="projectFormModalDialog" class="modalDialog">
+            <div>
+                <div id="head">
+                    <a href="#close" title="Close" class="close2">X</a>
+                    <h5 class="modalDialog-title">Add Project</h5>
+                </div>
+                <hr>
+
+                <div class="modal-body">
+
+                    <div class="scrollbar-modal1">
+                        <div id="dialog_create_project">
+
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+    <!-- END The Modal -->
+
+    <script>
+        $('.select-drugtoprescribe').select2();
+        $('.select-drugtoprescribedosage').select2();
+    
+        $('.select2').css('width', '100%');
+        function settselectedtype(value, type) {
+            $('#settingtogglebtn').html(type);
+            $('#defaultselectedtypeString').val(type);
+        }
+
+        function functAddSLA() {
+            urldata = "{% url 'addSla'%}";
+            $.ajax({
+                type: "GET",
+                cache: false,
+                data: {},
+                url: urldata,
+                success: function (resp) {
+                    $.confirm({
+                        title: '<h3>Add New SLA</h3>',
+                        content: '' + resp,
+                        type: 'blue',
+                        typeAnimated: true,
+                        boxWidth: '50%',
+                        useBootstrap: false,
+                        closeIcon: true,
+                        buttons: {
+                            close: {
+                                text: 'Cancel',
+                                btnClass: 'btn-gray',
+                                action: function () {
+                                }
+                            }
+                        }
+                    });
+                }
+            });
+        }
+    </script>
+{% endblock %}
+
