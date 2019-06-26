@@ -7,7 +7,7 @@
 </div>
 <div class="card-body">
     <div class="basic-form">
-        <form class="form-horizontal" action="{% url 'updateProjectMilestone' milestone_id %}" method="POST"  >
+        <form class="form-horizontal" action="{% url 'updateMilestoneTask' task_id %}" method="POST"  >
             {% csrf_token %}
 
             <div class="row">
@@ -33,19 +33,19 @@
             
             <div class="row">
                 <div class="col-6">
-                    {{form.startdate|as_crispy_field}}
+                    {{form.start_date|as_crispy_field}}
                 </div>
                 <div class="col-6">
-                    {{form.enddate|as_crispy_field}}
+                    {{form.end_date|as_crispy_field}}
                 </div>
             </div>
 
             <div class="row">
                 <div class="col-6">
-                    {{form.actual_startdate|as_crispy_field}}
+                    {{form.actual_start_date|as_crispy_field}}
                 </div>
                 <div class="col-6">
-                    {{form.actual_enddate|as_crispy_field}}
+                    {{form.actual_end_date|as_crispy_field}}
                 </div>
             </div>
 
@@ -54,8 +54,8 @@
                     {{form.description|as_crispy_field}}
                 </div>
                 <div class="col-6">
-                    <button type="submit" id="btnUpdateMiletsone" class="form-control btn btn-success pull-right">
-                        <i class="fa fa-fw fa-lg fa-save"></i>Update Milestone
+                    <button type="submit" id="btnUpdateTask" class="form-control btn btn-success pull-right">
+                        <i class="fa fa-fw fa-lg fa-save"></i>Update Task
                     </button>
                 </div>
             </div>
@@ -67,40 +67,40 @@
 </div>
 
 <script>
-    $('#id_startdate').datepicker({
+    $('#id_start_date').datepicker({
         format: "mm/dd/yyyy",
         autoclose: true
     });
 
-    $('#id_enddate').datepicker({
+    $('#id_end_date').datepicker({
         format: "mm/dd/yyyy",
         autoclose: true
     });
 
-    $("#id_actual_startdate").prop("type", "text");
-    $("#id_actual_enddate").prop("type", "text");
+    $("#id_actual_start_date").prop("type", "text");
+    $("#id_actual_end_date").prop("type", "text");
 
-    $('#id_actual_startdate').datepicker({
+    $('#id_actual_start_date').datepicker({
         format: "mm/dd/yyyy",
         autoclose: true
     });
 
-    $('#id_actual_enddate').datepicker({
+    $('#id_actual_end_date').datepicker({
         format: "mm/dd/yyyy",
         autoclose: true
     });
 
-    $("#id_startdate").attr("placeholder", "mm/dd/yyyy");
-    $("#id_enddate").attr("placeholder", "mm/dd/yyyy");
+    $("#id_start_date").attr("placeholder", "mm/dd/yyyy");
+    $("#id_end_date").attr("placeholder", "mm/dd/yyyy");
 
-    $("#id_actual_startdate").attr("placeholder", "mm/dd/yyyy");
-    $("#id_actual_enddate").attr("placeholder", "mm/dd/yyyy");
+    $("#id_actual_start_date").attr("placeholder", "mm/dd/yyyy");
+    $("#id_actual_end_date").attr("placeholder", "mm/dd/yyyy");
 
-    $('#id_actual_enddate').on('focus', function(){
+    $('#id_actual_end_date').on('focus', function(){
         var date = $(this).blur();
     });
 
-    $('#id_enddate').on('focus', function(){
+    $('#id_end_date').on('focus', function(){
         var date = $(this).blur();
     });
 
@@ -108,7 +108,7 @@
         var date = $(this).blur();
     });
 
-    $('#id_startdate').on('focus', function(){
+    $('#id_start_date').on('focus', function(){
         var date = $(this).blur();
     });
 
@@ -118,10 +118,6 @@
     $('#id_status').selectpicker({
         size: 3
     });
-
-
-    // on load function for addition of milestone
-    $(function(){});
       
     $("#id_name").attr('autocomplete', 'off');
 

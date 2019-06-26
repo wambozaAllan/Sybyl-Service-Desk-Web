@@ -46,6 +46,7 @@
                                                 <th>Name</th>
                                                 <th>Code</th>
                                                 <th>Status</th>
+                                                <th>Progress</th>
                                                 <th class="text-center">Action</th>
                                             </tr>
                                             </thead>
@@ -57,6 +58,7 @@
                                                     <td>{{ project.name }}</td>
                                                     <td>{{ project.project_code }}</td>
                                                     <td>{{project.project_status}}</td>
+                                                    <td>{{project.completion}}%</td>
                                                     <td class="text-center">
                                                         <a href="{% url 'detailsProject' project.id %}">View</a> &nbsp;
                                                         <a href="{% url 'updateProject' project.id %}">Update</a> &nbsp;
@@ -86,7 +88,7 @@
             <div>
                 <div id="head">
                     <a href="#close" title="Close" class="close2">X</a>
-                    <h5 class="modalDialog-title">Add Project</h5>
+                    <h5 class="modalDialog-title" style="font-weight: bold; text-align: center; text-transform:uppercase;">Add Project</h5>
                 </div>
                 <hr>
 

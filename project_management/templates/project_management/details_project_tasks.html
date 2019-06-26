@@ -1,0 +1,139 @@
+{% load crispy_forms_tags %}
+
+<div class="card-body">
+    <div class="basic-form">
+        <div class="row">
+            <div class="col-sm">
+                <p class="text-muted m-b-15 f-s-12">Project</p>
+                <input type="text" class="form-control input-flat"
+                    value="{{ task.project }}" disabled>
+            </div>
+            <div class="col-sm">
+                <p class="text-muted m-b-15 f-s-12">Name</p>
+                <input type="text" class="form-control input-flat"
+                    value="{{ task.name }}" disabled>
+            </div>
+            <div class="col-sm">
+                <p class="text-muted m-b-15 f-s-12">Milestone</p>
+                <input type="text" class="form-control input-flat"
+                    value="{{ task.milestone }}" disabled>
+            </div>
+        </div>
+        
+        <br>
+        <div class="row">
+            
+            <div class="col-sm">
+                <p class="text-muted m-b-15 f-s-12">Status</p>
+                <input type="text" class="form-control input-flat"
+                    value="{{ task.status }}" disabled>
+            </div>  
+            <div class="col-sm">
+                <p class="text-muted m-b-15 f-s-12">Created By</p>
+                <input type="text" class="form-control input-flat"
+                    value="{{ task.creator }}" disabled>
+            </div>
+            <div class="col-sm">
+                <p class="text-muted m-b-15 f-s-12">Assigned To</p>
+                <select id="id_assignee" class="form-control"> 
+                    {% for assigned in incident.assignee.all%}
+                        <option>{{assigned}}</option>
+                    {% endfor %}
+                </select>
+            </div>
+        </div>
+        <br>
+        <div class="row">
+            
+            <div class="col-sm">
+                <p class="text-muted m-b-15 f-s-12">Description</p>
+                <input type="text" class="form-control input-flat"
+                    value="{{ task.description|striptags }}" disabled>
+            </div>
+        </div>
+        <!-- {{incident.elapsed_time}} -->
+        <br>
+        <div class="row">
+            <div class="col-sm">
+                <p class="text-muted m-b-15 f-s-12">Created At</p>
+                <input type="text" class="form-control input-flat"
+                    value="{{ task.created_time|date }}" disabled>
+            </div>
+            <div class="col-sm">
+                <p class="text-muted m-b-15 f-s-12">Start Time</p>
+                <input type="text" class="form-control input-flat"
+                    value="{{ task.start_date }}" disabled>
+            </div>
+            <div class="col-sm">
+                <p class="text-muted m-b-15 f-s-12"> End Time</p>
+                <input type="text" class="form-control input-flat"
+                    value="{{ task.end_date|date }}" disabled>
+            </div>
+        </div>
+        <br />
+        <div class="row">
+            <div class="col-3">
+                <button onclick="editTask('{{ task.id }}', '{{ task.name }}')" class="btn btn-success col-12">Update Task</button>
+            </div>	
+        </div>
+    </div>
+</div>
+
+<script>
+    function editTask(task_id, task_name) {
+
+        url = "{% url 'updateProjectTask' 999%}".replace(999, incident_id);
+        $.ajax({
+            url: url,
+            type: "GET",
+            cache: false,
+            data: {
+                task_id: task_id,
+                task_name: task_name,
+            },
+            success: function (resp) {
+                $.confirm({
+                    title: '<h3>Edit Task: <strong>'+ task_name +'</strong></h3>',
+                    content: '' + resp,
+                    type: 'blue',
+                    theme: 'material',
+                    typeAnimated: true,
+                    boxWidth: '75%',
+                    useBootstrap: false,
+                    closeIcon: true,
+                    buttons: {
+                        close: {
+                            text: 'Close',
+                            btnClass: 'btn-gray',
+                            action: function () {
+                            }
+                        }
+                    }
+                });
+            }
+        });
+    }
+
+    $('#id_status').attr('data-live-search', "true"); 
+    $('#id_status').selectpicker({
+        size: 3
+    });
+      
+    $('#id_title').attr('autocomplete', 'off');
+
+    $("#id_description").attr('autocomplete', 'off');
+
+    
+    $('#id_project').removeAttr('multiple', "");
+    
+    $('#id_project').attr( 'readOnly' , 'true' );
+    $("#id_project").prop("disabled", "disabled");
+
+    $('#id_assignee').attr('multiple', "multiple");
+    $('#id_assignee').attr('data-live-search', 'true');
+    $('#id_assignee').selectpicker({
+        size: 3,
+    });
+    
+
+</script>

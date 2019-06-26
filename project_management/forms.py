@@ -89,6 +89,7 @@ class MilestoneUpdateForm(forms.ModelForm):
             'actual_enddate': forms.DateTimeInput(attrs={'type':'date', 'placeholder':'Select a date'}, format='%d/%m/%Y'),
             'description': forms.Textarea(attrs={'rows':2, 'cols':15})
         }
+
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.helper = FormHelper()

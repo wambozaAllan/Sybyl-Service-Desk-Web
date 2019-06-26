@@ -21,7 +21,7 @@
             </div>
 
             <div class="col-2">
-                <a href="#" onclick="functAddMilestoneTask('{{ project_id }}', '{{ milestone_id}}')" class="btn btn-info pull-right">
+                <a href="#" onclick="functAddMilestoneTask('{{ project_id }}', '{{ milestone_id}}', '{{ milestone_name }}')" class="btn btn-info pull-right">
                         <i class="fa fa-fw fa-lg fa-plus"></i>Add Task</a>
             </div>
         </div>
@@ -49,13 +49,13 @@
                     <td>{{ task.status }}</td>
                     <td class="text-center">
                         <button class="btn btn-outline-success btn-sm"
-                            onclick="editMilestone('{{ milestone.id }}', '{{ milestone.name }}')">
-                            <i title="Manage Milestone" class="fa fa-edit"></i>
+                            onclick="editTask('{{ task.id }}', '{{ task.name }}')">
+                            <i title="Manage Task" class="fa fa-edit"></i>
                         </button>
 
-                        <button onclick="deleteMilestone('{{ milestone.id }}', '{{ milestone.name }}', '{{ team.id }}', '{{ team.name }}')"
+                        <button onclick="deleteTask('{{ task.id }}', '{{ task.name }}')"
                                 class="btn btn-outline-danger btn-sm" type="button">
-                            <i title="Delete Milestone" class="fa fa-remove"></i>
+                            <i title="Delete Task" class="fa fa-remove"></i>
                         </button>
                     </td>
                 </tr>
@@ -88,7 +88,7 @@
         });
     }
 
-    function functAddMilestoneTask(project_id, milestone_id){
+    function functAddMilestoneTask(project_id, milestone_id, milestone_name){
         urldata = "{% url 'addMilestoneTask' %}"
         $.ajax({
             type: "GET",
@@ -100,26 +100,60 @@
             url: urldata,
             success: function(resp){
                 $.confirm({
-                        title: '<h3>Add Task: </h3>',
-                        content: '' + resp,
-                        type: 'blue',
-                        theme: 'material',
-                        typeAnimated: true,
-                        height: '40%',
-                        useBootstrap: false,
-                        closeIcon: true,
-                        buttons: {
-                            close: {
-                                text: 'Close',
-                                btnClass: 'btn-gray close-dialog',
-                                action: function () {
-                                }
+                    title: '<h3>Add Task: under <strong>' +milestone_name+ '</strong</h3>',
+                    content: '' + resp,
+                    type: 'blue',
+                    theme: 'material',
+                    typeAnimated: true,
+                    boxWidth: '60%',
+                    useBootstrap: false,
+                    closeIcon: true,
+                    buttons: {
+                        close: {
+                            text: 'Close',
+                            btnClass: 'btn-gray close-dialog',
+                            action: function () {
                             }
                         }
-                    });
+                    }
+                });
             }
 
         })
+    }
+
+    function editTask(task_id, task_name) {
+
+        url = "{% url 'updateMilestoneTask' 999%}".replace(999, task_id);
+        $.ajax({
+            url: url,
+            type: "GET",
+            cache: false,
+            data: {
+                task_id: task_id,
+                task_name: task_name,
+            },
+            success: function (resp) {
+                $.confirm({
+                    title: '<h3>Edit Task: <strong>'+ task_name +'<strong></h3>',
+                    content: '' + resp,
+                    type: 'blue',
+                    theme: 'material',
+                    typeAnimated: true,
+                    boxWidth: '70%',
+                    useBootstrap: false,
+                    closeIcon: true,
+                    buttons: {
+                        close: {
+                            text: 'Close',
+                            btnClass: 'btn-gray',
+                            action: function () {
+                            }
+                        }
+                    }
+                });
+            }
+        });
     }
 
 </script>
