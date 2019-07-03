@@ -1,0 +1,96 @@
+{% extends 'base.html' %}
+{% load static %}
+{% load crispy_forms_tags %}
+{% block content %}
+    <div>
+        <!-- Main wrapper  -->
+        <div id="main-wrapper">
+            {% include 'header.html' %}
+            {% include 'left-nav.html' %}
+            <!-- Page wrapper  -->
+            <div class="page-wrapper">
+                <!-- Bread crumb -->
+                <div class="row page-titles">
+                    <div class="col-md-5 align-self-center">
+                        <h3 class="text-primary">Project Documents</h3>
+                    </div>
+                    <div class="col-md-7 align-self-center">
+                        <ol class="breadcrumb">
+                            <li class="breadcrumb-item"><a href="javascript:void(0)">Home</a></li>
+                            <li class="breadcrumb-item active"><a href="{% url 'listProjects' %}">Project List</a></li>
+                        </ol>
+                    </div>
+                </div>
+                {{project_id}}
+                <!-- End Bread crumb -->
+                <!-- Container fluid  -->
+                <div class="container-fluid">
+                    <!-- Start Page Content -->
+                    <div class="row">
+                        <div class="col-12">
+                            <div class="card">
+                                <div class="card-body">
+                                    <h3 class="card-title">Project Documents</h3>
+                                    <div class="card-body">
+                                        <div class="basic-form">
+                                            <form class="form-horizontal" action="{% url 'uploadDocument'  %}" method="POST" enctype="multipart/form-data" >
+                                                {% csrf_token %}
+                                                <div class="row">
+                                                    <div class="col-md-6">
+                                                        {{form.project|as_crispy_field}}   
+                                                    </div>
+                                                </div>
+                                                <div class="row">
+                                                    <div class="col-md-6">
+                                                        {{form.title|as_crispy_field}}   
+                                                    </div>
+                                                </div>
+                                                <div class="row">
+                                                    <div class="col-md-6">
+                                                        {{form.document_description|as_crispy_field}}
+                                                    </div>
+                                                </div>
+   
+                                                <div class="row">
+                                                    <div class="col-md-6">
+                                                        {{form.document|as_crispy_field}}
+                                                    </div>
+                                                </div>
+
+                                                <div class="row">
+                                                    <div class="col-6">
+                                                        <button type="submit" id="btnUpdateTask" class="form-control btn btn-success pull-right">
+                                                            <i class="fa fa-fw fa-lg fa-save"></i>Upload Document
+                                                        </button>
+                                                    </div>
+                                                </div>
+                                                
+                                            </div>
+                                                
+                                            </form>
+                                        </div>
+                                    </div>
+                                    
+                                </div>
+                            </div>
+                            {% include 'footer.html' %}
+                            <!-- End Page Content -->
+                        </div>
+                        <!-- End Container fluid  -->
+                    </div>
+                    <!-- End Page wrapper  -->
+                </div>
+            </div>
+        </div>
+    </div>
+    <script>
+        $("#id_document").addClass("dropzone");
+
+        $('#id_title').attr('autocomplete', 'off');
+
+        $('#id_document_description').attr('autocomplete', 'off');
+
+    </script>
+
+{% endblock %}
+
