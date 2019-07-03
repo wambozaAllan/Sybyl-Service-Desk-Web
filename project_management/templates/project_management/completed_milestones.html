@@ -1,0 +1,75 @@
+<div class="table-responsive">
+    <table class="table table-hover" id="table_completed_milestones">
+        <thead>
+            <tr>
+                <th>#</th>
+                <th>Name</th>
+                <th>Task count</th>
+                <th>Start Date</th>
+                <th>Status</th>
+                <th>Progress</th>
+                <th>Action</th>
+            </tr>
+        </thead>
+
+        <tbody>
+
+            {% for milestone in completed_milestones %}
+            <tr>
+                <td>{{ forloop.counter }}</td>
+                <td>
+                    <a href="#" onclick="detailsMilestone('{{ milestone.id }}', '{{ milestone.name }}')" style="color:black;">
+                    {{ milestone.name }}</a>
+                </td>
+                <td class="text-center">
+                    <a href="#" style="color: #fff"
+                        onclick="functionSpecificTask('{{ milestone.id }}', '{{ project_id }}')">
+                        <span class="badge badge-pill badge-success">{{milestone.task_set.count}}</span>
+                    </a>
+                </td>
+                <td>{{ milestone.startdate }}</td>
+                <td>{{ milestone.status }}</td>
+
+                <td class="text-center">
+                    {{ milestone.completion }}%
+                    <!-- {% if milestone.completion > 50 %}
+                    <h5 class="m-t-30"><span class="pull-right">{{ milestone.completion }}%</span></h5>
+                    <div class="progress-bar bg-danger" style="width: {{ milestone.completion }}%; height:6px;"
+                        role="progressbar">
+                        <span class="sr-only">69% Complete</span>
+                    </div>
+                    {% else %}
+                    <h5 class="m-t-30"><span class="pull-right">{{ milestone.completion }}%</span></h5>
+                    <div class="progress-bar bg-warning wow animated progress-animated"
+                        style="width: {{milestone.completion}}%; height:6px;" role="progressbar">
+                        <span class="sr-only">69% Complete</span>
+                    </div>
+
+                    {% endif %} -->
+                </td>
+                <td class="text-center">
+                    <button class="btn btn-outline-success btn-sm"
+                        onclick="editMilestone('{{ milestone.id }}', '{{ milestone.name }}', '{{project_id}}', '{{project_name}}')">
+                        <i title="Manage Milestone" class="fa fa-edit"></i>
+                    </button>
+
+                    <button
+                        onclick="deleteMilestone('{{ milestone.id }}', '{{ milestone.name }}', '{{ project_id }}', '{{ project_name }}')"
+                        class="btn btn-outline-danger btn-sm" type="button">
+                        <i title="Delete Milestone" class="fa fa-remove"></i>
+                    </button>
+                </td>
+            </tr>
+            {% empty %}
+            <tr>
+                <td colspan="4">No milestones currently. Add the first milestone.</td>
+            </tr>
+            {% endfor %}
+
+        </tbody>
+    </table>
+</div>
+
+<script>
+    $('#table_completed_milestones').DataTable();
+</script>
