@@ -57,7 +57,7 @@
     
         var projectTeam = $(this).val();
         $.ajax({
-            url: '{% url 'validateProjectTeamAssigned' %}',
+            url: "{% url 'validateProjectTeamAssigned' %}",
             data: {
                project_team: projectTeam
             },
