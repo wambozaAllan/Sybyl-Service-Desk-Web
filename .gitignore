@@ -23,5 +23,6 @@ media/documents/projects/
 media/images/incidents/
 media/logos/
 media/documents/incidents/
+media/attachments/
 chat/__pycache__/
 core/__pycache__/

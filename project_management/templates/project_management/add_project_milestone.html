@@ -292,8 +292,7 @@
                 
                 let newData = JSON.parse(data.status);
                 let actual = '';
-                // $("#id_status").html("");
-                $("#id_status").prepend('<option value=""> -----Choose Status----- </option>');
+                $("#id_status").prepend('<option value="" selected disabled> -----Choose Status----- </option>');
                 for(i=0; i<newData.length; i++){
                     actual = newData[i];
                     

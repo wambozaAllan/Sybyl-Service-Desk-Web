@@ -2,75 +2,99 @@
 {% csrf_token %}
 
 <div class="project_task">
-    <input id="project_id" type="hidden" value="{{ project_id }}"/>
-    <input id="team_id" type="hidden" value="{{ team_id }}"/>
-    <input id="project_name" type="hidden" value="{{ project_name }}"/>
-    <input id="team_name" type="hidden" value="{{ team_name }}"/>
+    <input id="project_id" type="text" value="{{ project_id }}" style="display: none;"/>
+    <input id="team_id" type="text" value="{{ team_id }}" style="display: none;"/>
+    <input id="project_name" type="text" value="{{ project_name }}" style="display: none;"/>
+    <input id="team_name" type="text" value="{{ team_name }}" style="display: none;"/>
 
-
+{% if state %}
 <div class="card-body project-tasks">
-
-    <div class="row">
-        <div class="col-10">
-            <!-- <h4 class="card-title">Tasks</h4> -->
+        <a href="#" id="add-task" class="btn btn-info pull-right" onclick="addTasks('{{project_id}}', '{{project_name}}');">
+            <i class="fa fa-fw fa-lg fa-plus"></i>Add Task
+        </a>
+        <ul class="nav nav-tabs customtab" role="tablist">
+            <li class="nav-item"> <a class="nav-link active" data-toggle="tab" href="#openPane" role="tab"><span class="hidden-sm-up"><i class="ti-home"></i></span> <span class="hidden-xs-down">Open <span class="label label-rounded label-info">{{open_count}}</span></span></a> </li>
+            <li class="nav-item" onclick="loadURL('{% url 'onholdTasks'%}', 'project_id={{ project_id }}', 'on-hold-tasks', 'GET');"> <a class="nav-link" data-toggle="tab" href="#onholdPane" role="tab"><span class="hidden-sm-up"><i class="ti-user"></i></span> <span class="hidden-xs-down">Onhold <span class="label label-rounded label-info">{{onhold_count}}</span></span></a> </li>
+            <li class="nav-item" onclick="loadURL('{% url 'terminatedTasks'%}', 'project_id={{ project_id }}', 'terminated-tasks', 'GET');"> <a class="nav-link" data-toggle="tab" href="#terminatedPane" role="tab"><span class="hidden-sm-up"><i class="ti-email"></i></span> <span class="hidden-xs-down">Terminated <span class="label label-rounded label-danger">{{terminated_count}}</span></span></a> </li>
+            <li class="nav-item" onclick="loadURL('{% url 'completedTasks'%}', 'project_id={{ project_id }}', 'completed-tasks', 'GET');"> <a class="nav-link" data-toggle="tab" href="#completedPane" role="tab"><span class="hidden-sm-up"><i class="ti-email"></i></span> <span class="hidden-xs-down">Completed <span class="label label-rounded label-danger">{{completed_count}}</span></span></a> </li>
+            
+        </ul>
+        <!-- Tab panes -->
+        <div class="tab-content">
+            <div class="tab-pane active" id="openPane" role="tabpanel">
+                <div class="card-body task-card">
+                    <div class="table-responsive">
+                        <table class="table table-hover" id="table_open_tasks">
+                            <thead>
+                                <tr>
+                                    <th>Name</th>
+                                    <th>Milestone</th>
+                                    <th>Assigned To</th>
+                                    <th>Start-Date</th>
+                                    <th>Status</th>
+                                    <th>Action</th>
+                                </tr>
+                            </thead>
+                            
+                            <tbody>
+                                {% for task in open_tasks %}
+                                <tr>
+                                    <td>
+                                        <a href="#" onclick="detailsTask('{{ task.id }}', '{{ task.name }}',  '{{ project_id }}')" style="color:black;">
+                                        {{ task.name }}</a>
+                                    </td>
+                                    <td>{{task.milestone}}</td>
+                                    <td>{{task.assigned_to}}</td>
+                                    <td>{{ task.end_date }}</td>
+                                    <td>{{ task.status }}</td>
+                                    <td>
+                                        <button class="btn btn-outline-success btn-sm"
+                                            onclick="editTask('{{ task.id }}', '{{ task.name }}', '{{ project_id}}')">
+                                            <i title="Manage Task" class="fa fa-edit"></i>
+                                        </button>
+                
+                                        <button onclick="deleteTask('{{ task.id }}', '{{ task.name }}')"
+                                                class="btn btn-outline-danger btn-sm" type="button">
+                                            <i title="Delete Task" class="fa fa-remove"></i>
+                                        </button>
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+            <div class="tab-pane" id="onholdPane" role="tabpanel">
+                <div class="on-hold-tasks"></div>
+            </div>
+            <div class="tab-pane" id="terminatedPane" role="tabpanel">
+                <div class="terminated-tasks"></div>
+            </div>
+            <div class="tab-pane" id="completedPane" role="tabpanel">
+                <div class="completed-tasks"></div>
+            </div>
         </div>
-
-        <div class="col-2">
-            <a href="#" id="add-task" class="btn btn-info pull-right" onclick="addTasks('{{project_id}}', '{{project_name}}');">
-                <i class="fa fa-fw fa-lg fa-plus"></i>Add Task
-            </a>
-        </div>
-    </div>
-    <br />
-    <div class="table-responsive">
-        <table class="table table-hover" id="table_tasks">
-            <thead>
-                <tr>
-                    <th>Name</th>
-                    <th>Milestone</th>
-                    <th>Assigned To</th>
-                    <th>Start-Date</th>
-                    <th>Status</th>
-                    <th>Action</th>
-                </tr>
-            </thead>
-
-            <tbody>
-                {% for task in tasks %}
-                <tr>
-                    <td>
-                        <a href="#" onclick="detailsTask('{{ task.id }}', '{{ task.name }}',  '{{ project_id }}')" style="color:black;">
-                        {{ task.name }}</a>
-                    </td>
-                    <td>{{task.milestone}}</td>
-                    <td>{{task.assigned_to}}</td>
-                    <td>{{ task.end_date }}</td>
-                    <td>{{ task.status }}</td>
-                    <td>
-                        <button class="btn btn-outline-success btn-sm"
-                            onclick="editTask('{{ task.id }}', '{{ task.name }}', '{{ project_id}}')">
-                            <i title="Manage Task" class="fa fa-edit"></i>
-                        </button>
-
-                        <button onclick="deleteTask('{{ task.id }}', '{{ task.name }}')"
-                                class="btn btn-outline-danger btn-sm" type="button">
-                            <i title="Delete Task" class="fa fa-remove"></i>
-                        </button>
-                    </td>
-                </tr>
-                {% endfor %}
-            </tbody>
-        </table>
-    </div>
+     
 </div>
 
+{% else %}
+    <div>
+        <div >
+            <h4>Follow these guidelines to add Tasks</h4>
+            <p>Ensure you have added Milestones</p>
+            <p>Ensure to Add a Project Team to assign Tasks</p>
+            <p>To do the above click on the tabs for Milestone and Team</p>
+        </div>
+    </div>
+{%endif%}
 
 
 </div>
 
 
 <script>
-    $('#table_tasks').DataTable();
+    $('#table_open_tasks').DataTable();
     
     function addTasks(project_id, project_name){
         urlData = "{% url 'populateTaskView' %}";
@@ -84,23 +108,23 @@
             url: urlData,
             success: function (resp) {
                 $.confirm({
-                        title: '<h3>Add Task for Project: <strong>'+ project_name +'</strong> </h3>',
-                        content: '' + resp,
-                        type: 'blue',
-                        theme: 'material',
-                        typeAnimated: true,
-                        boxWidth: '60%',
-                        useBootstrap: false,
-                        closeIcon: true,
-                        buttons: {
-                            close: {
-                                text: 'Close',
-                                btnClass: 'btn-gray close-dialog',
-                                action: function () {
-                                }
+                    title: '<h3>Add Task</h3>',
+                    content: '' + resp,
+                    type: 'blue',
+                    theme: 'material',
+                    typeAnimated: true,
+                    boxWidth: '60%',
+                    useBootstrap: false,
+                    closeIcon: true,
+                    buttons: {
+                        close: {
+                            text: 'Close',
+                            btnClass: 'btn-gray close-dialog',
+                            action: function () {
                             }
                         }
-                    });
+                    }
+                });
             }
         });
     }
@@ -173,5 +197,6 @@
             }
         });
         }
-
+    
+    
 </script>

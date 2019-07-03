@@ -24,6 +24,7 @@
                 </div>
                 <div class="col-6">
                         {{form.name|as_crispy_field}}
+                        
                 </div>
                 <div class="col-6">
                     {{form.status|as_crispy_field}}
@@ -69,12 +70,14 @@
 <script>
     $('#id_start_date').datepicker({
         format: "mm/dd/yyyy",
-        autoclose: true
+        autoclose: true,
+        clearBtn: true
     });
 
     $('#id_end_date').datepicker({
         format: "mm/dd/yyyy",
-        autoclose: true
+        autoclose: true,
+        clearBtn: true
     });
 
     $("#id_actual_start_date").prop("type", "text");
@@ -82,12 +85,14 @@
 
     $('#id_actual_start_date').datepicker({
         format: "mm/dd/yyyy",
-        autoclose: true
+        autoclose: true,
+        clearBtn: true
     });
 
     $('#id_actual_end_date').datepicker({
         format: "mm/dd/yyyy",
-        autoclose: true
+        autoclose: true,
+        clearBtn: true
     });
 
     $("#id_start_date").attr("placeholder", "mm/dd/yyyy");
@@ -123,29 +128,29 @@
 
     $("#id_description").attr('autocomplete', 'off');
     
-    // $('#id_name').on('input', function () {
-    //     var milestone_name = $(this).val().toUpperCase();
+    $('#id_name').on('input', function () {
+        var milestone_name = $(this).val().toUpperCase();
 
-    //     $.ajax({
-    //         url: "{% url 'validateMilestoneName' %}",
-    //         data: {
-    //             'milestoneName': milestone_name
-    //         },
-    //         dataType: 'json',
-    //         success: function (data) {
-    //             if (data.is_taken) {
-    //                 $("#validate_milestone_name").show();
-    //                 document.getElementById('id_name').style.borderColor = "red";
-    //                 document.getElementById("btnAddMiletsone").disabled = true;
-    //             } 
-    //             else {
-    //                 $("#validate_milestone_name").hide();
-    //                 document.getElementById('id_name').style.borderColor = "#e7e7e7";
-    //                 document.getElementById("btnAddMiletsone").disabled = false;
-    //             }
-    //         }
-    //     });
-    // });
+        $.ajax({
+            url: "{% url 'validateMilestoneName' %}",
+            data: {
+                'milestoneName': milestone_name
+            },
+            dataType: 'json',
+            success: function (data) {
+                if (data.is_taken) {
+                    $("#validate_milestone_name").show();
+                    document.getElementById('id_name').style.borderColor = "red";
+                    document.getElementById("btnAddMiletsone").disabled = true;
+                } 
+                else {
+                    $("#validate_milestone_name").hide();
+                    document.getElementById('id_name').style.borderColor = "#e7e7e7";
+                    document.getElementById("btnAddMiletsone").disabled = false;
+                }
+            }
+        });
+    });
 
     // $('#postForm').on('submit', function(){
     //     event.preventDefault();

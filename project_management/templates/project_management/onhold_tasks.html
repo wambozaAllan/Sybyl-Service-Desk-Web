@@ -1,0 +1,45 @@
+<div class="table-responsive">
+    <table class="table table-hover" id="table_onhold_tasks">
+        <thead>
+            <tr>
+                <th>Name</th>
+                <th>Milestone</th>
+                <th>Assigned To</th>
+                <th>Start-Date</th>
+                <th>Status</th>
+                <th>Action</th>
+            </tr>
+        </thead>
+        
+        <tbody>
+            {% for task in onhold_tasks %}
+            <tr>
+                <td>
+                    <a href="#" onclick="detailsTask('{{ task.id }}', '{{ task.name }}',  '{{ project_id }}')" style="color:black;">
+                    {{ task.name }}</a>
+                </td>
+                <td>{{task.milestone}}</td>
+                <td>{{task.assigned_to}}</td>
+                <td>{{ task.end_date }}</td>
+                <td>{{ task.status }}</td>
+                <td>
+                    <button class="btn btn-outline-success btn-sm"
+                        onclick="editTask('{{ task.id }}', '{{ task.name }}', '{{ project_id}}')">
+                        <i title="Manage Task" class="fa fa-edit"></i>
+                    </button>
+
+                    <button onclick="deleteTask('{{ task.id }}', '{{ task.name }}')"
+                            class="btn btn-outline-danger btn-sm" type="button">
+                        <i title="Delete Task" class="fa fa-remove"></i>
+                    </button>
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+        
+    </table>
+</div>
+
+    <script>
+        $('#table_onhold_tasks').DataTable();
+    </script>

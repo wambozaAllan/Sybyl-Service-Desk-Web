@@ -1,0 +1,78 @@
+<div class="card-body incident-card">
+    <div class="row page-titles">
+        <div class="col-md-8 col-sm-12 align-self-center">
+            <h5 class="text-primary">Assigned Members: </h3>
+        </div>
+        <div class="col-md-4 col-sm-12 align-self-center">
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item"><a href="#" onclick="listProjectIncidents('{{project_id}}')" >Incidents</a></li>
+                <li class="breadcrumb-item active">Members</li>
+            </ol>
+        </div>
+
+
+    </div>
+    
+    <div class="table-responsive">
+        <table class="table table-hover" id="table_assigned">
+            <thead>
+                <tr>
+                    <th>#</th>
+                    <th>First Name</th>
+                    <th>Last Name</th>
+                    <th>Email</th>
+                </tr>
+            </thead>
+
+            <tbody>
+
+                {% for member in team_members %}
+                <tr>
+                    <td>{{ forloop.counter }}</td>
+                    <td>{{ member.first_name }}</td>
+                    <td>{{ member.last_name }}</td>
+                    <td>{{ member.email }}</td>
+                    <!-- <td class="text-center">
+                        <button class="btn btn-outline-success btn-sm"
+                            onclick="editTask('{{ task.id }}', '{{ task.name }}')">
+                            <i title="Manage Task" class="fa fa-edit"></i>
+                        </button>
+
+                        <button onclick="deleteTask('{{ task.id }}', '{{ task.name }}')"
+                                class="btn btn-outline-danger btn-sm" type="button">
+                            <i title="Delete Task" class="fa fa-remove"></i>
+                        </button>
+                    </td> -->
+                </tr>
+                {% empty %}
+                <tr>
+                    <td colspan="4">No members assigned currently.</td>
+                    </tr>
+                {% endfor %}
+
+            </tbody>
+        </table>
+    </div>
+</div>
+ 
+<script>
+    $("#table_assigned").DataTable();
+
+    function listProjectIncidents(project_id){
+        urldata = "{% url 'listProjectIncidents' %}";
+        $.ajax({
+            type: "GET",
+            cache: false,
+            data: {
+                project_id: project_id
+            },
+            url: urldata,
+            success: function (resp) {
+                $('.incident-card').html(resp);
+            }
+        });
+    }
+</script>
+
+    
+    
