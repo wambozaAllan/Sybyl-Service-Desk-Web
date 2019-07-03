@@ -1,6 +1,6 @@
 from django import forms
 from django.db import models
-from .models import Project, Milestone, Task, ProjectDocument, Priority, Status, ProjectTeamMember, ProjectTeam, Incident, ServiceLevelAgreement
+from .models import Project, Milestone, Task, ProjectDocument, Priority, Status, ProjectTeamMember, ProjectTeam, Incident, ServiceLevelAgreement, EscalationLevel
 from company_management.models import Company
 from crispy_forms.helper import FormHelper
 from crispy_forms.layout import Submit
@@ -89,6 +89,7 @@ class MilestoneUpdateForm(forms.ModelForm):
             'actual_enddate': forms.DateTimeInput(attrs={'type':'date', 'placeholder':'Select a date'}, format='%d/%m/%Y'),
             'description': forms.Textarea(attrs={'rows':2, 'cols':15})
         }
+
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.helper = FormHelper()
@@ -99,7 +100,7 @@ class MilestoneUpdateForm(forms.ModelForm):
 class TaskForm(forms.ModelForm):
     class Meta:
         model = Task
-        fields = ('name', 'description', 'project', 'milestone', 'start_date', 'end_date', 'status')
+        fields = ('name', 'description', 'project', 'milestone', 'start_date', 'end_date', 'actual_start_date', 'actual_end_date', 'status')
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -173,4 +174,12 @@ class ServiceLevelAgreementForm(forms.ModelForm):
     class Meta:
         model = ServiceLevelAgreement
         fields = ('name', 'project','description', 'response_time', 'resolution_time', 'resolution_duration', 'response_duration',)
+        widgets = {'name': forms.TextInput(attrs={'class': 'form-control input-flat'})}
+
+
+class EscalationLevelForm(forms.ModelForm):
+    class Meta:
+        model = EscalationLevel
+        fields = ('name', 'project','description', 'escalated_by', 'escalated_to', 
+                    'escalation_on', 'escalation_on_duration',)
         widgets = {'name': forms.TextInput(attrs={'class': 'form-control input-flat'})}

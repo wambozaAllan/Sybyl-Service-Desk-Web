@@ -659,8 +659,7 @@ def fetch_permissions_by_module(request):
 
     all_permission = Permission.objects.filter(content_type_id=int(module_id))
 
-    permission_obj = Permission.objects.filter(
-        content_type_id=int(module_id), group=int(grpid1))
+    permission_obj = Permission.objects.filter(content_type_id=int(module_id), group=int(grpid1))
 
     distinct_permissions = set(all_permission).difference(set(permission_obj))
 

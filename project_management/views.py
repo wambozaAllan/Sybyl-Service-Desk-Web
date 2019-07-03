@@ -19,7 +19,7 @@ from django.core import serializers
 
 from django.contrib.auth.decorators import user_passes_test, permission_required
 
-from .models import Project, Milestone, Task, ProjectDocument, Incident, Priority, Status, ProjectTeam, ProjectTeamMember, Role, ProjectForumMessages, ProjectForum, ProjectForumMessageReplies, ServiceLevelAgreement
+from .models import Project, Milestone, Task, ProjectDocument, Incident, Priority, Status, ProjectTeam, ProjectTeamMember, Role, ProjectForumMessages, ProjectForum, ProjectForumMessageReplies, ServiceLevelAgreement, IncidentComment, EscalationLevel
 from user_management.models import User
 from company_management.models import Company, CompanyCategory
 from .forms import CreateProjectForm, MilestoneForm, TaskForm, DocumentForm, ProjectUpdateForm, MilestoneUpdateForm, ProjectForm, IncidentForm
@@ -296,6 +296,17 @@ def validateMilestoneName(request):
     return JsonResponse(data)
 
 
+def check_milestone_status(request):
+    status_id = request.GET.get('status_id', None);
+    if Status.objects.filter(id=status_id).exists():
+        status = Status.objects.get(id=status_id)
+        data = {
+            "status_name": status.name
+        }
+
+        return JsonResponse(data)
+
+
 def save_milestone(request):
     """
     add milestone to database
@@ -307,8 +318,10 @@ def save_milestone(request):
     status_id = request.GET.get('status_id')
     start = request.GET.get('start_date')
     end = request.GET.get('end_date')
+    actual_start = request.GET.get('actual_start')
+    actual_end = request.GET.get('actual_end')
     creator = request.user.id
-    
+
     if status_id == "":
         status_id = None
 
@@ -322,6 +335,16 @@ def save_milestone(request):
     else:
         start = None
 
+    if actual_start != "null":
+        actual_start = datetime.datetime.strptime(actual_start, "%m/%d/%Y").strftime("%Y-%m-%d")
+    else:
+        actual_start = None
+
+    if actual_end != "null":
+        actual_end = datetime.datetime.strptime(actual_end, "%m/%d/%Y").strftime("%Y-%m-%d")
+    else:
+        actual_end = None
+
     if Milestone.objects.filter(name=name).exists():
         milestone = Milestone.objects.get(name=name)
         response_data = {
@@ -331,7 +354,7 @@ def save_milestone(request):
         }
     
     else:
-        milestone = Milestone(name=name, description=description, project_id=project_id, creator_id=creator, startdate=start, enddate=end, status_id=status_id )
+        milestone = Milestone(name=name, description=description, project_id=project_id, creator_id=creator, startdate=start, enddate=end, status_id=status_id, actual_startdate=actual_start, actual_enddate=actual_end )
         milestone.save()
 
         response_data ={
@@ -346,7 +369,7 @@ def save_milestone(request):
     )
     
 
-def update_project_milestone(request):
+def update_project_milestone(request, pk):
     """
     update project_milestone view
     """
@@ -354,9 +377,20 @@ def update_project_milestone(request):
     milestone_name = request.GET.get('milestone_name')
     project_id = request.GET.get('project_id')
     project_name = request.GET.get('project_name')
-
     template = loader.get_template('project_management/update_project_milestone.html')   
-    form = MilestoneUpdateForm(request.POST)
+
+    milestone = get_object_or_404(Milestone, pk=milestone_id)
+    
+    form = MilestoneUpdateForm(request.POST, instance=milestone)
+    if form.is_valid():
+        form.save()
+        context = {
+            'milestone_id': milestone_id,
+            'project_id': project_id
+        }
+        return render(request, 'project_management/list_project_milestones.html', context)
+
+
     context = {
         'form': form,
         'project_name': project_name,
@@ -366,6 +400,19 @@ def update_project_milestone(request):
     }
 
     return HttpResponse(template.render(context, request))
+
+
+class UpdateProjectMilestone(UpdateView):
+    model = Milestone
+    fields = ['name', 'status', 'description', 'startdate', 'enddate', 'actual_startdate', 'actual_enddate', ]
+    template_name = 'project_management/update_project_milestone.html'
+    success_url = reverse_lazy('listProjects')
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        milestone_id = int(self.request.GET['milestone_id'])
+        context['milestone_id'] = milestone_id
+        return context
 
 
 def list_project_milestones(request):
@@ -428,7 +475,6 @@ def add_milestone_specific_task(request):
     project_id = request.GET.get('project_id')
     milestone_id = request.GET.get('milestone_id')
 
-    print(f"project id is {project_id} and milestone id is {milestone_id}")
     project = Project.objects.get(id=project_id)
 
     milestone = Milestone.objects.get(id=milestone_id)
@@ -463,6 +509,12 @@ class MilestoneDetailView(DetailView):
 
     def get_queryset(self):
         return Milestone.objects.all()
+
+
+class DetailsProjectMilestone(DetailView):
+    model = Milestone
+    context_object_name = 'milestone'
+    template_name = 'project_management/details_project_milestones.html'
 
 
 class MilestoneUpdateView(UpdateView):
@@ -512,39 +564,79 @@ def populate_status_milestone(request):
 
     status = Status.objects.all()
     milestones = Milestone.objects.filter(project_id=project.id)
+    team = ProjectTeam.objects.get(project_id=project.id)
+    project_team = team.id
+    team_members = ProjectTeamMember.objects.filter(project_team=project_team)
+    member_list = list(team_members)
+    old = []
+
+    if len(member_list) != 0:
+        for member in member_list:
+            old_user = User.objects.get(id=member.member_id)
+            old.append(old_user)
 
     data = {
         'status': serializers.serialize("json", status),
-        'milestones': serializers.serialize("json", milestones)
+        'milestones': serializers.serialize("json", milestones),
+        'members': serializers.serialize('json', old)
     }
 
     return JsonResponse(data)
     
 
-def add_project_tasks(request):
+# def add_project_tasks(request):
+#     project_id = request.GET.get('project_id')
+#     print(f"{project_id} is ssdjkalsdfa")
+#     project = get_object_or_404(Project, pk=project_id)
+
+#     milestones_exist = Milestone.objects.filter(project_id=project.id).exists()
+#     all_statuses = Status.objects.all()
+#     if milestones_exist:
+#         milestones = Milestone.objects.filter(project_id=project.id)
+        
+#         data = {
+#             'milestones': serializers.serialize("json", milestones),
+#             'statuses': serializers.serialize("json", all_statuses)
+#         }
+        
+#         return JsonResponse(data)
+
+#     else:
+#         data = {
+#             'milestones': '',
+#             'statuses': serializers.serialize("json", all_statuses)
+#         }
+
+#         return JsonResponse(data)
+
+
+def add_milestone_tasks(request):
     project_id = request.GET.get('project_id')
+    print(f"{project_id} is ssdjkalsdfa")
+    project_name = request.GET.get('project_name')
+    
+    project = Project.objects.get(id=project_id)
 
-    project = get_object_or_404(Project, pk=project_id)
+    status = Status.objects.all()
+    milestones = Milestone.objects.filter(project_id=project.id)
+    team = ProjectTeam.objects.get(project_id=project.id)
+    project_team = team.id
+    team_members = ProjectTeamMember.objects.filter(project_team=project_team)
+    member_list = list(team_members)
+    old = []
 
-    milestones_exist = Milestone.objects.filter(project_id=project.id).exists()
-    all_statuses = Status.objects.all()
-    if milestones_exist:
-        milestones = Milestone.objects.filter(project_id=project.id)
-        
-        data = {
-            'milestones': serializers.serialize("json", milestones),
-            'statuses': serializers.serialize("json", all_statuses)
-        }
-        
-        return JsonResponse(data)
+    if len(member_list) != 0:
+        for member in member_list:
+            old_user = User.objects.get(id=member.member_id)
+            old.append(old_user)
 
-    else:
-        data = {
-            'milestones': '',
-            'statuses': serializers.serialize("json", all_statuses)
-        }
+    data = {
+        'statuses': serializers.serialize("json", status),
+        'milestones': serializers.serialize("json", milestones),
+        'members': serializers.serialize('json', old)
+    }
 
-        return JsonResponse(data)
+    return JsonResponse(data)
 
 
 def validateTaskName(request):
@@ -552,7 +644,6 @@ def validateTaskName(request):
     check if name already exists
     """
     task_name = request.GET.get('task_name', None)
-    print(task_name)
     data = {
         'is_taken': Task.objects.filter(name=task_name).exists()
     }
@@ -570,9 +661,20 @@ def save_project_tasks(request):
     description = request.GET.get('description')
     start_date = request.GET.get('start_date')
     end_date = request.GET.get('end_date')
+    actual_start = request.GET.get('actual_start')
+    actual_end = request.GET.get('actual_end')
     created_by = request.user.id
+    assigned_to = request.GET.get('assigned_to')
 
     response_data = {}
+
+    if assigned_to == "":
+        assigned_to = None
+    else:
+        team = ProjectTeam.objects.get(project_id= project_id)
+        team_member = ProjectTeamMember.objects.get(member_id=assigned_to, project_team=team)
+        
+        assigned_to = team_member.id
 
     if status_id == "":
         status_id = None
@@ -585,8 +687,18 @@ def save_project_tasks(request):
     else:
         start_date = None
 
+    if actual_start != "null":
+        actual_start = datetime.datetime.strptime(actual_start, "%m/%d/%Y").strftime("%Y-%m-%d")
+    else:
+        actual_start = None
+
+    if actual_end != "null":
+        actual_end = datetime.datetime.strptime(actual_end, "%m/%d/%Y").strftime("%Y-%m-%d")
+    else:
+        actual_end = None
+
     if end_date != "null":
-        end_date = datetime.datetime.strptime(end, "%m/%d/%Y").strftime("%Y-%m-%d")
+        end_date = datetime.datetime.strptime(end_date, "%m/%d/%Y").strftime("%Y-%m-%d")
     else:
         end_date = None
 
@@ -598,13 +710,12 @@ def save_project_tasks(request):
         response_data['error'] = "Name exists"
         response_data['state'] = False
     else:   
-        task = Task(name=name, description=description, status_id=status_id, milestone_id=milestone.id, project_id=project.id, start_date=start_date, end_date=end_date, creator_id=created_by)
+        task = Task(name=name, description=description, status_id=status_id, milestone_id=milestone.id, project_id=project.id, start_date=start_date, end_date=end_date, creator_id=created_by, assigned_to_id=assigned_to, actual_start_date=actual_start , actual_end_date=actual_end)
         task.save()
 
         response_data['success'] = "Task created successfully"
         response_data['name'] = task.name
         response_data['state'] = True
-
 
     return HttpResponse(
         json.dumps(response_data),
@@ -677,6 +788,46 @@ def save_milestone_tasks(request):
     )
 
 
+class UpdateProjectTask(UpdateView):
+    model = Task
+    fields = ['name', 'status', 'description', 'start_date', 'end_date', 'actual_start_date', 'actual_end_date', 'assigned_to']
+    template_name = 'project_management/update_project_task.html'
+    success_url = reverse_lazy('listProjects')
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        task_id = int(self.request.GET['task_id'])
+        project_id = int(self.request.GET['project_id'])
+        context['task_id'] = task_id
+
+        team = ProjectTeam.objects.get(project_id=project_id)
+        project_team = team.id
+        team_members = ProjectTeamMember.objects.filter(project_team=project_team)
+        member_list = list(team_members)
+        old = []
+
+        if len(member_list) != 0:
+            for member in member_list:
+                old_user = User.objects.get(id=member.member_id)
+                old.append(old_user)
+
+        context['members'] = old
+        return context
+
+
+class UpdateMilestoneTask(UpdateView):
+    model = Task
+    fields = ['name', 'status', 'description', 'start_date', 'end_date', 'actual_start_date', 'actual_end_date', ]
+    template_name = 'project_management/update_milestone_task.html'
+    success_url = reverse_lazy('listProjects')
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        task_id = int(self.request.GET['task_id'])
+        context['task_id'] = task_id
+        return context
+
+
 def tasklist_by_project(request):
     """
     Tasks allocated to project
@@ -707,6 +858,12 @@ def tasklist_by_project(request):
         }
 
         return HttpResponse(template.render(context, request))
+
+
+class DetailsProjectTask(DetailView):
+    model = Task
+    context_name = 'task'
+    template_name = 'project_management/details_project_tasks.html'
 
 
 class TaskListView(ListView):
@@ -780,7 +937,7 @@ def change_status_on_task(request, pk):
 # INCIDENTS
 class AddProjectIncident(LoginRequiredMixin, CreateView):
     model = Incident
-    fields = ['project', 'title', 'description', 'status', 'priority', 'assignee', 'document', 'image', 'task']
+    fields = ['project', 'title', 'description', 'status', 'priority', 'assignee', 'document', 'image', 'task', 'close_time']
     template_name = 'project_management/add_project_incident.html'
     success_url = reverse_lazy('listProjects')
 
@@ -876,13 +1033,13 @@ def list_project_incidents(request):
                 }
             return HttpResponse(template.render(context, request))
     else:
-            state = False
-            context={
-                    'project_id': project.id,
-                    'project_name': project.name,
-                    'state':state
-                }
-            return HttpResponse(template.render(context, request))
+        state = False
+        context={
+                'project_id': project.id,
+                'project_name': project.name,
+                'state':state
+            }
+        return HttpResponse(template.render(context, request))
 
 
 class ListIncidents(ListView):
@@ -902,11 +1059,33 @@ class DetailsIncident(DetailView):
     template_name = 'project_management/details_incident.html'
 
 
+class DetailsProjectIncident(DetailView):
+    model = Incident
+    context_object_name = 'incident'
+    template_name = 'project_management/details_project_incident.html'
+
+
 class UpdateIncident(UpdateView):
     model = Incident
     fields = ['project', 'title', 'description', 'document', 'image', 'status', 'priority', 'assignee']
     template_name = 'project_management/update_incident.html'
     success_url = reverse_lazy('listIncidents')
+
+
+class UpdateProjectIncident(UpdateView):
+    model = Incident
+    fields = ['title', 'description', 'document', 'image', 'status', 'priority', 'assignee', 'task', 'resolution_time']
+    template_name = 'project_management/update_project_incident.html'
+    success_url = reverse_lazy('listIncidents')
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        incident_id = int(self.request.GET['incident_id'])
+        context['incident_id'] = incident_id
+        return context
+
+    # def get_success_url(self):
+    #     return reverse_lazy('listProjectIncidents', kwargs={'pk': self.object.project_id})
 
 
 def get_team_members(request):
@@ -1038,6 +1217,7 @@ def validatePriorityName(request):
     return JsonResponse(data)
 
 
+# STATUSES
 class ListAllStatuses(ListView):
     template_name = 'project_management/list_all_statuses.html'
     context_object_name = 'list_status'
@@ -1127,7 +1307,7 @@ def ValidateRoleName(request):
     return JsonResponse(data)
 
 
-# PROJECT LIST
+# PROJECT LIST    
 def addProject(request):
     if request.method == 'POST':
         project_form = ProjectForm(request.POST, request.FILES)
@@ -1158,27 +1338,28 @@ def addProject(request):
 
             project.save()
 
-            project_id = Project.objects.get(pk=project.id)
+            # project_id = Project.objects.get(pk=project.id)
 
-            if project:
-                # save project document information
-                form = request.POST.copy()
-                title = form.get('title')
-                description = form.get('description')
-                creator = request.user.id
-                user = User.objects.get(id=creator)
-                document = request.FILES['document']
-                doc = ProjectDocument(title=title, description=description, project=project_id, document=document, created_by=user)
-                doc.save()
-
+            # if project:
+            #     # save project document information
+            #     form = request.POST.copy()
+            #     if form.is_valid():
+            #         title = form.get('title')
+            #         description = form.get('description')
+            #         creator = request.user.id
+            #         user = User.objects.get(id=creator)
+            #         document = request.FILES['document']
+            #         doc = ProjectDocument(title=title, description=description, project=project_id, document=document, created_by=user)
+            #         doc.save()
+                
             return redirect('listProjects')
     else:
         project_form = ProjectForm()
-        document_form = DocumentForm()
+        # document_form = DocumentForm()
 
     return render(request, 'project_management/add_project.html', {
             'project_form': project_form,
-            'document_form': document_form
+            # 'document_form': document_form
     })
 
 
@@ -1238,49 +1419,6 @@ def validateProjectName(request):
         'is_taken': Project.objects.filter(name=project_name).exists()
     }
     return JsonResponse(data)
-
-
-def format_project_code(request):
-    companies = request.GET.get('companies')
-    company_values = json.loads(companies)
-    empty_list = []
-    category_list = []
-    client_company = []
-    company_name = []
-
-    for val in company_values:
-        company = Company.objects.get(id=val)
-        empty_list.append(company)
-
-    for c in empty_list:
-        category = CompanyCategory.objects.get(id=c.category_id)
-        category_list.append(category)
-
-    for v in category_list:
-        if v.category_value == 'Client':
-            for val in company_values:
-                new_company = Company.objects.filter(id=val, category=v.id)
-                lst = list(new_company)
-                client_company.append(lst)
-
-    # returning client company
-    for final in client_company:
-        if final != []:
-            for check in final:
-                company_name.append(check.name)
-
-            if company_name:
-                data = {
-                    "name": company_name[0]
-                }
-
-                return JsonResponse(data)
-    else:
-        data = {
-            "name": ""
-        }
-
-        return JsonResponse(data)
 
 
 # PROJECT TEAMS
@@ -1692,12 +1830,32 @@ def delete_forum_reply(request):
 
     return HttpResponse(template.render(context, request))
 
-class ProjectSLAList(ListView):
-    template_name = 'project_management/project_sla_list.html'
-    context_object_name = 'sla'
 
-    def get_queryset(self):
-        return Project.objects.all()
+def project_sla_list(request):
+    projectid = request.GET.get('projectid')
+    projectname = request.GET.get('projectname')
+
+    template = loader.get_template('project_management/project_sla_list.html')
+    if ServiceLevelAgreement.objects.filter(project_id=projectid).exists():
+        sla_obj = ServiceLevelAgreement.objects.filter(project_id=int(projectid)).first()
+        status = True
+    else:
+        status = False
+
+    if status:
+        context = {
+            'status': status,
+            'sla_obj': sla_obj
+        }
+    else:
+        context = {
+            'status': status,
+            'projectid':projectid,
+            'projectname':projectname
+        }
+
+    return HttpResponse(template.render(context, request))
+
 
 class AddSla(CreateView):
     model = ServiceLevelAgreement
@@ -1708,10 +1866,279 @@ class AddSla(CreateView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        # comp_id = self.request.session['company_id']
-
-        # comp_branches = Branch.objects.filter(company=comp_id)
-        # comp_department = Department.objects.filter(company=comp_id)
-        # context['branches'] = comp_branches
-        # context['dept'] = comp_department
+        pro_id = self.request.GET.get('pro_id')
+        pro_name = self.request.GET.get('pro_name')
+        context['pro_id'] = pro_id
+        context['pro_name'] = pro_name
         return context
+
+
+def save_sla(request):
+    sla_name = request.GET.get('sla_name')
+    id_description = request.GET.get('id_description')
+    id_response_time = request.GET.get('id_response_time')
+    id_resolution_time = request.GET.get('id_resolution_time')
+    settingtoggleresp = request.GET.get('settingtoggleresp')
+    settingtoggleresoln = request.GET.get('settingtoggleresoln')
+    id_project = request.GET.get('id_project')
+
+    obj = ServiceLevelAgreement(name=sla_name, project_id=int(id_project), description=id_description, response_time=int(id_response_time),
+               resolution_time=int(id_resolution_time), response_duration=settingtoggleresp, resolution_duration=settingtoggleresoln)
+    obj.save()
+
+    slas = ServiceLevelAgreement.objects.filter(project_id=int(id_project)).first()
+    status = True
+    template = loader.get_template('project_management/project_sla_list.html')
+    context = {
+        'status': status,
+        'sla_obj': slas
+    }
+
+    return HttpResponse(template.render(context, request))
+
+
+class UpdateSLA(UpdateView):
+    model = ServiceLevelAgreement
+    fields = ['name', 'project','description', 'response_time', 'resolution_time', 'resolution_duration', 'response_duration']
+    template_name = 'project_management/update_sla.html'
+    success_url = reverse_lazy('projectsla')
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        sla_id = self.kwargs['pk']
+        response_time = self.get_object().response_time
+        resolution_time = self.get_object().resolution_time
+        resolution_duration = self.get_object().resolution_duration
+        response_duration = self.get_object().response_duration
+        context['sla_id'] = sla_id
+        context['response_time'] = response_time
+        context['resolution_time'] = resolution_time
+        context['resolution_duration'] = resolution_duration
+        context['response_duration'] = response_duration
+        return context
+
+
+def save_sla_update(request):
+    sla_name = request.GET.get('sla_name')
+    id_description = request.GET.get('id_description')
+    id_response_time = request.GET.get('id_response_time')
+    id_resolution_time = request.GET.get('id_resolution_time')
+    settingtoggleresp = request.GET.get('settingtoggleresp')
+    settingtoggleresoln = request.GET.get('settingtoggleresoln')
+    id_project = request.GET.get('id_project')
+    sla_id = request.GET.get('sla_id')
+
+    ServiceLevelAgreement.objects.filter(pk=int(sla_id)).update(name=sla_name, description=id_description, response_time=id_response_time,
+        resolution_time=id_resolution_time, resolution_duration=settingtoggleresoln, response_duration=settingtoggleresp,  project_id=int(id_project))
+    
+    slas = ServiceLevelAgreement.objects.filter(project_id=int(id_project)).first()
+    status = True
+    template = loader.get_template('project_management/project_sla_list.html')
+    context = {
+        'status': status,
+        'sla_obj': slas
+    } 
+
+    return HttpResponse(template.render(context, request))
+
+class ProjectEscalationList(ListView):
+    template_name = 'project_management/project_escalation_list.html'
+    context_object_name = 'esc_levels'
+    
+
+    def get_queryset(self):
+        id_project = int(self.request.GET['projectid'])
+        return EscalationLevel.objects.filter(project_id=int(id_project)).annotate(num_esc=Count('escalated_to'))
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        pro_id = self.request.GET.get('projectid')
+        pro_name = self.request.GET.get('projectname')
+        context['projectid'] = pro_id
+        context['projectname'] = pro_name
+        return context
+
+
+class AddEscalation(CreateView):
+    model = EscalationLevel
+    fields = ['name', 'project','description', 'escalated_by', 'escalated_to', 
+                    'escalation_on', 'escalation_on_duration']
+
+    template_name = 'project_management/add_escalation_level.html'
+    success_url = reverse_lazy('tabProjectEscalation')
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        pro_id = self.request.GET.get('pro_id')
+        pro_name = self.request.GET.get('pro_name')
+        context['projectid'] = pro_id
+        context['projectname'] = pro_name
+        return context
+
+
+def save_escation_level(request):
+    esc_name = request.GET.get('esc_name')
+    id_description = request.GET.get('id_description')
+    id_escalate_on = request.GET.get('id_escalate_on')
+    escsettingtogglebtn = request.GET.get('escsettingtogglebtn')
+    id_project = int(request.GET.get('id_project'))
+    id_escalated_to = request.GET.get('id_escalated_to')
+    project_name = request.GET.get('pro_name')
+    uid = request.user.id
+
+    obj = EscalationLevel(name=esc_name, project_id=id_project, description=id_description, escalated_by_id=uid, escalation_on=id_escalate_on, escalation_on_duration=escsettingtogglebtn)
+    obj.save()
+
+    for i in json.loads(id_escalated_to): 
+        if obj.id is not None:
+            escalation = EscalationLevel.objects.get(id=obj.id)
+            user_escalated_to = User.objects.get(id=int(i))
+            escalation.escalated_to.add(user_escalated_to)
+
+    esc_levels = EscalationLevel.objects.filter(project_id=int(id_project)).annotate(num_esc=Count('escalated_to'))
+    template = loader.get_template('project_management/project_escalation_list.html')
+    context = {
+        'esc_levels': esc_levels,
+        'projectid': id_project,
+        'projectname': project_name,
+    }
+
+    return HttpResponse(template.render(context, request))
+
+
+class UpdateEscalationLevel(UpdateView):
+    model = EscalationLevel
+    fields = ['name', 'project','description', 'escalated_by', 'escalated_to', 'escalation_on', 'escalation_on_duration']
+    template_name = 'project_management/update_escalation.html'
+    success_url = reverse_lazy('tabProjectEscalation')
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        esc_id = self.kwargs['pk']
+        escalation_on = self.get_object().escalation_on
+        escalation_on_duration = self.get_object().escalation_on_duration
+        desc = self.get_object().description
+        context['esc_id'] = esc_id
+        context['escalation_on'] = escalation_on
+        context['escalation_on_duration'] = escalation_on_duration
+        context['desc'] = desc
+        return context
+
+
+def update_escation_level_update(request):
+    esc_name = request.GET.get('esc_name')
+    id_description = request.GET.get('id_description')
+    id_escalate_on = request.GET.get('id_escalate_on')
+    escsettingtogglebtn = request.GET.get('escsettingtogglebtn')
+    id_project = int(request.GET.get('id_project'))
+    esc_id = int(request.GET.get('esc_id'))
+    pro_name = request.GET.get('pro_name')
+
+    uid = request.user.id
+    
+    EscalationLevel.objects.filter(pk=int(esc_id)).update(name=esc_name, project_id=id_project, description=id_description, escalation_on=id_escalate_on, escalation_on_duration=escsettingtogglebtn)
+
+    esc_levels = EscalationLevel.objects.filter(project_id=id_project).annotate(num_esc=Count('escalated_to'))
+    template = loader.get_template('project_management/project_escalation_list.html')
+    context = {
+        'esc_levels': esc_levels,
+        'projectid': id_project,
+        'projectname': pro_name,
+    }
+
+    return HttpResponse(template.render(context, request))
+
+
+def manage_escalated_users(request):
+    esc_id = request.GET.get('esc_id')
+    esc_name = request.GET.get('esc_name')
+    pro_name = request.GET.get('pro_name')
+    pro_id = request.GET.get('pro_id')
+
+    esc_users = User.objects.filter(escalationlevel=int(esc_id))
+    
+    template = loader.get_template('project_management/list_escalated_users.html')
+    context = {
+        'esc_users': esc_users,
+        'esc_id': esc_id,
+        'esc_name': esc_name,
+        'pro_name': pro_name,
+        'pro_id': pro_id,
+    }
+
+    return HttpResponse(template.render(context, request))
+
+
+def de_escalate_user(request):
+    uid = request.GET.get('uid')
+    esc_id = request.GET.get('esc_id')
+    esc_name = request.GET.get('esc_name')
+    pro_id = request.GET.get('pro_id')
+    pro_name = request.GET.get('pro_name')
+
+    esc_id2 = EscalationLevel.objects.get(id=int(esc_id))
+    uid2 = User.objects.get(id=int(uid))
+    esc_id2.escalated_to.remove(uid2)
+
+    esc_users = User.objects.filter(escalationlevel=int(esc_id))
+    
+    template = loader.get_template('project_management/list_escalated_users.html')
+    context = {
+        'esc_users': esc_users,
+        'esc_id': esc_id,
+        'esc_name': esc_name,
+        'pro_name': pro_name,
+        'pro_id': pro_id,
+    }
+
+    return HttpResponse(template.render(context, request))
+
+def escalate_user(request):
+    uid = request.GET.get('uid')
+    esc_id = request.GET.get('esc_id')
+    esc_name = request.GET.get('esc_name')
+    pro_id = request.GET.get('pro_id')
+    pro_name = request.GET.get('pro_name')
+    company_id = request.session['company_id']
+
+    all_company_users = User.objects.filter(company_id=int(company_id))
+    escalated_users = User.objects.filter(escalationlevel=int(esc_id))
+    print('fffff')
+    print(escalated_users)
+    distinct_users = set(all_company_users).difference(set(escalated_users))
+
+    template = loader.get_template('project_management/escalate_new_user.html')
+    context = {
+        'esc_users': distinct_users,
+        'esc_id': esc_id,
+        'esc_name': esc_name,
+        'pro_name': pro_name,
+        'pro_id': pro_id,
+    }
+
+    return HttpResponse(template.render(context, request))
+
+
+def save_escalated_user(request):
+    uid = request.GET.get('uid')
+    esc_id = request.GET.get('esc_id')
+    esc_name = request.GET.get('esc_name')
+    pro_id = request.GET.get('pro_id')
+    pro_name = request.GET.get('pro_name')
+
+    esc_id2 = EscalationLevel.objects.get(id=int(esc_id))
+    uid2 = User.objects.get(id=int(uid))
+    esc_id2.escalated_to.add(uid2)
+
+    esc_users = User.objects.filter(escalationlevel=int(esc_id))
+    
+    template = loader.get_template('project_management/list_escalated_users.html')
+    context = {
+        'esc_users': esc_users,
+        'esc_id': esc_id,
+        'esc_name': esc_name,
+        'pro_name': pro_name,
+        'pro_id': pro_id,
+    }
+
+    return HttpResponse(template.render(context, request))

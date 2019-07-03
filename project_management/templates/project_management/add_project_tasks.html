@@ -8,7 +8,7 @@
         <form class="form-horizontal" method='GET' id="taskForm">
             {% csrf_token %}
             <div class="row">
-                <div class="col-6">
+                <div class="col-6" style="display: none;">
                     <label> Project </label>
                     <input type="text" value="{{ project_name }}" id="id_project_name" class="form-control" style="margin-left: 0;"/> 
                     <input type='text' value="{{ project_id }}" class="form-control" style="display: none;" />
@@ -18,22 +18,32 @@
                     <label> Milestone<span class="asteriskField">*</span> </label>
                     <select id='id_milestone' class="select form-control" name="milestone" required></select>
                 </div>
-            </div> 
-            
-            <div class="row">
                 <div class="col-6">
                     <label>Task Name <span class="asteriskField">*</span></label>
-                    <input type="text" value="" class="form-control" required id="id_name"/> 
+                    <input type="text" value="" class="form-control" required id="id_name" placeholder="name"/> 
                     <medium id="validate_task_name" class="text-muted hidden">
                         <font color="red">
                             Task Name Already Exists!
                         </font>
                     </medium>
                 </div>
+            </div> 
             
+            <div class="row">
                 <div class="col-6">
                     <label> Status<span class="asteriskField">*</span> </label>
                     <select id='id_status' class="select form-control" name="status"></select>
+                </div>
+                <div class="col-6">
+                    <div id="div_id_assigned_to" class="form-group">
+                        <label for="id_assigned_to" class="col-form-label">
+                            Assigned to
+                        </label>
+                        <div class="">
+                            <select name="assigned_to" class="select form-control" id="id_assigned_to">
+                            </select>
+                        </div>
+                    </div>
                 </div>
             </div>
             
@@ -41,47 +51,80 @@
                 <div class="col-6">
                     <label> Start Date </label>
                     <input type="" value="" class="form-control" id="id_startDate"/> 
+                    <medium id="start_date" class="text-muted hidden">
+                        <font color="red">
+                            Start date has to be less or equal to end date
+                        </font>
+                    </medium>
                 </div> 
             
                 <div class="col-6">
                     <label> End Date </label>
-                    <input type="" value="" class="form-control" id="id_endDate" /> 
+                    <input type="" value="" class="form-control" id="id_endDate" />
+                    <medium id="end_date" class="text-muted hidden">
+                        <font color="red">
+                            End date has to be greater or equal to start date
+                        </font>
+                    </medium>  
                 </div> 
+
+                <div class="col-6 actual">
+                    <label class="col-form-label  requiredField">Actual Start Date<span
+                        class="asteriskField">*</span></label>
+                    <input type="" id='id_actual_start_date' class="form-control" value="" />
+                    <medium id="actual_start_date" class="text-muted hidden">
+                        <font color="red">
+                            Actual start date has to be less or equal to actual end date
+                        </font>
+                    </medium>
+                    <medium id="equal_start" class="text-muted hidden">
+                        <font color="red">
+                            Actual start date has to be greater or equal to start date
+                        </font>
+                    </medium>
+                </div>
+
+                <div class="col-6 actual">
+                    <label class="col-form-label  requiredField">Actual End Date<span
+                        class="asteriskField">*</span></label>
+                    <input type="" id='id_actual_end_date' class="form-control" value=""  />
+                    <medium id="actual_end_date" class="text-muted hidden">
+                        <font color="red">
+                            Actual end date has to be greater or equal to actual start date
+                        </font>
+                    </medium>
+                </div>
             </div>
-            
             <div class="row">
-                <div class="col-12">
+                <div class="col-6">
                     <label>Description</label>
                     <textarea class="form-control" id="id_description"></textarea>
                 </div>
-            </div>
-            <br>
-            <div class="row">
-                <div class="col-12">
+                <div class="col-6">
                     <button type="submit" value="Create Task" class="form-control btn btn-success pull-right" id="btnAddtask">
                         <i class="fa fa-fw fa-lg fa-save"></i>Add Task
                     </button>
-                </div>   
+                </div>
             </div>
-            
-            
-
+            <br>
         </form>
     </div>
 </div>
 
 </div>
 
-
 <script>
+    // FORMATTING DATES
     $('#id_startDate').datepicker({
         format: "mm/dd/yyyy",
-        autoclose: true
+        autoclose: true,
+        clearBtn: true
     });
 
     $('#id_endDate').datepicker({
         format: "mm/dd/yyyy",
-        autoclose: true
+        autoclose: true,
+        clearBtn: true
     });
 
     $("#id_startDate").attr("placeholder", "mm/dd/yyyy");
@@ -93,6 +136,143 @@
 
     $('#id_endDate').on('focus', function(){
         var date = $(this).blur();
+    });
+
+    $('#id_actual_start_date').datepicker({
+        format: "mm/dd/yyyy",
+        autoclose: true,
+        clearBtn: true
+    });
+
+    $('#id_actual_end_date').datepicker({
+        format: "mm/dd/yyyy",
+        autoclose: true,
+        clearBtn: true
+    });
+
+    $('#id_actual_start_date').on('focus', function(){
+        var date = $(this).blur();
+    });
+
+    $('#id_actual_end_date').on('focus', function(){
+        var date = $(this).blur();
+    });
+
+    $("#id_actual_start_date").attr("placeholder", "mm/dd/yyyy");
+    $("#id_actual_end_date").attr("placeholder", "mm/dd/yyyy");
+
+    // start date
+    $('#id_startDate').on('change', function(){
+        let startDate= document.getElementById('id_startDate').value;
+        let endDate= document.getElementById('id_endDate').value;
+        let actualStartDate= document.getElementById('id_actual_start_date').value;
+
+        let sDate = new Date(startDate);
+        let eDate = new Date(endDate);
+        let actualSDate = new Date(actualStartDate);
+
+        if(startDate != '' && endDate != '' && sDate > eDate){
+            document.getElementById("btnAddMiletsone").disabled = true;
+            document.getElementById('id_startDate').style.borderColor = "red";
+            $('#start_date').show();
+        }
+        else if(startDate != '' && endDate != '' && sDate <= eDate){
+            document.getElementById("btnAddMiletsone").disabled = false;
+            document.getElementById('id_startDate').style.borderColor = "";
+            $('#start_date').hide();
+            document.getElementById('id_endDate').style.borderColor = "";
+            $('#end_date').hide();
+        }
+
+        if(actualStartDate != '' && startDate != '' && actualSDate < sDate ){
+            document.getElementById('id_actual_start_date').style.borderColor = "red";
+            $('#equal_start').show();
+        }
+        else if(actualStartDate != '' && startDate != '' && actualSDate >= sDate ){
+            document.getElementById('id_actual_start_date').style.borderColor = "";
+            $('#equal_start').hide();
+        }
+    });
+
+    // end date
+    $('#id_endDate').on('change', function(){
+        let startDate= document.getElementById('id_startDate').value;
+        let endDate= document.getElementById('id_endDate').value;
+        let sDate = new Date(startDate);
+        let eDate = new Date(endDate);
+
+        if(startDate != '' && endDate != '' && sDate > eDate){
+            document.getElementById("btnAddMiletsone").disabled = true;
+            document.getElementById('id_endDate').style.borderColor = "red";
+            $('#end_date').show();
+        }
+        else if(startDate != '' && endDate != '' && sDate <= eDate){
+            document.getElementById("btnAddMiletsone").disabled = false;
+            document.getElementById('id_endDate').style.borderColor = "";
+            $('#end_date').hide();
+            document.getElementById('id_startDate').style.borderColor = "";
+            $('#start_date').hide();
+        }
+    });
+
+    // actual start date
+    $('#id_actual_start_date').on('change', function(){
+        var actualStartDate= document.getElementById('id_actual_start_date').value;
+        var actualEndDate= document.getElementById('id_actual_end_date').value;
+        var startDate= document.getElementById('id_startDate').value;
+        var endDate= document.getElementById('id_endDate').value;
+
+        var actualSDate = new Date(actualStartDate);
+        var actualEDate = new Date(actualEndDate);
+        var sDate = new Date(startDate);
+
+        if(actualStartDate != '' && actualEndDate != '' && actualSDate > actualEDate){
+            document.getElementById("btnAddMiletsone").disabled = true;
+            document.getElementById('id_actual_start_date').style.borderColor = "red";
+            $('#actual_start_date').show();
+        }
+        else if(actualStartDate != '' && actualEndDate != '' && actualSDate <= actualEDate){
+            document.getElementById("btnAddMiletsone").disabled = false;
+            document.getElementById('id_actual_start_date').style.borderColor = "";
+            $('#actual_start_date').hide();
+            document.getElementById('id_actual_end_date').style.borderColor = "";
+            $('#actual_end_date').hide();
+        }
+        
+        if(actualStartDate != '' && startDate != '' && actualSDate < sDate ){
+            document.getElementById('id_actual_start_date').style.borderColor = "red";
+            $('#equal_start').show();
+        }
+        else if(actualStartDate != '' && startDate != '' && actualSDate >= sDate ){
+            document.getElementById('id_actual_start_date').style.borderColor = "";
+            $('#equal_start').hide();
+        }
+    });
+
+    // actual end date
+    $('#id_actual_end_date').on('change', function(){
+        let actualStartDate= document.getElementById('id_actual_start_date').value;
+        let actualEndDate= document.getElementById('id_actual_end_date').value;
+        let startDate= document.getElementById('id_startDate').value;
+        let endDate= document.getElementById('id_endDate').value;
+
+        let actualSDate = new Date(actualStartDate);
+        let actualEDate = new Date(actualEndDate);
+        let sDate = new Date(startDate);
+        let eDate = new Date(endDate);
+
+        if(actualStartDate != '' && actualEndDate != '' && actualSDate > actualEDate){
+            document.getElementById("btnAddMiletsone").disabled = true;
+            document.getElementById('id_actual_end_date').style.borderColor = "red";
+            $('#actual_end_date').show();
+        }
+        else if(actualStartDate != '' && actualEndDate != '' && actualSDate <= actualEDate){
+            document.getElementById("btnAddMiletsone").disabled = false;
+            document.getElementById('id_actual_start_date').style.borderColor = "";
+            $('#actual_start_date').hide();
+            document.getElementById('id_actual_end_date').style.borderColor = "";
+            $('#actual_end_date').hide();
+        }
     });
 
     $('#id_project_name').attr( 'readOnly' , 'true' );
@@ -107,9 +287,17 @@
         size: 3
     });
 
+    $('#id_name').attr('autocomplete', 'off');
+
+    // $('#id_assigned_to').attr('data-live-search', "true"); 
+    // $('#id_assigned_to').selectpicker({
+    //     size: 3
+    // });
+
     $(function(){
         var project_id = $('#id_project').val();
         var project_name =$('#id_project_name').val();
+        $(".actual").css("display", "none");
 
         $.ajax({
             type:"GET",
@@ -121,7 +309,6 @@
             },
             dataType: 'json',
             success: function (data) {
-
                 let newMilestone = JSON.parse(data.milestones);
                 let actual = '';
                 $("#id_milestone").html("");
@@ -141,6 +328,16 @@
                     
                     $('#id_status').append('<option value="' + assign["pk"] + '">' + assign["fields"]["name"] + '</option>');
                     $("#id_status").selectpicker('refresh');
+                }
+
+                let members = JSON.parse(data.members);
+                let member = '';
+                $("#id_assigned_to").prepend('<option value=""> -----Assign Member----- </option>');
+                for(i=0; i<members.length; i++){
+                    member = members[i];
+                    
+                    $('#id_assigned_to').append('<option value="' + member["pk"] + '">' + member["fields"]["first_name"] +" "+ member['fields']['last_name']+ '</option>');
+                    $("#id_assigned_to").selectpicker('refresh');
                 }
 
             }
@@ -172,6 +369,30 @@
         });
     });
 
+    $('#id_status').on('change', function(){
+        var statusId = $(this).val();
+
+        $.ajax({
+            url: "{% url 'checkMilestoneStatus' %}",
+            data: {
+                status_id: statusId
+            },
+            dataType: 'json',
+            cache: false,
+            success: function(data){
+                var statusName = data.status_name;
+                if (statusName === "Open" || statusName === "Onhold"){
+                    $(".actual").css("display", "none");
+                }
+                else {
+                    $(".actual").css("display", "inline");
+                }
+
+            }
+        })
+    });
+
+
     $('#taskForm').on('submit', function(){
         event.preventDefault();
         addTask();
@@ -186,12 +407,25 @@
         let description = $('#id_description').val();
         let milestone_id = $('#id_milestone').val();
         let status_id = $('#id_status').val();
+        let assigned_to = $('#id_assigned_to').val();
+        let actual_start = $('#id_actual_start_date').val();
+        let actual_end = $('#id_actual_end_date').val();
+
+        console.log(assigned_to+" here we go ");
 
         if(start.length < 1){
             start = 'null';
         }
         if(end.length < 1){
             end = 'null';
+        }
+
+        if(actual_start.length < 1){
+            actual_start = 'null';
+        }
+
+        if(actual_end.length < 1){
+            actual_end = 'null';
         }
     
         urlData = "{% url 'saveProjectTask'%}"
@@ -206,9 +440,12 @@
                 name: name,
                 start_date: start,
                 end_date: end,
+                actual_start: actual_start,
+                actual_end: actual_end,
                 description: description,
                 milestone: milestone_id,
-                status_id:status_id
+                status_id:status_id,
+                assigned_to: assigned_to,
             },
             success: function(response_data){
                 $('.close-dialog').click();

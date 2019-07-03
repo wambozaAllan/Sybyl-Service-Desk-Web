@@ -27,41 +27,44 @@
                     <th>Title</th>
                     <th>Status</th>
                     <th>Priority</th>
-                    <th>Color code</th>
                     <th>Creator</th>
                     <th>Assignee</th>
+                    <th>Elapsed time</th>
                     <th>Action</th>
                 </tr>
             </thead>
             <tbody>
                 {% for incident in incidents %}
-                <tr>
-                    <td>{{ incident.title }}</td>
-                    <td>{{ incident.status }}</td>
-                    <td>{{ incident.priority}}</td>
+                <tr id="{{incident.id}}" data-created="{{ incident.created_time|date }}">
                     <td>
-                        <input type="text" style="background-color: {{ incident.priority.color }}; border: 0;"></input>
+                        <a href="{% url 'detailsProjectIncident' incident.id %}" style="color:black;">
+                            {{ incident.title }}</a>
                     </td>
+                    <td>{{ incident.status }}</td>
+                    <td><input id="incident-priority" value="{{ incident.priority}}" type="text" style="background-color: {{ incident.priority.color }}; border: 0; color:white;"></td>
+                   
                     <td>{{ incident.creator }}</td>
 
                     <td class="text-center">
                         <span class="badge badge-pill badge-success">{{ incident.assigned }}</span>
                     </td>
-
+                    <td id="elapsed{{ incident.id }}"></td>
                     <td>
                         <button class="btn btn-outline-success btn-sm"
-                            onclick="editIncident('{{ incident.id }}', '{{ incident.name }}')">
+                            onclick="editIncident('{{ incident.id }}', '{{ incident.title }}', '{{ project_id }}')">
                             <i title="Manage Incident" class="fa fa-edit"></i>
                         </button>
 
-                        <button onclick="deleteIncident('{{ incident.id }}', '{{ incident.name }}')"
+                        <button onclick="deleteIncident('{{ incident.id }}', '{{ incident.title }}')"
                             class="btn btn-outline-danger btn-sm" type="button">
                             <i title="Delete Incident" class="fa fa-remove"></i>
                         </button>
+                        
                     </td>
                 </tr>
+                <input type="text" value="{{ incident.created_time|date }}" style="display: none;" class='id_elapsed' />
+                
                 {% endfor %}
-            </tbody>
         </table>
     </div>
     <br />
@@ -91,6 +94,15 @@
 </div>
 <!-- END The Modal -->
 
+<style>
+    #incident-priority{
+        padding: 5px;
+        text-transform: uppercase;
+        text-align: center;
+        border-radius: 5px;
+        width: 60%;
+    }
+</style>
 
 <script>
     $('#table_incidents').DataTable();
@@ -117,6 +129,7 @@
         });
     });
 
+
     $('#toggleCheckbox').on('change', function () {
         if ($(this).is(":checked")) {
             $(".docs").css("display", "flex");
@@ -127,6 +140,91 @@
 
     });
 
+    function editIncident(incident_id, incident_title, project_id) {
 
+        url = "{% url 'updateProjectIncident' 999%}".replace(999, incident_id);
+        $.ajax({
+            url: url,
+            type: "GET",
+            cache: false,
+            data: {
+                incident_id: incident_id,
+                incident_title: incident_title,
+                project_id: project_id
+            },
+            success: function (resp) {
+                $.confirm({
+                    title: '<h3>Edit Incident: <strong>'+incident_title +'</strong></h3>',
+                    content: '' + resp,
+                    type: 'blue',
+                    theme: 'material',
+                    typeAnimated: true,
+                    boxWidth: '75%',
+                    useBootstrap: false,
+                    closeIcon: true,
+                    buttons: {
+                        close: {
+                            text: 'Close',
+                            btnClass: 'btn-gray',
+                            action: function () {
+                            }
+                        }
+                    }
+                });
+            }
+        });
+    }
+
+
+    function dhm(ms){
+        var days = Math.floor(ms / (24*60*60*1000));
+        var daysms=ms % (24*60*60*1000);
+        var hours = Math.floor((daysms)/(60*60*1000));
+        var hoursms=ms % (60*60*1000);
+        var minutes = Math.floor((hoursms)/(60*1000));
+        var minutesms=ms % (60*1000);
+        var sec = Math.floor((minutesms)/(1000));
+        
+        if (days == 1){
+            var day = days;
+            return day+" day";
+        }
+        if (days > 1){
+            var day = days;   
+            return day +" days";
+        }
+        if (days < 1){
+            if (hours < 1){
+                if (minutes >= 60){
+                    var hour_min = hours;
+                    return hour_min + " hour";
+                }
+                else if (minutes < 60){
+                    var minimum = minutes;
+                    var second = seconds;
+                    return minimum +" mins " + second + " seconds";
+                }
+            }
+            else if(hours >=1 ){
+                var hr = hours;
+                var min = minutes;
+                return hr+" h " + min + " mins";
+            }
+            
+        }
+    }
+    
+    // setting time for incident delay
+    $('#table_incidents tr').each(function(){
+        var row_id = this.id;
+        var created_time = $(this).data('created'); 
+
+        var created = Date.parse(created_time)
+        var date_today =  new Date();
+        var elapsed = date_today - created;
+
+        var changed = dhm(elapsed)
+        $('#elapsed'+row_id).html(changed);
+    });    
 
 </script>

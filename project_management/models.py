@@ -1,6 +1,8 @@
+import datetime
+from datetime import date, datetime
 from django.db import models
 from django.conf import settings
-from datetime import datetime, date
+from django.utils import timezone
 
 from company_management.models import Company
 from user_management.models import User, UserTeamMember
@@ -230,8 +232,8 @@ class Milestone(models.Model):
         status_complete = Status.objects.get(id=4)
         status_terminate = Status.objects.get(id=3)
 
-        task_terminate = Task.objects.filter(project_id=self.id, status=status_terminate.id).count()
-        task_complete = Task.objects.filter(project_id=self.id, status=status_complete.id).count()
+        task_terminate = Task.objects.filter(milestone_id=self.id, status=status_terminate.id).count()
+        task_complete = Task.objects.filter(milestone_id=self.id, status=status_complete.id).count()
 
         completed_tasks = task_terminate + task_complete
         total_tasks         = Task.objects.filter(milestone_id=self.id).count()
@@ -271,6 +273,7 @@ class Task(models.Model):
     milestone = models.ForeignKey(Milestone, on_delete=models.SET_NULL, null=True, blank=True)
     status = models.ForeignKey(Status, on_delete=models.SET_NULL, null=True, blank=True)
     creator = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, blank=True, related_name='task_creator')
+    assigned_to = models.ForeignKey(ProjectTeamMember, on_delete=models.SET_NULL, null=True, blank=True)
     start_date = models.DateField(null=True, blank=True)
     end_date = models.DateField(null=True, blank=True)
     actual_start_date = models.DateField(null=True, blank=True)
@@ -339,6 +342,9 @@ class IncidentComment(models.Model):
     comment = models.CharField(max_length=200)
     created_time = models.DateTimeField(auto_now_add=True)
     modified_time = models.DateTimeField(auto_now=True)
+    document = models.FileField(upload_to='documents/incidents', null=True, blank=True)
+    image = models.ImageField(upload_to='images/incidents', null=True, blank=True)
+    created_by = models.ForeignKey(User, null=True, blank=True, on_delete=models.SET_NULL)
 
     class Meta():
         db_table = 'incident_comment'
@@ -452,10 +458,12 @@ class ServiceLevelAgreement(models.Model):
 # Escalation Levels
 class EscalationLevel(models.Model):
     name = models.CharField(max_length=255)
-    project = models.OneToOneField(Project, on_delete=models.CASCADE)
-    description = models.CharField(max_length=255, null=True, blank=True) 
-    escalated_to = models.ForeignKey(User, on_delete=models.CASCADE, related_name='escalated_to')
+    project = models.ForeignKey(Project, on_delete=models.CASCADE)
+    description = RichTextField(blank=True, null=True)
+    escalated_to = models.ManyToManyField(User)
     escalated_by = models.ForeignKey(User, on_delete=models.CASCADE, related_name='escalated_by')
-    resolution_time = models.IntegerField()
     date_escalated = models.DateTimeField(auto_now_add=True)
     modified_time = models.DateTimeField(auto_now=True)
+    escalation_on = models.IntegerField(default=1)
+    TIME_CHOICES = (('1', 'Days'), ('2', 'Weeks'), ('3', 'Months'))
+    escalation_on_duration = models.CharField(max_length=255, choices=TIME_CHOICES, default='Days')

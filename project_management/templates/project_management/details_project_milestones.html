@@ -1,0 +1,133 @@
+{% load crispy_forms_tags %}
+
+<div class="card-body">
+    <div class="basic-form">
+        <div class="row">
+            <div class="col-sm">
+                <p class="text-muted m-b-15 f-s-12">Project</p>
+                <input type="text" class="form-control input-flat"
+                    value="{{ milestone.project }}" disabled>
+            </div>
+            <div class="col-sm">
+                <p class="text-muted m-b-15 f-s-12">Milestone name</p>
+                <input type="text" class="form-control input-flat"
+                    value="{{ milestone.name }}" disabled>
+            </div>
+        </div>
+        
+        <div class="row">
+            <div class="col-sm">
+                <p class="text-muted m-b-15 f-s-12">Status</p>
+                <input type="text" class="form-control input-flat"
+                    value="{{ milestone.status }}" disabled>
+            </div>  
+            <div class="col-sm">
+                <p class="text-muted m-b-15 f-s-12">Created By</p>
+                <input type="text" class="form-control input-flat"
+                    value="{{ milestone.creator }}" disabled>
+            </div>
+        </div>
+    
+        <div class="row">
+            
+            <div class="col-sm">
+                <p class="text-muted m-b-15 f-s-12">Description</p>
+                <input type="text" class="form-control input-flat"
+                    value="{{ milestone.description|striptags }}" disabled>
+            </div>
+        </div>
+        <!-- {{incident.elapsed_time}} -->
+        <br>
+        <div class="row">
+            <div class="col-sm">
+                <p class="text-muted m-b-15 f-s-12">StartDate</p>
+                <input type="text" class="form-control input-flat"
+                    value="{{ milestone.startdate }}" disabled>
+            </div>
+            <div class="col-sm">
+                <p class="text-muted m-b-15 f-s-12">EndDate</p>
+                <input type="text" class="form-control input-flat"
+                    value="{{ milestone.enddate }}" disabled>
+            </div>
+            <div class="col-sm">
+                <p class="text-muted m-b-15 f-s-12">Actual start date </p>
+                <input type="text" class="form-control input-flat"
+                    value="{{ milestone.actual_startdate }}" disabled>
+            </div>
+            <div class="col-sm">
+                <p class="text-muted m-b-15 f-s-12">Actual end date </p>
+                <input type="text" class="form-control input-flat"
+                    value="{{ milestone.actual_enddate }}" disabled>
+            </div>
+        </div>
+        <br />
+        <div class="row">
+            <div class="col-3">
+                <button onclick="editMilestone('{{ milestone.id }}', '{{ milestone.name }}')" class="btn btn-success col-12">Update Milestone</button>
+            </div>	
+        </div>
+    </div>
+</div>
+
+<script>
+    function editMilestone(milestone_id, milestone_name, project_id, project_name) {
+
+        url = "{% url 'updateProjectMilestone' 999%}".replace(999, milestone_id);
+        $.ajax({
+            url: url,
+            type: "GET",
+            cache: false,
+            data: {
+                milestone_id: milestone_id,
+                milestone_name: milestone_name,
+                project_id: project_id,
+                project_name: project_name
+            },
+            success: function (resp) {
+                $.confirm({
+                    title: '<h3>Edit Milestone: <strong>'+ milestone_name +'</strong></h3>',
+                    content: '' + resp,
+                    type: 'blue',
+                    theme: 'material',
+                    typeAnimated: true,
+                    boxWidth: '75%',
+                    useBootstrap: false,
+                    closeIcon: true,
+                    buttons: {
+                        close: {
+                            text: 'Close',
+                            btnClass: 'btn-gray',
+                            action: function () {
+                            }
+                        }
+                    }
+                });
+            }
+        });
+    }
+
+    
+
+    $('#id_status').attr('data-live-search', "true"); 
+    $('#id_status').selectpicker({
+        size: 3
+    });
+      
+    $('#id_title').attr('autocomplete', 'off');
+
+    $("#id_description").attr('autocomplete', 'off');
+
+    
+    $('#id_project').removeAttr('multiple', "");
+    
+    $('#id_project').attr( 'readOnly' , 'true' );
+    $("#id_project").prop("disabled", "disabled");
+
+    $('#id_assignee').attr('multiple', "multiple");
+    $('#id_assignee').attr('data-live-search', 'true');
+    $('#id_assignee').selectpicker({
+        size: 3,
+    });
+    
+
+</script>

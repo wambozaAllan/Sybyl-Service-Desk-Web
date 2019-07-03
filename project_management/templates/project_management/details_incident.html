@@ -71,10 +71,11 @@
 									</div>
 									<div class="col-sm">
 										<p class="text-muted m-b-15 f-s-12">Assigned To</p>
-										{% for assigned in incident.assignee.all%}
-										<input type="text" class="form-control input-flat"
-											value="{{ assigned }}" disabled>
-										{% endfor %}
+										<select class="form-control" id="id_assignee">
+											{% for assigned in incident.assignee.all%}
+											<option>{{assigned}}</option>
+											{% endfor %}
+										</select>
 									</div>
 								</div>
 								<br>
@@ -100,4 +101,11 @@
 			</div>
 			<!-- End Page wrapper  -->
 		</div>
+		<script>
+			
+			$('#id_assignee').attr('data-live-search', 'true');
+			$('#id_assignee').selectpicker({
+				size: 3,
+			});
+		</script>
 		{% endblock %}

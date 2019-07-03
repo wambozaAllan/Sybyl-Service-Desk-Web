@@ -21,11 +21,12 @@
         $(document).ready(function () {
             jscolor.installByClassName("jscolor");
         });
-
+        
         $('#listBranchContacts').DataTable({});
         $('#listEmails').DataTable({});
         $('#listBranches').DataTable({});
         $('#table_status').DataTable();
+        $('#table_projects').DataTable();
         $('#table_priorities').DataTable();
         $('#table_category').DataTable();
         $('#table_conpanies').DataTable();
@@ -35,6 +36,8 @@
         $('#table_users').DataTable();
         $('#groupList2').DataTable();
         $('#table_system_modules2').DataTable();
+        $('#table_sla1').DataTable();
+        
 
         function loadURL(url, params, responseDiv, method) {
             $.ajax({
@@ -1493,11 +1496,11 @@
                 content: '' +
                     '<div class="form-group">' +
                     '<label>User Name</label>' +
-                    '<div class="row col-12"><input id="id_username" type="text" placeholder="' + username + '" class="name form-control col-10" required value=' + username + ' disabled=""> <span class="col-2"><a onclick="functUserNameEmail()" href="#!"> <i style="margin-top: 52%; margin-left: -32%;" class="fa fa-fw fa-lg fa-edit"></i></a></span></div>' +
+                    '<div class="row col-12"><input id="id_username" type="text" placeholder="' + username + '" class="name form-control col-10 username-focus" required value=' + username + ' disabled=""> <span class="col-2"><a onclick="functUserNameEmail()" href="#!"> <i style="margin-top: 52%; margin-left: -32%;" class="fa fa-fw fa-lg fa-edit"></i></a></span></div>' +
                     '</div>' +
                     '<div class="form-group">' +
                     '<label>Email Address</label>' +
-                    '<div class="row col-12"><input id="id_email" type="text" placeholder="' + email + '" class="name form-control col-10" required value=' + email + ' disabled=""> <span class="col-2"> <a href="#!"> <i onclick="functEditEmail()" style="margin-top: 52%; margin-left: -32%;" class="fa fa-fw fa-lg fa-edit"></i> </a></span></div>' +
+                    '<div class="row col-12"><input id="id_email" type="text" placeholder="' + email + '" class="name form-control col-10 email-focus" required value=' + email + ' disabled=""> <span class="col-2"> <a href="#!"> <i onclick="functEditEmail()" style="margin-top: 52%; margin-left: -32%;" class="fa fa-fw fa-lg fa-edit"></i> </a></span></div>' +
                     '</div>',
                 closeIcon: true,
                 type: 'blue',
@@ -1623,12 +1626,12 @@
         }
 
         function functEditEmail() {
-            $("#id_email").prop("disabled", false);
-            $("#id_email").focus();
+            $(".email-focus").prop("disabled", false);
+            $(".email-focus").focus();
         }
 
         function functUserNameEmail() {
-            $("#id_username").prop("disabled", false);
-            $("#id_username").focus();
+            $(".username-focus").prop("disabled", false);
+            $(".username-focus").focus();
         } 
     </script>

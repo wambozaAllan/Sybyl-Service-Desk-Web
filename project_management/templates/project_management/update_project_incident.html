@@ -1,61 +1,49 @@
 {% load crispy_forms_tags %}
-<div>
-    <input type="text" value="{{project_id}}" style="display: none;" id='id_project'/>
-    <input type="text" value="{{project_name}}" style="display: none;" id='id_project_name'/>
-    <input type="text" value="{{milestone_id}}" style="display: none;" id='id_milestone'/>
-    <input type="text" value="{{milestone_name}}" style="display: none;" id='id_milestone_name'/>
-</div>
+
 <div class="card-body">
     <div class="basic-form">
-        <form class="form-horizontal" action="{% url 'updateProjectMilestone' milestone_id %}" method="POST"  >
+        <form class="form-horizontal" action="{% url 'updateProjectIncident' incident_id %}" method="POST" enctype="multipart/form-data">
             {% csrf_token %}
-
             <div class="row">
-                <div class="col-6" style="display: none;"> 
-                    <div id="div_id_project" class="form-group">
-                        <label for="id_project" class="col-form-label ">
-                            Project
-                        </label>
-                        <div class="">
-                                <input name="project" class="textinput textInput form-control" required="" id="id_project" value="{{project_id}}" type="hidden">
-                                <input type="text" name="" class="textinput textInput form-control" required="" value="{{project_name}}" placeholder="" disabled="">
-                        </div>
-                    </div>
+                <div class="col-4">
+                    {{form.title|as_crispy_field}}
                 </div>
-                <div class="col-6">
-                        {{form.name|as_crispy_field}}
+                <div class="col-4">
+                    {{form.task|as_crispy_field}}
                 </div>
-                <div class="col-6">
+                <div class="col-4">
                     {{form.status|as_crispy_field}}
                 </div>
-                
             </div>
-            
+
             <div class="row">
-                <div class="col-6">
-                    {{form.startdate|as_crispy_field}}
+                <div class="col-4">
+                    {{form.priority|as_crispy_field}}
                 </div>
-                <div class="col-6">
-                    {{form.enddate|as_crispy_field}}
+                <div class="col-4">
+                    {{form.assignee|as_crispy_field}}
+                </div>
+                <div class="col-4">
+                    {{form.resolution_time|as_crispy_field}}
                 </div>
             </div>
 
             <div class="row">
                 <div class="col-6">
-                    {{form.actual_startdate|as_crispy_field}}
+                    {{form.document|as_crispy_field}}  
                 </div>
                 <div class="col-6">
-                    {{form.actual_enddate|as_crispy_field}}
+                    {{form.image|as_crispy_field}}
                 </div>
             </div>
-
+            <br>
             <div class="row">
                 <div class="col-6">
                     {{form.description|as_crispy_field}}
                 </div>
                 <div class="col-6">
-                    <button type="submit" id="btnUpdateMiletsone" class="form-control btn btn-success pull-right">
-                        <i class="fa fa-fw fa-lg fa-save"></i>Update Milestone
+                    <button type="submit" id="btnUpdateIncident" class="form-control btn btn-success pull-right">
+                            <i class="fa fa-fw fa-lg fa-save"></i>Update Incident
                     </button>
                 </div>
             </div>
@@ -67,67 +55,29 @@
 </div>
 
 <script>
-    $('#id_startdate').datepicker({
+    $('#id_resolution_time').datepicker({
         format: "mm/dd/yyyy",
         autoclose: true
     });
-
-    $('#id_enddate').datepicker({
-        format: "mm/dd/yyyy",
-        autoclose: true
-    });
-
-    $("#id_actual_startdate").prop("type", "text");
-    $("#id_actual_enddate").prop("type", "text");
-
-    $('#id_actual_startdate').datepicker({
-        format: "mm/dd/yyyy",
-        autoclose: true
-    });
-
-    $('#id_actual_enddate').datepicker({
-        format: "mm/dd/yyyy",
-        autoclose: true
-    });
-
-    $("#id_startdate").attr("placeholder", "mm/dd/yyyy");
-    $("#id_enddate").attr("placeholder", "mm/dd/yyyy");
-
-    $("#id_actual_startdate").attr("placeholder", "mm/dd/yyyy");
-    $("#id_actual_enddate").attr("placeholder", "mm/dd/yyyy");
-
-    $('#id_actual_enddate').on('focus', function(){
-        var date = $(this).blur();
-    });
-
-    $('#id_enddate').on('focus', function(){
-        var date = $(this).blur();
-    });
-
-    $('#id_actual_startdate').on('focus', function(){
-        var date = $(this).blur();
-    });
-
-    $('#id_startdate').on('focus', function(){
-        var date = $(this).blur();
-    });
-
-    $('#id_project_name').attr( 'readOnly' , 'true' );
-
+    
+    $("#id_resolution_time").attr("placeholder", "mm/dd/yyyy");
+    
     $('#id_status').attr('data-live-search', "true"); 
     $('#id_status').selectpicker({
         size: 3
     });
-
-
-    // on load function for addition of milestone
-    $(function(){});
       
-    $("#id_name").attr('autocomplete', 'off');
+    $('#id_title').attr('autocomplete', 'off');
 
     $("#id_description").attr('autocomplete', 'off');
+
     
-    // $('#id_name').on('input', function () {
+    $('#id_assignee').attr('multiple', "multiple");
+    $('#id_assignee').attr('data-live-search', 'true');
+    $('#id_assignee').selectpicker({
+        size: 3,
+    });
+    // $('#id_title').on('input', function () {
     //     var milestone_name = $(this).val().toUpperCase();
 
     //     $.ajax({

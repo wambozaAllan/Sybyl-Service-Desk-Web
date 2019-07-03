@@ -8,7 +8,7 @@
             {% csrf_token %}
 
             <div class="row">
-                <div class="col-12">
+                <div class="col-6" style="display: none;">
                     <label class="col-form-label  requiredField">Project<span
                         class="asteriskField">*</span></label>
                     <div class="" >
@@ -16,9 +16,6 @@
                         <input type="text" value="{{project_id}}" id='id_project' class="form-control" style="display: none;"/>
                     </div> 
                 </div>
-            </div>
-            
-            <div class="row">
                 <div class="col-6">
                     <label class="col-form-label  requiredField">Milestone name<span
                         class="asteriskField">*</span></label>
@@ -31,7 +28,6 @@
                         </font>
                     </medium>
                 </div>
-                
                 <div class="col-6">
                     <label class="col-form-label  requiredField">Status<span
                         class="asteriskField">*</span></label>
@@ -46,12 +42,48 @@
                     <label class="col-form-label  requiredField">Start Date<span
                         class="asteriskField">*</span></label>
                     <input type="" id='id_startDate' class="form-control" value="" />
+                    <medium id="start_date" class="text-muted hidden">
+                        <font color="red">
+                            Start date has to be less or equal to end date
+                        </font>
+                    </medium>
                 </div>
 
                 <div class="col-6">
-                    <label class="col-form-label  requiredField">End Date<span
+                    <label class="col-form-label  requiredField">End Date</label>
+                    <input type="" id='id_endDate' class="form-control" value="" />
+                    <medium id="end_date" class="text-muted hidden">
+                        <font color="red">
+                            End date has to be greater or equal to start date
+                        </font>
+                    </medium>      
+                </div>
+
+                <div class="col-6 actual">
+                    <label class="col-form-label  requiredField">Actual Start Date<span
                         class="asteriskField">*</span></label>
-                    <input type="" id='id_endDate' class="form-control" value="" />      
+                    <input type="" id='id_actual_start_date' class="form-control" value="" />
+                    <medium id="actual_start_date" class="text-muted hidden">
+                        <font color="red">
+                            Actual start date has to be less or equal to actual end date
+                        </font>
+                    </medium>
+                    <medium id="equal_start" class="text-muted hidden">
+                        <font color="red">
+                            Actual start date has to be greater or equal to start date
+                        </font>
+                    </medium>
+                </div>
+
+                <div class="col-6 actual">
+                    <label class="col-form-label  requiredField">Actual End Date<span
+                        class="asteriskField">*</span></label>
+                    <input type="" id='id_actual_end_date' class="form-control" value="" />
+                    <medium id="actual_end_date" class="text-muted hidden">
+                        <font color="red">
+                            Actual end date has to be greater or equal to actual start date
+                        </font>
+                    </medium>      
                 </div>
                 
             </div>
@@ -74,24 +106,165 @@
 <script>
     $('#id_startDate').datepicker({
         format: "mm/dd/yyyy",
-        autoclose: true
+        autoclose: true,
+        clearBtn: true
     });
 
     $('#id_endDate').datepicker({
         format: "mm/dd/yyyy",
-        autoclose: true
+        autoclose: true,
+        clearBtn: true
+    });
+
+    $('#id_actual_start_date').datepicker({
+        format: "mm/dd/yyyy",
+        autoclose: true,
+        clearBtn: true
+    });
+
+    $('#id_actual_end_date').datepicker({
+        format: "mm/dd/yyyy",
+        autoclose: true,
+        clearBtn: true
     });
 
     $("#id_startDate").attr("placeholder", "mm/dd/yyyy");
     $("#id_endDate").attr("placeholder", "mm/dd/yyyy");
 
+    $("#id_actual_start_date").attr("placeholder", "mm/dd/yyyy");
+    $("#id_actual_end_date").attr("placeholder", "mm/dd/yyyy");
+
     $('#id_startDate').on('focus', function(){
-        var date = $(this).blur();
+        var dateid_actual_end_date = $(this).blur();
     });
 
     $('#id_endDate').on('focus', function(){
         var date = $(this).blur();
     });
+
+    $('#id_actual_start_date').on('focus', function(){
+        var date = $(this).blur();
+    });
+
+    $('#id_actual_end_date').on('focus', function(){
+        var date = $(this).blur();
+    });
+
+    // start date
+    $('#id_startDate').on('change', function(){
+        var startDate= document.getElementById('id_startDate').value;
+        var endDate= document.getElementById('id_endDate').value;
+        var actualStartDate= document.getElementById('id_actual_start_date').value;
+
+        var sDate = new Date(startDate);
+        var eDate = new Date(endDate);
+        var actualSDate = new Date(actualStartDate);
+
+        if(startDate != '' && endDate != '' && sDate > eDate){
+            document.getElementById("btnAddMiletsone").disabled = true;
+            document.getElementById('id_startDate').style.borderColor = "red";
+            $('#start_date').show();
+        }
+        else if(startDate != '' && endDate != '' && sDate <= eDate){
+            document.getElementById("btnAddMiletsone").disabled = false;
+            document.getElementById('id_startDate').style.borderColor = "";
+            $('#start_date').hide();
+            document.getElementById('id_endDate').style.borderColor = "";
+            $('#end_date').hide();
+        }
+
+        if(actualStartDate != '' && startDate != '' && actualSDate < sDate ){
+            document.getElementById('id_actual_start_date').style.borderColor = "red";
+            $('#equal_start').show();
+        }
+        else if(actualStartDate != '' && startDate != '' && actualSDate >= sDate ){
+            document.getElementById('id_actual_start_date').style.borderColor = "";
+            $('#equal_start').hide();
+        }
+    });
+
+    // end date
+    $('#id_endDate').on('change', function(){
+        var startDate= document.getElementById('id_startDate').value;
+        var endDate= document.getElementById('id_endDate').value;
+
+        var sDate = new Date(startDate);
+        var eDate = new Date(endDate);
+
+        if(startDate != '' && endDate != '' && sDate > eDate){
+            document.getElementById("btnAddMiletsone").disabled = true;
+            document.getElementById('id_endDate').style.borderColor = "red";
+            $('#end_date').show();
+        }
+        else if(startDate != '' && endDate != '' && sDate <= eDate){
+            document.getElementById("btnAddMiletsone").disabled = false;
+            document.getElementById('id_endDate').style.borderColor = "";
+            $('#end_date').hide();
+            document.getElementById('id_startDate').style.borderColor = "";
+            $('#start_date').hide();
+        }
+    });
+
+    // actual start date
+    $('#id_actual_start_date').on('change', function(){
+        var actualStartDate= document.getElementById('id_actual_start_date').value;
+        var actualEndDate= document.getElementById('id_actual_end_date').value;
+        var startDate= document.getElementById('id_startDate').value;
+        var endDate= document.getElementById('id_endDate').value;
+
+        var actualSDate = new Date(actualStartDate);
+        var actualEDate = new Date(actualEndDate);
+        var sDate = new Date(startDate);
+
+        if(actualStartDate != '' && actualEndDate != '' && actualSDate > actualEDate){
+            document.getElementById("btnAddMiletsone").disabled = true;
+            document.getElementById('id_actual_start_date').style.borderColor = "red";
+            $('#actual_start_date').show();
+        }
+        else if(actualStartDate != '' && actualEndDate != '' && actualSDate <= actualEDate){
+            document.getElementById("btnAddMiletsone").disabled = false;
+            document.getElementById('id_actual_start_date').style.borderColor = "";
+            $('#actual_start_date').hide();
+            document.getElementById('id_actual_end_date').style.borderColor = "";
+            $('#actual_end_date').hide();
+        }
+        
+        if(actualStartDate != '' && startDate != '' && actualSDate < sDate ){
+            document.getElementById('id_actual_start_date').style.borderColor = "red";
+            $('#equal_start').show();
+        }
+        else if(actualStartDate != '' && startDate != '' && actualSDate >= sDate ){
+            document.getElementById('id_actual_start_date').style.borderColor = "";
+            $('#equal_start').hide();
+        }
+    });
+
+    // actual end date
+    $('#id_actual_end_date').on('change', function(){
+        var actualStartDate= document.getElementById('id_actual_start_date').value;
+        var actualEndDate= document.getElementById('id_actual_end_date').value;
+        var startDate= document.getElementById('id_startDate').value;
+        var endDate= document.getElementById('id_endDate').value;
+
+        var actualSDate = new Date(actualStartDate);
+        var actualEDate = new Date(actualEndDate);
+        var sDate = new Date(startDate);
+        var eDate = new Date(endDate);
+
+        if(actualStartDate != '' && actualEndDate != '' && actualSDate > actualEDate){
+            document.getElementById("btnAddMiletsone").disabled = true;
+            document.getElementById('id_actual_end_date').style.borderColor = "red";
+            $('#actual_end_date').show();
+        }
+        else if(actualStartDate != '' && actualEndDate != '' && actualSDate <= actualEDate){
+            document.getElementById("btnAddMiletsone").disabled = false;
+            document.getElementById('id_actual_start_date').style.borderColor = "";
+            $('#actual_start_date').hide();
+            document.getElementById('id_actual_end_date').style.borderColor = "";
+            $('#actual_end_date').hide();
+        }
+    });
+
 
     $('#id_project_name').attr( 'readOnly' , 'true' );
 
@@ -105,6 +278,7 @@
     $(function(){
         var project_id = $('#id_project').val();
         var project_name =$('#id_project_name').val();
+        $(".actual").css("display", "none");
 
         $.ajax({
             url: "{% url 'populateMilestoneStatus' %}",
@@ -118,7 +292,7 @@
                 
                 let newData = JSON.parse(data.status);
                 let actual = '';
-                $("#id_status").html("");
+                // $("#id_status").html("");
                 $("#id_status").prepend('<option value=""> -----Choose Status----- </option>');
                 for(i=0; i<newData.length; i++){
                     actual = newData[i];
@@ -162,9 +336,31 @@
     $('#postForm').on('submit', function(){
         event.preventDefault();
         saveMilestone();
-        
-        
+               
     })
+
+    $('#id_status').on('change', function(){
+        var statusId = $(this).val();
+
+        $.ajax({
+            url: "{% url 'checkMilestoneStatus' %}",
+            data: {
+                status_id: statusId
+            },
+            dataType: 'json',
+            cache: false,
+            success: function(data){
+                var statusName = data.status_name;
+                if (statusName === "Open" || statusName === "Onhold"){
+                    $(".actual").css("display", "none");
+                }
+                else {
+                    $(".actual").css("display", "inline");
+                }
+
+            }
+        })
+    });
 
     // saving milestone to database
     function saveMilestone(event){
@@ -174,6 +370,8 @@
         let milestone_name = $('#id_name').val();
         let start = $('#id_startDate').val();
         let end = $('#id_endDate').val();
+        let actual_start = $('#id_actual_start_date').val();
+        let actual_end = $('#id_actual_end_date').val();
         let description = $('#id_description').val();
 
         if(milestone_name.length > 0 || milestone_name !== ''){
@@ -183,6 +381,13 @@
             if(end.length < 1){
                 end = 'null';
             }
+            if(actual_start.length < 1){
+                actual_start = 'null';
+            }
+            if(actual_end.length < 1){
+                actual_end = 'null';
+            }
+
             urlData = "{% url 'saveMilestone' %}";
             $.ajax({
                 type: "GET",
@@ -195,6 +400,8 @@
                     status_id: status_id,
                     start_date: start,
                     end_date: end,
+                    actual_start: actual_start,
+                    actual_end: actual_end,
                     description:description,
                 },
                 url: urlData,
