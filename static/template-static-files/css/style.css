@@ -8469,3 +8469,17 @@ div.on-hover:hover {
     background-color: #eaeff9;
     cursor: pointer;
 }
+
+.isDisabled {
+    color: currentColor;
+    cursor: not-allowed;
+    opacity: 0.5;
+    text-decoration: none;
+}
+
+#errmsg1{
+    color: red;
+}
+#errmsg2{
+    color: red;
+}

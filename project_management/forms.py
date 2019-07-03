@@ -1,6 +1,6 @@
 from django import forms
 from django.db import models
-from .models import Project, Milestone, Task, ProjectDocument, Priority, Status, ProjectTeamMember, ProjectTeam, Incident
+from .models import Project, Milestone, Task, ProjectDocument, Priority, Status, ProjectTeamMember, ProjectTeam, Incident, ServiceLevelAgreement, EscalationLevel
 from company_management.models import Company
 from crispy_forms.helper import FormHelper
 from crispy_forms.layout import Submit
@@ -170,3 +170,16 @@ class IncidentForm(forms.ModelForm):
         fields = ('title', 'description', 'priority', 'task', 'status', 'project', 'assignee',
                   'image', 'document')
 
+class ServiceLevelAgreementForm(forms.ModelForm):
+    class Meta:
+        model = ServiceLevelAgreement
+        fields = ('name', 'project','description', 'response_time', 'resolution_time', 'resolution_duration', 'response_duration',)
+        widgets = {'name': forms.TextInput(attrs={'class': 'form-control input-flat'})}
+
+
+class EscalationLevelForm(forms.ModelForm):
+    class Meta:
+        model = EscalationLevel
+        fields = ('name', 'project','description', 'escalated_by', 'escalated_to', 
+                    'escalation_on', 'escalation_on_duration',)
+        widgets = {'name': forms.TextInput(attrs={'class': 'form-control input-flat'})}

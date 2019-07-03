@@ -38,7 +38,7 @@
                 {% empty %}
                 {% endfor %}
 
-                {% if perms.core %} <li class="nav-label">Main Menu</li>{% endif %}
+                <li class="nav-label">Main Menu</li>
                 
                 {% if perms.project_management.add_project or perms.project_management.view_project or perms.project_management.delete_project or perms.project_management.change_project %}
                     <li>
@@ -53,7 +53,6 @@
                     {% endif %}
 
                     <li><a href="{% url 'listProjectTeams' %}">Project Teams</a></li>
-                    
                 </ul>
                 </li>
 
@@ -185,10 +184,8 @@
                     </li>
 
                     <li>
-                        <a class="has-arrow" href="#" aria-expanded="false"><i class="fa fa-bar-chart"></i><span
-                                class="hide-menu">Departments
-
-              Master</span></a>
+                        <a class="has-arrow" href="#" aria-expanded="false"><i class="fa fa-bar-chart"></i>
+                        <span class="hide-menu">Departments Master</span></a>
                         <ul aria-expanded="false" class="collapse">
                             <li><a href="{% url 'listDepartments' %}">List of Departments</a></li>
                             <li><a href="{% url 'addDepartment' %}">Add Department</a></li>
@@ -196,8 +193,10 @@
                     </li>
 
                     <li class="">
-                        <a class="has-arrow" href="#" aria-expanded="false"><i class="fa fa-cogs"></i><span
-                                class="hide-menu">SETTINGS</span></a>
+                        <a class="has-arrow" href="#" aria-expanded="false">
+                            <i class="fa fa-cogs"></i>
+                            <span class="hide-menu">SETTINGS</span>
+                        </a>
                         <ul aria-expanded="false" class="collapse">
                             <li><a href="{% url 'listCategories' %}"><i class="fa fa-list-alt"></i> Company Categories</a></li>
                             <li><a href="{% url 'listAllPriorities' %}"><i class="fa fa-list"></i> Priorities</a></li>
