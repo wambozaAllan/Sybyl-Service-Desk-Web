@@ -38,7 +38,7 @@
                                         </div>
                                     </div>
                                     <div class="table-responsive">
-                                        <table id="table_incidents" class="display nowrap table table-hover"
+                                        <table id="table_projects" class="display nowrap table table-hover"
                                                cellspacing="0" width="100%">
                                             <thead>
                                             <tr>
@@ -62,6 +62,7 @@
                                                     <td class="text-center">
                                                         <a href="{% url 'detailsProject' project.id %}">View</a> &nbsp;
                                                         <a href="{% url 'updateProject' project.id %}">Update</a> &nbsp;
+                                                        <a href="{% url 'uploadDocument'  %}">Documents</a> &nbsp;
                                                     </td>
                                                 </tr>
                                             {% endfor %}
@@ -106,7 +107,6 @@
     </div>
     <!-- END The Modal -->
     <script>
-        $('#table_incidents').DataTable();
         
         function functAddNewProject() {
             urldata = "{% url 'addProject'%}";
