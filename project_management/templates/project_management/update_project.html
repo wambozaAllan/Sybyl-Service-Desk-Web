@@ -37,7 +37,7 @@
                                       enctype="multipart/form-data">
                                     {% csrf_token %}
                                     <div class="row">
-                                        <div class="col-6">
+                                        <div class="col-md-6 col-sm-12">
                                             {{ form.name|as_crispy_field }}
                                             <medium id="validate_project_name" class="text-muted hidden">
                                                 <font color="red">
@@ -45,13 +45,13 @@
                                                 </font>
                                             </medium>
                                         </div>
-                                        <div class="col-6">
+                                        <div class="col-md-6 col-sm-12 ">
                                             {{ form.company|as_crispy_field }}
                                         </div>
                                     </div>
 
                                     <div class="row">
-                                        <div class="col-6">
+                                        <div class="col-md-6 col-sm-12">
                                             {{ form.estimated_start_date|as_crispy_field }}
                                             <medium id="start_date" class="text-muted hidden">
                                                 <font color="red">
@@ -60,7 +60,7 @@
                                             </medium>
                                         </div>
                                         
-                                        <div class="col-6">
+                                        <div class="col-md-6 col-sm-12">
                                             {{ form.estimated_end_date|as_crispy_field }}
                                             <medium id="end_date" class="text-muted hidden">
                                                 <font color="red">
@@ -72,7 +72,7 @@
                                     </div>
 
                                     <div class="row">
-                                        <div class="col-6">
+                                        <div class="col-md-6 col-sm-12">
                                             {{ form.actual_start_date|as_crispy_field }}
                                             <medium id="actual_start" class="text-muted hidden">
                                                 <font color="red">
@@ -80,7 +80,7 @@
                                                 </font>
                                             </medium>
                                         </div>
-                                        <div class="col-6">
+                                        <div class="col-md-6 col-sm-12">
                                             {{ form.actual_end_date|as_crispy_field }}
                                             <medium id="actual_end" class="text-muted hidden">
                                                 <font color="red">
@@ -89,7 +89,7 @@
                                             </medium>
                                         </div>
 
-                                        <div class="col-6">
+                                        <div class="col-md-6 col-sm-12">
                                             {{ form.final_cost|as_crispy_field }}
                                             <medium id="final_cost" class="text-muted hidden">
                                                 <font color="red">
@@ -98,7 +98,7 @@
                                             </medium>
                                         </div>
 
-                                        <div class="col-6">
+                                        <div class="col-md-6 col-sm-12">
                                             {{ form.project_code|as_crispy_field }}
                                             <medium id="project_code" class="text-muted hidden">
                                                 <font color="red">
@@ -106,10 +106,10 @@
                                                 </font>
                                             </medium>
                                         </div>
-                                        <div class="col-6">
+                                        <div class="col-md-6 col-sm-12">
                                             {{ form.project_status|as_crispy_field }}
                                         </div>
-                                        <div class="col-6">
+                                        <div class="col-md-6 col-sm-12">
                                             {{ form.logo|as_crispy_field }}
                                         </div>
                                     </div>
@@ -117,20 +117,17 @@
                                         
 
                                     <div class="row">
-                                        <div class="col-12">
+                                        <div class="col-md-12 col-sm-12">
                                             {{ form.description|as_crispy_field }}
                                         </div>
                                     </div>
 
 
-                                    <div class="row">
-                                        <a href="{% url 'listProjects' %}" class="btn btn-inverse" >Cancel</a>
-                                        &nbsp;
-                                        <button id="btnUpdateProject" class="btn btn-success pull-right">
-                                            <i class="fa fa-fw fa-lg fa-save"></i>Update
-                                        </button>
-                                    </div>
-
+                                    
+                                    <a href="{% url 'listProjects' %}" class="btn btn-inverse pull-right col-md-2" >Cancel</a>
+                                    <button id="btnUpdateProject" class="btn btn-success pull-right col-md-2">
+                                        <i class="fa fa-fw fa-lg fa-save"></i>Update
+                                    </button>
 
                                 </form>
                             </div>
@@ -157,22 +154,26 @@
 
         $('#id_estimated_start_date').datepicker({
             format: "mm/dd/yyyy",
-            autoclose: true
+            autoclose: true,
+            clearBtn: true
         });
 
         $('#id_estimated_end_date').datepicker({
             format: "mm/dd/yyyy",
-            autoclose: true
+            autoclose: true,
+            clearBtn: true
         });
 
         $('#id_actual_start_date').datepicker({
             format: "mm/dd/yyyy",
-            autoclose: true
+            autoclose: true,
+            clearBtn: true
         });
 
         $('#id_actual_end_date').datepicker({
             format: "mm/dd/yyyy",
-            autoclose: true
+            autoclose: true,
+            clearBtn: true
         });
 
         // estimated end date
@@ -313,13 +314,14 @@
         });
 
         // company attribute
-        $("#id_company").prop("selectedIndex", -1);
+        // $("#id_company").prop("selectedIndex", -1);
         $('#id_company').attr('multiple', "multiple");
         $('#id_company').attr('data-live-search', "true");
         $('#id_company').selectpicker({
             size: 2,
         });
 
+        $("#div_id_project_status").removeClass("form-group");
 
 
         // PROJECT NAME 
@@ -333,7 +335,7 @@
             var project_name = $(this).val().toUpperCase();
 
             $.ajax({
-                url: '{% url 'validateProjectName' %}',
+                url: "{% url 'validateProjectName' %}",
                 data: {
                     'projectname': project_name
                 },
@@ -354,57 +356,6 @@
 
         $('#id_project_code').attr( 'readOnly' , 'true' );
 
-        // generate project_code
-        $('#id_project_code').on('focus', function(){
-            var company = document.getElementById('id_company');
-            
-            var companies = Array.from(company.selectedOptions).map(option => option.value);
-
-            var jsonText = JSON.stringify(companies);
-            console.log(jsonText);
-
-
-            $.ajax({
-                url: '{% url 'formatProjectCode' %}',
-                data: {
-                    companies: jsonText
-                },
-            
-                dataType: 'json',
-                success: function(data){
-                    
-                    if (data['name'] != "" && startDate != "" && sDate != 'Invalid Date' ){
-                        var clientName = data.name;
-                        var name = document.getElementById("id_name").value;
-                        var upper = name.toUpperCase();
-
-                        if (upper != ''){
-                            var clientArr = clientName.slice(0,3);
-                            var upperArr = upper.slice(0,2);
-                            var startDate= document.getElementById('id_estimated_start_date').value;
-                            var sDate = new Date(startDate);
-                            var final = upperArr + "/" + clientArr + "/" + sDate;
-
-                            document.getElementById('id_project_code').value=final;
-                            $("#project_code").hide();
-                            document.getElementById("btnUpdateProject").disabled = false;
-                            document.getElementById('id_project_code').style.borderColor = "";
-                        }
-                        else{
-                            document.getElementById('id_project_code').style.borderColor = "red";
-                            document.getElementById("btnAddProject").disabled = true;
-                            $("#project_code").show();
-                        }   
-                    }
-                    else{
-                        $("#project_code").show();
-                        document.getElementById('id_project_code').style.borderColor = "red";
-                        document.getElementById("btnUpdateProject").disabled = true;
-                    }
-                    
-                }
-            })
-        });
     })
 </script>
 {% endblock %}
