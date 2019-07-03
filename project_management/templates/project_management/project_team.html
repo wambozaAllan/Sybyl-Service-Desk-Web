@@ -49,7 +49,7 @@
                         <i title="Edit Team Member" class="fa fa-edit"></i>
                     </button>
 
-                    <button onclick="deleteProjectTeamMember({{ member.id }}, '{{ member.member }}', '{{ team.id }}', '{{ team.name }}')"
+                    <button onclick="deleteProjectTeamMember('{{ member.id }}', '{{ member.member }}', '{{ team_id }}', '{{ team_name }}', '{{ project_id }}')"
                             class="btn btn-outline-danger btn-sm" type="button">
                         <i title="Delete Team Member" class="fa fa-remove"></i>
                     </button>
@@ -114,7 +114,7 @@
                             }
 
                             $.ajax({
-                                url: '{% url 'validateProjectTeamName' %}',
+                                url: "{% url 'validateProjectTeamName' %}",
                                 data: {
                                     'teamname': teamName
                                 },
@@ -159,40 +159,114 @@
     }
 
     function addProjectTeamMember(team_id, team_name, project_id, project_name) {
-            urldata = "{% url 'addProjectTeamMember'%}";
-            $.ajax({
-                type: "GET",
-                cache: false,
-                data: {
-                    team_id: team_id,
-                    team_name: team_name,
-                    project_id: project_id,
-                    project_name: project_name
-                },
-                url: urldata,
-                success: function (resp) {
-                    $.confirm({
-                        title: '<h3>Add Project Members: </h3>',
-                        content: '' + resp,
-                        type: 'blue',
-                        theme: 'material',
-                        typeAnimated: true,
-                        boxWidth: '50%',
-                        height: '40%',
-                        useBootstrap: false,
-                        closeIcon: true,
-                        buttons: {
-                            close: {
-                                text: 'Close',
-                                btnClass: 'btn-gray close-dialog',
-                                action: function () {
-                                }
+        urldata = "{% url 'addProjectTeamMember'%}";
+        $.ajax({
+            type: "GET",
+            cache: false,
+            data: {
+                team_id: team_id,
+                team_name: team_name,
+                project_id: project_id,
+                project_name: project_name
+            },
+            url: urldata,
+            success: function (resp) {
+                $.confirm({
+                    title: '<h3>Add Project Members: </h3>',
+                    content: '' + resp,
+                    type: 'blue',
+                    theme: 'material',
+                    typeAnimated: true,
+                    boxWidth: '50%',
+                    height: '40%',
+                    useBootstrap: false,
+                    closeIcon: true,
+                    buttons: {
+                        close: {
+                            text: 'Close',
+                            btnClass: 'btn-gray close-dialog',
+                            action: function () {
                             }
                         }
-                    });
+                    }
+                });
+            }
+        });
+    }
+        
+
+    function deleteProjectTeamMember(memberid, membername, teamid, teamname, project_id) {
+        urldata = "{% url 'deleteProjectTeamMember'%}";
+        $.confirm({
+            title: '<h4>Remove Member: <strong class="text-danger">"' + membername + ' "</strong>! from"' + teamname +'</h4>',
+            content: '',
+            type: 'red',
+            typeAnimated: true,
+            boxWidth: '40%',
+            useBootstrap: false,
+            theme: 'modern',
+            icon: 'fa fa-exclamation-circle',
+            buttons: {
+                formSubmit: {
+                    text: 'Remove',
+                    btnClass: 'btn-red',
+                    action: function (){
+                        $.ajax({
+                            type: "GET",
+                            cache: false,
+                            data: {
+                                memberid: memberid,
+                                teamname: teamname,
+                                teamid: teamid
+                            },
+                            dataType: 'json',
+                            url: urldata,
+                            success: function (response_data) {
+                                $('.close-dialog').click();
+                                if (response_data.state === true){
+                                    $.confirm({
+                                        title: "Success",
+                                        content: 'Member: '   + response_data.success,
+                                        type: 'blue',
+                                        typeAnimated: true,
+                                        boxWidth: '35%',
+                                        useBootstrap: false,
+                                        closeIcon: true,
+                                            buttons: {
+                                                formSubmit: {
+                                                    text: 'OK',
+                                                    btnClass: 'btn-blue close-dialog',
+                                                    action: function () {
+                                                        $.ajax({
+                                                            type:"GET",
+                                                            cache: false,
+                                                            data:{
+                                                                project_id:project_id,
+                                                            },
+                                                            url: "{% url 'tabListTeam' %}",
+                                                            success: function(resp){
+                                                                $('.team-project').html(resp);                                                    
+                                                            }
+                                                        });
+                                                    }
+                                                }
+                                            }
+                                    }); 
+                                    
+                                }
+                            }
+                        });
+                    }
+                },
+                close: {
+                    text: 'Cancel',
+                    btnClass: 'btn-gray',
+                    action: function () {
+                    }
                 }
-            });
-        }
+            }
+        });
+    }
 
 </script>
 
