@@ -26,8 +26,8 @@
 				</label>
 				<div class="">
 					<select name="task" class="select form-control" id="id_task">
-						{% for t in tasks %}
-							<option value="{{t.id}}">{{t.name}}</option>
+						{% for task in tasks %}
+							<option value="{{task.id}}">{{task.name}}</option>
                         {% endfor %}
 					</select>
 				</div>
@@ -41,7 +41,7 @@
 				<div class="">
 					<select name="assignee" class="selectmultiple form-control" required="" id="id_assignee" multiple="">
 						{% for member in members%}
-							<option value="{{member.id}}"> {{member.first_name}}{{member.last_name}}</option>
+							<option value="{{member.id}}"> {{member.first_name}} {{member.last_name}}</option>
 						{% endfor %}
 					</select>
 				</div>
@@ -50,37 +50,37 @@
 	</div>
 	<br>
 	<div class="row">
-		<div class="col-6">{{ form.priority|as_crispy_field }}</div>
-		<div class="col-2">
+		<div class="col-md-6">{{ form.priority|as_crispy_field }}</div>
+		<div class="col-md-2">
 			<div><label>Color Code</label></div>
 			<div><input type="text" id="priority_color" class="form-control" style="border-radius: 5px;"></div>
 		</div>
-		<div class="col-4">{{ form.close_time|as_crispy_field }}</div>
+		<div class="col-md-4">{{ form.close_time|as_crispy_field }}</div>
 	</div>
 
 	<div class="row">
-		<div class="col-6">{{ form.status|as_crispy_field }}</div>
-		<div class="col-6">{{ form.description|as_crispy_field }}</div>
+		<div class="col-md-6">{{ form.status|as_crispy_field }}</div>
+		<div class="col-md-6">{{ form.description|as_crispy_field }}</div>
 	</div>
 
 	<br>
 	<div class="row">
-		<div class="col-6 fallback">
+		<div class="col-md-6fallback">
 			<div class="row">
-				<div class="col-6">
+				<div class="col-md-6">
 					{{ form.document|as_crispy_field }}
 				</div>
-				<div class="col-6">
+				<div class="col-md-6">
 					{{ form.image|as_crispy_field }}
 				</div>
 			</div>	
 		</div>
-		<div class="col-6">
+		<div class="col-md-6">
 			<div class="row">
-				<div class="col-6">
+				<div class="col-md-6">
 					<button type="submit" class="btn btn-success col-12">Add Incident</button>
 				</div>
-				<div class="col-6">
+				<div class="col-md-6">
 					<button class="btn btn-inverse col-12"><a href="{% url 'listIncidents' %}" >Cancel</a></button>
 				</div>
 			</div>
@@ -139,6 +139,12 @@
 	
 		$('#id_document').addClass('dropzone');
 		$('#id_image').addClass('dropzone');
+
+		$("#div_id_priority").removeClass('form-group');
+		$("#div_id_task").removeClass('form-group');
+		$("#div_id_status").removeClass('form-group');
+		$("#div_id_assignee").removeClass('form-group');
+		
 	
 		$('#priority_color').attr( 'readOnly' , 'true' );
 	
