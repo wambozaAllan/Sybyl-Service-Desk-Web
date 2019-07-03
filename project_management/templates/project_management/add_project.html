@@ -1,10 +1,9 @@
 {% load crispy_forms_tags %}
-<form class="form-horizontal"  action="{% url 'addProject' %}" method="post" enctype="multipart/form-data">
+<form class="form-horizontal"  action="{% url 'addProject' %}" method="post" enctype="multipart/form-data" id="addProject">
     {% csrf_token %}
     {{project_form.media}}
-    <div class="row col-12" style="top: 5px;">
-        
-        <div class="col-4">
+    <div class="row">
+        <div class="col-md-4 col-sm-12">
             {{ project_form.name|as_crispy_field }}
             <medium id="validate_project_name" class="text-muted hidden">
                 <font color="red">
@@ -12,15 +11,15 @@
                 </font>
             </medium>
         </div>
-        <div class="col-4">
+        <div class="col-md-4 col-sm-12">
             {{ project_form.company|as_crispy_field}}
         </div>
-        <div class="col-4">
+        <div class="col-md-4 col-sm-12">
             {{ project_form.project_status|as_crispy_field }}
         </div>
     </div>   
     <div class="row">
-        <div class="col-4">
+        <div class="col-md-4 col-sm-12">
             {{ project_form.estimated_cost|as_crispy_field }}
             <medium id="cost_check" class="text-muted hidden">
                 <font color="red">
@@ -28,7 +27,7 @@
                 </font>
             </medium>
         </div> 
-        <div class="col-4">
+        <div class="col-md-4 col-sm-12">
             {{ project_form.estimated_start_date|as_crispy_field }}
             <medium id="start_date" class="text-muted hidden">
                 <font color="red">
@@ -36,7 +35,7 @@
                 </font>
             </medium>
         </div>
-        <div class="col-4">
+        <div class="col-md-4 col-sm-12">
             {{ project_form.estimated_end_date|as_crispy_field }}
             <medium id="end_date" class="text-muted hidden">
                 <font color="red">
@@ -47,7 +46,7 @@
     </div>
 
     <div class="row">
-        <div class="col-4">
+        <div class="col-md-4 col-sm-12">
             {{ project_form.project_code|as_crispy_field }}
             <medium id="project_code" class="text-muted hidden">
                 <font color="red">
@@ -55,18 +54,20 @@
                 </font>
             </medium>
         </div>
-        <div class="col-4">
+        <div class="col-md-4 col-sm-12">
             {{ project_form.logo|as_crispy_field }}
         </div>
     </div> 
     
-    <div class="row col-12">
-        {{ project_form.description|as_crispy_field }}
+    <div class="row col-md-12 col-sm-12">
+        {{ project_form.description|as_crispy_field|safe }}
     </div>
+
+   
     
     <div class="row">
-        <div class="col-md-12  ">
-            <button id="btnAddProject" class="btn btn-success pull-left">
+        <div class="col-md-12 col-sm-12 ">
+            <button id="btnAddProject" class="col-md-4 col-sm-12 btn btn-success pull-right ">
                 <i class="fa fa-fw fa-lg fa-save"></i>Add project
             </button>
         </div>
@@ -81,6 +82,8 @@
         size: 4,
     });
 
+    $("#div_id_company").removeClass("form-group");
+    $("#div_id_project_status").removeClass("form-group");
     
     // status attribute 
     $('#id_project_status').removeAttr('multiple', "");
@@ -142,7 +145,7 @@
             document.getElementById('id_estimated_end_date').style.borderColor = "red";
             $('#end_date').show();
         }
-        else if(startDate != '' && endDate != '' && sDate < eDate){
+        else if(startDate != '' && endDate != '' && sDate <= eDate){
             document.getElementById("btnAddProject").disabled = false;
             document.getElementById('id_estimated_end_date').style.borderColor = "";
             $('#end_date').hide();
@@ -167,7 +170,7 @@
             document.getElementById('id_estimated_start_date').style.borderColor = "red";
             $('#start_date').show();
         }
-        else if(startDate != '' && endDate != '' && sDate < eDate){
+        else if(startDate != '' && endDate != '' && sDate <= eDate){
             document.getElementById("btnAddProject").disabled = false;
             document.getElementById('id_estimated_start_date').style.borderColor = "";
             $('#start_date').hide();
@@ -215,7 +218,8 @@
                 var day = acronymDate.getUTCDate();
                 var month = acronymDate.getUTCMonth()+1;
                 var year = acronymDate.getUTCFullYear();
-                var final = acronym + "/" + day + "/" + month + "/" + year;
+                var randCode = Math.floor(Math.random() * 1000000000);
+                var final = acronym + "-" + day + "/" + month + "/" + year + "-" + randCode;
 
                 document.getElementById('id_project_code').value=final;
                 $("#project_code").hide();
@@ -266,5 +270,59 @@
         
         return splitStr.join(' '); 
     }
+
+    // $(function(){
+    //     $(".projectDocument").css("display", "none");
+    // });
+
+    // $('#addDocument').on('change', function () {
+    //     if ($(this).is(":checked")) {
+    //         $(".projectDocument").css("display", "block");
+    //     }
+    //     else {
+    //         $(".projectDocument").css("display", "none");
+    //     }
+    // });
+
+    // $("#addProject").on('submit', function(){
+    //     event.preventDefault();
+    //     console.log("Success has come");
+    //     var data = new FormData(this);
+    //     console.log(data);
+    //     var docs = $("#id_description").html();
+    //     alert(docs);
+    //     console.log(docs + " here");
+    //     $.ajax({
+    //         url: "{% url 'addProject' %}",
+    //         type: 'POST',
+    //         data: data,
+    //         cache: false,
+    //         processData: false,
+    //         contentType: false,
+    //         success: function(data) {
+    //             if(data.success === true){
+    //                 $.confirm({
+    //                     title: "Success",
+    //                     content: data.message,
+    //                     type: 'blue',
+    //                     typeAnimated: true,
+    //                     boxWidth: '25%',
+    //                     useBootstrap: false,
+    //                     closeIcon: true,
+    //                         buttons: {
+    //                             formSubmit: {
+    //                                 text: 'OK',
+    //                                 btnClass: 'btn-blue',
+    //                                 action: function () {
+                                        
+    //                                 }
+    //                             }
+    //                         }
+    //                 });
+    //             }
+
+    //         }
+    //     });
+    // });
  
 </script>
