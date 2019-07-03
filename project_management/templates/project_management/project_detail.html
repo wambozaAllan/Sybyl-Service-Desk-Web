@@ -568,8 +568,7 @@
                                                 {% for milestone in milestones %}
 
                                                 <tr>
-                                                    <td><a href="{% url 'milestone_details' milestone.pk %}">
-                                                            {{ milestone.name }}</a></td>
+                                                    <td><a href="{% url 'milestone_details' milestone.pk %}">{{ milestone.name }}</a></td>
                                                     <td>{{ milestone.startdate }}</td>
                                                     <td>{{ milestone.status }}</td>
                                                     <td>{{ milestone.completion }}% </td>

@@ -60,7 +60,21 @@
                             <li class="nav-item"  onclick="listTeam({{ project.id }})">
                                 <a class="nav-link" data-toggle="tab" href="#teams" >
                                     <span class="hidden-sm-up"><i class="fas fa-users"></i></span>
-                                    <span class="hidden-xs-down">Team</span></a>
+                                    <span class="hidden-xs-down">Team</span>
+                                </a>
+                            </li>
+
+                            <li class="nav-item"  onclick="loadURL('{% url 'projectsla'%}', 'projectid={{ project.id }}&projectname={{ project.name }}&b=a&c=a&d=0&ofst=1&maxR=100&sStr=', 'proj-sla', 'GET');">
+                                <a class="nav-link" data-toggle="tab" href="#project_sla" >
+                                    <span class="hidden-sm-up"><i class="fas fa-users"></i></span>
+                                    <span class="hidden-xs-down">Service Level Agreememt</span>
+                                </a>
+                            </li>
+
+                            <li class="nav-item"  onclick="loadURL('{% url 'tabProjectEscalation'%}', 'projectid={{ project.id }}&projectname={{ project.name }}&b=a&c=a&d=0&ofst=1&maxR=100&sStr=', 'proj-escalations', 'GET');">
+                                <a class="nav-link" data-toggle="tab" href="#project_escalations" >
+                                    <span class="hidden-sm-up"><i class="fas fa-users"></i></span>
+                                    <span class="hidden-xs-down">Escalation Levels</span></a>
                             </li>
                             
                         </ul>
@@ -193,6 +207,26 @@
                                     </div>
                                 </div>    
                             </div>
+
+                            <!-- PROJECT SERVICE LEVEL AGREEMENTS -->
+                            <div class="tab-pane p-20" id="project_sla" role="tabpanel">
+                                <div class="card-body proj-sla">
+                                    <div class="text-center">
+                                        <i class="fa fa-spinner fa-spin fa-5x "></i>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- PROJECT ESCALATION LEVELS -->
+                            <div class="tab-pane p-20" id="project_escalations" role="tabpanel">
+                                    <div class="p-20">
+                                        <div class="card-body proj-escalations">
+                                            <div class="text-center">
+                                                <i class="fa fa-spinner fa-spin fa-5x "></i>
+                                            </div>
+                                        </div>
+                                    </div>    
+                                </div>
                         </div>
                     <!-- End Page Content -->
                 <!-- End Container fluid  -->

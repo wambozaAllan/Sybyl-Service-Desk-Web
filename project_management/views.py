@@ -19,7 +19,11 @@ from django.core import serializers
 
 from django.contrib.auth.decorators import user_passes_test, permission_required
 
+<<<<<<< HEAD
+from .models import Project, Milestone, Task, ProjectDocument, Incident, Priority, Status, ProjectTeam, ProjectTeamMember, Role, ProjectForumMessages, ProjectForum, ProjectForumMessageReplies, ServiceLevelAgreement, IncidentComment, EscalationLevel
+=======
 from .models import Project, Milestone, Task, ProjectDocument, Incident, Priority, Status, ProjectTeam, ProjectTeamMember, Role, ProjectForumMessages, ProjectForum, ProjectForumMessageReplies, IncidentComment
+>>>>>>> 2938fe51a8788e60e21becc6841059955ab8dcf6
 from user_management.models import User
 from company_management.models import Company, CompanyCategory
 from .forms import CreateProjectForm, MilestoneForm, TaskForm, DocumentForm, ProjectUpdateForm, MilestoneUpdateForm, ProjectForm, IncidentForm
@@ -2470,6 +2474,319 @@ def delete_forum_reply(request):
         'forum_name': forum_name,
         'msg': msg,
         'forum_id': forum_id,
+    }
+
+    return HttpResponse(template.render(context, request))
+
+
+def project_sla_list(request):
+    projectid = request.GET.get('projectid')
+    projectname = request.GET.get('projectname')
+
+    template = loader.get_template('project_management/project_sla_list.html')
+    if ServiceLevelAgreement.objects.filter(project_id=projectid).exists():
+        sla_obj = ServiceLevelAgreement.objects.filter(project_id=int(projectid)).first()
+        status = True
+    else:
+        status = False
+
+    if status:
+        context = {
+            'status': status,
+            'sla_obj': sla_obj
+        }
+    else:
+        context = {
+            'status': status,
+            'projectid':projectid,
+            'projectname':projectname
+        }
+
+    return HttpResponse(template.render(context, request))
+
+
+class AddSla(CreateView):
+    model = ServiceLevelAgreement
+    fields = ['name', 'project','description', 'response_time', 'resolution_time', 'resolution_duration', 'response_duration']
+
+    template_name = 'project_management/add_sla.html'
+    success_url = reverse_lazy('projectsla')
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        pro_id = self.request.GET.get('pro_id')
+        pro_name = self.request.GET.get('pro_name')
+        context['pro_id'] = pro_id
+        context['pro_name'] = pro_name
+        return context
+
+
+def save_sla(request):
+    sla_name = request.GET.get('sla_name')
+    id_description = request.GET.get('id_description')
+    id_response_time = request.GET.get('id_response_time')
+    id_resolution_time = request.GET.get('id_resolution_time')
+    settingtoggleresp = request.GET.get('settingtoggleresp')
+    settingtoggleresoln = request.GET.get('settingtoggleresoln')
+    id_project = request.GET.get('id_project')
+
+    obj = ServiceLevelAgreement(name=sla_name, project_id=int(id_project), description=id_description, response_time=int(id_response_time),
+               resolution_time=int(id_resolution_time), response_duration=settingtoggleresp, resolution_duration=settingtoggleresoln)
+    obj.save()
+
+    slas = ServiceLevelAgreement.objects.filter(project_id=int(id_project)).first()
+    status = True
+    template = loader.get_template('project_management/project_sla_list.html')
+    context = {
+        'status': status,
+        'sla_obj': slas
+    }
+
+    return HttpResponse(template.render(context, request))
+
+
+class UpdateSLA(UpdateView):
+    model = ServiceLevelAgreement
+    fields = ['name', 'project','description', 'response_time', 'resolution_time', 'resolution_duration', 'response_duration']
+    template_name = 'project_management/update_sla.html'
+    success_url = reverse_lazy('projectsla')
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        sla_id = self.kwargs['pk']
+        response_time = self.get_object().response_time
+        resolution_time = self.get_object().resolution_time
+        resolution_duration = self.get_object().resolution_duration
+        response_duration = self.get_object().response_duration
+        context['sla_id'] = sla_id
+        context['response_time'] = response_time
+        context['resolution_time'] = resolution_time
+        context['resolution_duration'] = resolution_duration
+        context['response_duration'] = response_duration
+        return context
+
+
+def save_sla_update(request):
+    sla_name = request.GET.get('sla_name')
+    id_description = request.GET.get('id_description')
+    id_response_time = request.GET.get('id_response_time')
+    id_resolution_time = request.GET.get('id_resolution_time')
+    settingtoggleresp = request.GET.get('settingtoggleresp')
+    settingtoggleresoln = request.GET.get('settingtoggleresoln')
+    id_project = request.GET.get('id_project')
+    sla_id = request.GET.get('sla_id')
+
+    ServiceLevelAgreement.objects.filter(pk=int(sla_id)).update(name=sla_name, description=id_description, response_time=id_response_time,
+        resolution_time=id_resolution_time, resolution_duration=settingtoggleresoln, response_duration=settingtoggleresp,  project_id=int(id_project))
+    
+    slas = ServiceLevelAgreement.objects.filter(project_id=int(id_project)).first()
+    status = True
+    template = loader.get_template('project_management/project_sla_list.html')
+    context = {
+        'status': status,
+        'sla_obj': slas
+    } 
+
+    return HttpResponse(template.render(context, request))
+
+class ProjectEscalationList(ListView):
+    template_name = 'project_management/project_escalation_list.html'
+    context_object_name = 'esc_levels'
+    
+
+    def get_queryset(self):
+        id_project = int(self.request.GET['projectid'])
+        return EscalationLevel.objects.filter(project_id=int(id_project)).annotate(num_esc=Count('escalated_to'))
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        pro_id = self.request.GET.get('projectid')
+        pro_name = self.request.GET.get('projectname')
+        context['projectid'] = pro_id
+        context['projectname'] = pro_name
+        return context
+
+
+class AddEscalation(CreateView):
+    model = EscalationLevel
+    fields = ['name', 'project','description', 'escalated_by', 'escalated_to', 
+                    'escalation_on', 'escalation_on_duration']
+
+    template_name = 'project_management/add_escalation_level.html'
+    success_url = reverse_lazy('tabProjectEscalation')
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        pro_id = self.request.GET.get('pro_id')
+        pro_name = self.request.GET.get('pro_name')
+        context['projectid'] = pro_id
+        context['projectname'] = pro_name
+        return context
+
+
+def save_escation_level(request):
+    esc_name = request.GET.get('esc_name')
+    id_description = request.GET.get('id_description')
+    id_escalate_on = request.GET.get('id_escalate_on')
+    escsettingtogglebtn = request.GET.get('escsettingtogglebtn')
+    id_project = int(request.GET.get('id_project'))
+    id_escalated_to = request.GET.get('id_escalated_to')
+    project_name = request.GET.get('pro_name')
+    uid = request.user.id
+
+    obj = EscalationLevel(name=esc_name, project_id=id_project, description=id_description, escalated_by_id=uid, escalation_on=id_escalate_on, escalation_on_duration=escsettingtogglebtn)
+    obj.save()
+
+    for i in json.loads(id_escalated_to): 
+        if obj.id is not None:
+            escalation = EscalationLevel.objects.get(id=obj.id)
+            user_escalated_to = User.objects.get(id=int(i))
+            escalation.escalated_to.add(user_escalated_to)
+
+    esc_levels = EscalationLevel.objects.filter(project_id=int(id_project)).annotate(num_esc=Count('escalated_to'))
+    template = loader.get_template('project_management/project_escalation_list.html')
+    context = {
+        'esc_levels': esc_levels,
+        'projectid': id_project,
+        'projectname': project_name,
+    }
+
+    return HttpResponse(template.render(context, request))
+
+
+class UpdateEscalationLevel(UpdateView):
+    model = EscalationLevel
+    fields = ['name', 'project','description', 'escalated_by', 'escalated_to', 'escalation_on', 'escalation_on_duration']
+    template_name = 'project_management/update_escalation.html'
+    success_url = reverse_lazy('tabProjectEscalation')
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        esc_id = self.kwargs['pk']
+        escalation_on = self.get_object().escalation_on
+        escalation_on_duration = self.get_object().escalation_on_duration
+        desc = self.get_object().description
+        context['esc_id'] = esc_id
+        context['escalation_on'] = escalation_on
+        context['escalation_on_duration'] = escalation_on_duration
+        context['desc'] = desc
+        return context
+
+
+def update_escation_level_update(request):
+    esc_name = request.GET.get('esc_name')
+    id_description = request.GET.get('id_description')
+    id_escalate_on = request.GET.get('id_escalate_on')
+    escsettingtogglebtn = request.GET.get('escsettingtogglebtn')
+    id_project = int(request.GET.get('id_project'))
+    esc_id = int(request.GET.get('esc_id'))
+    pro_name = request.GET.get('pro_name')
+
+    uid = request.user.id
+    
+    EscalationLevel.objects.filter(pk=int(esc_id)).update(name=esc_name, project_id=id_project, description=id_description, escalation_on=id_escalate_on, escalation_on_duration=escsettingtogglebtn)
+
+    esc_levels = EscalationLevel.objects.filter(project_id=id_project).annotate(num_esc=Count('escalated_to'))
+    template = loader.get_template('project_management/project_escalation_list.html')
+    context = {
+        'esc_levels': esc_levels,
+        'projectid': id_project,
+        'projectname': pro_name,
+    }
+
+    return HttpResponse(template.render(context, request))
+
+
+def manage_escalated_users(request):
+    esc_id = request.GET.get('esc_id')
+    esc_name = request.GET.get('esc_name')
+    pro_name = request.GET.get('pro_name')
+    pro_id = request.GET.get('pro_id')
+
+    esc_users = User.objects.filter(escalationlevel=int(esc_id))
+    
+    template = loader.get_template('project_management/list_escalated_users.html')
+    context = {
+        'esc_users': esc_users,
+        'esc_id': esc_id,
+        'esc_name': esc_name,
+        'pro_name': pro_name,
+        'pro_id': pro_id,
+    }
+
+    return HttpResponse(template.render(context, request))
+
+
+def de_escalate_user(request):
+    uid = request.GET.get('uid')
+    esc_id = request.GET.get('esc_id')
+    esc_name = request.GET.get('esc_name')
+    pro_id = request.GET.get('pro_id')
+    pro_name = request.GET.get('pro_name')
+
+    esc_id2 = EscalationLevel.objects.get(id=int(esc_id))
+    uid2 = User.objects.get(id=int(uid))
+    esc_id2.escalated_to.remove(uid2)
+
+    esc_users = User.objects.filter(escalationlevel=int(esc_id))
+    
+    template = loader.get_template('project_management/list_escalated_users.html')
+    context = {
+        'esc_users': esc_users,
+        'esc_id': esc_id,
+        'esc_name': esc_name,
+        'pro_name': pro_name,
+        'pro_id': pro_id,
+    }
+
+    return HttpResponse(template.render(context, request))
+
+def escalate_user(request):
+    uid = request.GET.get('uid')
+    esc_id = request.GET.get('esc_id')
+    esc_name = request.GET.get('esc_name')
+    pro_id = request.GET.get('pro_id')
+    pro_name = request.GET.get('pro_name')
+    company_id = request.session['company_id']
+
+    all_company_users = User.objects.filter(company_id=int(company_id))
+    escalated_users = User.objects.filter(escalationlevel=int(esc_id))
+    print('fffff')
+    print(escalated_users)
+    distinct_users = set(all_company_users).difference(set(escalated_users))
+
+    template = loader.get_template('project_management/escalate_new_user.html')
+    context = {
+        'esc_users': distinct_users,
+        'esc_id': esc_id,
+        'esc_name': esc_name,
+        'pro_name': pro_name,
+        'pro_id': pro_id,
+    }
+
+    return HttpResponse(template.render(context, request))
+
+
+def save_escalated_user(request):
+    uid = request.GET.get('uid')
+    esc_id = request.GET.get('esc_id')
+    esc_name = request.GET.get('esc_name')
+    pro_id = request.GET.get('pro_id')
+    pro_name = request.GET.get('pro_name')
+
+    esc_id2 = EscalationLevel.objects.get(id=int(esc_id))
+    uid2 = User.objects.get(id=int(uid))
+    esc_id2.escalated_to.add(uid2)
+
+    esc_users = User.objects.filter(escalationlevel=int(esc_id))
+    
+    template = loader.get_template('project_management/list_escalated_users.html')
+    context = {
+        'esc_users': esc_users,
+        'esc_id': esc_id,
+        'esc_name': esc_name,
+        'pro_name': pro_name,
+        'pro_id': pro_id,
     }
 
     return HttpResponse(template.render(context, request))
