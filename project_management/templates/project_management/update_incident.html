@@ -24,7 +24,7 @@
         <div class="container-fluid">
             <!-- Start Page Content -->
             <div class="row">
-                <div class="col-12">
+                <div class="col-md-12">
                   <div class="card">
                       <div class="card-title">
                           <h4>Update Incident</h4>
@@ -34,11 +34,7 @@
                               <form method="post">
 									{% csrf_token %}
 									<div class="row">
-										<div class="col-12">{{ form.title|as_crispy_field }}</div>
-                                    </div>
-                                    <br>
-									<div class="row">
-                                        <div class="col-4">
+                                        <div class="col-md-6 col-sm-12">
                                             {{ form.project|as_crispy_field }}
                                             <medium id="project_has_team" class="text-muted hidden">
                                                 <font color="red">
@@ -46,26 +42,35 @@
                                                 </font>
                                             </medium>
                                         </div>
-                                        <div class="col-4">{{ form.status|as_crispy_field }}</div>
-                                        <div class="col-4">{{ form.assignee|as_crispy_field }}</div>
+										<div class="col-md-6 col-sm-12">{{ form.title|as_crispy_field }}</div>
                                     </div>
                                     <br>
 									<div class="row">
-                                        <div class="col-4">{{ form.priority|as_crispy_field }}</div>
-                                        <div class="col-4">
+                                        
+                                        <div class="col-md-4 col-sm-12">{{ form.status|as_crispy_field }}</div>
+                                        <div class="col-md-4 col-sm-12">{{ form.assignee|as_crispy_field }}</div>
+                                    </div>
+                                    <br>
+									<div class="row">
+                                        <div class="col-md-4 col-sm-12">{{ form.priority|as_crispy_field }}</div>
+                                        <div class="col-md-4 col-sm-12">
                                             <div><label>Color Code</label></div>
                                             <div><input type="text" id="priority_color" class="form-control" style="width: 50%; background-color: {{ form.priority.color }}; border: 0;"></input></div>
                                         </div>
-										<div class="col-4">{{ form.description|as_crispy_field }}</div>
+										<div class="col-md-4 col-sm-12">{{ form.description|as_crispy_field }}</div>
+                                    </div>
+                                    <div class="row">
+                                        <div class="col-md-4 col-sm-6">{{ form.resolution_time|as_crispy_field }}</div>
+                                        <div class="col-md-4 col-sm-6">{{ form.reopen_time|as_crispy_field }}</div>
+                                        <div class="col-md-4 col-sm-6">{{ form.close_time|as_crispy_field }}</div>
                                     </div>
                                     <br>
                                     <div class="row">
                                         
                                     </div>
 								<div class="row">
-									<div class="col-5"></div>
-									<div class="col-1"><a href="{% url 'listIncidents' %}" class="btn btn-inverse">Cancel</a></div>
-									<div class="col-1"><button type="submit" value="Update" class="btn btn-success">Update</button></div>	
+                                    <div class="col-md-2 col-sm-6"><a href="{% url 'listIncidents' %}" class="btn btn-inverse col-md-12">Cancel</a></div>
+									<div class="col-md-2 col-sm-6"><button type="submit" value="Update" class="btn btn-success col-md-12">Update</button></div>	
                                 </div>
                               </form>
                           </div>
@@ -102,12 +107,11 @@
     
         // project
         $('#id_project').removeAttr('multiple', "");
-        $('#id_project').attr('data-live-search', 'true');
-        $('#id_project').selectpicker({
-            size: 3,
-        });
+        // $('#id_project').attr('data-live-search', 'true');
+        // $('#id_project').selectpicker({
+        //     size: 3,
+        // });
 
-        $("#id_project").prop("disabled", "disabled");
     
         // PRIORITY
         $('#id_priority').removeAttr('multiple', "");
@@ -121,6 +125,40 @@
         $('#id_status').attr('data-live-search', 'true');
         $('#id_status').selectpicker({
             size: 3,
+        });
+
+        $('#id_resolution_time').datepicker({
+            format: "mm/dd/yyyy",
+            autoclose: true,
+            clearBtn: true
+        });
+
+        $('#id_reopen_time').datepicker({
+            format: "mm/dd/yyyy",
+            autoclose: true,
+            clearBtn: true
+        });
+
+        $('#id_close_time').datepicker({
+            format: "mm/dd/yyyy",
+            autoclose: true,
+            clearBtn: true
+        });
+
+        $("#id_resolution_time").attr("placeholder", "mm/dd/yyyy");
+        $("#id_reopen_time").attr("placeholder", "mm/dd/yyyy");
+        $("#id_close_time").attr("placeholder", "mm/dd/yyyy");
+
+        $('#id_resolution_time').on('focus', function(){
+            var date = $(this).blur();
+        });
+
+        $('#id_reopen_time').on('focus', function(){
+            var date = $(this).blur();
+        });
+
+        $('#id_close_time').on('focus', function(){
+            var date = $(this).blur();
         });
     
         // selecting project
