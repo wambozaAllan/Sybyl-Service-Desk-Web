@@ -115,10 +115,8 @@
 		$("#id_assignee").html("");
 		$("#id_creator").html("");
 
-		
-
 		$.ajax({
-			url: '{% url 'getTeamMembers' %}',
+			url: "{% url 'getTeamMembers' %}",
 			data:{
 				project: project_name
 			},
@@ -151,7 +149,7 @@
 		var priority_name = $(this).val();
 
 		$.ajax({
-			url: '{% url 'setColorCode' %}',
+			url: "{% url 'setColorCode' %}",
 			data: {
 				priority: priority_name
 			},
