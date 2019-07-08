@@ -6,97 +6,98 @@
     <div class="basic-form">
         <form class="form-horizontal" action="{% url 'saveMilestone' %}" method="GET" class="form-group" id="postForm">
             {% csrf_token %}
-
-            <div class="row">
-                <div class="col-6" style="display: none;">
-                    <label class="col-form-label  requiredField">Project<span
-                        class="asteriskField">*</span></label>
-                    <div class="" >
-                        <input type="text" value="{{project_name}}" id='id_project_name' class="form-control"/>
-                        <input type="text" value="{{project_id}}" id='id_project' class="form-control" style="display: none;"/>
-                    </div> 
-                </div>
-                <div class="col-6">
-                    <label class="col-form-label  requiredField">Milestone name<span
-                        class="asteriskField">*</span></label>
-                    <div class="">
-                        <input type="text" value="" id='id_name' class="form-control" name="milestone" required/>
-                    </div> 
-                    <medium id="validate_milestone_name" class="text-muted hidden">
-                        <font color="red">
-                            Milestone Name Already Exists!
-                        </font>
-                    </medium>
-                </div>
-                <div class="col-6">
-                    <label class="col-form-label  requiredField">Status<span
-                        class="asteriskField">*</span></label>
-                    <div class="">
-                        <select id='id_status' class="select form-control" name="status"></select>
-                    </div> 
-                </div>
-            </div>
-
-            <div class="row">
-                <div class="col-6">
-                    <label class="col-form-label  requiredField">Start Date<span
-                        class="asteriskField">*</span></label>
-                    <input type="" id='id_startDate' class="form-control" value="" />
-                    <medium id="start_date" class="text-muted hidden">
-                        <font color="red">
-                            Start date has to be less or equal to end date
-                        </font>
-                    </medium>
+            <div class="col-12">
+                <div class="row">
+                    <div class="col-6" style="display: none;">
+                        <label class="col-form-label  requiredField">Project<span
+                            class="asteriskField">*</span></label>
+                        <div class="" >
+                            <input type="text" value="{{project_name}}" id='id_project_name' class="form-control"/>
+                            <input type="text" value="{{project_id}}" id='id_project' class="form-control" style="display: none;"/>
+                        </div> 
+                    </div>
+                    <div class="col-6">
+                        <label class="col-form-label  requiredField">Milestone name<span
+                            class="asteriskField">*</span></label>
+                        <div class="">
+                            <input type="text" value="" id='id_name' class="form-control" name="milestone" required/>
+                        </div> 
+                        <medium id="validate_milestone_name" class="text-muted hidden">
+                            <font color="red">
+                                Milestone Name Already Exists!
+                            </font>
+                        </medium>
+                    </div>
+                    <div class="col-6">
+                        <label class="col-form-label  requiredField">Status<span
+                            class="asteriskField">*</span></label>
+                        <div class="">
+                            <select id='id_status' class="select form-control" name="status"></select>
+                        </div> 
+                    </div>
                 </div>
 
-                <div class="col-6">
-                    <label class="col-form-label  requiredField">End Date</label>
-                    <input type="" id='id_endDate' class="form-control" value="" />
-                    <medium id="end_date" class="text-muted hidden">
-                        <font color="red">
-                            End date has to be greater or equal to start date
-                        </font>
-                    </medium>      
+                <div class="row">
+                    <div class="col-6">
+                        <label class="col-form-label  requiredField">Start Date<span
+                            class="asteriskField">*</span></label>
+                        <input type="" id='id_startDate' class="form-control" value="" />
+                        <medium id="start_date" class="text-muted hidden">
+                            <font color="red">
+                                Start date has to be less or equal to end date
+                            </font>
+                        </medium>
+                    </div>
+
+                    <div class="col-6">
+                        <label class="col-form-label  requiredField">End Date</label>
+                        <input type="" id='id_endDate' class="form-control" value="" />
+                        <medium id="end_date" class="text-muted hidden">
+                            <font color="red">
+                                End date has to be greater or equal to start date
+                            </font>
+                        </medium>      
+                    </div>
+
+                    <div class="col-6 actual">
+                        <label class="col-form-label  requiredField">Actual Start Date<span
+                            class="asteriskField">*</span></label>
+                        <input type="" id='id_actual_start_date' class="form-control" value="" />
+                        <medium id="actual_start_date" class="text-muted hidden">
+                            <font color="red">
+                                Actual start date has to be less or equal to actual end date
+                            </font>
+                        </medium>
+                        <medium id="equal_start" class="text-muted hidden">
+                            <font color="red">
+                                Actual start date has to be greater or equal to start date
+                            </font>
+                        </medium>
+                    </div>
+
+                    <div class="col-6 actual">
+                        <label class="col-form-label  requiredField">Actual End Date<span
+                            class="asteriskField">*</span></label>
+                        <input type="" id='id_actual_end_date' class="form-control" value="" />
+                        <medium id="actual_end_date" class="text-muted hidden">
+                            <font color="red">
+                                Actual end date has to be greater or equal to actual start date
+                            </font>
+                        </medium>      
+                    </div>
+                    
                 </div>
 
-                <div class="col-6 actual">
-                    <label class="col-form-label  requiredField">Actual Start Date<span
-                        class="asteriskField">*</span></label>
-                    <input type="" id='id_actual_start_date' class="form-control" value="" />
-                    <medium id="actual_start_date" class="text-muted hidden">
-                        <font color="red">
-                            Actual start date has to be less or equal to actual end date
-                        </font>
-                    </medium>
-                    <medium id="equal_start" class="text-muted hidden">
-                        <font color="red">
-                            Actual start date has to be greater or equal to start date
-                        </font>
-                    </medium>
+                <div class="row col-12">
+                    <label>Description</label>
+                    <textarea class="form-control" id="id_description"></textarea>
                 </div>
-
-                <div class="col-6 actual">
-                    <label class="col-form-label  requiredField">Actual End Date<span
-                        class="asteriskField">*</span></label>
-                    <input type="" id='id_actual_end_date' class="form-control" value="" />
-                    <medium id="actual_end_date" class="text-muted hidden">
-                        <font color="red">
-                            Actual end date has to be greater or equal to actual start date
-                        </font>
-                    </medium>      
+                <br>
+                <div class="row col-12">
+                    <button type="submit" id="btnAddMiletsone" class="form-control btn btn-success pull-right">
+                        <i class="fa fa-fw fa-lg fa-save"></i>Add Milestone
+                    </button>
                 </div>
-                
-            </div>
-
-            <div class="row col-12">
-                <label>Description</label>
-                <textarea class="form-control" id="id_description"></textarea>
-            </div>
-            <br>
-            <div class="row col-12">
-                <button type="submit" id="btnAddMiletsone" class="form-control btn btn-success pull-right">
-                    <i class="fa fa-fw fa-lg fa-save"></i>Add Milestone
-                </button>
             </div>
             
         </form>
@@ -292,8 +293,7 @@
                 
                 let newData = JSON.parse(data.status);
                 let actual = '';
-                // $("#id_status").html("");
-                $("#id_status").prepend('<option value=""> -----Choose Status----- </option>');
+                $("#id_status").prepend('<option value="" selected disabled> -----Choose Status----- </option>');
                 for(i=0; i<newData.length; i++){
                     actual = newData[i];
                     
