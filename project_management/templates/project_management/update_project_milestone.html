@@ -9,72 +9,99 @@
     <div class="basic-form">
         <form class="form-horizontal" action="{% url 'updateProjectMilestone' milestone_id %}" method="POST"  >
             {% csrf_token %}
-
-            <div class="row">
-                <div class="col-6" style="display: none;"> 
-                    <div id="div_id_project" class="form-group">
-                        <label for="id_project" class="col-form-label ">
-                            Project
-                        </label>
-                        <div class="">
-                                <input name="project" class="textinput textInput form-control" required="" id="id_project" value="{{project_id}}" type="hidden">
-                                <input type="text" name="" class="textinput textInput form-control" required="" value="{{project_name}}" placeholder="" disabled="">
+            <div class="col-12">
+                <div class="row">
+                    <div class="col-6" style="display: none;"> 
+                        <div id="div_id_project" class="form-group">
+                            <label for="id_project" class="col-form-label ">
+                                Project
+                            </label>
+                            <div class="">
+                                    <input name="project" class="textinput textInput form-control" required="" id="id_project" value="{{project_id}}" type="hidden">
+                                    <input type="text" name="" class="textinput textInput form-control" required="" value="{{project_name}}" placeholder="" disabled="">
+                            </div>
                         </div>
                     </div>
-                </div>
-                <div class="col-6">
-                        {{form.name|as_crispy_field}}
-                </div>
-                <div class="col-6">
-                    {{form.status|as_crispy_field}}
+                    <div class="col-6">
+                            {{form.name|as_crispy_field}}
+                    </div>
+                    <div class="col-6">
+                        {{form.status|as_crispy_field}}
+                    </div>
+                    
                 </div>
                 
-            </div>
-            
-            <div class="row">
-                <div class="col-6">
-                    {{form.startdate|as_crispy_field}}
+                <div class="row">
+                    <div class="col-6">
+                        {{form.startdate|as_crispy_field}}
+                        <medium id="start_date" class="text-muted hidden">
+                            <font color="red">
+                                Start date has to be less or equal to end date
+                            </font>
+                        </medium>
+                    </div>
+                    <div class="col-6">
+                        {{form.enddate|as_crispy_field}}
+                        <medium id="end_date" class="text-muted hidden">
+                            <font color="red">
+                                End date has to be greater or equal to start date
+                            </font>
+                        </medium> 
+                    </div>
                 </div>
-                <div class="col-6">
-                    {{form.enddate|as_crispy_field}}
-                </div>
-            </div>
 
-            <div class="row">
-                <div class="col-6">
-                    {{form.actual_startdate|as_crispy_field}}
+                <div class="row">
+                    <div class="col-6">
+                        {{form.actual_startdate|as_crispy_field}}
+                        <medium id="actual_start_date" class="text-muted hidden">
+                            <font color="red">
+                                Actual start date has to be less or equal to actual end date
+                            </font>
+                        </medium>
+                        <medium id="equal_start" class="text-muted hidden">
+                            <font color="red">
+                                Actual start date has to be greater or equal to start date
+                            </font>
+                        </medium>
+                    </div>
+                    <div class="col-6">
+                        {{form.actual_enddate|as_crispy_field}}
+                        <medium id="actual_end_date" class="text-muted hidden">
+                            <font color="red">
+                                Actual end date has to be greater or equal to actual start date
+                            </font>
+                        </medium>
+                    </div>
                 </div>
-                <div class="col-6">
-                    {{form.actual_enddate|as_crispy_field}}
-                </div>
-            </div>
 
-            <div class="row">
-                <div class="col-6">
-                    {{form.description|as_crispy_field}}
-                </div>
-                <div class="col-6">
-                    <button type="submit" id="btnUpdateMiletsone" class="form-control btn btn-success pull-right">
-                        <i class="fa fa-fw fa-lg fa-save"></i>Update Milestone
-                    </button>
+                <div class="row">
+                    <div class="col-6">
+                        {{form.description|as_crispy_field}}
+                    </div>
+                    <div class="col-6">
+                        <button style="margin-top: 8%;" type="submit" id="btnUpdateMilestone" class="form-control btn btn-success pull-right">
+                            <i class="fa fa-fw fa-lg fa-save"></i>Update Milestone
+                        </button>
+                    </div>
                 </div>
             </div>
-            
-            
-            
         </form>
     </div>
 </div>
 
 <script>
+    $('#div_id_status').removeClass("form-group");
+
     $('#id_startdate').datepicker({
         format: "mm/dd/yyyy",
-        autoclose: true
+        autoclose: true,
+        clearBtn: true
     });
 
     $('#id_enddate').datepicker({
         format: "mm/dd/yyyy",
-        autoclose: true
+        autoclose: true,
+        clearBtn: true
     });
 
     $("#id_actual_startdate").prop("type", "text");
@@ -110,6 +137,116 @@
 
     $('#id_startdate').on('focus', function(){
         var date = $(this).blur();
+    });
+
+    // start date
+    $('#id_startdate').on('change', function(){
+        var startDate= document.getElementById('id_startdate').value;
+        var endDate= document.getElementById('id_enddate').value;
+        var actualStartDate= document.getElementById('id_actual_startdate').value;
+
+        var sDate = new Date(startDate);
+        var eDate = new Date(endDate);
+        var actualSDate = new Date(actualStartDate);
+
+        if(startDate != '' && endDate != '' && sDate > eDate){
+            document.getElementById("btnUpdateMilestone").disabled = true;
+            document.getElementById('id_startdate').style.borderColor = "red";
+            $('#start_date').show();
+        }
+        else if(startDate != '' && endDate != '' && sDate <= eDate){
+            document.getElementById("btnUpdateMilestone").disabled = false;
+            document.getElementById('id_startdate').style.borderColor = "";
+            $('#start_date').hide();
+            document.getElementById('id_enddate').style.borderColor = "";
+            $('#end_date').hide();
+        }
+
+        if(actualStartDate != '' && startDate != '' && actualSDate < sDate ){
+            document.getElementById('id_actual_startdate').style.borderColor = "red";
+            $('#equal_start').show();
+        }
+        else if(actualStartDate != '' && startDate != '' && actualSDate >= sDate ){
+            document.getElementById('id_actual_startdate').style.borderColor = "";
+            $('#equal_start').hide();
+        }
+    });
+
+    // end date
+    $('#id_enddate').on('change', function(){
+        var startDate= document.getElementById('id_startdate').value;
+        var endDate= document.getElementById('id_enddate').value;
+
+        var sDate = new Date(startDate);
+        var eDate = new Date(endDate);
+
+        if(startDate != '' && endDate != '' && sDate > eDate){
+            document.getElementById("btnUpdateMilestone").disabled = true;
+            document.getElementById('id_enddate').style.borderColor = "red";
+            $('#end_date').show();
+        }
+        else if(startDate != '' && endDate != '' && sDate <= eDate){
+            document.getElementById("btnUpdateMilestone").disabled = false;
+            document.getElementById('id_enddate').style.borderColor = "";
+            $('#end_date').hide();
+            document.getElementById('id_startdate').style.borderColor = "";
+            $('#start_date').hide();
+        }
+    });
+
+    // actual start date
+    $('#id_actual_startdate').on('change', function(){
+        var actualStartDate= document.getElementById('id_actual_startdate').value;
+        var actualEndDate= document.getElementById('id_actual_enddate').value;
+        var startDate= document.getElementById('id_startdate').value;
+        var endDate= document.getElementById('id_enddate').value;
+
+        var actualSDate = new Date(actualStartDate);
+        var actualEDate = new Date(actualEndDate);
+        var sDate = new Date(startDate);
+
+        if(actualStartDate != '' && actualEndDate != '' && actualSDate > actualEDate){
+            document.getElementById("btnUpdateMilestone").disabled = true;
+            document.getElementById('id_actual_startdate').style.borderColor = "red";
+            $('#actual_start_date').show();
+        }
+        else if(actualStartDate != '' && actualEndDate != '' && actualSDate <= actualEDate){
+            document.getElementById("btnUpdateMilestone").disabled = false;
+            document.getElementById('id_actual_startdate').style.borderColor = "";
+            $('#actual_start_date').hide();
+            document.getElementById('id_actual_enddate').style.borderColor = "";
+            $('#actual_end_date').hide();
+        }
+        
+        else if(actualStartDate != '' && startDate != '' && actualSDate < sDate ){
+            document.getElementById('id_actual_startdate').style.borderColor = "red";
+            $('#equal_start').show();
+        }
+        else if(actualStartDate != '' && startDate != '' && actualSDate >= sDate ){
+            document.getElementById('id_actual_startdate').style.borderColor = "";
+            $('#equal_start').hide();
+        }
+    });
+
+    // actual end date
+    $('#id_actual_enddate').on('change', function(){
+        var actualStartDate= document.getElementById('id_actual_startdate').value;
+        var actualEndDate= document.getElementById('id_actual_enddate').value;
+        var actualSDate = new Date(actualStartDate);
+        var actualEDate = new Date(actualEndDate);
+
+        if(actualStartDate != '' && actualEndDate != '' && actualSDate > actualEDate){
+            document.getElementById("btnUpdateMilestone").disabled = true;
+            document.getElementById('id_actual_enddate').style.borderColor = "red";
+            $('#actual_end_date').show();
+        }
+        else if(actualStartDate != '' && actualEndDate != '' && actualSDate <= actualEDate){
+            document.getElementById("btnUpdateMilestone").disabled = false;
+            document.getElementById('id_actual_startdate').style.borderColor = "";
+            $('#actual_start_date').hide();
+            document.getElementById('id_actual_enddate').style.borderColor = "";
+            $('#actual_end_date').hide();
+        }
     });
 
     $('#id_project_name').attr( 'readOnly' , 'true' );
