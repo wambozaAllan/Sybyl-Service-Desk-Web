@@ -143,8 +143,8 @@
                     $('.close-dialog').click();
                     if (response_data.state === true){
                         $.confirm({
-                            title: response_data.success,
-                            content: 'Task name: ' +response_data.name,
+                            title: "Success",
+                            content: 'Member: ' +response_data.name + " " + response_data.success,
                             type: 'blue',
                             typeAnimated: true,
                             boxWidth: '35%',
