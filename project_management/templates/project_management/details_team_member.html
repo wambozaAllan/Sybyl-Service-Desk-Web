@@ -108,5 +108,45 @@
         });
     }
     
+    function deleteProjectTeamMember(memberid, membername, teamid, teamname) {
+            urldata = "{% url 'deleteProjectTeamMember'%}";
+            $.confirm({
+                title: '<h4>Remove Member: <strong class="text-danger">"' + membername + ' "</strong>! from Team</h4>',
+                content: '',
+                type: 'red',
+                typeAnimated: true,
+                boxWidth: '40%',
+                useBootstrap: false,
+                theme: 'modern',
+                icon: 'fa fa-exclamation-circle',
+                buttons: {
+                    formSubmit: {
+                        text: 'Remove',
+                        btnClass: 'btn-red',
+                        action: function () {
+                            $.ajax({
+                                type: "GET",
+                                cache: false,
+                                data: {
+                                    memberid: memberid,
+                                    teamname: teamname,
+                                    teamid: teamid
+                                },
+                                url: urldata,
+                                success: function (resp) {
+                                    $('.page-wrapper').html(resp);
+                                }
+                            });
+                        }
+                    },
+                    close: {
+                        text: 'Cancel',
+                        btnClass: 'btn-gray',
+                        action: function () {
+                        }
+                    }
+                }
+            });
+        }
 
 </script>
