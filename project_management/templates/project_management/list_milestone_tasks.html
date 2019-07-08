@@ -1,18 +1,20 @@
+<div>
+    <input type="text" value="{{ project_id }}" style="display: none;">
+    <input type="text" value="{{ milestone_id }}" style="display: none;">
+
+
+
 <div class="card-body task-milestone">
     <div class="row page-titles">
-        <div class="col-md-5 align-self-center">
+        <div class="col-md-8 col-sm-12 align-self-center">
             <h5 class="text-primary">MILESTONE: {{ milestone_name }}</h3>
         </div>
-        <div class="col-md-7 align-self-center">
+        <div class="col-md-4 col-sm-12 align-self-center">
             <ol class="breadcrumb">
                 <li class="breadcrumb-item"><a href="#" onclick="listMilestones('{{project_id}}')">Milestones</a></li>
                 <li class="breadcrumb-item active">Task List</li>
             </ol>
         </div>
-        <div>
-            <input type="text" value="{{ project_id }}" style="display: none;" />
-        </div>
-
     </div>
     <div class="card-title">
         <div class="row">
@@ -70,6 +72,8 @@
     </div>
 </div>
 
+</div>
+
 <script>
 
     $('#table_tasks').DataTable();
@@ -98,27 +102,26 @@
                 milestone_id: milestone_id
             },
             url: urldata,
-            success: function(resp){
+            success: function (resp) {
                 $.confirm({
-                    title: '<h3>Add Task: under <strong>' +milestone_name+ '</strong</h3>',
-                    content: '' + resp,
-                    type: 'blue',
-                    theme: 'material',
-                    typeAnimated: true,
-                    boxWidth: '60%',
-                    useBootstrap: false,
-                    closeIcon: true,
-                    buttons: {
-                        close: {
-                            text: 'Close',
-                            btnClass: 'btn-gray close-dialog',
-                            action: function () {
+                        title: '<h3>Add Task:</h3>',
+                        content: '' + resp,
+                        type: 'blue',
+                        theme: 'material',
+                        typeAnimated: true,
+                        boxWidth: '60%',
+                        useBootstrap: false,
+                        closeIcon: true,
+                        buttons: {
+                            close: {
+                                text: 'Close',
+                                btnClass: 'btn-gray close-dialog',
+                                action: function () {
+                                }
                             }
                         }
-                    }
-                });
+                    });
             }
-
         })
     }
 
