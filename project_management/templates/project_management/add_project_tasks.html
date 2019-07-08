@@ -8,17 +8,22 @@
         <form class="form-horizontal" method='GET' id="taskForm">
             {% csrf_token %}
             <div class="row">
-                <div class="col-6" style="display: none;">
+                <div class="col-md-6 col-sm-12" style="display: none;">
                     <label> Project </label>
                     <input type="text" value="{{ project_name }}" id="id_project_name" class="form-control" style="margin-left: 0;"/> 
                     <input type='text' value="{{ project_id }}" class="form-control" style="display: none;" />
                 </div>
                 
-                <div class="col-6">
+                <div class="col-md-6 col-sm-12">
                     <label> Milestone<span class="asteriskField">*</span> </label>
-                    <select id='id_milestone' class="select form-control" name="milestone" required></select>
+                    <select id='id_milestone' class="select form-control" name="milestone" required>
+                        <option value="" selected disabled>--Select status--</option>
+                        {% for milestone in milestones %}
+                            <option value="{{milestone.id}}">{{milestone.name}}</option>
+                        {% endfor %}
+                    </select>
                 </div>
-                <div class="col-6">
+                <div class="col-md-6 col-sm-12">
                     <label>Task Name <span class="asteriskField">*</span></label>
                     <input type="text" value="" class="form-control" required id="id_name" placeholder="name"/> 
                     <medium id="validate_task_name" class="text-muted hidden">
@@ -30,17 +35,26 @@
             </div> 
             
             <div class="row">
-                <div class="col-6">
+                <div class="col-md-6 col-sm-12">
                     <label> Status<span class="asteriskField">*</span> </label>
-                    <select id='id_status' class="select form-control" name="status"></select>
+                    <select id='id_status' class="select form-control" name="status">
+                        <option value="" selected disabled>--Select status--</option>
+                        {% for status in statuses %}
+                            <option value="{{status.id}}">{{status.name}}</option>
+                        {% endfor %}
+                    </select>
                 </div>
-                <div class="col-6">
+                <div class="col-md-6 col-sm-12">
                     <div id="div_id_assigned_to" class="form-group">
                         <label for="id_assigned_to" class="col-form-label">
                             Assigned to
                         </label>
                         <div class="">
                             <select name="assigned_to" class="select form-control" id="id_assigned_to">
+                                <option value="" selected disabled>--Select member--</option>
+                                {% for member in members %}
+                                    <option value="{{member.id}}">{{member.first_name}} {{member.last_name}}</option>
+                                {% endfor %}
                             </select>
                         </div>
                     </div>
@@ -48,9 +62,9 @@
             </div>
             
             <div class="row">
-                <div class="col-6">
+                <div class="col-md-6 col-sm-12">
                     <label> Start Date </label>
-                    <input type="" value="" class="form-control" id="id_startDate"/> 
+                    <input type="text" class="form-control" id="id_startDate"/> 
                     <medium id="start_date" class="text-muted hidden">
                         <font color="red">
                             Start date has to be less or equal to end date
@@ -58,9 +72,9 @@
                     </medium>
                 </div> 
             
-                <div class="col-6">
+                <div class="col-md-6 col-sm-12">
                     <label> End Date </label>
-                    <input type="" value="" class="form-control" id="id_endDate" />
+                    <input type="text" class="form-control" id="id_endDate" />
                     <medium id="end_date" class="text-muted hidden">
                         <font color="red">
                             End date has to be greater or equal to start date
@@ -68,7 +82,7 @@
                     </medium>  
                 </div> 
 
-                <div class="col-6 actual">
+                <div class="col-md-6 col-sm-12 actual">
                     <label class="col-form-label  requiredField">Actual Start Date<span
                         class="asteriskField">*</span></label>
                     <input type="" id='id_actual_start_date' class="form-control" value="" />
@@ -84,7 +98,7 @@
                     </medium>
                 </div>
 
-                <div class="col-6 actual">
+                <div class="col-md-6 col-sm-12 actual">
                     <label class="col-form-label  requiredField">Actual End Date<span
                         class="asteriskField">*</span></label>
                     <input type="" id='id_actual_end_date' class="form-control" value=""  />
@@ -96,15 +110,15 @@
                 </div>
             </div>
             <div class="row">
-                <div class="col-6">
+                <div class="col-md-6 col-sm-12">
                     <label>Description</label>
                     <textarea class="form-control" id="id_description"></textarea>
                 </div>
-                <div class="col-6">
-                    <button type="submit" value="Create Task" class="form-control btn btn-success pull-right" id="btnAddtask">
+                <div  class="col-md-6 col-sm-12">
+                    <button type="submit" value="Create Task" style="margin-top:9%;" class="form-control btn btn-success pull-right" id="btnAddtask">
                         <i class="fa fa-fw fa-lg fa-save"></i>Add Task
                     </button>
-                </div>
+                </div>  
             </div>
             <br>
         </form>
@@ -158,26 +172,31 @@
         var date = $(this).blur();
     });
 
+    $("#div_id_assigned_to").removeClass("form-group");
+
     $("#id_actual_start_date").attr("placeholder", "mm/dd/yyyy");
     $("#id_actual_end_date").attr("placeholder", "mm/dd/yyyy");
 
+    $(document).ready(
+        
+    );
+
     // start date
     $('#id_startDate').on('change', function(){
-        let startDate= document.getElementById('id_startDate').value;
-        let endDate= document.getElementById('id_endDate').value;
-        let actualStartDate= document.getElementById('id_actual_start_date').value;
-
-        let sDate = new Date(startDate);
-        let eDate = new Date(endDate);
-        let actualSDate = new Date(actualStartDate);
+        var startDate = document.getElementById('id_startDate').value;
+        var endDate = document.getElementById('id_endDate').value;
+        var actualStartDate = document.getElementById('id_actual_start_date').value;
+        var sDate = new Date(startDate);
+        var eDate = new Date(endDate);
+        var actualSDate = new Date(actualStartDate);
 
         if(startDate != '' && endDate != '' && sDate > eDate){
-            document.getElementById("btnAddMiletsone").disabled = true;
+            document.getElementById("btnAddTask").disabled = true;
             document.getElementById('id_startDate').style.borderColor = "red";
             $('#start_date').show();
         }
         else if(startDate != '' && endDate != '' && sDate <= eDate){
-            document.getElementById("btnAddMiletsone").disabled = false;
+            document.getElementById("btnAddTask").disabled = false;
             document.getElementById('id_startDate').style.borderColor = "";
             $('#start_date').hide();
             document.getElementById('id_endDate').style.borderColor = "";
@@ -196,18 +215,18 @@
 
     // end date
     $('#id_endDate').on('change', function(){
-        let startDate= document.getElementById('id_startDate').value;
-        let endDate= document.getElementById('id_endDate').value;
-        let sDate = new Date(startDate);
-        let eDate = new Date(endDate);
+        var startDate= document.getElementById('id_startDate').value;
+        var endDate= document.getElementById('id_endDate').value;
+        var sDate = new Date(startDate);
+        var eDate = new Date(endDate);
 
         if(startDate != '' && endDate != '' && sDate > eDate){
-            document.getElementById("btnAddMiletsone").disabled = true;
+            document.getElementById("btnAddTask").disabled = true;
             document.getElementById('id_endDate').style.borderColor = "red";
             $('#end_date').show();
         }
         else if(startDate != '' && endDate != '' && sDate <= eDate){
-            document.getElementById("btnAddMiletsone").disabled = false;
+            document.getElementById("btnAddTask").disabled = false;
             document.getElementById('id_endDate').style.borderColor = "";
             $('#end_date').hide();
             document.getElementById('id_startDate').style.borderColor = "";
@@ -227,12 +246,12 @@
         var sDate = new Date(startDate);
 
         if(actualStartDate != '' && actualEndDate != '' && actualSDate > actualEDate){
-            document.getElementById("btnAddMiletsone").disabled = true;
+            document.getElementById("btnAddTask").disabled = true;
             document.getElementById('id_actual_start_date').style.borderColor = "red";
             $('#actual_start_date').show();
         }
         else if(actualStartDate != '' && actualEndDate != '' && actualSDate <= actualEDate){
-            document.getElementById("btnAddMiletsone").disabled = false;
+            document.getElementById("btnAddTask").disabled = false;
             document.getElementById('id_actual_start_date').style.borderColor = "";
             $('#actual_start_date').hide();
             document.getElementById('id_actual_end_date').style.borderColor = "";
@@ -251,23 +270,23 @@
 
     // actual end date
     $('#id_actual_end_date').on('change', function(){
-        let actualStartDate= document.getElementById('id_actual_start_date').value;
-        let actualEndDate= document.getElementById('id_actual_end_date').value;
-        let startDate= document.getElementById('id_startDate').value;
-        let endDate= document.getElementById('id_endDate').value;
+        var actualStartDate= document.getElementById('id_actual_start_date').value;
+        var actualEndDate= document.getElementById('id_actual_end_date').value;
+        var startDate= document.getElementById('id_startDate').value;
+        var endDate= document.getElementById('id_endDate').value;
 
-        let actualSDate = new Date(actualStartDate);
-        let actualEDate = new Date(actualEndDate);
-        let sDate = new Date(startDate);
-        let eDate = new Date(endDate);
+        var actualSDate = new Date(actualStartDate);
+        var actualEDate = new Date(actualEndDate);
+        var sDate = new Date(startDate);
+        var eDate = new Date(endDate);
 
         if(actualStartDate != '' && actualEndDate != '' && actualSDate > actualEDate){
-            document.getElementById("btnAddMiletsone").disabled = true;
+            document.getElementById("btnAddTask").disabled = true;
             document.getElementById('id_actual_end_date').style.borderColor = "red";
             $('#actual_end_date').show();
         }
         else if(actualStartDate != '' && actualEndDate != '' && actualSDate <= actualEDate){
-            document.getElementById("btnAddMiletsone").disabled = false;
+            document.getElementById("btnAddTask").disabled = false;
             document.getElementById('id_actual_start_date').style.borderColor = "";
             $('#actual_start_date').hide();
             document.getElementById('id_actual_end_date').style.borderColor = "";
@@ -282,68 +301,17 @@
         size: 3
     });
 
+    $('#id_assigned_to').attr('data-live-search', "true"); 
+    $('#id_assigned_to').selectpicker({
+        size: 3
+    });
+
     $('#id_milestone').attr('data-live-search', "true"); 
     $('#id_milestone').selectpicker({
         size: 3
     });
 
     $('#id_name').attr('autocomplete', 'off');
-
-    // $('#id_assigned_to').attr('data-live-search', "true"); 
-    // $('#id_assigned_to').selectpicker({
-    //     size: 3
-    // });
-
-    $(function(){
-        var project_id = $('#id_project').val();
-        var project_name =$('#id_project_name').val();
-        $(".actual").css("display", "none");
-
-        $.ajax({
-            type:"GET",
-            cache: false,
-            url: "{% url 'populateStatusMilestone' %}",
-            data: {
-               project_id: project_id,
-               project_name: project_name
-            },
-            dataType: 'json',
-            success: function (data) {
-                let newMilestone = JSON.parse(data.milestones);
-                let actual = '';
-                $("#id_milestone").html("");
-                $("#id_milestone").prepend('<option value=""> -----Choose Milestone----- </option>');
-                for(i=0; i<newMilestone.length; i++){
-                    actual = newMilestone[i];
-                    
-                    $('#id_milestone').append('<option value="' + actual["pk"] + '">' + actual["fields"]["name"] + '</option>');
-                    $("#id_milestone").selectpicker('refresh');
-                }
-                
-                let newStatus = JSON.parse(data.status);
-                let assign = '';
-                $("#id_status").prepend('<option value=""> -----Choose Status----- </option>');
-                for(i=0; i<newStatus.length; i++){
-                    assign = newStatus[i];
-                    
-                    $('#id_status').append('<option value="' + assign["pk"] + '">' + assign["fields"]["name"] + '</option>');
-                    $("#id_status").selectpicker('refresh');
-                }
-
-                let members = JSON.parse(data.members);
-                let member = '';
-                $("#id_assigned_to").prepend('<option value=""> -----Assign Member----- </option>');
-                for(i=0; i<members.length; i++){
-                    member = members[i];
-                    
-                    $('#id_assigned_to').append('<option value="' + member["pk"] + '">' + member["fields"]["first_name"] +" "+ member['fields']['last_name']+ '</option>');
-                    $("#id_assigned_to").selectpicker('refresh');
-                }
-
-            }
-        });
-    });
-
 
     $('#id_name').on('input', function () {
         var task_name = $(this).val().toUpperCase();
@@ -410,8 +378,6 @@
         let assigned_to = $('#id_assigned_to').val();
         let actual_start = $('#id_actual_start_date').val();
         let actual_end = $('#id_actual_end_date').val();
-
-        console.log(assigned_to+" here we go ");
 
         if(start.length < 1){
             start = 'null';
