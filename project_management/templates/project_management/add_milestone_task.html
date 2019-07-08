@@ -30,7 +30,12 @@
             
                 <div class="col-4">
                     <label>Status</label>
-                    <select id='id_status' class="select form-control" name="status"></select>
+                    <select id='id_task_status' class="select form-control" name="status">
+                        <option value="" selected disabled>--Select status--</option>
+                        {% for status in statuses %}
+                           <option value="{{status.id}}">{{status.name}}</option>
+                        {% endfor %}
+                    </select>
                 </div>
 
                 <div class="col-4">
@@ -40,6 +45,10 @@
                         </label>
                         <div class="">
                             <select name="assigned_to" class="select form-control" id="id_assigned_to">
+                                <option value="" selected disabled>--Select member--</option>
+                                {% for member in members %}
+                                    <option value="{{member.id}}">{{member.first_name}} {{member.last_name}}</option>
+                                {% endfor %}  
                             </select>
                         </div>
                     </div>
@@ -50,14 +59,12 @@
 
             <div class="row">
                 <div class="col-6">
-                    <label class="col-form-label  requiredField">Start Date<span
-                        class="asteriskField">*</span></label>
+                    <label class="col-form-label  requiredField">Start Date</label>
                     <input type="" id='id_startDate' class="form-control" value="" />
                 </div>
 
                 <div class="col-6">
-                    <label class="col-form-label  requiredField">End Date<span
-                        class="asteriskField">*</span></label>
+                    <label class="col-form-label  requiredField">End Date</label>
                     <input type="" id='id_endDate' class="form-control" value="" />      
                 </div>
 
@@ -81,11 +88,10 @@
                 </div>
             </div>
             <br>
-            <div class="row">
-                <button id="btnAddMilestoneTask" class="btn btn-success">
-                    <i class="fa fa-fw fa-lg fa-save"></i>Add Task
-                </button>  
-            </div>
+
+            <button id="btnAddMilestoneTask" class="btn btn-success pull-right col-md-3">
+                <i class="fa fa-fw fa-lg fa-save"></i>Add Task
+            </button> 
             
 
         </form>
@@ -146,54 +152,135 @@
 
     $('#id_milestone_name').attr('readOnly', 'true');
 
-    $('#id_status').attr('data-live-search', "true"); 
-    $('#id_status').selectpicker({
+    $('#id_task_status').attr('data-live-search', "true"); 
+    $('#id_task_status').selectpicker({
         size: 3
     });
 
-    $(function(){
-        let project_id = $('#project_id').val();
-        let milestone_id = $('#id_milestone').val();
-        let start_date = $('#id_startDate').val();
-        let end_date = $('#id_endDate').val();
+    $('#id_name').attr('autocomplete', 'off');
 
-        $(".actual").css("display", "none");
+    $('#div_id_assigned_to').removeClass("form-group");
 
-        urldata = "{% url 'addMilestoneTasks' %}";
-        $.ajax({
-            type: "GET",
-            cache: false,
-            data: {
-                project_id: project_id
-            },
-            url: urldata,
-            success: function (data) {
-                let statuses = JSON.parse(data.statuses);
-
-                // let actual = '';
-                // $("#id_status").html("");
-                $("#id_status").prepend('<option value=""> -----Choose Status----- </option>');
-                for(i=0; i<statuses.length; i++){
-                    let actual = statuses[i];
-                    
-                    $('#id_status').append('<option value="' + actual["pk"] + '">' + actual["fields"]["name"] + '</option>');
-                    $("#id_status").selectpicker('refresh');
-                }
-
-                let members = JSON.parse(data.members);
-                console.log(members);
-                let member = '';
-                $("#id_assigned_to").prepend('<option value=""> -----Assign Member----- </option>');
-                for(i=0; i<members.length; i++){
-                    member = members[i];
-                    
-                    $('#id_assigned_to').append('<option value="' + member["pk"] + '">' + member["fields"]["first_name"] +" "+ member['fields']['last_name']+ '</option>');
-                    $("#id_assigned_to").selectpicker('refresh');
-                }
-            }
-        });
-               
+    $('#id_assigned_to').attr('data-live-search', "true"); 
+    $('#id_assigned_to').selectpicker({
+        size: 3
     });
+
+    // start date
+    $('#id_startDate').on('change', function(){
+        var startDate= document.getElementById('id_startDate').value;
+        var endDate= document.getElementById('id_endDate').value;
+        var actualStartDate= document.getElementById('id_actual_start_date').value;
+
+        var sDate = new Date(startDate);
+        var eDate = new Date(endDate);
+        var actualSDate = new Date(actualStartDate);
+
+        if(startDate != '' && endDate != '' && sDate > eDate){
+            document.getElementById("btnAddMilestoneTask").disabled = true;
+            document.getElementById('id_startDate').style.borderColor = "red";
+            $('#start_date').show();
+        }
+        else if(startDate != '' && endDate != '' && sDate <= eDate){
+            document.getElementById("btnAddMilestoneTask").disabled = false;
+            document.getElementById('id_startDate').style.borderColor = "";
+            $('#start_date').hide();
+            document.getElementById('id_endDate').style.borderColor = "";
+            $('#end_date').hide();
+        }
+
+        if(actualStartDate != '' && startDate != '' && actualSDate < sDate ){
+            document.getElementById('id_actual_start_date').style.borderColor = "red";
+            $('#equal_start').show();
+        }
+        else if(actualStartDate != '' && startDate != '' && actualSDate >= sDate ){
+            document.getElementById('id_actual_start_date').style.borderColor = "";
+            $('#equal_start').hide();
+        }
+    });
+
+    // end date
+    $('#id_endDate').on('change', function(){
+        var startDate= document.getElementById('id_startDate').value;
+        var endDate= document.getElementById('id_endDate').value;
+
+        var sDate = new Date(startDate);
+        var eDate = new Date(endDate);
+
+        if(startDate != '' && endDate != '' && sDate > eDate){
+            document.getElementById("btnAddMilestoneTask").disabled = true;
+            document.getElementById('id_endDate').style.borderColor = "red";
+            $('#end_date').show();
+        }
+        else if(startDate != '' && endDate != '' && sDate <= eDate){
+            document.getElementById("btnAddMilestoneTask").disabled = false;
+            document.getElementById('id_endDate').style.borderColor = "";
+            $('#end_date').hide();
+            document.getElementById('id_startDate').style.borderColor = "";
+            $('#start_date').hide();
+        }
+    });
+
+    // actual start date
+    // $('#id_actual_start_date').on('change', function(){
+    //     var actualStartDate= document.getElementById('id_actual_start_date').value;
+    //     var actualEndDate= document.getElementById('id_actual_end_date').value;
+    //     var startDate= document.getElementById('id_startDate').value;
+    //     var endDate= document.getElementById('id_endDate').value;
+
+    //     var actualSDate = new Date(actualStartDate);
+    //     var actualEDate = new Date(actualEndDate);
+    //     var sDate = new Date(startDate);
+
+    //     if(actualStartDate != '' && actualEndDate != '' && actualSDate > actualEDate){
+    //         document.getElementById("btnAddMilestoneTask").disabled = true;
+    //         document.getElementById('id_actual_start_date').style.borderColor = "red";
+    //         $('#actual_start_date').show();
+    //     }
+    //     else if(actualStartDate != '' && actualEndDate != '' && actualSDate <= actualEDate){
+    //         document.getElementById("btnAddMilestoneTask").disabled = false;
+    //         document.getElementById('id_actual_start_date').style.borderColor = "";
+    //         $('#actual_start_date').hide();
+    //         document.getElementById('id_actual_end_date').style.borderColor = "";
+    //         $('#actual_end_date').hide();
+    //     }
+        
+    //     if(actualStartDate != '' && startDate != '' && actualSDate < sDate ){
+    //         document.getElementById('id_actual_start_date').style.borderColor = "red";
+    //         $('#equal_start').show();
+    //     }
+    //     else if(actualStartDate != '' && startDate != '' && actualSDate >= sDate ){
+    //         document.getElementById('id_actual_start_date').style.borderColor = "";
+    //         $('#equal_start').hide();
+    //     }
+    // });
+
+    // // actual end date
+    // $('#id_actual_end_date').on('change', function(){
+    //     var actualStartDate= document.getElementById('id_actual_start_date').value;
+    //     var actualEndDate= document.getElementById('id_actual_end_date').value;
+    //     var startDate= document.getElementById('id_startDate').value;
+    //     var endDate= document.getElementById('id_endDate').value;
+
+    //     var actualSDate = new Date(actualStartDate);
+    //     var actualEDate = new Date(actualEndDate);
+    //     var sDate = new Date(startDate);
+    //     var eDate = new Date(endDate);
+
+    //     if(actualStartDate != '' && actualEndDate != '' && actualSDate > actualEDate){
+    //         document.getElementById("btnAddMilestoneTask").disabled = true;
+    //         document.getElementById('id_actual_end_date').style.borderColor = "red";
+    //         $('#actual_end_date').show();
+    //     }
+    //     else if(actualStartDate != '' && actualEndDate != '' && actualSDate <= actualEDate){
+    //         document.getElementById("btnAddMilestoneTask").disabled = false;
+    //         document.getElementById('id_actual_start_date').style.borderColor = "";
+    //         $('#actual_start_date').hide();
+    //         document.getElementById('id_actual_end_date').style.borderColor = "";
+    //         $('#actual_end_date').hide();
+    //     }
+    // });
+
    
     $('#id_name').on('input', function () {
         var task_name = $(this).val().toUpperCase();
@@ -219,7 +306,7 @@
         });
     });
 
-    $('#id_status').on('change', function(){
+    $('#id_task_status').on('change', function(){
         var statusId = $(this).val();
 
         $.ajax({
@@ -242,6 +329,10 @@
         })
     });
 
+    $(function(){
+        $(".actual").css("display", "none");
+    })
+
     $('#milestoneTaskForm').on('submit', function(){
         event.preventDefault();
         console.log("task under milestone")
@@ -254,9 +345,30 @@
         let name = $('#id_name').val();
         let start = $('#id_startDate').val();
         let end = $('#id_endDate').val();
+        let actual_start = $('#id_actual_start_date').val();
+        let actual_end = $('#id_actual_end_date').val();
         let description = $('#id_description').val();
         let milestone_id = $('#id_milestone').val();
-        let status_id = $('#id_status').val();
+        let status_id = $('#id_task_status').val();
+
+        console.log(actual_end + " " + actual_start);
+
+        if(start.length < 1){
+            start = 'null';
+        }
+
+        if(end.length < 1){
+            end = 'null';
+        }
+
+        if(actual_start.length < 1){
+            actual_start = 'null';
+        }
+
+        if(actual_end.length < 1){
+            actual_end = 'null';
+        }
+    
     
         urlData = "{% url 'saveMilestoneTask'%}"
         $.ajax({
@@ -270,6 +382,8 @@
                 name: name,
                 start_date: start,
                 end_date: end,
+                actual_start: actual_start,
+                actual_end: actual_end,
                 description: description,
                 milestone: milestone_id,
                 status_id:status_id
