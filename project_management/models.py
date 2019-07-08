@@ -187,8 +187,8 @@ class ProjectTeamMember(models.Model):
 
 
 class ProjectDocument(models.Model):
-    title = models.CharField(max_length=255)
-    description = models.CharField(max_length=255, null=True, blank=True)
+    title = models.CharField(max_length=255, null=True, blank=True)
+    document_description = models.CharField(max_length=255, null=True, blank=True)
     document = models.FileField(upload_to='documents/projects/')
     project = models.ForeignKey(Project, on_delete=models.CASCADE)
     created_by = models.ForeignKey(User, on_delete=models.CASCADE)
@@ -339,11 +339,10 @@ class IncidentAttachment(models.Model):
 # IncidentComment
 class IncidentComment(models.Model):
     incident = models.ForeignKey(Incident, on_delete=models.DO_NOTHING)
-    comment = models.CharField(max_length=200)
+    comment = models.TextField()
     created_time = models.DateTimeField(auto_now_add=True)
     modified_time = models.DateTimeField(auto_now=True)
-    document = models.FileField(upload_to='documents/incidents', null=True, blank=True)
-    image = models.ImageField(upload_to='images/incidents', null=True, blank=True)
+    attachment = models.FileField(upload_to="attachments/incidents", null=True, blank=True)
     created_by = models.ForeignKey(User, null=True, blank=True, on_delete=models.SET_NULL)
 
     class Meta():
