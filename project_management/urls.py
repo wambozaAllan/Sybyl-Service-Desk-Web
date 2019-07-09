@@ -38,9 +38,10 @@ urlpatterns = [
     path('onholdMilestones/', views.onhold_project_milestones, name='onholdMilestones'),
     path('terminatedMilestones/', views.terminated_project_milestones, name='terminatedMilestones'),
     path('completedMilestones/', views.completed_project_milestones, name='completedMilestones'),
-
-    path('populateTaskView', views.populate_task_view, name='populateTaskView'),
+  
+    path('populateTaskView', views.populate_task_view, name='populateTaskView'),    
     path('populateStatusMilestone', views.populate_status_milestone, name='populateStatusMilestone'),
+
     path('tasks/', views.TaskListView.as_view(), name='listTasks'),
     path('tasks/', views.TaskListView.as_view(), name='task_list'),
     path('task/<int:pk>/', views.TaskDetailView.as_view(), name='task_details'),
@@ -130,7 +131,7 @@ urlpatterns = [
 
     path('listTeam/', views.list_project_team, name='tabListTeam'),
     path('viewAssignedMembers/', views.view_assigned_members, name='viewAssignedMembers'),
-  
+
     path('projectsla/', views.project_sla_list, name='projectsla'),
     path('addSLA/', views.AddSla.as_view(), name='addSla'),
     path('saveSLA/', views.save_sla, name='saveSLA'),

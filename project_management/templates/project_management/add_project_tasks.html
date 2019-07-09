@@ -16,7 +16,12 @@
                 
                 <div class="col-md-6 col-sm-12">
                     <label> Milestone<span class="asteriskField">*</span> </label>
-                    <select id='id_milestone' class="select form-control" name="milestone" required></select>
+                    <select id='id_milestone' class="select form-control" name="milestone" required>
+                        <option value="" selected disabled>--Select status--</option>
+                        {% for milestone in milestones %}
+                            <option value="{{milestone.id}}">{{milestone.name}}</option>
+                        {% endfor %}
+                    </select>
                 </div>
                 <div class="col-md-6 col-sm-12">
                     <label>Task Name <span class="asteriskField">*</span></label>
@@ -32,7 +37,12 @@
             <div class="row">
                 <div class="col-md-6 col-sm-12">
                     <label> Status<span class="asteriskField">*</span> </label>
-                    <select id='id_status' class="select form-control" name="status"></select>
+                    <select id='id_status' class="select form-control" name="status">
+                        <option value="" selected disabled>--Select status--</option>
+                        {% for status in statuses %}
+                            <option value="{{status.id}}">{{status.name}}</option>
+                        {% endfor %}
+                    </select>
                 </div>
                 <div class="col-md-6 col-sm-12">
                     <div id="div_id_assigned_to" class="form-group">
@@ -41,6 +51,10 @@
                         </label>
                         <div class="">
                             <select name="assigned_to" class="select form-control" id="id_assigned_to">
+                                <option value="" selected disabled>--Select member--</option>
+                                {% for member in members %}
+                                    <option value="{{member.id}}">{{member.first_name}} {{member.last_name}}</option>
+                                {% endfor %}
                             </select>
                         </div>
                     </div>
@@ -96,16 +110,15 @@
                 </div>
             </div>
             <div class="row">
-                <div class="col-md-12 col-sm-12">
+                <div class="col-md-6 col-sm-12">
                     <label>Description</label>
                     <textarea class="form-control" id="id_description"></textarea>
-                    <button type="submit" value="Create Task" class="col-md-4 form-control btn btn-success pull-right" id="btnAddtask">
+                </div>
+                <div  class="col-md-6 col-sm-12">
+                    <button type="submit" value="Create Task" style="margin-top:9%;" class="form-control btn btn-success pull-right" id="btnAddtask">
                         <i class="fa fa-fw fa-lg fa-save"></i>Add Task
                     </button>
-                </div>
-                
-                    
-                
+                </div>  
             </div>
             <br>
         </form>
@@ -349,7 +362,6 @@
             }
         });
     });
-
 
     $('#id_name').on('input', function () {
         var task_name = $(this).val().toUpperCase();
