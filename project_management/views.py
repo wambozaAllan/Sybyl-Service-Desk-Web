@@ -19,7 +19,7 @@ from django.core import serializers
 
 from django.contrib.auth.decorators import user_passes_test, permission_required
 
-from .models import Project, Milestone, Task, ProjectDocument, Incident, Priority, Status, ProjectTeam, ProjectTeamMember, Role, ProjectForumMessages, ProjectForum, ProjectForumMessageReplies, IncidentComment
+from .models import Project, Milestone, Task, ProjectDocument, Incident, Priority, Status, ProjectTeam, ProjectTeamMember, Role, ProjectForumMessages, ProjectForum, ProjectForumMessageReplies, ServiceLevelAgreement, IncidentComment, EscalationLevel
 from user_management.models import User
 from company_management.models import Company, CompanyCategory
 from .forms import CreateProjectForm, MilestoneForm, TaskForm, DocumentForm, ProjectUpdateForm, MilestoneUpdateForm, ProjectForm, IncidentForm
@@ -511,6 +511,22 @@ def onhold_project_milestones(request):
     milestones_exist = Milestone.objects.filter(project_id=project.id).exists()
     if milestones_exist:
         milestones = Milestone.objects.filter(project_id=project.id)
+        open_status = Status.objects.get(id=1)
+        open_milestones = Milestone.objects.filter(project_id=project.id, status=open_status)
+
+        open_count = Milestone.objects.filter(project_id=project.id, status=open_status).count()
+
+        onhold_status = Status.objects.get(id=2)
+        onhold_milestones = Milestone.objects.filter(project_id=project.id, status=onhold_status)
+        onhold_count = Milestone.objects.filter(project_id=project.id, status=onhold_status).count()
+
+        terminated_status = Status.objects.get(id=3)
+        terminated_milestones = Milestone.objects.filter(project_id=project.id, status=terminated_status)
+        terminated_count = Milestone.objects.filter(project_id=project.id, status=terminated_status).count()
+
+        completed_status = Status.objects.get(id=4)
+        completed_milestones = Milestone.objects.filter(project_id=project.id, status=completed_status)
+        completed_count = Milestone.objects.filter(project_id=project.id, status=completed_status).count()
 
         onhold_status = Status.objects.get(id=2)
         onhold_milestones = Milestone.objects.filter(project_id=project.id, status=onhold_status)
@@ -551,6 +567,11 @@ def terminated_project_milestones(request):
             'project_id': project.id,
             'project_name': project.name,
             'terminated_milestones': terminated_milestones,
+            'open_milestones': open_milestones,
+            'completed_count': completed_count,
+            'onhold_count': onhold_count,
+            'terminated_count': terminated_count,
+            'open_count': open_count
         }
 
         return HttpResponse(template.render(context, request))
@@ -561,8 +582,7 @@ def terminated_project_milestones(request):
             'project_name': project.name,
             'milestones': ''
         }
-
-        return HttpResponse(template.render(context, request))
+        return HttpResponse(template.render(context, request))  
 
 
 def view_tasks_under_milestone(request):
@@ -989,7 +1009,6 @@ class UpdateMilestoneTask(UpdateView):
         context['task_id'] = task_id
         return context
 
-
 def tasklist_by_project(request):
     """
     Tasks allocated to project
@@ -1048,8 +1067,7 @@ def tasklist_by_project(request):
             'state': False
         }
 
-    return HttpResponse(template.render(context, request))
-
+return HttpResponse(template.render(context, request))
 
 def onhold_tasks(request):
     project_id = request.GET.get("project_id")
@@ -1086,8 +1104,7 @@ def onhold_tasks(request):
             'state': False
         }
 
-    return HttpResponse(template.render(context, request))
-
+return HttpResponse(template.render(context, request))
 
 def terminated_tasks(request):
     project_id = request.GET.get("project_id")
@@ -1128,6 +1145,69 @@ def terminated_tasks(request):
     return HttpResponse(template.render(context, request))
 
 
+
+def completed_tasks(request):
+    project_id = request.GET.get("project_id")
+    project = get_object_or_404(Project, pk=int(project_id))
+
+    template = loader.get_template('project_management/completed_tasks.html')
+
+    state = True
+    completed_status = Status.objects.get(id=4)
+
+    if Milestone.objects.filter(project_id=project_id).exists():
+        if Task.objects.filter(project_id=project.id, status=completed_status).exists():
+            completed_tasks = Task.objects.filter(project_id=project.id, status=completed_status)
+
+            context = {
+                'project_name': project.name,
+                'project_id': project.id,
+                'completed_tasks': completed_tasks,
+                'state': state
+            }
+
+        else:
+            context = {
+                'project_name': project.name,
+                'project_id': project.id,
+                'completed_tasks': "",
+                'state': state
+            }
+
+
+def terminated_tasks(request):
+    project_id = request.GET.get("project_id")
+    project = get_object_or_404(Project, pk=int(project_id))
+
+    template = loader.get_template('project_management/terminated_tasks.html')
+
+    tasks = Task.objects.filter(project_id= project_id).exists()
+    state = True
+
+    if Milestone.objects.filter(project_id=project_id).exists():
+        if tasks:
+            terminated_status = Status.objects.get(id=3)
+            terminated_tasks = Task.objects.filter(project_id=project.id, status=terminated_status)
+
+            context = {
+                'project_name': project.name,
+                'project_id': project.id,
+                'terminated_tasks': terminated_tasks,
+                'state': state,
+            }
+
+            return HttpResponse(template.render(context, request))
+
+        else:
+            state = True
+            context = {
+                'project_name': project.name,
+                'project_id': project.id,
+                'tasks': '',
+                'state': state
+            }
+
+            return HttpResponse(template.render(context, request))
 def completed_tasks(request):
     project_id = request.GET.get("project_id")
     project = get_object_or_404(Project, pk=int(project_id))
@@ -2432,4 +2512,4 @@ def delete_forum_reply(request):
         'forum_id': forum_id,
     }
 
-    return HttpResponse(template.render(context, request))
+return HttpResponse(template.render(context, request))

@@ -38,8 +38,10 @@ urlpatterns = [
     path('onholdMilestones/', views.onhold_project_milestones, name='onholdMilestones'),
     path('terminatedMilestones/', views.terminated_project_milestones, name='terminatedMilestones'),
     path('completedMilestones/', views.completed_project_milestones, name='completedMilestones'),
-
+  
     path('populateTaskView', views.populate_task_view, name='populateTaskView'),    
+    path('populateStatusMilestone', views.populate_status_milestone, name='populateStatusMilestone'),
+
     path('tasks/', views.TaskListView.as_view(), name='listTasks'),
     path('tasks/', views.TaskListView.as_view(), name='task_list'),
     path('task/<int:pk>/', views.TaskDetailView.as_view(), name='task_details'),
@@ -129,6 +131,20 @@ urlpatterns = [
 
     path('listTeam/', views.list_project_team, name='tabListTeam'),
     path('viewAssignedMembers/', views.view_assigned_members, name='viewAssignedMembers'),
-    
 
+    path('projectsla/', views.project_sla_list, name='projectsla'),
+    path('addSLA/', views.AddSla.as_view(), name='addSla'),
+    path('saveSLA/', views.save_sla, name='saveSLA'),
+    path('updateSLA/<int:pk>/', views.UpdateSLA.as_view(), name='updateSLA'),
+    path('update2SLA/', views.save_sla_update, name='saveSLAupdate'),
+
+    path('projectEscalations/', views.ProjectEscalationList.as_view(), name='tabProjectEscalation'),
+    path('addEscalationLevel/', views.AddEscalation.as_view(), name='addEscalationLevel'),
+    path('saveEscalationLevel/', views.save_escation_level, name='saveEscalationLevels'),
+    path('updateEscalation/<int:pk>/', views.UpdateEscalationLevel.as_view(), name='updateEscalation'),
+    path('saveEscalationUpdate/', views.update_escation_level_update, name='saveEscalationUpdate'),
+    path('manageEscalatedUsers/', views.manage_escalated_users, name='manageEscalatedUsers'),
+    path('deEscalate/', views.de_escalate_user, name='deEscalateUser'),
+    path('escalateUser/', views.escalate_user, name='escalateNewUser'),
+    path('saveEscalatedUser/', views.save_escalated_user, name='saveEscalatedUser'),
 ]

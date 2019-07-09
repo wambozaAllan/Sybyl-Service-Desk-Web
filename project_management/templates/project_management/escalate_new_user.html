@@ -1,0 +1,74 @@
+<div class="col-12 row">
+    <div class="col-1"></div>
+    <div class="col-10">
+        <div id="" class="form-group">
+            <label for="id_name" class="col-form-label  requiredField">Escalation Level<span class="asteriskField">*</span>
+            </label>
+            <div class="">
+                <input type="text" class="textinput textInput form-control" required="" disabled value="{{esc_name}}">
+                <input type="hidden" value="{{esc_id}}" id="esc_id">
+                <input type="hidden" value="{{pro_name}}" id="pro_name">
+                <input type="hidden" value="{{pro_id}}" id="pro_id">
+                <input type="hidden" value="{{esc_name}}" id="esc_name">
+            </div>
+        </div>
+
+        <div id="div_id_branch" class="form-group">
+            <label for="id_branch" class="col-form-label  requiredField">User<span class="asteriskField">*</span>
+            </label>
+            <div class="">
+                <select name="branch" class="select form-control" id="escalate_to">
+                    <option value="" selected disabled>  --select user--</option>
+                    {% for u in esc_users %}
+                        <option value="{{ u.id }}">{{ u.first_name }} {{ u.last_name }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+        </div>
+        <button id="btnEscalateNewUser" class="btn btn-success pull-right">
+            <span class="btn-save-user"><i class="fa fa-fw fa-lg fa-save"></i>Submit</span>
+        </button>
+    </div>
+    <div class="col-1"></div>
+</div>
+
+<script>
+    $('#btnEscalateNewUser').click(function () {
+        var esc_id = $('#esc_id').val();
+        var pro_name = $('#pro_name').val();
+        var pro_id = $('#pro_id').val();
+        var esc_name = $('#esc_name').val();
+        var uid = $('#escalate_to').val();
+
+        if (uid < 1) {
+            if (uid < 1) {
+                $('#escalate_to').css({ "border": '2px solid #00635a' });
+            }
+        } else {
+            document.getElementById('btnEscalateNewUser').disabled = true;
+            urldata = "{% url 'saveEscalatedUser'%}";
+            $.ajax({
+                type: "GET",
+                cache: false,
+                data: {
+                    esc_id: esc_id,
+                    esc_name: esc_name,
+                    pro_id: pro_id,
+                    pro_name: pro_name,
+                    uid: uid
+                },
+                url: urldata,
+                success: function (resp) {
+                    $('.close-dialog').click();
+                    $('.save-esc-pane1').html(resp);
+                }
+            });
+        }
+    });
+
+    $('#escalate_to').on('input', function () {
+        $('#escalate_to').css({ "border": '1px solid #ced4da;' });
+    });
+
+</script>
+

@@ -2,15 +2,6 @@
 {% load static %}
 
 {% block content %}
-<style>
-    .isDisabled {
-        color: currentColor;
-        cursor: not-allowed;
-        opacity: 0.5;
-        text-decoration: none;
-    }
-</style>
-
 <!-- Main wrapper  -->
 <div id="main-wrapper">
     <!-- header header  -->
@@ -69,32 +60,32 @@
                                             <td>{{ userdetails.gender }}</td>
                                             <td>{{ userdetails.department }}</td>
                                             {% if userdetails.is_active %}
-                                            <td class="text-center"><span
-                                                    class="badge badge-success"><strong>Active</strong></span>
-                                            </td>
+                                                <td class="text-center"><span
+                                                        class="badge badge-success"><strong>Active</strong></span>
+                                                </td>
                                             {% else %}
-                                            <td class="text-center"><span
-                                                    class="badge badge-danger"><strong>Inactive</strong></span>
-                                            </td>
+                                                <td class="text-center"><span
+                                                        class="badge badge-danger"><strong>Inactive</strong></span>
+                                                </td>
                                             {% endif %}
 
                                             {% if userdetails.is_superuser %}
-                                            <td class="text-center"><span class="badge badge-success"><strong>Super
-                                                        User</strong></span>
-                                            </td>
+                                                <td class="text-center"><span class="badge badge-success"><strong>Super
+                                                            User</strong></span>
+                                                </td>
                                             {% else %}
-                                            <td class="text-center"><span class="badge badge-secondary"><strong>Normal
-                                                        User</strong></span>
-                                            </td>
+                                                <td class="text-center"><span class="badge badge-secondary"><strong>Normal
+                                                            User</strong></span>
+                                                </td>
                                             {% endif %}
                                             {% if userdetails.group %}
-                                            <td class="text-center"><span
-                                                    class="badge badge-success"><strong>{{ userdetails.group }}</strong></span>
-                                            </td>
+                                                <td class="text-center"><span
+                                                        class="badge badge-success"><strong>{{ userdetails.group }}</strong></span>
+                                                </td>
                                             {% else %}
-                                            <td class="text-center"><span
-                                                    class="badge badge-warning"><strong>Un-assigned</strong></span>
-                                            </td>
+                                                <td class="text-center"><span
+                                                        class="badge badge-warning"><strong>Un-assigned</strong></span>
+                                                </td>
                                             {% endif %}
                                             <td>
                                                 {% if userdetails.last_login %}

@@ -10,7 +10,7 @@ from .managers import UserManager
 
 # CustomUser
 class User(AbstractBaseUser, PermissionsMixin):
-    groups = models.ManyToManyField(Group, related_name='groups', blank=True, null=True)
+    groups = models.ManyToManyField(Group, related_name='groups')
     company = models.ForeignKey(Company, default=1, on_delete=models.CASCADE)
     branch = models.ForeignKey(Branch, default=1, on_delete=models.CASCADE)
     department = models.ForeignKey(Department, default=1, on_delete=models.CASCADE)

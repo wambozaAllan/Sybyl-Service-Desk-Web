@@ -1,0 +1,147 @@
+<div id="save-esc-pane">
+    {% load crispy_forms_tags %} {% csrf_token %}
+    <input id="project_name1" value="{{projectname}}" type="hidden">
+    <div class="row col-12">
+        <div class="col-6">
+
+            {{ form.name | as_crispy_field }}
+
+            {{ form.escalated_to | as_crispy_field }}
+
+            <div id="div_id_description" class="form-group">
+                <label for="id_description" class="col-form-label ">
+                    Description
+                </label>
+                <div class="">
+                    <textarea  name="description" class="form-control" id="id_description">
+                
+                    </textarea>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-6">
+            <div id="div_id_project" class="form-group">
+                <label for="id_project" class="col-form-label  requiredField">Project<span class="asteriskField">*</span>
+                </label>                    
+                <div class="">
+                    <input value="{{projectid}}" type="hidden" name="project" id="id_project">
+                    <input type="text" maxlength="255" class="textinput textInput form-control" required="" value="{{projectname}}" disabled>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label for="expiry">Escalate On</label>
+                <div class="input-group">
+                    <input id="id_escalate_on" type="number" class="form-control select-durations" placeholder="Enter Number"
+                        aria-label="Text input with segmented dropdown button">
+                    <div class="input-group-append">
+                        <button type="button" class="btn btn-outline-secondary" id="escsettingtogglebtn">Day(s)</button>
+                        <button type="button" class="btn btn-outline-secondary dropdown-toggle dropdown-toggle-split"
+                            data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                            <span class="sr-only">Select Days</span>
+                        </button>
+                        <div class="dropdown-menu">
+                            <span class="dropdown-item icon-custom"
+                                onclick="escsettselectedtype(1, 'Day(s)');">Day(s)</span>
+                            <span class="dropdown-item icon-custom"
+                                onclick="escsettselectedtype(2, 'Week(S)');">Week(S)</span>
+                            <span class="dropdown-item icon-custom"
+                                onclick="escsettselectedtype(3, 'Month(s)');">Month(s)</span>
+                        </div>
+                    </div>
+                </div>
+                <span id="errmsg1"></span>
+            </div><br><br><br>
+
+            <div class="">
+                <div class="col-12">
+                    <button id="btnAddEscalation" class="btn btn-success pull-right">
+                        <span class="btn-save-escalation"><i class="fa fa-fw fa-lg fa-save"></i>Submit</span>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<script>
+    $('#id_escalated_to').attr('multiple', "multiple");
+    $('#id_escalated_to').attr('data-live-search', "true");
+    $('#id_escalated_to').selectpicker({
+        size: 4,
+    });
+    $( "#div_id_escalated_to" ).removeClass( "form-group");
+
+    $("#id_escalate_on").keypress(function (e) {
+        if (e.which != 8 && e.which != 0 && (e.which < 48 || e.which > 57)) {
+            $("#errmsg1").html("Digits Only").show().fadeOut("slow");
+                return false;
+        }
+   });
+
+   $('#btnAddEscalation').click(function () { 
+        var pro_name = $('#project_name1').val();
+        var esc_name = $('#id_name').val();
+        var id_description = $('#id_description').val();
+        var id_escalate_on = $('#id_escalate_on').val();
+        var escsettingtogglebtn = $('#escsettingtogglebtn').html();
+        var id_project = $('#id_project').val();
+        var id_escalated_to = $('#id_escalated_to').val();
+
+        if (esc_name < 1 || id_escalate_on < 1 || id_project < 1 || $("#id_escalated_to :selected").length === 0)  {
+            if (esc_name < 1) {
+                $('#id_name').css({ "border": '2px solid #00635a'});
+            }
+
+            if (id_escalate_on < 1) {
+                $('#id_escalate_on').css({ "border": '2px solid #00635a' });
+            }
+
+            if (id_project < 1) {
+                $('#id_project').css({ "border": '2px solid #00635a' });
+            }
+
+            if ($("#id_escalated_to :selected").length === 0) {
+                $('.selectmultiple ').css({ "border": '2px solid #00635a' });
+            }
+        } else {
+            document.getElementById('btnAddEscalation').disabled = true;
+            data3 = {
+                esc_name: esc_name,
+                id_description: id_description,
+                id_escalate_on: id_escalate_on,
+                escsettingtogglebtn: escsettingtogglebtn,
+                id_project: id_project,
+                id_escalated_to: JSON.stringify(id_escalated_to),
+                pro_name: pro_name
+            };
+            url_data = "{% url 'saveEscalationLevels'%}";
+            $.ajax({
+                type: "GET",
+                cache: false,
+                data: data3,
+                url: url_data,
+                success: function (resp) {
+                    $('.close-dialog').click();
+                    $('.save-esc-pane1').html(resp);
+                }
+            });
+        }
+    });
+
+    $('#id_name').on('input', function () {
+        $('#id_name').css({ "border": '1px solid #ced4da' });
+    });
+
+    $('#id_escalate_on').on('input', function () {
+        $('#id_escalate_on').css({ "border": '1px solid #ced4da' });
+    });
+
+    $('#id_project').change(function () {
+        $('#id_project').css({"border": '1px solid #ced4da'});
+    });
+
+   function escsettselectedtype(value, type) {
+        $('#escsettingtogglebtn').html(type);
+    }
+</script>
