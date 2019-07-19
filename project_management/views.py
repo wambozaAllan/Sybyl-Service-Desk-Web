@@ -264,6 +264,7 @@ def populate_milestone_view(request):
     """
     project_id = request.GET.get('project_id')
     project_name = request.GET.get('project_name')
+    status = Status.objects.all()
       
     template = loader.get_template('project_management/add_project_milestone.html')
     context = {
@@ -412,7 +413,7 @@ class UpdateProjectMilestone(UpdateView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        milestone_id = int(self.request.GET['milestone_id'])
+        milestone_id = int(self.kwargs['pk'])
         context['milestone_id'] = milestone_id
         return context
 
@@ -426,15 +427,153 @@ def list_project_milestones(request):
     project = Project.objects.get(id=project_id)
 
     template = loader.get_template('project_management/list_project_milestones.html')
+    
+    open_status = Status.objects.get(id=1)
+    
+    if Milestone.objects.filter(project_id=project.id, status=open_status).exists():
+        open_milestones = Milestone.objects.filter(project_id=project.id, status=open_status)
+        open_count = Milestone.objects.filter(project_id=project.id, status=open_status).count()
+    else:
+        open_milestones = ""
+        open_count = 0
 
-    milestones_exist = Milestone.objects.filter(project_id=project.id).exists()
-    if milestones_exist:
-        milestones = Milestone.objects.filter(project_id=project.id)
+    onhold_status = Status.objects.get(id=2)
+    if Milestone.objects.filter(project_id=project.id, status=onhold_status).exists():
+        onhold_count = Milestone.objects.filter(project_id=project.id, status=onhold_status).count()
+    else:
+        onhold_count = 0
+
+    terminated_status = Status.objects.get(id=3)
+    if Milestone.objects.filter(project_id=project.id, status=terminated_status).exists():
+        terminated_count = Milestone.objects.filter(project_id=project.id, status=terminated_status).count()
+    else:
+        terminated_count = 0
+
+    completed_status = Status.objects.get(id=4)
+    if Milestone.objects.filter(project_id=project.id, status=completed_status).exists():
+        completed_count = Milestone.objects.filter(project_id=project.id, status=completed_status).count()
+    else:
+        completed_count = 0
+
+    context = {
+        'project_id': project.id,
+        'project_name': project.name,
+        'open_milestones': open_milestones,
+        'completed_count': completed_count,
+        'onhold_count': onhold_count,
+        'terminated_count': terminated_count,
+        'open_count': open_count
+    }
+
+    return HttpResponse(template.render(context, request))  
+
+
+def completed_project_milestones(request):
+    """
+    list completed project milestones
+    """
+    project_id = request.GET.get('project_id')
+
+    project = Project.objects.get(id=int(project_id))
+
+    template = loader.get_template('project_management/completed_milestones.html')
+
+    completed_status = Status.objects.get(id=4)
+
+    if Milestone.objects.filter(project_id=project.id, status=completed_status).exists():
+        completed_milestones = Milestone.objects.filter(project_id=project.id, status=completed_status)
+        completed_count = Milestone.objects.filter(project_id=project.id, status=completed_status).count()
 
         context = {
             'project_id': project.id,
             'project_name': project.name,
-            'milestones': milestones
+            'completed_milestones': completed_milestones,
+        }
+
+    else:
+        context = {
+            'project_id': project.id,
+            'project_name': project.name,
+            'completed_milestones': ''
+        }
+
+    return HttpResponse(template.render(context, request))
+
+
+def onhold_project_milestones(request):
+    """
+    list onhold project milestones
+    """
+    project_id = request.GET.get('project_id')
+
+    project = Project.objects.get(id=int(project_id))
+
+    template = loader.get_template('project_management/onhold_milestones.html')
+
+    milestones_exist = Milestone.objects.filter(project_id=project.id).exists()
+    if milestones_exist:
+        milestones = Milestone.objects.filter(project_id=project.id)
+        open_status = Status.objects.get(id=1)
+        open_milestones = Milestone.objects.filter(project_id=project.id, status=open_status)
+
+        open_count = Milestone.objects.filter(project_id=project.id, status=open_status).count()
+
+        onhold_status = Status.objects.get(id=2)
+        onhold_milestones = Milestone.objects.filter(project_id=project.id, status=onhold_status)
+        onhold_count = Milestone.objects.filter(project_id=project.id, status=onhold_status).count()
+
+        terminated_status = Status.objects.get(id=3)
+        terminated_milestones = Milestone.objects.filter(project_id=project.id, status=terminated_status)
+        terminated_count = Milestone.objects.filter(project_id=project.id, status=terminated_status).count()
+
+        completed_status = Status.objects.get(id=4)
+        completed_milestones = Milestone.objects.filter(project_id=project.id, status=completed_status)
+        completed_count = Milestone.objects.filter(project_id=project.id, status=completed_status).count()
+
+        onhold_status = Status.objects.get(id=2)
+        onhold_milestones = Milestone.objects.filter(project_id=project.id, status=onhold_status)
+        onhold_count = Milestone.objects.filter(project_id=project.id, status=onhold_status).count()
+
+        context = {
+            'project_id': project.id,
+            'project_name': project.name,
+            'onhold_milestones': onhold_milestones,
+        }
+
+    else:
+        context = {
+            'project_id': project.id,
+            'project_name': project.name,
+            'milestones': ''
+        }
+
+    return HttpResponse(template.render(context, request))
+
+
+def terminated_project_milestones(request):
+    """
+    list terminated project milestones
+    """
+    project_id = request.GET.get('project_id')
+
+    project = Project.objects.get(id=int(project_id))
+
+    template = loader.get_template('project_management/terminated_milestones.html')
+
+    terminated_status = Status.objects.get(id=3)
+    if Milestone.objects.filter(project_id=project.id, status=terminated_status).exists():
+        terminated_milestones = Milestone.objects.filter(project_id=project.id, status=terminated_status)
+        terminated_count = Milestone.objects.filter(project_id=project.id, status=terminated_status).count()
+
+        context = {
+            'project_id': project.id,
+            'project_name': project.name,
+            'terminated_milestones': terminated_milestones,
+            'open_milestones': open_milestones,
+            'completed_count': completed_count,
+            'onhold_count': onhold_count,
+            'terminated_count': terminated_count,
+            'open_count': open_count
         }
 
         return HttpResponse(template.render(context, request))
@@ -445,8 +584,7 @@ def list_project_milestones(request):
             'project_name': project.name,
             'milestones': ''
         }
-
-        return HttpResponse(template.render(context, request))   
+        return HttpResponse(template.render(context, request))  
 
 
 def view_tasks_under_milestone(request):
@@ -473,7 +611,36 @@ def view_tasks_under_milestone(request):
         return HttpResponse(template.render(context, request))
 
 
+def add_milestone_tasks(request):
+    project_id = request.GET.get('project_id')
+    project_name = request.GET.get('project_name')
+    
+    project = Project.objects.get(id=int(project_id))
+
+    status = Status.objects.all()
+    milestones = Milestone.objects.filter(project_id=project.id)
+    team = ProjectTeam.objects.get(project_id=project.id)
+    project_team = team.id
+    team_members = ProjectTeamMember.objects.filter(project_team=project_team)
+    member_list = list(team_members)
+    old = []
+
+    if len(member_list) != 0:
+        for member in member_list:
+            old_user = User.objects.get(id=member.member_id)
+            old.append(old_user)
+
+    data = {
+        'statuses': serializers.serialize("json", status),
+        'success': True,
+        'members': serializers.serialize('json', old)
+    }
+
+    return JsonResponse(data)
+
+
 def add_milestone_specific_task(request):
+    """Tasks under given milestone"""
     project_id = request.GET.get('project_id')
     milestone_id = request.GET.get('milestone_id')
 
@@ -481,15 +648,52 @@ def add_milestone_specific_task(request):
 
     milestone = Milestone.objects.get(id=milestone_id)
 
+    status = Status.objects.all()
+    milestones = Milestone.objects.filter(project_id=project.id)
+    team = ProjectTeam.objects.get(project_id=project.id)
+    project_team = team.id
+    team_members = ProjectTeamMember.objects.filter(project_team=project_team)
+    member_list = list(team_members)
+    old_members = []
+
+    if len(member_list) != 0:
+        for member in member_list:
+            old_user = User.objects.get(id=member.member_id)
+            old_members.append(old_user)
+
     template = loader.get_template('project_management/add_milestone_task.html')
     context = {
         'project_id': project_id,
         'project_name':project.name,
         'milestone_id': milestone_id,
-        'milestone_name': milestone.name   
+        'milestone_name': milestone.name,
+        'statuses': status,
+        'members': old_members
     }
 
     return HttpResponse(template.render(context, request))
+
+
+def delete_project_milestone(request):
+    """
+    delete project milestone
+    """
+    milestone_name = request.GET.get('milestone_name')
+    milestone_id = request.GET.get('milestone_id')
+    project_id = request.GET.get('project_id')
+
+    milestone = Milestone.objects.get(id=milestone_id)
+    milestone.delete()
+
+    response_data = {
+        "success": True,
+        "message": "Successfully deleted"
+    }
+
+    return HttpResponse(
+        json.dumps(response_data),
+        content_type="application/json"
+    )
 
 
 def load_milestones(request):
@@ -545,46 +749,40 @@ def populate_task_view(request):
     """
     project_id = request.GET.get('project_id')
     project_name = request.GET.get('project_name')
-     
+    template = loader.get_template('project_management/add_project_tasks.html')
+
+    project = Project.objects.get(id=int(project_id))
+    status = Status.objects.all()
+    milestones = Milestone.objects.filter(project_id=project.id)
+    if ProjectTeam.objects.filter(project_id=int(project_id)).exists():
+        team = ProjectTeam.objects.get(project_id=project.id)
+        project_team = team.id
+        team_members = ProjectTeamMember.objects.filter(project_team=project_team)
+        member_list = list(team_members)
+    
+        old = []
+
+        if len(member_list) != 0:
+            for member in member_list:
+                old_user = User.objects.get(id=member.member_id)
+                old.append(old_user)
+ 
+        members = old
+
+    else:
+        members = ""
+
     template = loader.get_template('project_management/add_project_tasks.html')
     context = {
         'project_id': project_id,
-        'project_name': project_name
+        'project_name': project_name,
+        'members': members,
+        'milestones': milestones,
+        'statuses': status
     }
 
     return HttpResponse(template.render(context, request))
 
-
-def populate_status_milestone(request):
-    """
-    populate status and milestone in task view
-    """
-    project_id = request.GET.get('project_id')
-    project_name = request.GET.get('project_name')
-    
-    project = Project.objects.get(id=project_id)
-
-    status = Status.objects.all()
-    milestones = Milestone.objects.filter(project_id=project.id)
-    team = ProjectTeam.objects.get(project_id=project.id)
-    project_team = team.id
-    team_members = ProjectTeamMember.objects.filter(project_team=project_team)
-    member_list = list(team_members)
-    old = []
-
-    if len(member_list) != 0:
-        for member in member_list:
-            old_user = User.objects.get(id=member.member_id)
-            old.append(old_user)
-
-    data = {
-        'status': serializers.serialize("json", status),
-        'milestones': serializers.serialize("json", milestones),
-        'members': serializers.serialize('json', old)
-    }
-
-    return JsonResponse(data)
-    
 
 # def add_project_tasks(request):
 #     project_id = request.GET.get('project_id')
@@ -610,35 +808,6 @@ def populate_status_milestone(request):
 #         }
 
 #         return JsonResponse(data)
-
-
-def add_milestone_tasks(request):
-    project_id = request.GET.get('project_id')
-    print(f"{project_id} is ssdjkalsdfa")
-    project_name = request.GET.get('project_name')
-    
-    project = Project.objects.get(id=project_id)
-
-    status = Status.objects.all()
-    milestones = Milestone.objects.filter(project_id=project.id)
-    team = ProjectTeam.objects.get(project_id=project.id)
-    project_team = team.id
-    team_members = ProjectTeamMember.objects.filter(project_team=project_team)
-    member_list = list(team_members)
-    old = []
-
-    if len(member_list) != 0:
-        for member in member_list:
-            old_user = User.objects.get(id=member.member_id)
-            old.append(old_user)
-
-    data = {
-        'statuses': serializers.serialize("json", status),
-        'milestones': serializers.serialize("json", milestones),
-        'members': serializers.serialize('json', old)
-    }
-
-    return JsonResponse(data)
 
 
 def validateTaskName(request):
@@ -737,6 +906,8 @@ def save_milestone_tasks(request):
     description = request.GET.get('description')
     start_date = request.GET.get('start_date')
     end_date = request.GET.get('end_date')
+    actual_start = request.GET.get('actual_start')
+    actual_end = request.GET.get('actual_end')
     created_by = request.user.id
 
     print(f"chineke me {created_by}")
@@ -746,7 +917,8 @@ def save_milestone_tasks(request):
     print(f"start_date is {start_date}")
     print(f"end_date is {end_date}")
     print(f"milestone_id is {milestone_id}")
-    print(f"project_id is {project_id}")
+    print(f"actual_start is {actual_start}")
+    print(f"actual_end is {actual_end}")
 
     response_data = {}
 
@@ -756,17 +928,27 @@ def save_milestone_tasks(request):
     if description == "":
         description = None
 
-    if start_date == "":
+    if start_date == "null":
         start_date = None
-
-    if end_date == "":
-        end_date = None
-
-    if start_date != "":
+    else:
         start_date = datetime.datetime.strptime(start_date, "%m/%d/%Y").strftime("%Y-%m-%d")
 
-    if end_date != "":
+    if end_date == "null":
+        end_date = None
+    else:
         end_date = datetime.datetime.strptime(end_date, "%m/%d/%Y").strftime("%Y-%m-%d")
+
+    if actual_start == "null":
+        actual_start = None
+    else:
+        actual_start = datetime.datetime.strptime(actual_start, "%m/%d/%Y").strftime("%Y-%m-%d")
+
+    if actual_end == "null":
+        actual_end = None
+    else:
+        actual_end = datetime.datetime.strptime(actual_end, "%m/%d/%Y").strftime("%Y-%m-%d")
+    
+        
 
     project = Project.objects.get(id=project_id)
     
@@ -776,7 +958,7 @@ def save_milestone_tasks(request):
         response_data['error'] = "Name exists"
         response_data['state'] = False
     else:   
-        task = Task(name=name, description=description, status_id=status_id, milestone_id=milestone.id, project_id=project.id, start_date=start_date, end_date=end_date, creator_id=created_by)
+        task = Task(name=name, description=description, status_id=status_id, milestone_id=milestone.id, project_id=project.id, start_date=start_date, end_date=end_date, actual_start_date=actual_start, actual_end_date=actual_end, creator_id=created_by)
         task.save()
 
         response_data['success'] = "Task created successfully"
@@ -829,37 +1011,243 @@ class UpdateMilestoneTask(UpdateView):
         context['task_id'] = task_id
         return context
 
-
 def tasklist_by_project(request):
     """
     Tasks allocated to project
     """
     project_id = request.GET.get('project_id')
-    project = get_object_or_404(Project, pk=project_id)
+    project = get_object_or_404(Project, pk=int(project_id))
 
     template = loader.get_template('project_management/list_project_tasks.html')
 
     tasks = Task.objects.filter(project_id= project_id).exists()
-    
-    if tasks:
+    state = True
+
+    if Milestone.objects.filter(project_id=project_id).exists():
+        
         project_tasks = Task.objects.filter(project_id=project.id)
+        open_status = Status.objects.get(id=1)
+        open_tasks = Task.objects.filter(project_id=project.id, status=open_status)
+
+        open_count = Task.objects.filter(project_id=project.id, status=open_status).count()
+
+        onhold_status = Status.objects.get(id=2)
+        if Task.objects.filter(project_id=project.id, status=onhold_status).exists():
+            onhold_count = Task.objects.filter(project_id=project.id, status=onhold_status).count()
+        else:
+            onhold_count = 0
+        
+        terminated_status = Status.objects.get(id=3)
+        if Task.objects.filter(project_id=project.id, status=terminated_status).exists():
+            terminated_count = Task.objects.filter(project_id=project.id, status=terminated_status).count()
+        else:
+            terminated_count = 0
+
+        completed_status = Status.objects.get(id=4)
+        if Task.objects.filter(project_id=project.id, status=completed_status).exists():
+            completed_count = Task.objects.filter(project_id=project.id, status=completed_status).count()
+        else:
+            completed_count = 0
 
         context = {
             'project_name': project.name,
             'project_id': project.id,
-            'tasks': project_tasks
+            'open_tasks': open_tasks,
+            'state': state,
+            'open_count': open_count,
+            'onhold_count': onhold_count,
+            'terminated_count': terminated_count,
+            'completed_count': completed_count
         }
-
-        return HttpResponse(template.render(context, request))
 
     else:
+        state = False
         context = {
             'project_name': project.name,
             'project_id': project.id,
-            'tasks': ''
+            'open_tasks': '',
+            'state': False
         }
 
-        return HttpResponse(template.render(context, request))
+    return HttpResponse(template.render(context, request))
+
+def onhold_tasks(request):
+    project_id = request.GET.get("project_id")
+    project = get_object_or_404(Project, pk=int(project_id))
+
+    template = loader.get_template('project_management/onhold_tasks.html')
+
+    state = True
+    onhold_status = Status.objects.get(id=2)
+    if Milestone.objects.filter(project_id=project_id).exists():
+        if Task.objects.filter(project_id=project.id, status=onhold_status).exists():
+            onhold_tasks = Task.objects.filter(project_id=project.id, status=onhold_status)
+
+            context = {
+                'project_name': project.name,
+                'project_id': project.id,
+                'onhold_tasks': onhold_tasks,
+                'state': state,
+            }
+        else:
+            context = {
+                'project_name': project.name,
+                'project_id': project.id,
+                'onhold_tasks': "",
+                'state': state,
+            }
+
+    else:
+        state = False
+        context = {
+            'project_name': project.name,
+            'project_id': project.id,
+            'onhold_tasks': '',
+            'state': False
+        }
+
+    return HttpResponse(template.render(context, request))
+
+def terminated_tasks(request):
+    project_id = request.GET.get("project_id")
+    project = get_object_or_404(Project, pk=int(project_id))
+
+    template = loader.get_template('project_management/terminated_tasks.html')
+
+    state = True
+    terminated_status = Status.objects.get(id=3)
+
+    if Milestone.objects.filter(project_id=project_id).exists():
+        if Task.objects.filter(project_id= project_id, status=terminated_status).exists():
+            terminated_tasks = Task.objects.filter(project_id=project.id, status=terminated_status)
+            context = {
+                'project_name': project.name,
+                'project_id': project.id,
+                'terminated_tasks': terminated_tasks,
+                'state': state,
+            }
+
+        else:
+            context = {
+                'project_name': project.name,
+                'project_id': project.id,
+                'terminated_tasks': "",
+                'state': state,
+            } 
+    
+    else:
+        state = False
+        context = {
+            'project_name': project.name,
+            'project_id': project.id,
+            'tasks': '',
+            'state': False
+        }
+
+    return HttpResponse(template.render(context, request))
+
+
+
+def completed_tasks(request):
+    project_id = request.GET.get("project_id")
+    project = get_object_or_404(Project, pk=int(project_id))
+
+    template = loader.get_template('project_management/completed_tasks.html')
+
+    state = True
+    completed_status = Status.objects.get(id=4)
+
+    if Milestone.objects.filter(project_id=project_id).exists():
+        if Task.objects.filter(project_id=project.id, status=completed_status).exists():
+            completed_tasks = Task.objects.filter(project_id=project.id, status=completed_status)
+
+            context = {
+                'project_name': project.name,
+                'project_id': project.id,
+                'completed_tasks': completed_tasks,
+                'state': state
+            }
+
+        else:
+            context = {
+                'project_name': project.name,
+                'project_id': project.id,
+                'completed_tasks': "",
+                'state': state
+            }
+
+
+def terminated_tasks(request):
+    project_id = request.GET.get("project_id")
+    project = get_object_or_404(Project, pk=int(project_id))
+
+    template = loader.get_template('project_management/terminated_tasks.html')
+
+    tasks = Task.objects.filter(project_id= project_id).exists()
+    state = True
+
+    if Milestone.objects.filter(project_id=project_id).exists():
+        if tasks:
+            terminated_status = Status.objects.get(id=3)
+            terminated_tasks = Task.objects.filter(project_id=project.id, status=terminated_status)
+
+            context = {
+                'project_name': project.name,
+                'project_id': project.id,
+                'terminated_tasks': terminated_tasks,
+                'state': state,
+            }
+
+            return HttpResponse(template.render(context, request))
+
+        else:
+            state = True
+            context = {
+                'project_name': project.name,
+                'project_id': project.id,
+                'tasks': '',
+                'state': state
+            }
+
+            return HttpResponse(template.render(context, request))
+def completed_tasks(request):
+    project_id = request.GET.get("project_id")
+    project = get_object_or_404(Project, pk=int(project_id))
+
+    template = loader.get_template('project_management/completed_tasks.html')
+
+    state = True
+    completed_status = Status.objects.get(id=4)
+
+    if Milestone.objects.filter(project_id=project_id).exists():
+        if Task.objects.filter(project_id=project.id, status=completed_status).exists():
+            completed_tasks = Task.objects.filter(project_id=project.id, status=completed_status)
+
+            context = {
+                'project_name': project.name,
+                'project_id': project.id,
+                'completed_tasks': completed_tasks,
+                'state': state
+            }
+
+        else:
+            context = {
+                'project_name': project.name,
+                'project_id': project.id,
+                'completed_tasks': "",
+                'state': state
+            }
+
+    else:
+        state = False
+        context = {
+            'project_name': project.name,
+            'project_id': project.id,
+            'complete_tasks': '',
+            'state': False
+        }
+
+    return HttpResponse(template.render(context, request))
 
 
 class DetailsProjectTask(DetailView):
@@ -1000,18 +1388,35 @@ def list_project_incidents(request):
     if ProjectTeam.objects.filter(project_id=project_id).exists():
         team = ProjectTeam.objects.get(project_id=project.id)
         team_id = team.id
-        team_members = ProjectTeamMember.objects.filter(project_team=int(team_id))
+        team_members = ProjectTeamMember.objects.filter(project_team=team_id)
         if team_members:
             if Incident.objects.filter(project_id=project.id).exists():
                 team_member = ProjectTeamMember.objects.filter(member=request.user, project_team=team_id)
-                
-                incidents = Incident.objects.filter(Q(creator=request.user)|Q(assignee__in=team_member), project_id=project.id).annotate(assigned=Count('assignee', distinct=True))
+
+                open_status = Status.objects.get(id=1)
+                open_count = Incident.objects.filter(project_id=project.id, status=open_status).count()
+
+                onhold_status = Status.objects.get(id=2)
+                onhold_count = Incident.objects.filter(project_id=project.id, status=onhold_status).count()
+
+                terminated_status = Status.objects.get(id=3) 
+                terminated_count = Incident.objects.filter(project_id=project.id, status=terminated_status).count()
+
+                completed_status = Status.objects.get(id=4)                
+                completed_count = Incident.objects.filter(project_id=project.id, status=completed_status).count()
+
+                open_incidents = Incident.objects.filter(Q(creator=request.user)|Q(assignee__in=team_member), project_id=project.id, status=open_status).annotate(assigned=Count('assignee', distinct=True))
                 state = True
                 context = {
                     'project_id': project.id,
                     'project_name': project.name,
-                    'incidents': incidents,
-                    'state': state
+                    'open_incidents': open_incidents,
+                    'state': state,
+                    'team_id': team_id,
+                    'open_count': open_count,
+                    'completed_count': completed_count,
+                    'terminated_count': terminated_count,
+                    'onhold_count': onhold_count
                 }
 
                 return HttpResponse(template.render(context, request))
@@ -1022,7 +1427,8 @@ def list_project_incidents(request):
                     'project_id': project.id,
                     'project_name': project.name,
                     'incidents': '',
-                    'state': state
+                    'state': state, 
+                    'team_id': team_id
                 }
                 return HttpResponse(template.render(context, request))
 
@@ -1069,25 +1475,289 @@ class DetailsProjectIncident(DetailView):
 
 class UpdateIncident(UpdateView):
     model = Incident
-    fields = ['project', 'title', 'description', 'document', 'image', 'status', 'priority', 'assignee']
+    fields = ['project', 'title', 'description', 'document', 'image', 'status', 'priority', 'assignee', 'resolution_time', 'reopen_time', 'close_time']
     template_name = 'project_management/update_incident.html'
     success_url = reverse_lazy('listIncidents')
 
 
 class UpdateProjectIncident(UpdateView):
     model = Incident
-    fields = ['title', 'description', 'document', 'image', 'status', 'priority', 'assignee', 'task', 'resolution_time']
+    fields = ['title', 'description', 'document', 'image', 'status', 'priority', 'assignee', 'task', 'resolution_time', 'reopen_time', 'close_time']
     template_name = 'project_management/update_project_incident.html'
     success_url = reverse_lazy('listIncidents')
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         incident_id = int(self.request.GET['incident_id'])
+        project_id = int(self.request.GET['project_id'])
         context['incident_id'] = incident_id
+        context['project_id'] = project_id
+
+        team = ProjectTeam.objects.get(project_id=project_id)
+        project_team = team.id
+        team_members = ProjectTeamMember.objects.filter(project_team=project_team)
+        member_list = list(team_members)
+        old = []
+
+        if len(member_list) != 0:
+            for member in member_list:
+                old_user = User.objects.get(id=member.member_id)
+                old.append(old_user)
+
+        context['members'] = old
         return context
 
     # def get_success_url(self):
     #     return reverse_lazy('listProjectIncidents', kwargs={'pk': self.object.project_id})
+
+
+def completed_project_incidents(request):
+    """
+    incident for specific project
+    """
+    project_id = request.GET.get('project_id')
+    
+    template = loader.get_template('project_management/completed_incidents.html')
+
+    project = Project.objects.get(id=project_id)
+    state = True
+
+    if ProjectTeam.objects.filter(project_id=project_id).exists():
+        team = ProjectTeam.objects.get(project_id=project.id)
+        team_id = team.id
+        team_members = ProjectTeamMember.objects.filter(project_team=team_id)
+        if team_members:
+            if Incident.objects.filter(project_id=project.id).exists():
+                team_member = ProjectTeamMember.objects.filter(member=request.user, project_team=team_id)
+                completed_status = Status.objects.get(id=4)                
+                completed_incidents = Incident.objects.filter(Q(creator=request.user)|Q(assignee__in=team_member), project_id=project.id, status=completed_status).annotate(assigned=Count('assignee', distinct=True))
+                state = True
+                context = {
+                    'project_id': project.id,
+                    'project_name': project.name,
+                    'completed_incidents': completed_incidents,
+                    'state': state,
+                    'team_id': team_id
+                }
+
+                return HttpResponse(template.render(context, request))
+        
+            else:
+                state=True
+                context={
+                    'project_id': project.id,
+                    'project_name': project.name,
+                    'incidents': '',
+                    'state': state, 
+                    'team_id': team_id
+                }
+                return HttpResponse(template.render(context, request))
+
+        else:
+            state = False
+            context={
+                    'project_id': project.id,
+                    'project_name': project.name,
+                    'state':state
+                }
+            return HttpResponse(template.render(context, request))
+    else:
+        state = False
+        context={
+                'project_id': project.id,
+                'project_name': project.name,
+                'state':state
+            }
+        return HttpResponse(template.render(context, request))
+
+
+def onhold_project_incidents(request):
+    """
+    incident for specific project
+    """
+    project_id = request.GET.get('project_id')
+    
+    template = loader.get_template('project_management/onhold_incidents.html')
+
+    project = Project.objects.get(id=project_id)
+    state = True
+
+    if ProjectTeam.objects.filter(project_id=project_id).exists():
+        team = ProjectTeam.objects.get(project_id=project.id)
+        team_id = team.id
+        team_members = ProjectTeamMember.objects.filter(project_team=team_id)
+        if team_members:
+            if Incident.objects.filter(project_id=project.id).exists():
+                team_member = ProjectTeamMember.objects.filter(member=request.user, project_team=team_id)
+                onhold_status = Status.objects.get(id=2)
+                
+                onhold_incidents = Incident.objects.filter(Q(creator=request.user)|Q(assignee__in=team_member), project_id=project.id, status=onhold_status).annotate(assigned=Count('assignee', distinct=True))
+                state = True
+                context = {
+                    'project_id': project.id,
+                    'project_name': project.name,
+                    'onhold_incidents': onhold_incidents,
+                    'state': state,
+                    'team_id': team_id
+                }
+
+                return HttpResponse(template.render(context, request))
+        
+            else:
+                state=True
+                context={
+                    'project_id': project.id,
+                    'project_name': project.name,
+                    'onhold_incidents': '',
+                    'state': state, 
+                    'team_id': team_id
+                }
+                return HttpResponse(template.render(context, request))
+
+        else:
+            state = False
+            context={
+                    'project_id': project.id,
+                    'project_name': project.name,
+                    'state':state
+                }
+            return HttpResponse(template.render(context, request))
+    else:
+        state = False
+        context={
+                'project_id': project.id,
+                'project_name': project.name,
+                'state':state
+            }
+        return HttpResponse(template.render(context, request))
+
+
+def terminated_project_incidents(request):
+    """
+    incident for specific project
+    """
+    project_id = request.GET.get('project_id')
+    
+    template = loader.get_template('project_management/terminated_incidents.html')
+
+    project = Project.objects.get(id=int(project_id))
+    state = True
+
+    if ProjectTeam.objects.filter(project_id=project_id).exists():
+        team = ProjectTeam.objects.get(project_id=project.id)
+        team_id = team.id
+        team_members = ProjectTeamMember.objects.filter(project_team=team_id)
+        if team_members:
+            if Incident.objects.filter(project_id=project.id).exists():
+                team_member = ProjectTeamMember.objects.filter(member=request.user, project_team=team_id)
+                terminated_status = Status.objects.get(id=3) 
+                terminated_incidents = Incident.objects.filter(Q(creator=request.user)|Q(assignee__in=team_member), project_id=project.id, status=terminated_status).annotate(assigned=Count('assignee', distinct=True))
+                state = True
+                context = {
+                    'project_id': project.id,
+                    'project_name': project.name,
+                    'terminated_incidents': terminated_incidents,
+                    'state': state,
+                    'team_id': team_id
+                }
+
+                return HttpResponse(template.render(context, request))
+        
+            else:
+                state=True
+                context={
+                    'project_id': project.id,
+                    'project_name': project.name,
+                    'terminated_incidents': '',
+                    'state': state, 
+                    'team_id': team_id
+                }
+                return HttpResponse(template.render(context, request))
+
+        else:
+            state = False
+            context={
+                    'project_id': project.id,
+                    'project_name': project.name,
+                    'state':state
+                }
+            return HttpResponse(template.render(context, request))
+    else:
+        state = False
+        context={
+                'project_id': project.id,
+                'project_name': project.name,
+                'state':state
+            }
+        return HttpResponse(template.render(context, request))
+
+
+def view_assigned_members(request):
+    incident_id = request.GET.get('incident_id')
+    project_id = request.GET.get('project_id')
+    team_id = request.GET.get('team_id')
+
+    team_members = Incident.assignee.through.objects.filter(id=incident_id)
+
+    team = []
+    users = []
+
+    for member in team_members: 
+        t = ProjectTeamMember.objects.get(id=member.projectteammember_id)
+        team.append(t)
+
+    for user in team:
+        team_user = User.objects.get(id=user.member_id)
+        users.append(team_user)
+    print(users)
+
+    context = {
+        "team_members": users,
+        "project_id": project_id
+    }
+
+    return render(request, 'project_management/assigned_incident_members.html', context)
+
+
+# Add Incident Comments
+def add_comment(request):
+    if request.method == 'POST' and request.is_ajax():
+        file_data = request.FILES.get('docs', None)
+        data = request.POST.copy()
+        incident = data.get('incident')
+        comment = data.get('comment')
+        created_by = request.user.id
+
+        db_incident = Incident.objects.get(id=int(incident))
+        creator = User.objects.get(id=created_by)
+        print(db_incident)
+        new_comment = IncidentComment(comment=comment, incident=db_incident, created_by=creator, attachment=file_data)
+        new_comment.save()
+
+        data = {
+            'success': True, 
+            'message': 'Posted Successfully',
+            'comment': new_comment.comment,
+            'created_by': creator.first_name +" "+ creator.last_name,
+            'time_created': new_comment.created_time
+        }
+
+        return JsonResponse(data)
+
+
+def list_incident_comments(request):
+    """
+    list comments of given incident
+    """
+    incident_id = request.GET.get('incident_id')
+
+    incident_comments = IncidentComment.objects.filter(incident_id=int(incident_id))
+
+    data = {
+        'all_comments': serializers.serialize("json", incident_comments),
+    }
+
+    return JsonResponse(data)
 
 
 def get_team_members(request):
@@ -1095,10 +1765,10 @@ def get_team_members(request):
 
     project_id = request.GET.get('project')
 
-    team = ProjectTeam.objects.filter(project_id=project_id).exists()
+    team = ProjectTeam.objects.filter(project_id=int(project_id)).exists()
 
     if team == True:
-        project_team = ProjectTeam.objects.get(project_id=project_id)
+        project_team = ProjectTeam.objects.get(project_id=int(project_id))
         project_members_exist = ProjectTeamMember.objects.filter(project_team=project_team.id).exists()
 
         if project_members_exist == True:
@@ -1138,7 +1808,7 @@ def set_priority_color_code(request):
     data = {}
 
     if priority_id is not None:
-        priority = Priority.objects.get(id=priority_id)
+        priority = Priority.objects.get(id=int(priority_id))
         data['name'] = priority.name
         data['color'] = priority.color
 
@@ -1313,7 +1983,7 @@ def ValidateRoleName(request):
 def addProject(request):
     if request.method == 'POST':
         project_form = ProjectForm(request.POST, request.FILES)
-        document_form = DocumentForm(request.FILES)
+        # document_form = DocumentForm(request.FILES)
 
         if project_form.is_valid():
             data = request.POST.copy()
@@ -1321,25 +1991,41 @@ def addProject(request):
             description = data.get('description')
             project_code = data.get('project_code')
             estimated_cost = data.get('estimated_cost')
-            logo = request.FILES['logo']
+            company = data['company']
+            logo = request.FILES.get('logo', None)
             start_date = data.get('estimated_start_date')
             end_date = data.get('estimated_end_date')
             project_status = data.get('project_status')
-            created_by = request.user.id
+            created_by = request.user.id 
+            
+            
+            if start_date == "":
+                start_date = None
+                estimated_start_date = None
+            else:
+                estimated_start_date = datetime.datetime.strptime(start_date, "%m/%d/%Y").strftime("%Y-%m-%d")
+                
+            if end_date == "":
+                end_date = None
+                estimated_end_date = None
+            else:
+                estimated_end_date = datetime.datetime.strptime(end_date, "%m/%d/%Y").strftime("%Y-%m-%d")
+            
+            if project_status == "":
+                status = None
+            else:            
+                status = Status.objects.get(id=project_status)
 
-            # converting date to yyyy-mm-dd format to save to db
-            estimated_start_date = datetime.datetime.strptime(start_date, "%m/%d/%Y").strftime("%Y-%m-%d")
-            estimated_end_date = datetime.datetime.strptime(end_date, "%m/%d/%Y").strftime("%Y-%m-%d")
-
-            status = Status.objects.get(id=project_status)
             user_id = User.objects.get(id=created_by)
 
-            project = Project(name=name, description=description, project_code=project_code, estimated_cost=estimated_cost,
+            project = Project(name=name.title(), description=description, project_code=project_code, estimated_cost=estimated_cost,
             logo=logo, estimated_start_date=estimated_start_date, estimated_end_date=estimated_end_date,
             project_status=status, created_by=user_id)
 
             project.save()
-
+            for value in company:
+                p = project.company.add(value)
+                
             # project_id = Project.objects.get(pk=project.id)
 
             # if project:
@@ -1389,29 +2075,18 @@ class DetailProject(DetailView):
         context = super().get_context_data(**kwargs)
         project_id = self.kwargs['pk']
 
-        if Milestone.objects.filter(project_id=project_id).exists():
-            milestone_status = True
-        else:
-            milestone_status = False
-        
-        context['milestone_status'] = milestone_status
-
         if ProjectTeam.objects.filter(project_id=project_id).exists():
             obj1 = ProjectTeam.objects.filter(project_id=project_id).values('id').first()
             project_team_id = obj1['id']
 
             if ProjectTeamMember.objects.filter(project_team=project_team_id, member_id=self.request.user.id).exists():
                 forum_status = True
-                incident_status = True
             else:
                 forum_status = False
-                incident_status = False
         else:
             forum_status = False
-            incident_status = False
 
         context['forum_status'] = forum_status
-        context['incident_status'] = incident_status
         return context
 
 
@@ -1421,6 +2096,18 @@ def validateProjectName(request):
         'is_taken': Project.objects.filter(name=project_name).exists()
     }
     return JsonResponse(data)
+
+
+class UploadDocument(LoginRequiredMixin, CreateView):
+    model = ProjectDocument
+    fields = ['title', 'document_description', 'document', 'project']
+    success_url = reverse_lazy("listProjects")
+    template_name = 'project_management/upload_document.html'
+
+    def form_valid(self, form):
+        """auto registering loggedin user"""
+        form.instance.created_by = self.request.user
+        return super().form_valid(form)
 
 
 # PROJECT TEAMS
@@ -1502,7 +2189,7 @@ class UpdateProjectTeam(UpdateView):
     model = ProjectTeam
     fields = ['name', 'project']
     template_name = 'project_management/update_project_team.html'
-    success_url = reverse_lazy('listProjectTeams')
+    success_url = reverse_lazy('listProjects')
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -1579,15 +2266,12 @@ def save_team_member(request):
     team_member.project_team.add(team)
 
     response_data = {
-        'success': 'Member added successfully',
+        'success': 'added successfully',
         'state': True,
-        "name": team_member.member_id
+        "name": user.first_name + " " + user.last_name
     }
     
-    return HttpResponse(
-        json.dumps(response_data),
-        content_type="application/json"
-    )
+    return JsonResponse(response_data)
     
 
 class AddProjectTeamMember(CreateView):
@@ -1678,21 +2362,21 @@ def remove_project_team_member(request):
     team_id = request.GET.get('teamid')
     team_name = request.GET.get('teamname')
     member_id = request.GET.get('memberid')
+    print(f"{member_id} is member_id")
 
     teamid = ProjectTeam.objects.get(id=int(team_id))
     memberid = ProjectTeamMember.objects.get(id=int(member_id))
     memberid.project_team.remove(teamid)
 
+    incident = Incident.objects.filter(assignee=memberid)
+    print(f"{incident}")
 
-    team = ProjectTeamMember.objects.filter(project_team=int(team_id))
-    template = loader.get_template('project_management/details_team_member.html')
-    context = {
-        'team': team,
-        'team_name': team_name,
-        'team_id': team_id,
+    response_data = {
+        'success': 'deleted successfully',
+        'state': True,
     }
 
-    return HttpResponse(template.render(context, request))
+    return JsonResponse(response_data)
 
 
 def project_forum(request):

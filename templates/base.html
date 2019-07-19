@@ -26,6 +26,8 @@
         $('#listEmails').DataTable({});
         $('#listBranches').DataTable({});
         $('#table_status').DataTable();
+        $('#table_project_tasks').DataTable();
+        $("#table_incidents").DataTable();
         $('#table_projects').DataTable();
         $('#table_priorities').DataTable();
         $('#table_category').DataTable();
@@ -1012,9 +1014,9 @@
             });
         }
 
-        function deleteProjectTeam(teamId, teamName, teamNum) {
+        function deleteProjectTeam(teamId, teamName, teamMembers) {
             urldata = "{% url 'deleteProjectTeam' 999%}".replace(999, teamId);
-            if (teamNum == 0) {
+            if (teamMembers === 0) {
                 $.confirm({
                     title: '<h4>Delete ProjectTeam: <strong class="text-danger">' + teamName + ' </strong>!</h4>',
                     content: '',
@@ -1344,46 +1346,6 @@
             });
         }
 
-        function deleteProjectTeamMember(memberid, membername, teamid, teamname) {
-            urldata = "{% url 'deleteProjectTeamMember'%}";
-            $.confirm({
-                title: '<h4>Remove Member: <strong class="text-danger">"' + membername + ' "</strong>! from Team</h4>',
-                content: '',
-                type: 'red',
-                typeAnimated: true,
-                boxWidth: '40%',
-                useBootstrap: false,
-                theme: 'modern',
-                icon: 'fa fa-exclamation-circle',
-                buttons: {
-                    formSubmit: {
-                        text: 'Remove',
-                        btnClass: 'btn-red',
-                        action: function () {
-                            $.ajax({
-                                type: "GET",
-                                cache: false,
-                                data: {
-                                    memberid: memberid,
-                                    teamname: teamname,
-                                    teamid: teamid
-                                },
-                                url: urldata,
-                                success: function (resp) {
-                                    $('.page-wrapper').html(resp);
-                                }
-                            });
-                        }
-                    },
-                    close: {
-                        text: 'Cancel',
-                        btnClass: 'btn-gray',
-                        action: function () {
-                        }
-                    }
-                }
-            });
-        }
 
         function functionDeleteGlobalGroup(grp, grpextid, percount, usercount, grpid) {
             if (percount > 0 || usercount > 0) {

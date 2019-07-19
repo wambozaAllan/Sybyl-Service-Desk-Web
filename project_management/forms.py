@@ -1,6 +1,6 @@
 from django import forms
 from django.db import models
-from .models import Project, Milestone, Task, ProjectDocument, Priority, Status, ProjectTeamMember, ProjectTeam, Incident, ServiceLevelAgreement, EscalationLevel
+from .models import Project, Milestone, Task, ProjectDocument, Priority, Status, ProjectTeamMember, ProjectTeam, Incident, IncidentComment, ServiceLevelAgreement, EscalationLevel
 from company_management.models import Company
 from crispy_forms.helper import FormHelper
 from crispy_forms.layout import Submit
@@ -124,7 +124,7 @@ class TaskUpdateForm(forms.ModelForm):
 class DocumentForm(forms.ModelForm):
     class Meta:
         model = ProjectDocument
-        fields = ('title', 'description', 'document', 'project', 'created_by')
+        fields = ('title', 'document_description', 'document', 'project', 'created_by')
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
