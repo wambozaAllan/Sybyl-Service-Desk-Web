@@ -4,6 +4,7 @@
 <!-- Main wrapper  -->
 <div id="main-wrapper">
     {% include 'header.html' %}
+
     {% include 'left-nav.html' %}
     <!-- Page wrapper  -->
     <div class="page-wrapper">
@@ -28,7 +29,7 @@
                         <ul class="nav nav-tabs" role="tablist">
                             <li class="nav-item">
                                 <a class="nav-link active" data-toggle="tab" href="#home" role="tab"><span class="hidden-sm-up"><i class="ti-home"></i></span>
-                                <span class="hidden-xs-down">Home</span></a>
+                                <span class="hidden-xs-down">Overview</span></a>
                             </li>
 
                             {% if forum_status %}
@@ -45,7 +46,7 @@
                                 <span class="hidden-xs-down">Milestones</span></a>
                             </li>
 
-                            {% if milestone_status%}
+                            {% if milestone_status %}
                             <li class="nav-item"  onclick="listTasks({{ project.id }})">
                                 <a class="nav-link" data-toggle="tab" href="#tasks" >
                                     <span class="hidden-sm-up"><i class="fas fa-users"></i></span>
@@ -53,7 +54,6 @@
                             </li>
                             {% else %}{% endif %}
 
-                            
 
                             {% if incident_status%}
                             <li class="nav-item"  onclick="listProjectIncidents({{ project.id }})">
@@ -87,46 +87,110 @@
                         <!-- Tab panes -->
                         <div class="tab-content tabcontent-border">
                             <div class="tab-pane active" id="home" role="tabpanel">
-                                <div class="p-20">
-                                    <div class="card-title">
-                                        <h4>Projects Details</h4>
-                                    </div>
-                                    <div class="card-body">
-                                        <div class="basic-form">
-                                            <div class="row">
-                                                <div class="col-6">
-                                                    <p class="text-muted m-b-15 f-s-12">Name</p>
-                                                    <input type="text" class="form-control input-flat"
-                                                           value="{{ project.name }}" disabled>
-                                                </div>
-                                                <div class="col-6">
-                                                    <p class="text-muted m-b-15 f-s-12">Status</p>
-                                                    <input type="text" class="form-control input-flat"
-                                                           value="{{ project.project_status }}" disabled>
-                                                </div>
-                                                <div class="col-6">
-                                                    <p class="text-muted m-b-15 f-s-12">Project Code</p>
-                                                    <input type="text" class="form-control input-flat"
-                                                           value="{{ project.project_code }}" disabled>
-                                                </div>
-                                                <div class="col-6">
-                                                    <p class="text-muted m-b-15 f-s-12">Estimated Cost</p>
-                                                    <input type="text" class="form-control input-flat"
-                                                           value="{{ project.estimated_cost }}" disabled>
-                                                </div>
-                                                <div class="col-6">
-                                                    <p class="text-muted m-b-15 f-s-12">Start Date</p>
-                                                    <input type="text" class="form-control input-flat"
-                                                           value="{{ project.estimated_start_date }}" disabled>
-                                                </div>
-                                                <div class="col-6">
-                                                    <p class="text-muted m-b-15 f-s-12">End Date</p>
-                                                    <input type="text" class="form-control input-flat"
-                                                           value="{{ project.estimated_end_date }}" disabled>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
+                                <div class="">
+                                   <h4 style="margin-left: 1%;margin-top: 1%;"> <strong class="font-weight-bold">Project Overview</strong> <a style="margin-left: 2px;" onclick="viewProjectDetails()" href="#"> <i class="fa fa-dedent color-primary" title="View Project Details"></i></a></h4>
+                                    
+                                    <div class="row no-gutters widget-1 shadow-base">
+                                        <div class="col-sm-6 col-lg-4">
+                                            <div class="card">
+                                                <div class="card-header">
+                                                    <h6 class="card-title">Tasks</h6>
+                                                    <a href=""><i class="icon ion-android-more-horizontal"></i></a>
+                                                </div><!-- card-header -->
+                                                <div class="card-body">
+                                                    <span id="spark1">
+                                                        <i style="display: inline-block; width: 89px; height: 35px; vertical-align: top;" width="89" height="30" class="fa fa-tasks f-s-60 color-primary"></i>
+                                                    </span>
+                                                    <span>30</span>
+                                                </div><!-- card-body -->
+                                                <div class="card-footer">
+                                                    <div>
+                                                        <span class="tx-11">Open</span>
+                                                        <h6 class="tx-inverse text-right"><i class="fa fa-circle color-primary"></i> 3</h6>
+                                                    </div>
+                                                    <div>
+                                                        <span class="tx-11">Completed</span>
+                                                        <h6 class="tx-inverse text-right"><i class="fa fa-circle color-success"></i> 8</h6>
+                                                    </div>
+                                                    <div>
+                                                        <span class="tx-11">Onhold</span>
+                                                        <h6 class="tx-inverse text-right"><i class="fa fa-circle color-warning"></i> 20</h6>
+                                                    </div>
+                                                    <div>
+                                                        <span class="tx-11">Terminated</span>
+                                                        <h6 class="tx-inverse text-right"><i class="fa fa-circle color-danger"></i> 9</h6>
+                                                    </div>
+                                                </div><!-- card-footer -->
+                                            </div><!-- card -->
+                                        </div><!-- col-3 -->
+
+                                        <div class="col-sm-6 col-lg-4 mg-t-1 mg-sm-t-0">
+                                            <div class="card">
+                                                <div class="card-header">
+                                                    <h6 class="card-title">Milestones</h6>
+                                                    <a href=""><i class="icon ion-android-more-horizontal"></i></a>
+                                                </div><!-- card-header -->
+                                                <div class="card-body">
+                                                    <span id="spark2">
+                                                        <i style="display: inline-block; width: 89px; height: 35px; vertical-align: top;" width="89" height="30" class="fa fa-th-list f-s-60 color-primary"></i>
+                                                    </span>
+                                                    <span class="tx-medium tx-inverse tx-32">20</span>
+                                                </div><!-- card-body -->
+                                                <div class="card-footer">
+                                                    <div>
+                                                        <span class="tx-11">Open</span>
+                                                        <h6 class="tx-inverse text-right"><i class="fa fa-circle color-primary"></i> 1</h6>
+                                                    </div>
+                                                    <div>
+                                                        <span class="tx-11">Completed</span>
+                                                        <h6 class="tx-inverse text-right"><i class="fa fa-circle color-success"></i> 4</h6>
+                                                    </div>
+                                                    <div>
+                                                        <span class="tx-11">Onhold</span>
+                                                        <h6 class="tx-inverse text-right"><i class="fa fa-circle color-warning"></i> 0</h6>
+                                                    </div>
+                                                    <div>
+                                                        <span class="tx-11">Terminated</span>
+                                                        <h6 class="tx-inverse text-right"><i class="fa fa-circle color-danger"></i> 5</h6>
+                                                    </div>
+                                                </div><!-- card-footer -->
+                                            </div><!-- card -->
+                                        </div><!-- col-3 -->
+
+                                        <div class="col-sm-6 col-lg-4 mg-t-1 mg-lg-t-0">
+                                            <div class="card">
+                                                <div class="card-header">
+                                                    <h6 class="card-title">Incidents</h6>
+                                                    <a href=""><i class="icon ion-android-more-horizontal"></i></a>
+                                                </div><!-- card-header -->
+                                                <div class="card-body">
+                                                    <span id="spark3">
+                                                        <i style="display: inline-block; width: 89px; height: 35px; vertical-align: top;" width="89" height="30" class="fa fa-list f-s-60 color-primary"></i>
+                                                    </span>
+                                                    <span>40</span>
+                                                </div><!-- card-body -->
+                                                <div class="card-footer">
+                                                    <div>
+                                                        <span class="tx-11">Open</span>
+                                                        <h6 class="tx-inverse text-right"><i class="fa fa-circle color-primary"></i> 20</h6>
+                                                    </div>
+                                                    <div>
+                                                        <span class="tx-11">Completed</span>
+                                                        <h6 class="tx-inverse text-right"><i class="fa fa-circle color-success"></i> 12</h6>
+                                                    </div>
+                                                    <div>
+                                                        <span class="tx-11">Onhold</span>
+                                                        <h6 class="tx-inverse text-right"><i class="fa fa-circle color-warning"></i> 3</h6>
+                                                    </div>
+                                                    <div>
+                                                        <span class="tx-11">Terminated</span>
+                                                        <h6 class="tx-inverse text-right"><i class="fa fa-circle color-danger"></i> 18</h6>
+                                                    </div>
+                                                </div><!-- card-footer -->
+                                            </div><!-- card -->
+                                        </div><!-- col-3 -->
+
+                                    </div>                                    
                                 </div>
                             </div>
                             <div class="tab-pane p-20 projectforum" id="project_forum">
@@ -155,10 +219,9 @@
                                             </div>
                                         </div> 
                                     </div>
-                                <div class="tab-pane  p-20" id="profile1" role="tabpanel">2</div>
-                                <div class="tab-pane p-20" id="messages1" role="tabpanel">3</div>
+                                    <div class="tab-pane  p-20" id="profile1" role="tabpanel">2</div>
+                                    <div class="tab-pane p-20" id="messages1" role="tabpanel">3</div>
                                 </div>
-                                 
                                 <!-- tab 3 -->
                             </div>
                             
@@ -313,5 +376,52 @@
         });
     }
 
+    function viewProjectDetails(){
+        $.confirm({
+            title: '<h3>View Project Details</h3>',
+            content: '' + 
+            '<div class="card">'+
+            '<div class="card-body">'+
+                '<div class="basic-form">'+
+                    '<div class="row col-12">'+
+                        '<div class="col-6">'+
+                            '<p class="text-muted m-b-15 f-s-12">Project Name</p>'+
+                            '<input type="text" class="form-control input-flat" value="{{ project.name }}" disabled>'+
+                        '</div>'+
+                        '<div class="col-6">'+
+                            '<p class="text-muted m-b-15 f-s-12">Status</p>'+
+                            '<input type="text" class="form-control input-flat" value="{{ project.project_status }}" disabled>'+
+                        '</div>'+
+                        '<div class="col-6">'+
+                            '<p class="text-muted m-b-15 f-s-12">Project Code</p>'+
+                            '<input type="text" class="form-control input-flat" value="{{ project.project_code }}" disabled>'+
+                        '</div>'+
+                        '<div class="col-6">'+
+                            '<p class="text-muted m-b-15 f-s-12">Estimated Cost</p>'+
+                            '<input type="text" class="form-control input-flat" value="{{ project.estimated_cost }}" disabled>'+
+                        '</div>'+
+                        '<div class="col-6">'+
+                            '<p class="text-muted m-b-15 f-s-12">Start Date</p>'+
+                            '<input type="text" class="form-control input-flat" value="{{ project.estimated_start_date }}" disabled>'+
+                        '</div>'+
+                        '<div class="col-6">'+
+                            '<p class="text-muted m-b-15 f-s-12">End Date</p>'+
+                            '<input type="text" class="form-control input-flat" value="{{ project.estimated_end_date }}" disabled>'+
+                        '</div></div></div></div></div>',
+            type: 'blue',
+            typeAnimated: true,
+            boxWidth: '60%',
+            useBootstrap: false,
+            closeIcon: true,
+            buttons: {
+                close: {
+                    text: 'Close',
+                    btnClass: 'btn-gray close-dialog',
+                    action: function () {
+                    }
+                }
+            }
+        });
+    }
 </script>
 {% endblock %}

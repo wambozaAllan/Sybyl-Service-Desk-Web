@@ -43,6 +43,8 @@ INSTALLED_APPS = [
     'ckeditor',
     'channels',
     'chat',
+    'background_task',
+    'simple_history',
 ]
 
 CKEDITOR_CONFIGS = {
@@ -87,6 +89,7 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'simple_history.middleware.HistoryRequestMiddleware',
 ]
 
 ROOT_URLCONF = 'sybyl_project_issue_tracker_web.urls'

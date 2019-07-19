@@ -1,6 +1,7 @@
 <div class="sla-pane">
     {% if status %}
-    <div class="col-12 ROW">
+    <div class="col-12 ">
+        <span class="text-primary" style="font-size: 130%"><b>SLA</b></span>
         <button id="" class="btn btn-dark btn-outline btn-rounded m-b-10 m-l-5 pull-right" onclick="functionEditSla({{ sla_obj.id }}, '{{ sla_obj.name }}')">
             <i class="fa fa-fw fa-lg fa-edit"></i>Update SLA
         </button>
@@ -49,7 +50,6 @@
 </div>
 
 <script>
-
     function functAddSLA(pro_id, pro_name) {
         urldata = "{% url 'addSla'%}";
         $.ajax({
@@ -71,6 +71,7 @@
                             text: 'Cancel',
                             btnClass: 'btn-gray close-dialog',
                             action: function () {
+                                
                             }
                         }
                     }

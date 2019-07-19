@@ -1,6 +1,7 @@
 import csv, io, xlwt
 import xlsxwriter
 import datetime
+from datetime import date
 
 from django.shortcuts import render, get_object_or_404, redirect
 from django.views.generic import CreateView, ListView, DetailView, UpdateView, DeleteView
@@ -15,19 +16,20 @@ from django.core.mail import EmailMessage
 from static.fusioncharts import FusionCharts
 from django.template import loader
 from django.core import serializers
+from operator import itemgetter
+import operator
 
 
 from django.contrib.auth.decorators import user_passes_test, permission_required
 
 from .models import Project, Milestone, Task, ProjectDocument, Incident, Priority, Status, ProjectTeam, ProjectTeamMember, Role, ProjectForumMessages, ProjectForum, ProjectForumMessageReplies, ServiceLevelAgreement, IncidentComment, EscalationLevel, IncidentComment
 from user_management.models import User
-from company_management.models import Company, CompanyCategory
+from company_management.models import Company, CompanyCategory, CompanyDomain
 from .forms import CreateProjectForm, MilestoneForm, TaskForm, DocumentForm, ProjectUpdateForm, MilestoneUpdateForm, ProjectForm, IncidentForm
 from django.contrib.auth.mixins import PermissionRequiredMixin
 from django.http import JsonResponse
 from django.db.models import Count
 import json
-
 
 # Custom Views
 class ProjectCreateView(PermissionRequiredMixin, CreateView):
@@ -2103,8 +2105,6 @@ def escalate_user(request):
 
     all_company_users = User.objects.filter(company_id=int(company_id))
     escalated_users = User.objects.filter(escalationlevel=int(esc_id))
-    print('fffff')
-    print(escalated_users)
     distinct_users = set(all_company_users).difference(set(escalated_users))
 
     template = loader.get_template('project_management/escalate_new_user.html')
@@ -2139,6 +2139,254 @@ def save_escalated_user(request):
         'esc_name': esc_name,
         'pro_name': pro_name,
         'pro_id': pro_id,
+    }
+
+    return HttpResponse(template.render(context, request))
+
+
+def view_audit_logs(request):
+    company_id = request.session['company_id']
+    audit_logs = []
+    
+    startdate1 = str(date.today())
+    enddate1 = str(date.today()) 
+
+    startdate = datetime.datetime.strptime(startdate1, '%Y-%m-%d')
+    enddate = datetime.datetime.strptime(enddate1, '%Y-%m-%d')
+
+    min_dt = datetime.datetime.combine(startdate, datetime.time.min)
+    max_dt = datetime.datetime.combine(enddate, datetime.time.max)
+
+    obj_projects =  Project.history.filter(id=0, history_date__range=(min_dt, max_dt))
+    obj_tasks = Task.history.filter(project_id=0, history_date__range=(min_dt, max_dt))
+    obj_incidents = Incident.history.filter(project_id=0, history_date__range=(min_dt, max_dt))
+    obj_milestones = Milestone.history.filter(project_id=0, history_date__range=(min_dt, max_dt))
+
+    comp_projects = Project.objects.filter(company=int(company_id))
+    for project_instance in comp_projects:
+      
+        obj_projects = obj_projects | Project.history.filter(id=project_instance.id, history_date__range=(min_dt, max_dt))
+        obj_tasks = obj_tasks | Task.history.filter(project_id=project_instance.id, history_date__range=(min_dt, max_dt))
+        obj_incidents = obj_incidents | Incident.history.filter(project_id=project_instance.id, history_date__range=(min_dt, max_dt))
+        obj_milestones = obj_milestones | Milestone.history.filter(project_id=project_instance.id, history_date__range=(min_dt, max_dt))
+        
+    for i in obj_tasks:
+        tasks_hist = {'name': i.name, 'history_type': i.history_type, 'created_by': i.history_user, 'history_date': i.history_date, 'state': 'Task', 'project' : i.project}
+        audit_logs.append(tasks_hist)
+
+    for f in obj_projects:
+        proj_hist = {'name': f.name, 'history_type': f.history_type, 'created_by': f.history_user, 'history_date': f.history_date, 'state': 'Project'}
+        audit_logs.append(proj_hist)
+
+    for j in obj_incidents:
+        incid_hist = {'name': j.name, 'history_type': j.history_type, 'created_by': j.history_user, 'history_date': j.history_date, 'state': 'Incident', 'project' : j.project}
+        audit_logs.append(incid_hist)
+
+    for t in obj_milestones:
+        milest_hist = {'name': t.name, 'history_type': t.history_type, 'created_by': t.history_user, 'history_date': t.history_date, 'state': 'Milestone', 'project' : t.project}
+        audit_logs.append(milest_hist)
+    
+    sorted_audit_logs_list = sorted(audit_logs, key=operator.itemgetter('history_date'), reverse=True)
+    template = loader.get_template('project_management/list_audit_logs.html')
+    
+    company_list = Company.objects.filter(~Q(id = int(company_id)))
+    context = {
+        'audit_logs': sorted_audit_logs_list,
+        'company_list': company_list,
+    }
+
+    return HttpResponse(template.render(context, request))
+
+
+def filter_audit_logs(request):
+    company_id = request.GET.get('company_select_id')
+    group_select_id = request.GET.get('group_select_id')
+    action_select_id = request.GET.get('action_select_id')
+    startdate1 = request.GET.get('start_audit_log')
+    enddate1 = request.GET.get('end_audit_log')
+
+    startdate = datetime.datetime.strptime(startdate1, '%d-%m-%Y')
+    enddate = datetime.datetime.strptime(enddate1, '%d-%m-%Y')
+
+    min_dt = datetime.datetime.combine(startdate, datetime.time.min)
+    max_dt = datetime.datetime.combine(enddate, datetime.time.max)
+
+    audit_logs = []
+    obj_projects =  Project.history.filter(id=0, history_date__range=(min_dt, max_dt))
+    obj_tasks = Task.history.filter(project_id=0, history_date__range=(min_dt, max_dt))
+    obj_incidents = Incident.history.filter(project_id=0, history_date__range=(min_dt, max_dt))
+    obj_milestones = Milestone.history.filter(project_id=0, history_date__range=(min_dt, max_dt))
+    comp_projects = Project.objects.filter(company=int(company_id))
+
+    if(group_select_id == 'all'):
+        # all categories : milestones,projects,tasks,incidents
+        if(action_select_id == 'all'):
+            # all actions : update, delete, add
+            for project_instance in comp_projects:
+                obj_projects = obj_projects | Project.history.filter(id=project_instance.id, history_date__range=(min_dt, max_dt))
+                obj_tasks = obj_tasks | Task.history.filter(project_id=project_instance.id, history_date__range=(min_dt, max_dt))
+                obj_incidents = obj_incidents | Incident.history.filter(project_id=project_instance.id, history_date__range=(min_dt, max_dt))
+                obj_milestones = obj_milestones | Milestone.history.filter(project_id=project_instance.id, history_date__range=(min_dt, max_dt))
+        else:
+            # one actions : update/delete/add
+            for project_instance in comp_projects:
+                obj_projects = obj_projects | Project.history.filter(id=project_instance.id, history_type=action_select_id, history_date__range=(min_dt, max_dt))
+                obj_tasks = obj_tasks | Task.history.filter(project_id=project_instance.id, history_type=action_select_id, history_date__range=(min_dt, max_dt))
+                obj_incidents = obj_incidents | Incident.history.filter(project_id=project_instance.id, history_type=action_select_id, history_date__range=(min_dt, max_dt))
+                obj_milestones = obj_milestones | Milestone.history.filter(project_id=project_instance.id, history_type=action_select_id, history_date__range=(min_dt, max_dt))
+
+    else:
+        # all categories : milestones,projects,tasks,incidents
+        if(action_select_id == 'all'):
+            # all actions : update, delete, add
+            if(group_select_id == 'projects'):
+                for project_instance in comp_projects:
+                    obj_projects = obj_projects | Project.history.filter(id=project_instance.id)
+            
+            elif(group_select_id == 'milestones'):
+                for project_instance in comp_projects:
+                    obj_milestones = obj_milestones | Milestone.history.filter(project_id=project_instance.id)
+
+            elif(group_select_id == 'tasks'):
+                for project_instance in comp_projects:
+                    obj_tasks = obj_tasks | Task.history.filter(project_id=project_instance.id)
+            else:
+                for project_instance in comp_projects:
+                    obj_incidents = obj_incidents | Incident.history.filter(project_id=project_instance.id)
+
+        else:
+            # one actions : update/delete/add
+            if(group_select_id == 'projects'):
+                for project_instance in comp_projects:
+                    obj_projects = obj_projects | Project.history.filter(id=project_instance.id, history_type=action_select_id)
+            
+            elif(group_select_id == 'milestones'):
+                for project_instance in comp_projects:
+                    obj_milestones = obj_milestones | Milestone.history.filter(project_id=project_instance.id, history_type=action_select_id)
+
+            elif(group_select_id == 'tasks'):
+                for project_instance in comp_projects:
+                    obj_tasks = obj_tasks | Task.history.filter(project_id=project_instance.id, history_type=action_select_id)
+            else:
+                for project_instance in comp_projects:
+                    obj_incidents = obj_incidents | Incident.history.filter(project_id=project_instance.id, history_type=action_select_id)
+
+    for i in obj_tasks:
+        tasks_hist = {'name': i.name, 'history_type': i.history_type, 'created_by': i.history_user, 'history_date': i.history_date, 'state': 'Task', 'project' : i.project}
+        audit_logs.append(tasks_hist)
+
+    for f in obj_projects:
+        proj_hist = {'name': f.name, 'history_type': f.history_type, 'created_by': f.history_user, 'history_date': f.history_date, 'state': 'Project'}
+        audit_logs.append(proj_hist)
+
+    for j in obj_incidents:
+        incid_hist = {'name': j.name, 'history_type': j.history_type, 'created_by': j.history_user, 'history_date': j.history_date, 'state': 'Incident', 'project' : j.project}
+        audit_logs.append(incid_hist)
+
+    for t in obj_milestones:
+        milest_hist = {'name': t.name, 'history_type': t.history_type, 'created_by': t.history_user, 'history_date': t.history_date, 'state': 'Milestone', 'project' : t.project}
+        audit_logs.append(milest_hist)
+    
+    sorted_audit_logs_list = sorted(audit_logs, key=operator.itemgetter('history_date'), reverse=True)
+        
+
+    template = loader.get_template('project_management/list_audit_logs_filter.html')
+    context = {
+        'audit_logs': sorted_audit_logs_list,
+    }
+
+    return HttpResponse(template.render(context, request))
+
+
+def all_companies_filter_auditlogs(request):
+    group_select_id = request.GET.get('group_select_id')
+    action_select_id = request.GET.get('action_select_id')
+
+    audit_logs = []
+    obj_projects =  Project.history.filter(id=0)
+    obj_tasks = Task.history.filter(project_id=0)
+    obj_incidents = Incident.history.filter(project_id=0)
+    obj_milestones = Milestone.history.filter(project_id=0)
+    comp_projects = Project.objects.all()
+
+    if(group_select_id == 'all'):
+        # all categories : milestones,projects,tasks,incidents
+        if(action_select_id == 'all'):
+            # all actions : update, delete, add
+            for project_instance in comp_projects:
+                obj_projects = obj_projects | Project.history.filter(id=project_instance.id)
+                obj_tasks = obj_tasks | Task.history.filter(project_id=project_instance.id)
+                obj_incidents = obj_incidents | Incident.history.filter(project_id=project_instance.id)
+                obj_milestones = obj_milestones | Milestone.history.filter(project_id=project_instance.id)
+        else:
+            # one actions : update/delete/add
+            for project_instance in comp_projects:
+                obj_projects = obj_projects | Project.history.filter(id=project_instance.id, history_type=action_select_id)
+                obj_tasks = obj_tasks | Task.history.filter(project_id=project_instance.id, history_type=action_select_id)
+                obj_incidents = obj_incidents | Incident.history.filter(project_id=project_instance.id, history_type=action_select_id)
+                obj_milestones = obj_milestones | Milestone.history.filter(project_id=project_instance.id, history_type=action_select_id)
+
+    else:
+        # all categories : milestones,projects,tasks,incidents
+        if(action_select_id == 'all'):
+            # all actions : update, delete, add
+            if(group_select_id == 'projects'):
+                for project_instance in comp_projects:
+                    obj_projects = obj_projects | Project.history.filter(id=project_instance.id)
+            
+            elif(group_select_id == 'milestones'):
+                for project_instance in comp_projects:
+                    obj_milestones = obj_milestones | Milestone.history.filter(project_id=project_instance.id)
+
+            elif(group_select_id == 'tasks'):
+                for project_instance in comp_projects:
+                    obj_tasks = obj_tasks | Task.history.filter(project_id=project_instance.id)
+            else:
+                for project_instance in comp_projects:
+                    obj_incidents = obj_incidents | Incident.history.filter(project_id=project_instance.id)
+
+        else:
+            # one actions : update/delete/add
+            if(group_select_id == 'projects'):
+                for project_instance in comp_projects:
+                    obj_projects = obj_projects | Project.history.filter(id=project_instance.id, history_type=action_select_id)
+            
+            elif(group_select_id == 'milestones'):
+                for project_instance in comp_projects:
+                    obj_milestones = obj_milestones | Milestone.history.filter(project_id=project_instance.id, history_type=action_select_id)
+
+            elif(group_select_id == 'tasks'):
+                for project_instance in comp_projects:
+                    obj_tasks = obj_tasks | Task.history.filter(project_id=project_instance.id, history_type=action_select_id)
+            else:
+                for project_instance in comp_projects:
+                    obj_incidents = obj_incidents | Incident.history.filter(project_id=project_instance.id, history_type=action_select_id)
+
+    for i in obj_tasks:
+        comp1 = Company.objects.filter(project=int(i.project_id)).first()
+        tasks_hist = {'name': i.name, 'history_type': i.history_type, 'created_by': i.history_user, 'history_date': i.history_date, 'state': 'Task', 'project': i.project, 'company': comp1}
+        audit_logs.append(tasks_hist)
+
+    for f in obj_projects:
+        comp2 = Company.objects.filter(project=int(f.id)).first()    
+        proj_hist = {'name': f.name, 'history_type': f.history_type, 'created_by': f.history_user, 'history_date': f.history_date, 'state': 'Project', 'company': comp2}
+        audit_logs.append(proj_hist)
+
+    for j in obj_incidents:
+        comp3 = Company.objects.filter(project=int(j.project_id)).first()  
+        incid_hist = {'name': j.name, 'history_type': j.history_type, 'created_by': j.history_user, 'history_date': j.history_date, 'state': 'Incident', 'project': j.project, 'company': comp3}
+        audit_logs.append(incid_hist)
+
+    for t in obj_milestones:
+        comp4 = Company.objects.filter(project=int(t.project_id)).first()  
+        milest_hist = {'name': t.name, 'history_type': t.history_type, 'created_by': t.history_user, 'history_date': t.history_date, 'state': 'Milestone', 'project' : t.project, 'company': comp4}
+        audit_logs.append(milest_hist)
+    
+    sorted_audit_logs_list = sorted(audit_logs, key=operator.itemgetter('history_date'), reverse=True)
+
+    template = loader.get_template('project_management/list_all_comp_auditlogs_filter.html')
+    context = {
+        'audit_logs': sorted_audit_logs_list,
     }
 
     return HttpResponse(template.render(context, request))

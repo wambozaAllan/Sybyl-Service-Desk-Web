@@ -132,4 +132,7 @@ urlpatterns = [
     path('deEscalate/', views.de_escalate_user, name='deEscalateUser'),
     path('escalateUser/', views.escalate_user, name='escalateNewUser'),
     path('saveEscalatedUser/', views.save_escalated_user, name='saveEscalatedUser'),
+    path('auditlogs/', views.view_audit_logs, name='listauditlogs'),
+    path('auditlogsfilter/', views.filter_audit_logs, name='auditlogsfilter'),
+    path('auditlogsfilter2/', views.all_companies_filter_auditlogs, name='auditlogsfilterallcomp'),
 ]

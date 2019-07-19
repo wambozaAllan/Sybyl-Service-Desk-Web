@@ -437,8 +437,7 @@ def search_unassigned_users(request):
     grpid = request.GET.get('grpid')
     company_id = request.session['company_id']
     users = User.objects.filter(
-        (Q(first_name__icontains=search_value) | Q(last_name__icontains=search_value)) & Q(groups__isnull=True) & Q(
-            company=company_id))
+        (Q(first_name__icontains=search_value) | Q(last_name__icontains=search_value)) & Q(groups__isnull=True) & Q(company=company_id))
     template = loader.get_template(
         'user_management/unassigned_users_search_results.html')
     context = {
