@@ -82,7 +82,7 @@
 <script>
     function editTask(task_id, task_name) {
 
-        url = "{% url 'updateProjectTask' 999%}".replace(999, incident_id);
+        url = "{% url 'updateProjectTask' 999%}".replace(999, task_id);
         $.ajax({
             url: url,
             type: "GET",
