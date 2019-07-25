@@ -48,7 +48,6 @@ urlpatterns = [
     path('tasks/new/', views.TaskCreateView.as_view(), name='new_task'),
     path('task-update/<int:pk>/', views.TaskUpdateView.as_view(), name='update_task'),
     path('listProjectTasks', views.tasklist_by_project, name='listProjectTasks'),
-    # path('addProjectTasks', views.add_project_tasks, name='addProjectTasks'),
     path('validateTaskName/', views.validateTaskName, name='validateTaskName'),
     path('saveProjectTask', views.save_project_tasks, name='saveProjectTask'),
     path('milestoneTasks', views.view_tasks_under_milestone, name='milestoneTasks'),
@@ -58,6 +57,7 @@ urlpatterns = [
     path('updateProjectTask/<int:pk>', views.UpdateProjectTask.as_view(), name='updateProjectTask'),
     path('updateMilestoneTask/<int:pk>', views.UpdateMilestoneTask.as_view(), name='updateMilestoneTask'),
     path('detailsProjectTask/<int:pk>', views.DetailsProjectTask.as_view(), name='detailsProjectTask'),
+    path('deleteTask/', views.delete_task, name='deleteTask'),
     path('onholdTasks/', views.onhold_tasks, name="onholdTasks"),
     path('terminatedTasks/', views.terminated_tasks, name="terminatedTasks"),
     path('completedTasks/', views.completed_tasks, name="completedTasks"),
@@ -119,7 +119,6 @@ urlpatterns = [
 
     path('getTeamMembers/', views.get_team_members, name='getTeamMembers'),
     path('setColorCode/', views.set_priority_color_code, name='setColorCode'),
-    path('changeIncidentStatus/<int:pk>', views.change_status_on_task, name='changeIncidentStatus'),
 
     path('projectForum/', views.project_forum, name='tabProjectForum'),
     path('createForum/', views.create_project_forum, name='createProjectForum'),
