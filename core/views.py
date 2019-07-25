@@ -17,7 +17,6 @@ from static.fusioncharts import FusionCharts
 from django.contrib.auth.hashers import make_password
 import datetime
 
-
 class SignUp(generic.CreateView):
     form_class = CustomUserCreationForm
     template_name = 'signup.html'

@@ -367,6 +367,56 @@
 
     $('#id_name').attr('autocomplete', 'off');
 
+    $(function(){
+        var project_id = $('#id_project').val();
+        var project_name =$('#id_project_name').val();
+        $(".actual").css("display", "none");
+
+        $.ajax({
+            type:"GET",
+            cache: false,
+            url: "{% url 'populateStatusMilestone' %}",
+            data: {
+               project_id: project_id,
+               project_name: project_name
+            },
+            dataType: 'json',
+            success: function (data) {
+                let newMilestone = JSON.parse(data.milestones);
+                let actual = '';
+                $("#id_milestone").html("");
+                $("#id_milestone").prepend('<option value="" selected disabled> -----Choose Milestone----- </option>');
+                for(i=0; i<newMilestone.length; i++){
+                    actual = newMilestone[i];
+                    
+                    $('#id_milestone').append('<option value="' + actual["pk"] + '">' + actual["fields"]["name"] + '</option>');
+                    $("#id_milestone").selectpicker('refresh');
+                }
+                
+                let newStatus = JSON.parse(data.status);
+                let assign = '';
+                $("#id_status").prepend('<option value="" selected disabled> -----Choose Status----- </option>');
+                for(i=0; i<newStatus.length; i++){
+                    assign = newStatus[i];
+                    
+                    $('#id_status').append('<option value="' + assign["pk"] + '">' + assign["fields"]["name"] + '</option>');
+                    $("#id_status").selectpicker('refresh');
+                }
+
+                let members = JSON.parse(data.members);
+                let member = '';
+                $("#id_assigned_to").prepend('<option value="" selected disabled> -----Assign Member----- </option>');
+                for(i=0; i<members.length; i++){
+                    member = members[i];
+                    
+                    $('#id_assigned_to').append('<option value="' + member["pk"] + '">' + member["fields"]["first_name"] +" "+ member['fields']['last_name']+ '</option>');
+                    $("#id_assigned_to").selectpicker('refresh');
+                }
+
+            }
+        });
+    });
+
     $('#id_name').on('input', function () {
         var task_name = $(this).val().toUpperCase();
 

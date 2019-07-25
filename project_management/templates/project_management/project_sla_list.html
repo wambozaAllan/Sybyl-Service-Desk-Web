@@ -1,0 +1,113 @@
+<div class="sla-pane">
+    {% if status %}
+    <div class="col-12 ">
+        <span class="text-primary" style="font-size: 130%"><b>SLA</b></span>
+        <button id="" class="btn btn-dark btn-outline btn-rounded m-b-10 m-l-5 pull-right" onclick="functionEditSla({{ sla_obj.id }}, '{{ sla_obj.name }}')">
+            <i class="fa fa-fw fa-lg fa-edit"></i>Update SLA
+        </button>
+    </div>
+    <div class="row col-12">
+        <div class="col-6">
+            <p class="text-muted m-b-15 f-s-12">Name</p>
+            <input type="text" class="form-control input-flat" value="{{ sla_obj.name }}" disabled>
+        </div>
+        <div class="col-6">
+            <p class="text-muted m-b-15 f-s-12">Project</p>
+            <input type="text" class="form-control input-flat" value="{{ sla_obj.project }}" disabled>
+        </div>
+    </div>
+    <div class="row col-12">
+        <div class="col-6">
+            <p class="text-muted m-b-15 f-s-12">Response Time</p>
+            <input type="text" class="form-control input-flat" value="{{ sla_obj.response_time }} {{ sla_obj.response_duration }}" disabled>
+        </div>
+        <div class="col-6">
+            <p class="text-muted m-b-15 f-s-12">Resolution Time</p>
+            <input type="text" class="form-control input-flat" value="{{ sla_obj.resolution_time }} {{ sla_obj.resolution_duration }}" disabled>
+        </div>
+    </div>
+    <div class="row col-12">
+        <div class="col-6">
+            <p class="text-muted m-b-15 f-s-12">Description</p>
+            <input type="text" class="form-control input-flat" value="{{ sla_obj.description }}" disabled>
+        </div>
+        <div class="col-6">
+            <p class="text-muted m-b-15 f-s-12">Created Time</p>
+            <input type="text" class="form-control input-flat" value="{{ sla_obj.created_time }}" disabled>
+        </div>
+    </div>
+    {% else %}
+        <div class="col-12">
+            <button id="" class="btn btn-info pull-right" onclick="functAddSLA({{projectid}}, '{{projectname}}');">
+                <i class="fa fa-fw fa-lg fa-plus"></i>Add Project SLA
+            </button>
+        </div>
+        <div class="form-group">
+            <label><h4>No registered Service Level Agreement.</h4></label>
+            <p class="form-control-static">Please Click Button on the right to add Project SLA.</p>
+        </div>
+    {% endif %}
+</div>
+
+<script>
+    function functAddSLA(pro_id, pro_name) {
+        urldata = "{% url 'addSla'%}";
+        $.ajax({
+            type: "GET",
+            cache: false,
+            data: {pro_id:pro_id, pro_name:pro_name},
+            url: urldata,
+            success: function (resp) {
+                $.confirm({
+                    title: '<h3>Add Project SLA</h3>',
+                    content: '' + resp,
+                    type: 'blue',
+                    typeAnimated: true,
+                    boxWidth: '50%',
+                    useBootstrap: false,
+                    closeIcon: true,
+                    buttons: {
+                        close: {
+                            text: 'Cancel',
+                            btnClass: 'btn-gray close-dialog',
+                            action: function () {
+                                
+                            }
+                        }
+                    }
+                });
+            }
+        });
+    }
+    
+    function functionEditSla(slaid, slaname) {
+        urldata = "{% url 'updateSLA' 999%}".replace(999, slaid);
+        $.ajax({
+            type: "GET",
+            cache: false,
+            data: {
+                slaname: slaname
+            },
+            url: urldata,
+            success: function (resp) {
+                $.confirm({
+                    title: '<h3>Update <strong class="text-info">' + slaname + ' </strong></h3>',
+                    content: '' + resp,
+                    type: 'blue',
+                    typeAnimated: true,
+                    boxWidth: '50%',
+                    useBootstrap: false,
+                    closeIcon: true,
+                    buttons: {
+                        close: {
+                            text: 'Close',
+                            btnClass: 'btn-gray close-dialog',
+                            action: function () {
+                            }
+                        }
+                    }
+                });
+            }
+        });
+    }
+</script>

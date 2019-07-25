@@ -10,6 +10,7 @@ from user_management.models import User, UserTeamMember
 from ckeditor.fields import RichTextField
 # color palette import
 from colorfield.fields import ColorField
+from simple_history.models import HistoricalRecords
 
 
 # PRIORITIES
@@ -63,6 +64,7 @@ class Project(models.Model):
     created_time = models.DateTimeField(auto_now_add=True)
     modified_time = models.DateTimeField(auto_now=True)
     created_by = models.ForeignKey(User, null=True, blank=True, on_delete=models.SET_NULL)
+    history = HistoricalRecords()
 
     def __str__(self):
         return self.name
@@ -223,6 +225,7 @@ class Milestone(models.Model):
     created_time = models.DateTimeField(auto_now_add=True)
     creator  = models.ForeignKey(User, on_delete=models.SET_NULL, blank=True, null=True, related_name='milestone_creator')
     modified_time = models.DateTimeField(auto_now=True)
+    history = HistoricalRecords()
 
     def __str__(self):
         return self.name
@@ -280,6 +283,7 @@ class Task(models.Model):
     actual_end_date = models.DateField(null=True, blank=True)
     created_time = models.DateTimeField(auto_now_add=True)
     modified_time = models.DateTimeField(auto_now=True)
+    history = HistoricalRecords()
 
     def __str__(self):
         return self.name
@@ -317,7 +321,8 @@ class Incident(models.Model):
     close_time = models.DateTimeField(null=True, blank=True)
     created_time = models.DateTimeField(auto_now_add=True)
     modified_time = models.DateTimeField(auto_now=True)
-
+    history = HistoricalRecords()
+    
     def __str__(self):
         return self.title
 
@@ -438,3 +443,31 @@ class ProjectForumMessageReplyAttachments(models.Model):
 
     class Meta():
         db_table = 'project_forum_message_reply_attachments'
+
+
+# Project SLA(Service Level Agreement)
+class ServiceLevelAgreement(models.Model):
+    name = models.CharField(max_length=255)
+    project = models.ForeignKey(Project, on_delete=models.CASCADE)
+    description = models.CharField(max_length=255, null=True, blank=True) 
+    response_time = models.IntegerField()
+    resolution_time = models.IntegerField()
+    created_time = models.DateTimeField(auto_now_add=True)
+    modified_time = models.DateTimeField(auto_now=True)
+    TIME_CHOICES = (('1', 'Days'), ('2', 'Weeks'), ('3', 'Months'))
+    resolution_duration = models.CharField(max_length=255, choices=TIME_CHOICES, default='Days')
+    response_duration = models.CharField(max_length=255, choices=TIME_CHOICES, default='Days')
+
+
+# Escalation Levels
+class EscalationLevel(models.Model):
+    name = models.CharField(max_length=255)
+    project = models.ForeignKey(Project, on_delete=models.CASCADE)
+    description = RichTextField(blank=True, null=True)
+    escalated_to = models.ManyToManyField(User)
+    escalated_by = models.ForeignKey(User, on_delete=models.CASCADE, related_name='escalated_by')
+    date_escalated = models.DateTimeField(auto_now_add=True)
+    modified_time = models.DateTimeField(auto_now=True)
+    escalation_on = models.IntegerField(default=1)
+    TIME_CHOICES = (('1', 'Days'), ('2', 'Weeks'), ('3', 'Months'))
+    escalation_on_duration = models.CharField(max_length=255, choices=TIME_CHOICES, default='Days')

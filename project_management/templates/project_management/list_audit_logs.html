@@ -1,0 +1,249 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block content %}
+<!-- Main wrapper  -->
+<div id="main-wrapper">
+    {% include 'header.html' %}
+    
+<script type="text/javascript" src="https://cdn.jsdelivr.net/jquery/latest/jquery.min.js"></script>
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-daterangepicker/3.0.5/moment.min.js"></script>
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-daterangepicker/3.0.5/daterangepicker.js"></script>
+    <link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-daterangepicker/3.0.5/daterangepicker.css"/>
+
+    {% include 'left-nav.html' %}
+    <!-- Page wrapper  -->
+    <div class="page-wrapper">
+        <!-- Bread crumb -->
+        <div class="row page-titles">
+            <div class="col-md-5 align-self-center">
+                <h3 class="text-primary">Audit Logs</h3>
+            </div>
+            <div class="col-md-7 align-self-center">
+                <ol class="breadcrumb">
+                    <li class="breadcrumb-item"><a href="javascript:void(0)">Home</a></li>
+                    <li class="breadcrumb-item active">Audit Logs</li>
+                </ol>
+            </div>
+        </div>
+        <div class="container-fluid">
+            <div class="card ">
+                <div class="col-12 row">
+                    <div class="form-group col-3">
+                        <label for="">Filter by Company</label>
+                        <select class="form-control" id="company_select_id">
+                            <option value="{{ request.session.company_id }}">{{ request.session.company }}</option>
+                            {% for comp in company_list %}
+                                <option value="{{comp.id}}">{{comp.name}}</option>
+                            {% endfor %}
+                            <option value="all">All</option>
+                        </select>
+                    </div>
+
+                    <div class=" col-3">
+                        <label for="">Filter by Group</label>
+                        <select class="form-control" id="group_select_id">
+                            <option value="all">All</option>
+                            <option value="projects">Projects</option>
+                            <option value="milestones">Milestones</option>
+                            <option value="tasks">Tasks</option>
+                            <option value="incidents">Incidents</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group col-2">
+                        <label for="">Filter by Action</label>
+                        <select class="form-control" id="action_select_id">
+                            <option value="all">All</option>
+                            <option value="+">ADDED</option>
+                            <option value="~">UPDATED</option>
+                            <option value="-">DELETED</option>
+                        </select>
+                    </div>
+
+                    <div class="col-3">
+                        <label for="">Filter by Date</label>
+                        <input style="height: 42px; border-radius: 0; box-shadow: none; border-color: #e7e7e7; font-family: 'Poppins', sans-serif; display: block; width: 100%; height: calc(2.25rem + 2px); padding: .375rem .75rem; padding-left: 0.75rem; font-size: 1rem; line-height: 1.5; color: #495057; background-color: #fff; background-clip: padding-box; border: 1px solid #ced4da; border-top-color: rgb(206, 212, 218); border-right-color: rgb(206, 212, 218); border-bottom-color: rgb(206, 212, 218); border-left-color: rgb(206, 212, 218); border-radius: .25rem; transition: border-color .15s ease-in-out,box-shadow .15s ease-in-out; flex: 1 1 auto; width: 100%; margin-bottom: 0; margin-top: 2%" class="daterange" name="datefilter" id="auditDateFilter" type="text" />
+                    </div>
+
+                    <div class="col-1"  style="margin-top: 33px;">
+                        <button class="btn btn-info" onclick="functionFilterAuditLogs()" type="button">
+                            <i class="fa fa-lg fa-fw fa-search"></i>
+                        </button>
+                    </div>
+                </div>
+
+                <hr>
+                <div id="scrollDiv" style="height:420px; overflow-y: scroll;" class="audit-logs-pane">
+                    <div id="chat-log2" class="profiletimeline">
+                        {% if audit_logs %}
+                            {% for logs in audit_logs %}
+                            <div class="sl-item">
+                                <div class="sl-left"><img src="../../media/staffbackground.jpg" alt="user" class="img-square"/></div>
+                                <div class="sl-right">
+                                    <div>
+                                        {% if logs.state == 'Task' %}
+                                            {% if logs.history_type == '+' %}
+                                                <span class="link"><span class="text-info">{{logs.created_by}}</span> added {{logs.state}} <span class="text-info"> '{{logs.name}}'</span></span>
+                                            {% elif logs.history_type == '-' %}
+                                                <span class="link"><span class="text-info">{{logs.created_by}} </span> deleted {{logs.state}} <span class="text-info"> '{{logs.name}}'</span> </span>
+                                            {% else %}
+                                                <span class="link"><span class="text-info">{{logs.created_by}} </span> updated {{logs.state}} <span class="text-info"> '{{logs.name}}'</span></span> 
+                                            {% endif %}
+
+                                            <div>
+                                                <span>Project: </span><span class="sl-date text-info"> {{logs.project}}</span><br> 
+                                                <span class="sl-date text-info">{{logs.history_date}}</span> 
+                                            </div>
+                                        {% elif logs.state == 'Incident' %}
+                                            {% if logs.history_type == '+' %}
+                                                <span class="link"><span class="text-info">{{logs.created_by}}</span> added {{logs.state}} <span class="text-info"> '{{logs.name}}'</span></span>
+                                            {% elif logs.history_type == '-' %}
+                                                <span class="link"><span class="text-info">{{logs.created_by}} </span> deleted {{logs.state}} <span class="text-info"> '{{logs.name}}'</span> </span>
+                                            {% else %}
+                                                <span class="link"><span class="text-info">{{logs.created_by}} </span> updated {{logs.state}} <span class="text-info"> '{{logs.name}}'</span></span> 
+                                            {% endif %}
+
+                                            <div>
+                                                <span>Project: </span><span class="sl-date text-info"> {{logs.project}}</span><br> 
+                                                <span class="sl-date text-info">{{logs.history_date}}</span> 
+                                            </div>
+                                        {% elif logs.state == 'Milestone' %}
+                                            {% if logs.history_type == '+' %}
+                                                <span class="link"><span class="text-info">{{logs.created_by}}</span> added {{logs.state}} <span class="text-info"> '{{logs.name}}'</span></span>
+                                            {% elif logs.history_type == '-' %}
+                                                <span class="link"><span class="text-info">{{logs.created_by}} </span> deleted {{logs.state}} <span class="text-info"> '{{logs.name}}'</span> </span>
+                                            {% else %}
+                                                <span class="link"><span class="text-info">{{logs.created_by}} </span> updated {{logs.state}} <span class="text-info"> '{{logs.name}}'</span></span> 
+                                            {% endif %}
+                                                <div>
+                                                    <span>Project </span><span class="sl-date text-info"> {{logs.project}}</span><br>
+                                                    <span class="sl-date text-info">{{logs.history_date}}</span> 
+                                                </div>   
+                                        {% else %}
+                                            {% if logs.history_type == '+' %}
+                                                <span class="link"><span class="text-info">{{logs.created_by}}</span> added {{logs.state}} <span class="text-info"> '{{logs.name}}'</span></span>
+                                            {% elif logs.history_type == '-' %}
+                                                <span class="link">
+                                                    <span class="text-info">{{logs.created_by}} </span> deleted {{logs.state}} 
+                                                    <span class="text-info"> '{{logs.name}}'</span> 
+                                                </span>
+                                            {% else %}
+                                                <span class="link"><span class="text-info">{{logs.created_by}}                                  
+                                                    </span> updated {{logs.state}} <span class="text-info"> '{{logs.name}}'</span>
+                                                </span> 
+                                            {% endif %}
+                                                <div>
+                                                    <span class="sl-date text-info">{{logs.history_date}}</span> 
+                                                </div> 
+                                        {% endif %}
+                                    </div>
+                                </div>
+                                <hr>
+                            </div>
+                            {% endfor %}
+                        {% else %}
+                            <h3><span class="text-info">Company has no Audit Logs yet.</span></h3> 
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+            
+        </div>
+    </div>
+</div>
+
+
+<script>
+    $('input[name="datefilter"]').daterangepicker({
+        locale: {
+            format: 'DD-MM-YYYY',
+        }
+    });
+    
+    $('.audit-logs-pane').html('');
+    var company_select_id = $('#company_select_id').val();
+    var group_select_id = $('#group_select_id').val();
+    var action_select_id = $('#action_select_id').val();
+    var date_range = $('#auditDateFilter').val();
+    var aud_dates = date_range.split(" - ");
+    var start_audit_log = aud_dates[0];
+    var end_audit_log = aud_dates[1];
+
+    if (company_select_id === 'all') {
+        urldata1 = "{% url 'auditlogsfilterallcomp'%}";
+        $.ajax({
+            type: 'GET',
+            data: {
+                group_select_id: group_select_id,
+                action_select_id: action_select_id,
+                start_audit_log: start_audit_log,
+                end_audit_log: end_audit_log                
+            },
+            url: urldata1,
+            success: function (rep) {
+                $('.audit-logs-pane').html(rep);
+            }
+        });
+    }else{
+        urldata2 = "{% url 'auditlogsfilter'%}";
+        $.ajax({
+            type: 'GET',
+            data: {
+                group_select_id: group_select_id,
+                action_select_id: action_select_id,
+                company_select_id: company_select_id,
+                start_audit_log: start_audit_log,
+                end_audit_log: end_audit_log    
+            },
+            url: urldata2,
+            success: function (rep) {
+                $('.audit-logs-pane').html(rep);
+            }
+        });
+    }
+    
+    function functionFilterAuditLogs() {
+        $('.audit-logs-pane').html('');
+        var company_select_id = $('#company_select_id').val();
+        var group_select_id = $('#group_select_id').val();
+        var action_select_id = $('#action_select_id').val();
+        var date_range = $('#auditDateFilter').val();
+        var aud_dates = date_range.split(" - ");
+        var start_audit_log = aud_dates[0];
+        var end_audit_log = aud_dates[1];
+
+        if (company_select_id === 'all') {
+            urldata1 = "{% url 'auditlogsfilterallcomp'%}";
+            $.ajax({
+                type: 'GET',
+                data: {
+                    group_select_id: group_select_id,
+                    action_select_id: action_select_id,
+                    start_audit_log: start_audit_log,
+                    end_audit_log: end_audit_log
+                },
+                url: urldata1,
+                success: function (rep) {
+                    $('.audit-logs-pane').html(rep);
+                }
+            });
+        }else{
+            urldata2 = "{% url 'auditlogsfilter'%}";
+            $.ajax({
+                type: 'GET',
+                data: {
+                    group_select_id: group_select_id,
+                    action_select_id: action_select_id,
+                    company_select_id: company_select_id,
+                    start_audit_log: start_audit_log,
+                    end_audit_log: end_audit_log
+                },
+                url: urldata2,
+                success: function (rep) {
+                    $('.audit-logs-pane').html(rep);
+                }
+            });
+        }
+    }
+</script>
+{% endblock %}

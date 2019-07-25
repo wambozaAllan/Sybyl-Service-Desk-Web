@@ -1,6 +1,7 @@
 import csv, io, xlwt
 import xlsxwriter
 import datetime
+from datetime import date
 
 from django.shortcuts import render, get_object_or_404, redirect
 from django.views.generic import CreateView, ListView, DetailView, UpdateView, DeleteView
@@ -15,19 +16,20 @@ from django.core.mail import EmailMessage
 from static.fusioncharts import FusionCharts
 from django.template import loader
 from django.core import serializers
+from operator import itemgetter
+import operator
 
 
 from django.contrib.auth.decorators import user_passes_test, permission_required
 
-from .models import Project, Milestone, Task, ProjectDocument, Incident, Priority, Status, ProjectTeam, ProjectTeamMember, Role, ProjectForumMessages, ProjectForum, ProjectForumMessageReplies, IncidentComment
+from .models import Project, Milestone, Task, ProjectDocument, Incident, Priority, Status, ProjectTeam, ProjectTeamMember, Role, ProjectForumMessages, ProjectForum, ProjectForumMessageReplies, ServiceLevelAgreement, IncidentComment, EscalationLevel, IncidentComment
 from user_management.models import User
-from company_management.models import Company, CompanyCategory
+from company_management.models import Company, CompanyCategory, CompanyDomain
 from .forms import CreateProjectForm, MilestoneForm, TaskForm, DocumentForm, ProjectUpdateForm, MilestoneUpdateForm, ProjectForm, IncidentForm
 from django.contrib.auth.mixins import PermissionRequiredMixin
 from django.http import JsonResponse
 from django.db.models import Count
 import json
-
 
 # Custom Views
 class ProjectCreateView(PermissionRequiredMixin, CreateView):
@@ -489,6 +491,22 @@ def onhold_project_milestones(request):
     milestones_exist = Milestone.objects.filter(project_id=project.id).exists()
     if milestones_exist:
         milestones = Milestone.objects.filter(project_id=project.id)
+        open_status = Status.objects.get(id=1)
+        open_milestones = Milestone.objects.filter(project_id=project.id, status=open_status)
+
+        open_count = Milestone.objects.filter(project_id=project.id, status=open_status).count()
+
+        onhold_status = Status.objects.get(id=2)
+        onhold_milestones = Milestone.objects.filter(project_id=project.id, status=onhold_status)
+        onhold_count = Milestone.objects.filter(project_id=project.id, status=onhold_status).count()
+
+        terminated_status = Status.objects.get(id=3)
+        terminated_milestones = Milestone.objects.filter(project_id=project.id, status=terminated_status)
+        terminated_count = Milestone.objects.filter(project_id=project.id, status=terminated_status).count()
+
+        completed_status = Status.objects.get(id=4)
+        completed_milestones = Milestone.objects.filter(project_id=project.id, status=completed_status)
+        completed_count = Milestone.objects.filter(project_id=project.id, status=completed_status).count()
 
         onhold_status = Status.objects.get(id=2)
         onhold_milestones = Milestone.objects.filter(project_id=project.id, status=onhold_status)
@@ -529,6 +547,11 @@ def terminated_project_milestones(request):
             'project_id': project.id,
             'project_name': project.name,
             'terminated_milestones': terminated_milestones,
+            'open_milestones': open_milestones,
+            'completed_count': completed_count,
+            'onhold_count': onhold_count,
+            'terminated_count': terminated_count,
+            'open_count': open_count
         }
 
         return HttpResponse(template.render(context, request))
@@ -539,8 +562,7 @@ def terminated_project_milestones(request):
             'project_name': project.name,
             'milestones': ''
         }
-
-        return HttpResponse(template.render(context, request))
+        return HttpResponse(template.render(context, request))  
 
 
 def view_tasks_under_milestone(request):
@@ -920,7 +942,6 @@ class UpdateMilestoneTask(UpdateView):
         context['task_id'] = task_id
         return context
 
-
 def tasklist_by_project(request):
     """
     Tasks allocated to project
@@ -981,7 +1002,6 @@ def tasklist_by_project(request):
 
     return HttpResponse(template.render(context, request))
 
-
 def onhold_tasks(request):
     project_id = request.GET.get("project_id")
     project = get_object_or_404(Project, pk=int(project_id))
@@ -1018,7 +1038,6 @@ def onhold_tasks(request):
         }
 
     return HttpResponse(template.render(context, request))
-
 
 def terminated_tasks(request):
     project_id = request.GET.get("project_id")
@@ -1059,6 +1078,69 @@ def terminated_tasks(request):
     return HttpResponse(template.render(context, request))
 
 
+
+def completed_tasks(request):
+    project_id = request.GET.get("project_id")
+    project = get_object_or_404(Project, pk=int(project_id))
+
+    template = loader.get_template('project_management/completed_tasks.html')
+
+    state = True
+    completed_status = Status.objects.get(id=4)
+
+    if Milestone.objects.filter(project_id=project_id).exists():
+        if Task.objects.filter(project_id=project.id, status=completed_status).exists():
+            completed_tasks = Task.objects.filter(project_id=project.id, status=completed_status)
+
+            context = {
+                'project_name': project.name,
+                'project_id': project.id,
+                'completed_tasks': completed_tasks,
+                'state': state
+            }
+
+        else:
+            context = {
+                'project_name': project.name,
+                'project_id': project.id,
+                'completed_tasks': "",
+                'state': state
+            }
+
+
+def terminated_tasks(request):
+    project_id = request.GET.get("project_id")
+    project = get_object_or_404(Project, pk=int(project_id))
+
+    template = loader.get_template('project_management/terminated_tasks.html')
+
+    tasks = Task.objects.filter(project_id= project_id).exists()
+    state = True
+
+    if Milestone.objects.filter(project_id=project_id).exists():
+        if tasks:
+            terminated_status = Status.objects.get(id=3)
+            terminated_tasks = Task.objects.filter(project_id=project.id, status=terminated_status)
+
+            context = {
+                'project_name': project.name,
+                'project_id': project.id,
+                'terminated_tasks': terminated_tasks,
+                'state': state,
+            }
+
+            return HttpResponse(template.render(context, request))
+
+        else:
+            state = True
+            context = {
+                'project_name': project.name,
+                'project_id': project.id,
+                'tasks': '',
+                'state': state
+            }
+
+            return HttpResponse(template.render(context, request))
 def completed_tasks(request):
     project_id = request.GET.get("project_id")
     project = get_object_or_404(Project, pk=int(project_id))
@@ -2360,6 +2442,565 @@ def delete_forum_reply(request):
         'forum_name': forum_name,
         'msg': msg,
         'forum_id': forum_id,
+    }
+
+    return HttpResponse(template.render(context, request))
+
+
+def project_sla_list(request):
+    projectid = request.GET.get('projectid')
+    projectname = request.GET.get('projectname')
+
+    template = loader.get_template('project_management/project_sla_list.html')
+    if ServiceLevelAgreement.objects.filter(project_id=projectid).exists():
+        sla_obj = ServiceLevelAgreement.objects.filter(project_id=int(projectid)).first()
+        status = True
+    else:
+        status = False
+
+    if status:
+        context = {
+            'status': status,
+            'sla_obj': sla_obj
+        }
+    else:
+        context = {
+            'status': status,
+            'projectid':projectid,
+            'projectname':projectname
+        }
+
+    return HttpResponse(template.render(context, request))
+
+
+class AddSla(CreateView):
+    model = ServiceLevelAgreement
+    fields = ['name', 'project','description', 'response_time', 'resolution_time', 'resolution_duration', 'response_duration']
+
+    template_name = 'project_management/add_sla.html'
+    success_url = reverse_lazy('projectsla')
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        pro_id = self.request.GET.get('pro_id')
+        pro_name = self.request.GET.get('pro_name')
+        context['pro_id'] = pro_id
+        context['pro_name'] = pro_name
+        return context
+
+
+def save_sla(request):
+    sla_name = request.GET.get('sla_name')
+    id_description = request.GET.get('id_description')
+    id_response_time = request.GET.get('id_response_time')
+    id_resolution_time = request.GET.get('id_resolution_time')
+    settingtoggleresp = request.GET.get('settingtoggleresp')
+    settingtoggleresoln = request.GET.get('settingtoggleresoln')
+    id_project = request.GET.get('id_project')
+
+    obj = ServiceLevelAgreement(name=sla_name, project_id=int(id_project), description=id_description, response_time=int(id_response_time),
+               resolution_time=int(id_resolution_time), response_duration=settingtoggleresp, resolution_duration=settingtoggleresoln)
+    obj.save()
+
+    slas = ServiceLevelAgreement.objects.filter(project_id=int(id_project)).first()
+    status = True
+    template = loader.get_template('project_management/project_sla_list.html')
+    context = {
+        'status': status,
+        'sla_obj': slas
+    }
+
+    return HttpResponse(template.render(context, request))
+
+
+class UpdateSLA(UpdateView):
+    model = ServiceLevelAgreement
+    fields = ['name', 'project','description', 'response_time', 'resolution_time', 'resolution_duration', 'response_duration']
+    template_name = 'project_management/update_sla.html'
+    success_url = reverse_lazy('projectsla')
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        sla_id = self.kwargs['pk']
+        response_time = self.get_object().response_time
+        resolution_time = self.get_object().resolution_time
+        resolution_duration = self.get_object().resolution_duration
+        response_duration = self.get_object().response_duration
+        context['sla_id'] = sla_id
+        context['response_time'] = response_time
+        context['resolution_time'] = resolution_time
+        context['resolution_duration'] = resolution_duration
+        context['response_duration'] = response_duration
+        return context
+
+
+def save_sla_update(request):
+    sla_name = request.GET.get('sla_name')
+    id_description = request.GET.get('id_description')
+    id_response_time = request.GET.get('id_response_time')
+    id_resolution_time = request.GET.get('id_resolution_time')
+    settingtoggleresp = request.GET.get('settingtoggleresp')
+    settingtoggleresoln = request.GET.get('settingtoggleresoln')
+    id_project = request.GET.get('id_project')
+    sla_id = request.GET.get('sla_id')
+
+    ServiceLevelAgreement.objects.filter(pk=int(sla_id)).update(name=sla_name, description=id_description, response_time=id_response_time,
+        resolution_time=id_resolution_time, resolution_duration=settingtoggleresoln, response_duration=settingtoggleresp,  project_id=int(id_project))
+    
+    slas = ServiceLevelAgreement.objects.filter(project_id=int(id_project)).first()
+    status = True
+    template = loader.get_template('project_management/project_sla_list.html')
+    context = {
+        'status': status,
+        'sla_obj': slas
+    } 
+
+    return HttpResponse(template.render(context, request))
+
+class ProjectEscalationList(ListView):
+    template_name = 'project_management/project_escalation_list.html'
+    context_object_name = 'esc_levels'
+    
+
+    def get_queryset(self):
+        id_project = int(self.request.GET['projectid'])
+        return EscalationLevel.objects.filter(project_id=int(id_project)).annotate(num_esc=Count('escalated_to'))
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        pro_id = self.request.GET.get('projectid')
+        pro_name = self.request.GET.get('projectname')
+        context['projectid'] = pro_id
+        context['projectname'] = pro_name
+        return context
+
+
+class AddEscalation(CreateView):
+    model = EscalationLevel
+    fields = ['name', 'project','description', 'escalated_by', 'escalated_to', 
+                    'escalation_on', 'escalation_on_duration']
+
+    template_name = 'project_management/add_escalation_level.html'
+    success_url = reverse_lazy('tabProjectEscalation')
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        pro_id = self.request.GET.get('pro_id')
+        pro_name = self.request.GET.get('pro_name')
+        context['projectid'] = pro_id
+        context['projectname'] = pro_name
+        return context
+
+
+def save_escation_level(request):
+    esc_name = request.GET.get('esc_name')
+    id_description = request.GET.get('id_description')
+    id_escalate_on = request.GET.get('id_escalate_on')
+    escsettingtogglebtn = request.GET.get('escsettingtogglebtn')
+    id_project = int(request.GET.get('id_project'))
+    id_escalated_to = request.GET.get('id_escalated_to')
+    project_name = request.GET.get('pro_name')
+    uid = request.user.id
+
+    obj = EscalationLevel(name=esc_name, project_id=id_project, description=id_description, escalated_by_id=uid, escalation_on=id_escalate_on, escalation_on_duration=escsettingtogglebtn)
+    obj.save()
+
+    for i in json.loads(id_escalated_to): 
+        if obj.id is not None:
+            escalation = EscalationLevel.objects.get(id=obj.id)
+            user_escalated_to = User.objects.get(id=int(i))
+            escalation.escalated_to.add(user_escalated_to)
+
+    esc_levels = EscalationLevel.objects.filter(project_id=int(id_project)).annotate(num_esc=Count('escalated_to'))
+    template = loader.get_template('project_management/project_escalation_list.html')
+    context = {
+        'esc_levels': esc_levels,
+        'projectid': id_project,
+        'projectname': project_name,
+    }
+
+    return HttpResponse(template.render(context, request))
+
+
+class UpdateEscalationLevel(UpdateView):
+    model = EscalationLevel
+    fields = ['name', 'project','description', 'escalated_by', 'escalated_to', 'escalation_on', 'escalation_on_duration']
+    template_name = 'project_management/update_escalation.html'
+    success_url = reverse_lazy('tabProjectEscalation')
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        esc_id = self.kwargs['pk']
+        escalation_on = self.get_object().escalation_on
+        escalation_on_duration = self.get_object().escalation_on_duration
+        desc = self.get_object().description
+        context['esc_id'] = esc_id
+        context['escalation_on'] = escalation_on
+        context['escalation_on_duration'] = escalation_on_duration
+        context['desc'] = desc
+        return context
+
+
+def update_escation_level_update(request):
+    esc_name = request.GET.get('esc_name')
+    id_description = request.GET.get('id_description')
+    id_escalate_on = request.GET.get('id_escalate_on')
+    escsettingtogglebtn = request.GET.get('escsettingtogglebtn')
+    id_project = int(request.GET.get('id_project'))
+    esc_id = int(request.GET.get('esc_id'))
+    pro_name = request.GET.get('pro_name')
+
+    uid = request.user.id
+    
+    EscalationLevel.objects.filter(pk=int(esc_id)).update(name=esc_name, project_id=id_project, description=id_description, escalation_on=id_escalate_on, escalation_on_duration=escsettingtogglebtn)
+
+    esc_levels = EscalationLevel.objects.filter(project_id=id_project).annotate(num_esc=Count('escalated_to'))
+    template = loader.get_template('project_management/project_escalation_list.html')
+    context = {
+        'esc_levels': esc_levels,
+        'projectid': id_project,
+        'projectname': pro_name,
+    }
+
+    return HttpResponse(template.render(context, request))
+
+
+def manage_escalated_users(request):
+    esc_id = request.GET.get('esc_id')
+    esc_name = request.GET.get('esc_name')
+    pro_name = request.GET.get('pro_name')
+    pro_id = request.GET.get('pro_id')
+
+    esc_users = User.objects.filter(escalationlevel=int(esc_id))
+    
+    template = loader.get_template('project_management/list_escalated_users.html')
+    context = {
+        'esc_users': esc_users,
+        'esc_id': esc_id,
+        'esc_name': esc_name,
+        'pro_name': pro_name,
+        'pro_id': pro_id,
+    }
+
+    return HttpResponse(template.render(context, request))
+
+
+def de_escalate_user(request):
+    uid = request.GET.get('uid')
+    esc_id = request.GET.get('esc_id')
+    esc_name = request.GET.get('esc_name')
+    pro_id = request.GET.get('pro_id')
+    pro_name = request.GET.get('pro_name')
+
+    esc_id2 = EscalationLevel.objects.get(id=int(esc_id))
+    uid2 = User.objects.get(id=int(uid))
+    esc_id2.escalated_to.remove(uid2)
+
+    esc_users = User.objects.filter(escalationlevel=int(esc_id))
+    
+    template = loader.get_template('project_management/list_escalated_users.html')
+    context = {
+        'esc_users': esc_users,
+        'esc_id': esc_id,
+        'esc_name': esc_name,
+        'pro_name': pro_name,
+        'pro_id': pro_id,
+    }
+
+    return HttpResponse(template.render(context, request))
+
+def escalate_user(request):
+    uid = request.GET.get('uid')
+    esc_id = request.GET.get('esc_id')
+    esc_name = request.GET.get('esc_name')
+    pro_id = request.GET.get('pro_id')
+    pro_name = request.GET.get('pro_name')
+    company_id = request.session['company_id']
+
+    all_company_users = User.objects.filter(company_id=int(company_id))
+    escalated_users = User.objects.filter(escalationlevel=int(esc_id))
+    distinct_users = set(all_company_users).difference(set(escalated_users))
+
+    template = loader.get_template('project_management/escalate_new_user.html')
+    context = {
+        'esc_users': distinct_users,
+        'esc_id': esc_id,
+        'esc_name': esc_name,
+        'pro_name': pro_name,
+        'pro_id': pro_id,
+    }
+
+    return HttpResponse(template.render(context, request))
+
+
+def save_escalated_user(request):
+    uid = request.GET.get('uid')
+    esc_id = request.GET.get('esc_id')
+    esc_name = request.GET.get('esc_name')
+    pro_id = request.GET.get('pro_id')
+    pro_name = request.GET.get('pro_name')
+
+    esc_id2 = EscalationLevel.objects.get(id=int(esc_id))
+    uid2 = User.objects.get(id=int(uid))
+    esc_id2.escalated_to.add(uid2)
+
+    esc_users = User.objects.filter(escalationlevel=int(esc_id))
+    
+    template = loader.get_template('project_management/list_escalated_users.html')
+    context = {
+        'esc_users': esc_users,
+        'esc_id': esc_id,
+        'esc_name': esc_name,
+        'pro_name': pro_name,
+        'pro_id': pro_id,
+    }
+
+    return HttpResponse(template.render(context, request))
+
+
+def view_audit_logs(request):
+    company_id = request.session['company_id']
+    audit_logs = []
+    
+    startdate1 = str(date.today())
+    enddate1 = str(date.today()) 
+
+    startdate = datetime.datetime.strptime(startdate1, '%Y-%m-%d')
+    enddate = datetime.datetime.strptime(enddate1, '%Y-%m-%d')
+
+    min_dt = datetime.datetime.combine(startdate, datetime.time.min)
+    max_dt = datetime.datetime.combine(enddate, datetime.time.max)
+
+    obj_projects =  Project.history.filter(id=0, history_date__range=(min_dt, max_dt))
+    obj_tasks = Task.history.filter(project_id=0, history_date__range=(min_dt, max_dt))
+    obj_incidents = Incident.history.filter(project_id=0, history_date__range=(min_dt, max_dt))
+    obj_milestones = Milestone.history.filter(project_id=0, history_date__range=(min_dt, max_dt))
+
+    comp_projects = Project.objects.filter(company=int(company_id))
+    for project_instance in comp_projects:
+      
+        obj_projects = obj_projects | Project.history.filter(id=project_instance.id, history_date__range=(min_dt, max_dt))
+        obj_tasks = obj_tasks | Task.history.filter(project_id=project_instance.id, history_date__range=(min_dt, max_dt))
+        obj_incidents = obj_incidents | Incident.history.filter(project_id=project_instance.id, history_date__range=(min_dt, max_dt))
+        obj_milestones = obj_milestones | Milestone.history.filter(project_id=project_instance.id, history_date__range=(min_dt, max_dt))
+        
+    for i in obj_tasks:
+        tasks_hist = {'name': i.name, 'history_type': i.history_type, 'created_by': i.history_user, 'history_date': i.history_date, 'state': 'Task', 'project' : i.project}
+        audit_logs.append(tasks_hist)
+
+    for f in obj_projects:
+        proj_hist = {'name': f.name, 'history_type': f.history_type, 'created_by': f.history_user, 'history_date': f.history_date, 'state': 'Project'}
+        audit_logs.append(proj_hist)
+
+    for j in obj_incidents:
+        incid_hist = {'name': j.name, 'history_type': j.history_type, 'created_by': j.history_user, 'history_date': j.history_date, 'state': 'Incident', 'project' : j.project}
+        audit_logs.append(incid_hist)
+
+    for t in obj_milestones:
+        milest_hist = {'name': t.name, 'history_type': t.history_type, 'created_by': t.history_user, 'history_date': t.history_date, 'state': 'Milestone', 'project' : t.project}
+        audit_logs.append(milest_hist)
+    
+    sorted_audit_logs_list = sorted(audit_logs, key=operator.itemgetter('history_date'), reverse=True)
+    template = loader.get_template('project_management/list_audit_logs.html')
+    
+    company_list = Company.objects.filter(~Q(id = int(company_id)))
+    context = {
+        'audit_logs': sorted_audit_logs_list,
+        'company_list': company_list,
+    }
+
+    return HttpResponse(template.render(context, request))
+
+
+def filter_audit_logs(request):
+    company_id = request.GET.get('company_select_id')
+    group_select_id = request.GET.get('group_select_id')
+    action_select_id = request.GET.get('action_select_id')
+    startdate1 = request.GET.get('start_audit_log')
+    enddate1 = request.GET.get('end_audit_log')
+
+    startdate = datetime.datetime.strptime(startdate1, '%d-%m-%Y')
+    enddate = datetime.datetime.strptime(enddate1, '%d-%m-%Y')
+
+    min_dt = datetime.datetime.combine(startdate, datetime.time.min)
+    max_dt = datetime.datetime.combine(enddate, datetime.time.max)
+
+    audit_logs = []
+    obj_projects =  Project.history.filter(id=0, history_date__range=(min_dt, max_dt))
+    obj_tasks = Task.history.filter(project_id=0, history_date__range=(min_dt, max_dt))
+    obj_incidents = Incident.history.filter(project_id=0, history_date__range=(min_dt, max_dt))
+    obj_milestones = Milestone.history.filter(project_id=0, history_date__range=(min_dt, max_dt))
+    comp_projects = Project.objects.filter(company=int(company_id))
+
+    if(group_select_id == 'all'):
+        # all categories : milestones,projects,tasks,incidents
+        if(action_select_id == 'all'):
+            # all actions : update, delete, add
+            for project_instance in comp_projects:
+                obj_projects = obj_projects | Project.history.filter(id=project_instance.id, history_date__range=(min_dt, max_dt))
+                obj_tasks = obj_tasks | Task.history.filter(project_id=project_instance.id, history_date__range=(min_dt, max_dt))
+                obj_incidents = obj_incidents | Incident.history.filter(project_id=project_instance.id, history_date__range=(min_dt, max_dt))
+                obj_milestones = obj_milestones | Milestone.history.filter(project_id=project_instance.id, history_date__range=(min_dt, max_dt))
+        else:
+            # one actions : update/delete/add
+            for project_instance in comp_projects:
+                obj_projects = obj_projects | Project.history.filter(id=project_instance.id, history_type=action_select_id, history_date__range=(min_dt, max_dt))
+                obj_tasks = obj_tasks | Task.history.filter(project_id=project_instance.id, history_type=action_select_id, history_date__range=(min_dt, max_dt))
+                obj_incidents = obj_incidents | Incident.history.filter(project_id=project_instance.id, history_type=action_select_id, history_date__range=(min_dt, max_dt))
+                obj_milestones = obj_milestones | Milestone.history.filter(project_id=project_instance.id, history_type=action_select_id, history_date__range=(min_dt, max_dt))
+
+    else:
+        # all categories : milestones,projects,tasks,incidents
+        if(action_select_id == 'all'):
+            # all actions : update, delete, add
+            if(group_select_id == 'projects'):
+                for project_instance in comp_projects:
+                    obj_projects = obj_projects | Project.history.filter(id=project_instance.id)
+            
+            elif(group_select_id == 'milestones'):
+                for project_instance in comp_projects:
+                    obj_milestones = obj_milestones | Milestone.history.filter(project_id=project_instance.id)
+
+            elif(group_select_id == 'tasks'):
+                for project_instance in comp_projects:
+                    obj_tasks = obj_tasks | Task.history.filter(project_id=project_instance.id)
+            else:
+                for project_instance in comp_projects:
+                    obj_incidents = obj_incidents | Incident.history.filter(project_id=project_instance.id)
+
+        else:
+            # one actions : update/delete/add
+            if(group_select_id == 'projects'):
+                for project_instance in comp_projects:
+                    obj_projects = obj_projects | Project.history.filter(id=project_instance.id, history_type=action_select_id)
+            
+            elif(group_select_id == 'milestones'):
+                for project_instance in comp_projects:
+                    obj_milestones = obj_milestones | Milestone.history.filter(project_id=project_instance.id, history_type=action_select_id)
+
+            elif(group_select_id == 'tasks'):
+                for project_instance in comp_projects:
+                    obj_tasks = obj_tasks | Task.history.filter(project_id=project_instance.id, history_type=action_select_id)
+            else:
+                for project_instance in comp_projects:
+                    obj_incidents = obj_incidents | Incident.history.filter(project_id=project_instance.id, history_type=action_select_id)
+
+    for i in obj_tasks:
+        tasks_hist = {'name': i.name, 'history_type': i.history_type, 'created_by': i.history_user, 'history_date': i.history_date, 'state': 'Task', 'project' : i.project}
+        audit_logs.append(tasks_hist)
+
+    for f in obj_projects:
+        proj_hist = {'name': f.name, 'history_type': f.history_type, 'created_by': f.history_user, 'history_date': f.history_date, 'state': 'Project'}
+        audit_logs.append(proj_hist)
+
+    for j in obj_incidents:
+        incid_hist = {'name': j.name, 'history_type': j.history_type, 'created_by': j.history_user, 'history_date': j.history_date, 'state': 'Incident', 'project' : j.project}
+        audit_logs.append(incid_hist)
+
+    for t in obj_milestones:
+        milest_hist = {'name': t.name, 'history_type': t.history_type, 'created_by': t.history_user, 'history_date': t.history_date, 'state': 'Milestone', 'project' : t.project}
+        audit_logs.append(milest_hist)
+    
+    sorted_audit_logs_list = sorted(audit_logs, key=operator.itemgetter('history_date'), reverse=True)
+        
+
+    template = loader.get_template('project_management/list_audit_logs_filter.html')
+    context = {
+        'audit_logs': sorted_audit_logs_list,
+    }
+
+    return HttpResponse(template.render(context, request))
+
+
+def all_companies_filter_auditlogs(request):
+    group_select_id = request.GET.get('group_select_id')
+    action_select_id = request.GET.get('action_select_id')
+
+    audit_logs = []
+    obj_projects =  Project.history.filter(id=0)
+    obj_tasks = Task.history.filter(project_id=0)
+    obj_incidents = Incident.history.filter(project_id=0)
+    obj_milestones = Milestone.history.filter(project_id=0)
+    comp_projects = Project.objects.all()
+
+    if(group_select_id == 'all'):
+        # all categories : milestones,projects,tasks,incidents
+        if(action_select_id == 'all'):
+            # all actions : update, delete, add
+            for project_instance in comp_projects:
+                obj_projects = obj_projects | Project.history.filter(id=project_instance.id)
+                obj_tasks = obj_tasks | Task.history.filter(project_id=project_instance.id)
+                obj_incidents = obj_incidents | Incident.history.filter(project_id=project_instance.id)
+                obj_milestones = obj_milestones | Milestone.history.filter(project_id=project_instance.id)
+        else:
+            # one actions : update/delete/add
+            for project_instance in comp_projects:
+                obj_projects = obj_projects | Project.history.filter(id=project_instance.id, history_type=action_select_id)
+                obj_tasks = obj_tasks | Task.history.filter(project_id=project_instance.id, history_type=action_select_id)
+                obj_incidents = obj_incidents | Incident.history.filter(project_id=project_instance.id, history_type=action_select_id)
+                obj_milestones = obj_milestones | Milestone.history.filter(project_id=project_instance.id, history_type=action_select_id)
+
+    else:
+        # all categories : milestones,projects,tasks,incidents
+        if(action_select_id == 'all'):
+            # all actions : update, delete, add
+            if(group_select_id == 'projects'):
+                for project_instance in comp_projects:
+                    obj_projects = obj_projects | Project.history.filter(id=project_instance.id)
+            
+            elif(group_select_id == 'milestones'):
+                for project_instance in comp_projects:
+                    obj_milestones = obj_milestones | Milestone.history.filter(project_id=project_instance.id)
+
+            elif(group_select_id == 'tasks'):
+                for project_instance in comp_projects:
+                    obj_tasks = obj_tasks | Task.history.filter(project_id=project_instance.id)
+            else:
+                for project_instance in comp_projects:
+                    obj_incidents = obj_incidents | Incident.history.filter(project_id=project_instance.id)
+
+        else:
+            # one actions : update/delete/add
+            if(group_select_id == 'projects'):
+                for project_instance in comp_projects:
+                    obj_projects = obj_projects | Project.history.filter(id=project_instance.id, history_type=action_select_id)
+            
+            elif(group_select_id == 'milestones'):
+                for project_instance in comp_projects:
+                    obj_milestones = obj_milestones | Milestone.history.filter(project_id=project_instance.id, history_type=action_select_id)
+
+            elif(group_select_id == 'tasks'):
+                for project_instance in comp_projects:
+                    obj_tasks = obj_tasks | Task.history.filter(project_id=project_instance.id, history_type=action_select_id)
+            else:
+                for project_instance in comp_projects:
+                    obj_incidents = obj_incidents | Incident.history.filter(project_id=project_instance.id, history_type=action_select_id)
+
+    for i in obj_tasks:
+        comp1 = Company.objects.filter(project=int(i.project_id)).first()
+        tasks_hist = {'name': i.name, 'history_type': i.history_type, 'created_by': i.history_user, 'history_date': i.history_date, 'state': 'Task', 'project': i.project, 'company': comp1}
+        audit_logs.append(tasks_hist)
+
+    for f in obj_projects:
+        comp2 = Company.objects.filter(project=int(f.id)).first()    
+        proj_hist = {'name': f.name, 'history_type': f.history_type, 'created_by': f.history_user, 'history_date': f.history_date, 'state': 'Project', 'company': comp2}
+        audit_logs.append(proj_hist)
+
+    for j in obj_incidents:
+        comp3 = Company.objects.filter(project=int(j.project_id)).first()  
+        incid_hist = {'name': j.name, 'history_type': j.history_type, 'created_by': j.history_user, 'history_date': j.history_date, 'state': 'Incident', 'project': j.project, 'company': comp3}
+        audit_logs.append(incid_hist)
+
+    for t in obj_milestones:
+        comp4 = Company.objects.filter(project=int(t.project_id)).first()  
+        milest_hist = {'name': t.name, 'history_type': t.history_type, 'created_by': t.history_user, 'history_date': t.history_date, 'state': 'Milestone', 'project' : t.project, 'company': comp4}
+        audit_logs.append(milest_hist)
+    
+    sorted_audit_logs_list = sorted(audit_logs, key=operator.itemgetter('history_date'), reverse=True)
+
+    template = loader.get_template('project_management/list_all_comp_auditlogs_filter.html')
+    context = {
+        'audit_logs': sorted_audit_logs_list,
     }
 
     return HttpResponse(template.render(context, request))
