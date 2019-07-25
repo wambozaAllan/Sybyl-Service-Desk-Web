@@ -232,25 +232,6 @@ class MilestoneListView(ListView):
         return Milestone.objects.all()
 
 
-# class AddMilestone(LoginRequiredMixin, CreateView):
-#     model = Milestone
-#     fields = ['name', 'status', 'startdate', 'enddate', 'description',]
-#     template_name = 'project_management/add_project_milestone.html'
-#     success_url = reverse_lazy('listProjectMilestones')
-
-#     def form_valid(self, form):
-#         """auto registering loggedin user"""
-#         form.instance.creator = self.request.user
-#         return super().form_valid(form)
-
-#     def get_context_data(self, **kwargs):
-#         context = super().get_context_data(**kwargs)
-#         project_id = int(self.request.GET['project_id'])
-#         context['project_id'] = project_id
-#         print(context)
-#         return context
-
-
 def milestone_list_by_project(request, project_id):
     project_milestones = Milestone.objects.filter(project_id=project_id)
     return render(request, 'project_management/milestone_list.html', {'milestones': project_milestones})
@@ -364,10 +345,7 @@ def save_milestone(request):
             'state':True
         }
 
-    return HttpResponse(
-        json.dumps(response_data),
-        content_type="application/json"
-    )
+    return JsonResponse(response_data)
     
 
 def update_project_milestone(request, pk):
@@ -668,10 +646,7 @@ def delete_project_milestone(request):
         "message": "Successfully deleted"
     }
 
-    return HttpResponse(
-        json.dumps(response_data),
-        content_type="application/json"
-    )
+    return JsonResponse(response_data)
 
 
 def load_milestones(request):
@@ -762,32 +737,6 @@ def populate_task_view(request):
     return HttpResponse(template.render(context, request))
 
 
-# def add_project_tasks(request):
-#     project_id = request.GET.get('project_id')
-#     print(f"{project_id} is ssdjkalsdfa")
-#     project = get_object_or_404(Project, pk=project_id)
-
-#     milestones_exist = Milestone.objects.filter(project_id=project.id).exists()
-#     all_statuses = Status.objects.all()
-#     if milestones_exist:
-#         milestones = Milestone.objects.filter(project_id=project.id)
-        
-#         data = {
-#             'milestones': serializers.serialize("json", milestones),
-#             'statuses': serializers.serialize("json", all_statuses)
-#         }
-        
-#         return JsonResponse(data)
-
-#     else:
-#         data = {
-#             'milestones': '',
-#             'statuses': serializers.serialize("json", all_statuses)
-#         }
-
-#         return JsonResponse(data)
-
-
 def validateTaskName(request):
     """
     check if name already exists
@@ -866,10 +815,7 @@ def save_project_tasks(request):
         response_data['name'] = task.name
         response_data['state'] = True
 
-    return HttpResponse(
-        json.dumps(response_data),
-        content_type="application/json"
-    )
+    return JsonResponse(response_data)
     
 
 def save_milestone_tasks(request):
@@ -887,16 +833,6 @@ def save_milestone_tasks(request):
     actual_start = request.GET.get('actual_start')
     actual_end = request.GET.get('actual_end')
     created_by = request.user.id
-
-    print(f"chineke me {created_by}")
-    print(f"descriptoin is {description}")
-    print(f"name is {name}")    
-    print(f"status is {status_id}")
-    print(f"start_date is {start_date}")
-    print(f"end_date is {end_date}")
-    print(f"milestone_id is {milestone_id}")
-    print(f"actual_start is {actual_start}")
-    print(f"actual_end is {actual_end}")
 
     response_data = {}
 
@@ -926,8 +862,6 @@ def save_milestone_tasks(request):
     else:
         actual_end = datetime.datetime.strptime(actual_end, "%m/%d/%Y").strftime("%Y-%m-%d")
     
-        
-
     project = Project.objects.get(id=project_id)
     
     milestone = Milestone.objects.get(id=milestone_id, project_id=project.id)
@@ -944,10 +878,7 @@ def save_milestone_tasks(request):
         response_data['state'] = True
 
 
-    return HttpResponse(
-        json.dumps(response_data),
-        content_type="application/json"
-    )
+    return JsonResponse(response_data)
 
 
 class UpdateProjectTask(UpdateView):
@@ -979,7 +910,7 @@ class UpdateProjectTask(UpdateView):
 
 class UpdateMilestoneTask(UpdateView):
     model = Task
-    fields = ['name', 'status', 'description', 'start_date', 'end_date', 'actual_start_date', 'actual_end_date', ]
+    fields = ['name', 'status', 'description', 'start_date', 'end_date', 'actual_start_date', 'actual_end_date', 'assigned_to']
     template_name = 'project_management/update_milestone_task.html'
     success_url = reverse_lazy('listProjects')
 
@@ -995,7 +926,7 @@ def tasklist_by_project(request):
     Tasks allocated to project
     """
     project_id = request.GET.get('project_id')
-    project = get_object_or_404(Project, pk=int(project_id))
+    project = get_object_or_404(Project, pk=(project_id))
 
     template = loader.get_template('project_management/list_project_tasks.html')
 
@@ -1174,6 +1105,25 @@ class DetailsProjectTask(DetailView):
     template_name = 'project_management/details_project_tasks.html'
 
 
+def delete_task(request):
+    """
+    delete task
+    """
+    task_name = request.GET.get('task_name')
+    task_id = request.GET.get('task_id')
+    project_id = request.GET.get('project_id')
+    milestone_id = request.GET.get('milestone_id')
+
+    task = Task.objects.filter(id=task_id)
+    task.delete()
+
+    response_data = {
+        "success": True,
+        "message": "Successfully deleted"
+    }
+
+    return JsonResponse(response_data)
+
 class TaskListView(ListView):
     template_name = 'project_management/task_list.html'
     context_object_name = 'tasks'
@@ -1224,22 +1174,6 @@ def load_task_milestones(request):
     project_id = request.GET.get('project')
     milestones = Milestone.objects.filter(project_id=project_id).order_by('name')
     return render(request, 'project_management/task_milestone_dropdown_list_options.html', {'milestones': milestones})
-
-
-def change_status_on_task(request, pk):
-    """update incident status if incident is linked to task"""
-    task_status = request.GET.get('status')
-    
-    print("task status is "+task_status)
-    print("task id is "+str(pk))
-
-    incident_exists = Incident.objects.filter(task_id=pk).exists()
-    
-    if incident_exists == True:
-        incident = Incident.objects.get(task_id=pk)
-        updateIncidentStatus = Incident.objects.filter(pk=incident.id).update(status=task_status)
-    else:
-        print("no about to reach there")
 
 
 # INCIDENTS
@@ -1627,7 +1561,6 @@ def view_assigned_members(request):
     for user in team:
         team_user = User.objects.get(id=user.member_id)
         users.append(team_user)
-    print(users)
 
     context = {
         "team_members": users,
@@ -1648,7 +1581,6 @@ def add_comment(request):
 
         db_incident = Incident.objects.get(id=int(incident))
         creator = User.objects.get(id=created_by)
-        print(db_incident)
         new_comment = IncidentComment(comment=comment, incident=db_incident, created_by=creator, attachment=file_data)
         new_comment.save()
 
@@ -2280,14 +2212,12 @@ def remove_project_team_member(request):
     team_id = request.GET.get('teamid')
     team_name = request.GET.get('teamname')
     member_id = request.GET.get('memberid')
-    print(f"{member_id} is member_id")
 
     teamid = ProjectTeam.objects.get(id=int(team_id))
     memberid = ProjectTeamMember.objects.get(id=int(member_id))
     memberid.project_team.remove(teamid)
 
     incident = Incident.objects.filter(assignee=memberid)
-    print(f"{incident}")
 
     response_data = {
         'success': 'deleted successfully',
