@@ -8483,3 +8483,232 @@ div.on-hover:hover {
 #errmsg2{
     color: red;
 }
+
+
+/* Dashoard Cards */
+.widget-1 {
+    border-radius: 3px;
+}
+
+.widget-1 > div:first-child .card {
+    border-left: 0;
+    border-top-left-radius: 3px;
+    border-top-right-radius: 3px;
+}
+
+.widget-1 > div:last-child .card {
+    border-right: 0;
+    border-bottom-right-radius: 3px;
+    border-bottom-left-radius: 3px;
+}
+
+@media (min-width: 576px) {
+.widget-1 > div:first-child .card {
+    border-top-right-radius: 0;
+}
+
+.widget-1 > div:nth-child(2) .card {
+    border-top-right-radius: 3px;
+    border-left: 1px solid #e9ecef;
+}
+
+.widget-1 > div:nth-child(3) .card {
+    border-bottom-left-radius: 3px;
+}
+
+.widget-1 > div:last-child .card {
+    border-bottom-left-radius: 0;
+    border-left: 1px solid #e9ecef;
+}
+}
+
+@media (min-width: 992px) {
+.widget-1 > div:first-child .card {
+    border-bottom-left-radius: 3px;
+}
+
+.widget-1 > div:nth-child(2) .card {
+    border-top-right-radius: 0;
+}
+
+.widget-1 > div:nth-child(3) .card {
+    border-left: 1px solid #e9ecef;
+    border-bottom-left-radius: 0;
+}
+
+.widget-1 > div:last-child .card {
+    border-top-right-radius: 3px;
+}
+}
+
+.widget-1 .card {
+    border: 0;
+    border-radius: 0;
+}
+
+.widget-1 .card-header {
+    border-bottom: 0;
+    padding-top: 15px;
+    padding-bottom: 15px;
+    background-color: transparent;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.widget-1 .card-header a {
+    color: #868e96;
+}
+
+.widget-1 .card-header a:hover, .widget-1 .card-header a:focus {
+    color: #17A2B8;
+}
+
+.widget-1 .card-header a i {
+    line-height: 0;
+}
+
+.widget-1 .card-title {
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    font-size: 12px;
+    font-weight: 600;
+    color: #343a40;
+    margin-bottom: 0;
+}
+
+.widget-1 .card-body {
+    padding: 0 20px 20px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.widget-1 .card-body span:last-child {
+    font-family: "Lato", "Helvetica Neue", Arial, sans-serif;
+    font-weight: 700;
+    color: #343a40;
+    font-size: 24px;
+}
+
+.widget-1 .card-footer {
+    border-color: #e9ecef;
+    background-color: transparent;
+    display: flex;
+    justify-content: space-between;
+}
+
+.widget-1 .card-footer h6 {
+    font-family: "Lato", "Helvetica Neue", Arial, sans-serif;
+    font-weight: 700;
+}
+
+.tx-success {
+    color: #23BF08;
+}
+
+.tx-warning {
+    color: #F49917;
+}
+
+.tx-danger {
+    color: #DC3545;
+}
+
+.tx-info {
+    color: #17A2B8;
+}
+
+.tx-inverse {
+    color: #343a40;
+}
+
+.tx-teal {
+    color: #1CAF9A;
+}
+
+.tx-dark {
+    color: #343a40;
+}
+
+.tx-indigo {
+    color: #6610f2;
+}
+
+.tx-purple {
+    color: #6f42c1;
+}
+
+.tx-orange {
+    color: #f27510;
+}
+
+.tx-pink {
+    color: #e83e8c;
+}
+
+.tx-gray-100 {
+    color: #f8f9fa;
+}
+
+.tx-gray-200 {
+    color: #e9ecef;
+}
+
+.tx-gray-300 {
+    color: #dee2e6;
+}
+
+.tx-gray-400 {
+    color: #ced4da;
+}
+
+.tx-gray-500 {
+    color: #adb5bd;
+}
+
+.tx-gray-600 {
+    color: #868e96;
+}
+
+.tx-gray-700 {
+    color: #495057;
+}
+
+.tx-gray-800 {
+    color: #343a40;
+}
+
+.tx-gray-900 {
+    color: #212529;
+}
+
+.tx-br-primary {
+    color: #1D2939;
+}
+
+.tx-white-2 {
+    color: rgba(255, 255, 255, 0.2);
+}
+
+.tx-white-3 {
+    color: rgba(255, 255, 255, 0.3);
+}
+
+.tx-white-4 {
+    color: rgba(255, 255, 255, 0.4);
+}
+
+.tx-white-5 {
+    color: rgba(255, 255, 255, 0.5);
+}
+
+.tx-10-force {
+    font-size: 10px !important;
+}
+
+.tx-11 {
+    font-size: 11px;
+}
+
+/*Close Dashoard Cards */

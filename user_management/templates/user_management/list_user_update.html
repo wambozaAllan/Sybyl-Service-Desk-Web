@@ -76,8 +76,8 @@
                                     {% else %}
                                         <a href="#!" onclick="functionResendEmail({{userdetails.pk}}, '{{ userdetails.username}}', '{{ userdetails.email}}', '{{userdetails.first_name}}', '{{ userdetails.last_name}}')">Resend-Email</a>
                                     {% endif %}
-                                    <a href="{% url 'detailsUser' user.id %}">View</a>
-                                    <a href="{% url 'updateUser' user.id %}">Update</a>
+                                    <a href="{% url 'detailsUser' userdetails.id %}">View</a>
+                                    <a href="{% url 'updateUser' userdetails.id %}">Update</a>
                                 </td>
                             </tr>
                             {% endfor %}

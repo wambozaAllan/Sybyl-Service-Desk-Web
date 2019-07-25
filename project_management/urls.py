@@ -40,7 +40,7 @@ urlpatterns = [
     path('completedMilestones/', views.completed_project_milestones, name='completedMilestones'),
   
     path('populateTaskView', views.populate_task_view, name='populateTaskView'),    
-    path('populateStatusMilestone', views.populate_status_milestone, name='populateStatusMilestone'),
+    # path('populateStatusMilestone', views.populate_status_milestone, name='populateStatusMilestone'),
 
     path('tasks/', views.TaskListView.as_view(), name='listTasks'),
     path('tasks/', views.TaskListView.as_view(), name='task_list'),
@@ -147,4 +147,7 @@ urlpatterns = [
     path('deEscalate/', views.de_escalate_user, name='deEscalateUser'),
     path('escalateUser/', views.escalate_user, name='escalateNewUser'),
     path('saveEscalatedUser/', views.save_escalated_user, name='saveEscalatedUser'),
+    path('auditlogs/', views.view_audit_logs, name='listauditlogs'),
+    path('auditlogsfilter/', views.filter_audit_logs, name='auditlogsfilter'),
+    path('auditlogsfilter2/', views.all_companies_filter_auditlogs, name='auditlogsfilterallcomp'),
 ]
