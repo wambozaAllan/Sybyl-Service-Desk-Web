@@ -150,4 +150,5 @@ urlpatterns = [
     path('auditlogs/', views.view_audit_logs, name='listauditlogs'),
     path('auditlogsfilter/', views.filter_audit_logs, name='auditlogsfilter'),
     path('auditlogsfilter2/', views.all_companies_filter_auditlogs, name='auditlogsfilterallcomp'),
+    path('manageSLAEscalations/', views.manage_sla_esclations, name='manageSLAEscalations'),
 ]

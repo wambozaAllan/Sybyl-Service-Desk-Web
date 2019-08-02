@@ -322,6 +322,7 @@ class Incident(models.Model):
     created_time = models.DateTimeField(auto_now_add=True)
     modified_time = models.DateTimeField(auto_now=True)
     history = HistoricalRecords()
+    escalation_status = models.BooleanField(default=False)
     
     def __str__(self):
         return self.title
