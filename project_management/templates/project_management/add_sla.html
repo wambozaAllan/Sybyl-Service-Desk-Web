@@ -5,7 +5,9 @@
             {{ form.name | as_crispy_field }}
 
             <div class="form-group">
-                <label for="expiry">Response Time</label>
+                <label for="expiry">Response Time
+                    <span class="asteriskField">*</span>
+                </label>
                 <div class="input-group">
                     <input id="id_response_time" type="number" class="form-control select-durations" placeholder="Enter Number"
                         aria-label="Text input with segmented dropdown button">
@@ -49,7 +51,9 @@
                 </div>
             </div>
             <div class="form-group">
-                <label for="expiry">Resolution Time</label>
+                <label for="expiry">Resolution Time
+                    <span class="asteriskField">*</span>
+                </label>
                 <div class="input-group">
                     <input id="id_resolution_time" type="number" class="form-control select-durations" placeholder="Enter Number"
                         aria-label="Text input with segmented dropdown button" >

@@ -9,6 +9,7 @@
 
         <div class="col-6">
             {{ form.project|as_crispy_field }}
+            <input value="{{intial_project}}" type="hidden" id="intial_project_id">
         </div>
         
     </div>
@@ -16,7 +17,9 @@
     <div class="row col-12">
             <div class="col-6">
                 <div class="form-group">
-                    <label for="expiry">Response Time</label>
+                    <label for="expiry">Response Time
+                        <span class="asteriskField">*</span>
+                    </label>
                     <div class="input-group">
                         <input id="id_response_time2" value="{{ response_time }}" type="number" class="form-control select-durations" placeholder="Enter Number"
                             aria-label="Text input with segmented dropdown button">
@@ -42,7 +45,9 @@
 
         <div class="col-6">
             <div class="form-group">
-                <label for="expiry">Resolution Time</label>
+                <label for="expiry">Resolution Time
+                    <span class="asteriskField">*</span>
+                </label>
                 <div class="input-group">
                     <input id="id_resolution_time2" value="{{ resolution_time }}" type="number" class="form-control select-durations" placeholder="Enter Number"
                         aria-label="Text input with segmented dropdown button" >
@@ -82,7 +87,7 @@
 
 
 <script>
-     $("#id_response_time2").keypress(function (e) {
+    $("#id_response_time2").keypress(function (e) {
         //if the letter is not digit then display error and don't type anything
         if (e.which != 8 && e.which != 0 && (e.which < 48 || e.which > 57)) {
             //display error message
@@ -125,6 +130,7 @@
         var settingtoggleresoln = $('#settingtogglebtn4').html();
         var id_project = $('#id_project').val();
         var sla_id = $('#sla_id').val();
+        var intial_project_id = $('#intial_project_id').val();
 
         if (sla_name < 1 || id_response_time < 1 || id_resolution_time < 1 || id_project < 1) {
             if (sla_name < 1) {
@@ -136,7 +142,7 @@
             }
 
             if (id_resolution_time < 1) {
-                $('#id_resolution_time3').css({ "border": '2px solid #00635a' });
+                $('#id_resolution_time2').css({ "border": '2px solid #00635a' });
             }
 
             if (id_project < 1) {
@@ -152,7 +158,8 @@
                 settingtoggleresp: settingtoggleresp,
                 settingtoggleresoln: settingtoggleresoln,
                 sla_id: sla_id,
-                id_project: id_project
+                id_project: id_project,
+                intial_project_id: intial_project_id
             };
             url_data = "{% url 'saveSLAupdate'%}";
             $.ajax({

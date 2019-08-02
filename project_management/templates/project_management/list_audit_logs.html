@@ -4,12 +4,8 @@
 <!-- Main wrapper  -->
 <div id="main-wrapper">
     {% include 'header.html' %}
-    
-<script type="text/javascript" src="https://cdn.jsdelivr.net/jquery/latest/jquery.min.js"></script>
-    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-daterangepicker/3.0.5/moment.min.js"></script>
-    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-daterangepicker/3.0.5/daterangepicker.js"></script>
-    <link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-daterangepicker/3.0.5/daterangepicker.css"/>
-
+    <script type="text/javascript" src="{% static 'template-static-files/javascript/moment.js' %}"></script>
+    <script type="text/javascript" src="{% static 'template-static-files/javascript/daterangepicker.js' %}"></script>
     {% include 'left-nav.html' %}
     <!-- Page wrapper  -->
     <div class="page-wrapper">
