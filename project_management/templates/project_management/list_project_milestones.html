@@ -1,5 +1,5 @@
 <div>
-    <input type="text" value="{{ project_id }}" style="display: none">
+    <input type="text" value="{{ project_id }}" style="display: none" id="id_project">
     <input type="text" value="{{ project_name }}" style="display: none">
 </div>
 
@@ -9,83 +9,16 @@
         <i class="fa fa-fw fa-lg fa-plus"></i>Add Milestones
     </a>
     <ul class="nav nav-tabs customtab" role="tablist">
-        <li class="nav-item"> <a class="nav-link active" data-toggle="tab" href="#openMilestonePane" role="tab"><span class="hidden-sm-up"><i class="ti-home"></i></span> <span class="hidden-xs-down">Open <span class="label label-rounded label-info">{{open_count}}</span></span></a></li>
-        <li class="nav-item" onclick="loadURL('{% url 'onholdMilestones'%}', 'project_id={{ project_id }}', 'on-hold-milestones', 'GET');"> <a class="nav-link" data-toggle="tab" href="#onholdMilestonePane" role="tab"><span class="hidden-sm-up"><i class="ti-user"></i></span> <span class="hidden-xs-down">Onhold <span class="label label-rounded" style="background-color: #FFA500;">{{onhold_count}}</span></span></a></li>
-        <li class="nav-item" onclick="loadURL('{% url 'terminatedMilestones'%}', 'project_id={{ project_id }}', 'terminated-milestones', 'GET');"> <a class="nav-link" data-toggle="tab" href="#terminatedMilestonePane" role="tab"><span class="hidden-sm-up"><i class="ti-email"></i></span> <span class="hidden-xs-down">Terminated <span class="label label-rounded label-danger">{{terminated_count}}</span></span></a></li>
-        <li class="nav-item" onclick="loadURL('{% url 'completedMilestones'%}', 'project_id={{ project_id }}', 'completed-milestones', 'GET');"> <a class="nav-link" data-toggle="tab" href="#completedMilestonePane" role="tab"><span class="hidden-sm-up"><i class="ti-email"></i></span> <span class="hidden-xs-down">Completed <span class="label label-rounded" style="background-color: #44c548;">{{completed_count}}</span></span></a></li>
+        <li class="nav-item open-nav" onclick="loadURL('{% url 'openMilestones'%}', 'project_id={{ project_id }}', 'open-milestones', 'GET');"> <a class="nav-link active open-nav" data-toggle="tab" href="#openMilestonePane" role="tab"><span class="hidden-sm-up"><i class="ti-home"></i></span> <span class="hidden-xs-down">Open <span id="count_open_milestones" class="label label-rounded label-info">{{open_count}}</span></span></a></li>
+        <li class="nav-item onhold-nav" onclick="loadURL('{% url 'onholdMilestones'%}', 'project_id={{ project_id }}', 'on-hold-milestones', 'GET');"> <a class="nav-link onhold-nav" data-toggle="tab" href="#onholdMilestonePane" role="tab"><span class="hidden-sm-up"><i class="ti-user"></i></span> <span class="hidden-xs-down">Onhold <span id="count_onhold_milestones" class="label label-rounded" style="background-color: #FFA500;">{{onhold_count}}</span></span></a></li>
+        <li class="nav-item terminated-nav" onclick="loadURL('{% url 'terminatedMilestones'%}', 'project_id={{ project_id }}', 'terminated-milestones', 'GET');"> <a class="nav-link terminated-nav" data-toggle="tab" href="#terminatedMilestonePane" role="tab"><span class="hidden-sm-up"><i class="ti-email"></i></span> <span class="hidden-xs-down">Terminated <span id="count_terminated_milestones" class="label label-rounded label-danger">{{terminated_count}}</span></span></a></li>
+        <li class="nav-item completed-nav" onclick="loadURL('{% url 'completedMilestones'%}', 'project_id={{ project_id }}', 'completed-milestones', 'GET');"> <a class="nav-link completed-nav" data-toggle="tab" href="#completedMilestonePane" role="tab"><span class="hidden-sm-up"><i class="ti-email"></i></span> <span class="hidden-xs-down">Completed <span id="count_completed_milestones" class="label label-rounded" style="background-color: #44c548;">{{completed_count}}</span></span></a></li>
         
     </ul>
     <div class="tab-content">
         <div class="tab-pane active" id="openMilestonePane" role="tabpanel">
             <div class="card-body milestone-card">
-                <div class="table-responsive">
-                    <table class="table table-hover" id="table_open_milestones">
-                        <thead>
-                            <tr>
-                                <th>#</th>
-                                <th>Name</th>
-                                <th class="text-center">Tasks</th>
-                                <th>Start Date</th>
-                                <th>Status</th>
-                                <th>Progress</th>
-                                <th class="text-center">Action</th>
-                            </tr>
-                        </thead>
-            
-                        <tbody>
-            
-                            {% for milestone in open_milestones %}
-                            <tr>
-                                <td>{{ forloop.counter }}</td>
-                                <td>
-                                    <a href="#" onclick="detailsMilestone('{{ milestone.id }}', '{{ milestone.name }}')" style="color:black;">
-                                    {{ milestone.name }}</a>
-                                </td>
-                                <td class="text-center">
-                                    <a href="#" style="color: rgb(255, 255, 255)"
-                                        onclick="functionSpecificTask('{{ milestone.id }}', '{{ project_id }}')">
-                                        <span class="badge badge-pill badge-success">{{milestone.task_set.count}}</span>
-                                    </a>
-                                </td>
-                                <td>{{ milestone.startdate }}</td>
-                                <td>{{ milestone.status }}</td>
-            
-                                <td class="text-center">
-                                    {{ milestone.completion }}%
-                                    <!-- {% if milestone.completion > 50 %}
-                                    <h5 class="m-t-30"><span class="pull-right">{{ milestone.completion }}%</span></h5>
-                                    <div class="progress-bar bg-danger" style="width: {{ milestone.completion }}%; height:6px;"
-                                        role="progressbar">
-                                        <span class="sr-only">69% Complete</span>
-                                    </div>
-                                    {% else %}
-                                    <h5 class="m-t-30"><span class="pull-right">{{ milestone.completion }}%</span></h5>
-                                    <div class="progress-bar bg-warning wow animated progress-animated"
-                                        style="width: {{milestone.completion}}%; height:6px;" role="progressbar">
-                                        <span class="sr-only">69% Complete</span>
-                                    </div>
-            
-                                    {% endif %} -->
-                                </td>
-                                <td class="text-center">
-                                    <button class="btn btn-outline-success btn-sm"
-                                        onclick="editMilestone('{{ milestone.id }}', '{{ milestone.name }}', '{{project_id}}', '{{project_name}}')">
-                                        <i title="Manage Milestone" class="fa fa-edit"></i>
-                                    </button>
-            
-                                    <button
-                                        onclick="deleteMilestone('{{ milestone.id }}', '{{ milestone.name }}', '{{ project_id }}', '{{ project_name }}')"
-                                        class="btn btn-outline-danger btn-sm" type="button">
-                                        <i title="Delete Milestone" class="fa fa-remove"></i>
-                                    </button>
-                                </td>
-                            </tr>
-                            <!--  -->
-                            {% endfor %}
-            
-                        </tbody>
-                    </table>
-                </div>
+                <div class="open-milestones"></div>    
             </div>  
         </div>
         <div class="tab-pane" id="onholdMilestonePane" role="tabpanel">
@@ -97,14 +30,27 @@
         <div class="tab-pane" id="completedMilestonePane" role="tabpanel">
             <div class="completed-milestones"></div>
         </div>
-    </div>
-
-    
-    
+    </div>  
 </div>
 
 <script>
     $('#table_open_milestones').DataTable();
+
+    $(document).ready(function(){
+        var project_id = $("#id_project").val();
+
+        $.ajax({
+            type:"GET",
+            cache: false,
+            data:{
+                project_id:project_id,
+            },
+            url: "{% url 'openMilestones' %}",
+            success: function(resp){      
+                $('#openMilestonePane').html(resp);                                         
+            }
+        });
+    });
 
     function functionSpecificTask(milestone_id, project_id) {
         urlData = "{% url 'milestoneTasks' %}";
@@ -155,42 +101,6 @@
         });
     }
 
-    function editMilestone(milestone_id, milestone_name, project_id, project_name) {
-
-        url = "{% url 'updateProjectMilestone' 999%}".replace(999, milestone_id);
-        $.ajax({
-            url: url,
-            type: "GET",
-            cache: false,
-            data: {
-                milestone_id: milestone_id,
-                milestone_name: milestone_name,
-                project_id: project_id,
-                project_name: project_name
-            },
-            success: function (resp) {
-                $.confirm({
-                        title: '<h3>Edit Milestone:</h3>',
-                        content: '' + resp,
-                        type: 'blue',
-                        theme: 'material',
-                        typeAnimated: true,
-                        boxWidth: '70%',
-                        useBootstrap: false,
-                        closeIcon: true,
-                        buttons: {
-                            close: {
-                                text: 'Close',
-                                btnClass: 'btn-gray',
-                                action: function () {
-                                }
-                            }
-                        }
-                    });
-            }
-        });
-    }
-
     function detailsMilestone(milestone_id, milestone_name) {
 
         url = "{% url 'detailsProjectMilestone' 999%}".replace(999, milestone_id);
@@ -204,99 +114,25 @@
             },
             success: function (resp) {
                 $.confirm({
-                        title: '<h3>Details Milestone: <strong>'+ milestone_name + '</strong></h3>',
-                        content: '' + resp,
-                        type: 'blue',
-                        theme: 'material',
-                        typeAnimated: true,
-                        boxWidth: '70%',
-                        useBootstrap: false,
-                        closeIcon: true,
-                        buttons: {
-                            close: {
-                                text: 'Close',
-                                btnClass: 'btn-gray',
-                                action: function () {
-                                }
+                    title: '<h3>Details Milestone: <strong>'+ milestone_name + '</strong></h3>',
+                    content: '' + resp,
+                    type: 'blue',
+                    theme: 'material',
+                    typeAnimated: true,
+                    boxWidth: '70%',
+                    useBootstrap: false,
+                    closeIcon: true,
+                    buttons: {
+                        close: {
+                            text: 'Close',
+                            btnClass: 'btn-gray',
+                            action: function () {
                             }
                         }
-                    });
+                    }
+                });
             }
         });
     }
-
-    function deleteMilestone(milestone_id, milestone_name, project_id, project_name) {
-        urldata = "{% url 'deleteProjectMilestone'%}";
-        $.confirm({
-            title: '<h4>Delete Milestone: <strong class="text-danger">"' + milestone_name + ' "</strong>! from ' + project_name + '</h4>',
-            content: '',
-            type: 'red',
-            typeAnimated: true,
-            boxWidth: '40%',
-            useBootstrap: false,
-            theme: 'modern',
-            icon: 'fa fa-exclamation-circle',
-            buttons: {
-                formSubmit: {
-                    text: 'Remove',
-                    btnClass: 'btn-red',
-                    action: function () {
-                        $.ajax({
-                            type: "GET",
-                            cache: false,
-                            data: {
-                                milestone_name: milestone_name,
-                                milestone_id: milestone_id,
-                                project_id: project_id
-                            },
-                            dataType: 'json',
-                            url: urldata,
-                            success: function (response_data){
-                                $('.close-dialog').click();
-                                if (response_data.success === true){
-                                    $.ajax({
-                                        type:"GET",
-                                        cache: false,
-                                        data:{
-                                            project_id:project_id,
-                                        },
-                                        url: "{% url 'listProjectMilestones' %}",
-                                        success: function(resp){
-                                            $('.milestone-task').html(resp);                                                    
-                                        }
-                                    });
-                                    $.confirm({
-                                        title: "Success",
-                                        content: 'Milestone: ' + response_data.message,
-                                        type: 'blue',
-                                        typeAnimated: true,
-                                        boxWidth: '35%',
-                                        useBootstrap: false,
-                                        closeIcon: false,
-                                            buttons: {
-                                                formSubmit: {
-                                                    text: 'OK',
-                                                    btnClass: 'btn-blue close-dialog',
-                                                    action: function () {
-                                                        
-                                                    }
-                                                }
-                                            }
-                                    }); 
-                                }
-                            }
-                        });
-                    }
-                },
-                close: {
-                    text: 'Cancel',
-                    btnClass: 'btn-gray',
-                    action: function () {
-                    }
-                }
-            }
-        });
-    }
-
 
 </script>

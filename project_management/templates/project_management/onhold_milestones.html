@@ -1,4 +1,4 @@
-<div class="table-responsive">
+<div class="table-responsive onhold_milestones_pane">
     <table class="table table-hover" id="table_onhold_milestones">
         <thead>
             <tr>
@@ -6,6 +6,7 @@
                 <th>Name</th>
                 <th class="text-center">Tasks</th>
                 <th>Start Date</th>
+                <th>End Date</th>
                 <th>Status</th>
                 <th>Progress</th>
                 <th class="text-center">Action</th>
@@ -28,6 +29,7 @@
                     </a>
                 </td>
                 <td>{{ milestone.startdate }}</td>
+                <td style="color: #FF6347;">{{ milestone.enddate }}</td>
                 <td>{{ milestone.status }}</td>
 
                 <td class="text-center">
@@ -49,12 +51,12 @@
                 </td>
                 <td class="text-center">
                     <button class="btn btn-outline-success btn-sm"
-                        onclick="editMilestone('{{ milestone.id }}', '{{ milestone.name }}', '{{project_id}}', '{{project_name}}')">
+                        onclick="editOnholdMilestone('{{ milestone.id }}', '{{ milestone.name }}', '{{project_id}}', '{{project_name}}')">
                         <i title="Manage Milestone" class="fa fa-edit"></i>
                     </button>
 
                     <button
-                        onclick="deleteMilestone('{{ milestone.id }}', '{{ milestone.name }}', '{{ project_id }}', '{{ project_name }}')"
+                        onclick="deleteOnholdMilestone('{{ milestone.id }}', '{{ milestone.name }}', '{{ project_id }}', '{{ project_name }}', '{{milestone.task_set.count}}')"
                         class="btn btn-outline-danger btn-sm" type="button">
                         <i title="Delete Milestone" class="fa fa-remove"></i>
                     </button>
@@ -68,4 +70,153 @@
 
 <script>
     $('#table_onhold_milestones').DataTable();
+
+    function editOnholdMilestone(milestone_id, milestone_name, project_id, project_name) {
+
+        url = "{% url 'updateOnholdMilestone' 999%}".replace(999, milestone_id);
+        $.ajax({
+            url: url,
+            type: "GET",
+            cache: false,
+            data: {
+                milestone_id: milestone_id,
+                milestone_name: milestone_name,
+                project_id: project_id,
+                project_name: project_name
+            },
+            success: function (resp) {
+                $.confirm({
+                    title: '<h3>Edit Milestone:</h3>',
+                    content: '' + resp,
+                    type: 'blue',
+                    theme: 'material',
+                    typeAnimated: true,
+                    boxWidth: '70%',
+                    useBootstrap: false,
+                    closeIcon: true,
+                    buttons: {
+                        close: {
+                            text: 'Close',
+                            btnClass: 'btn-gray close-dialog',
+                            action: function () {
+                            }
+                        }
+                    }
+                });
+            }
+        });
+    }
+
+    function deleteOnholdMilestone(milestone_id, milestone_name, project_id, project_name, task_count) {
+        if (task_count > 0) {
+            $.confirm({
+                title: '<h3>Alert.</h3>',
+                content: 'Can not delete Milestone: <strong class="text-info">' + milestone_name + '</strong>, it has attached <strong>Tasks</strong>.',
+                type: 'orange',
+                typeAnimated: true,
+                boxWidth: '40%',
+                useBootstrap: false,
+                closeIcon: true,
+                icon: 'fa fa-warning',
+                buttons: {
+                    close: {
+                        text: 'Close',
+                        btnClass: 'btn-gray',
+                        action: function () {
+                        }
+                    }
+                }
+            });
+        }
+        else{
+            urldata = "{% url 'deleteProjectMilestone'%}";
+            $.confirm({
+                title: '<h4>Delete Milestone: <strong class="text-danger">"' + milestone_name + ' "</strong>! from ' + project_name + '</h4>',
+                content: '',
+                type: 'red',
+                typeAnimated: true,
+                boxWidth: '40%',
+                useBootstrap: false,
+                theme: 'modern',
+                icon: 'fa fa-exclamation-circle',
+                buttons: {
+                    formSubmit: {
+                        text: 'Remove',
+                        btnClass: 'btn-red',
+                        action: function () {
+                            $.ajax({
+                                type: "GET",
+                                cache: false,
+                                data: {
+                                    milestone_name: milestone_name,
+                                    milestone_id: milestone_id,
+                                    project_id: project_id
+                                },
+                                dataType: 'json',
+                                url: urldata,
+                                success: function (response_data){
+                                    $('.close-dialog').click();
+                                    if (response_data.success === true){
+                                        console.log("am the count "+response_data.onhold_count);
+                                        $.ajax({
+                                            type:"GET",
+                                            cache: false,
+                                            data:{
+                                                project_id:project_id,
+                                            },
+                                            url: "{% url 'onholdMilestones' %}",
+                                            success: function(resp){
+                                                $('#onholdMilestonePane').html(resp);   
+                                                // reflecting new count
+                                                $.ajax({
+                                                    type:"GET",
+                                                    cache: false,
+                                                    data:{
+                                                        project_id:project_id,
+                                                    },
+                                                    dataType: 'json',
+                                                    url: "{% url 'milestoneCount' %}",
+                                                    success: function(data){
+                                                        $("#count_open_milestones").text(data.open_count);
+                                                        $("#count_onhold_milestones").text(data.onhold_count);
+                                                        $("#count_terminated_milestones").text(data.terminated_count);
+                                                        $("#count_completed_milestones").text(data.completed_count);                                         
+                                                    }
+                                                });                                                 
+                                            }
+                                        });
+                                        $.confirm({
+                                            title: "Success",
+                                            content: 'Milestone: ' + response_data.message,
+                                            type: 'blue',
+                                            typeAnimated: true,
+                                            boxWidth: '35%',
+                                            useBootstrap: false,
+                                            closeIcon: false,
+                                                buttons: {
+                                                    formSubmit: {
+                                                        text: 'OK',
+                                                        btnClass: 'btn-blue close-dialog',
+                                                        action: function () {
+                                                            
+                                                        }
+                                                    }
+                                                }
+                                        }); 
+                                    }
+                                }
+                            });
+                        }
+                    },
+                    close: {
+                        text: 'Cancel',
+                        btnClass: 'btn-gray',
+                        action: function () {
+                        }
+                    }
+                }
+            });
+        }
+        
+    }
 </script>

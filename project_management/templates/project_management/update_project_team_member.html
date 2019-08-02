@@ -5,6 +5,7 @@
             {% csrf_token %}
             <div class="row col-12">
                 <div class="col-12">{{ form.responsibility | as_crispy_field}}</div>
+                {{project_id}}
             </div>
             <div class="">
                 <div class="col-md-12">

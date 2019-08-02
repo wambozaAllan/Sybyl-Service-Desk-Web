@@ -498,7 +498,18 @@
                             },
                             url: "{% url 'listProjectMilestones' %}",
                             success: function(resp){
-                                $('.milestone-task').html(resp);                                                    
+                                $('.milestone-task').html(resp);   
+                                $.ajax({
+                                    type:"GET",
+                                    cache: false,
+                                    data:{
+                                        project_id:project_id,
+                                    },
+                                    url: "{% url 'openMilestones' %}",
+                                    success: function(resp){      
+                                        $('#openMilestonePane').html(resp);                                         
+                                    }
+                                });                                                 
                             }
                         });
                         $.confirm({

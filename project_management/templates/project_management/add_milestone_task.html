@@ -363,11 +363,14 @@
    
     $('#id_name').on('input', function () {
         var task_name = $(this).val().toUpperCase();
+        var project_id = $("#id_project").val();
+        var milestone_id = $("#id_milestone").val();
 
         $.ajax({
             url: "{% url 'validateTaskName' %}",
             data: {
-                'task_name': task_name
+                'task_name': task_name,
+                milestone_id: milestone_id
             },
             dataType: 'json',
             success: function (data) {
@@ -492,7 +495,7 @@
                                 project_id:project_id,
                                 milestone_id: milestone_id,
                             },
-                            url: "{% url 'listProjectMilestones' %}",
+                            url: "{% url 'milestoneTasks' %}",
                             success: function(resp){
                                 $('.task-milestone').html(resp);                                                    
                             }
