@@ -129,6 +129,7 @@ urlpatterns = [
     path('deleteProjectTeamMember/', views.remove_project_team_member, name='deleteProjectTeamMember'),
     path('validateProjectTeamAssigned/', views.validateProjectTeamAssigned, name='validateProjectTeamAssigned'),
     path('saveTeamMember/', views.save_team_member, name='saveTeamMember'),
+    path('saveupdateTeamMember/<int:pk>', views.save_update_team_member, name='saveupdateTeamMember'),
 
     path('listAllRoles/', views.ListAllRoles.as_view(), name='listAllRoles'),
     path('addRole/', views.AddRole.as_view(), name='addRole'),
@@ -166,4 +167,5 @@ urlpatterns = [
     path('auditlogs/', views.view_audit_logs, name='listauditlogs'),
     path('auditlogsfilter/', views.filter_audit_logs, name='auditlogsfilter'),
     path('auditlogsfilter2/', views.all_companies_filter_auditlogs, name='auditlogsfilterallcomp'),
+    path('manageSLAEscalations/', views.manage_sla_esclations, name='manageSLAEscalations'),
 ]

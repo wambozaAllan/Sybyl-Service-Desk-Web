@@ -65,7 +65,7 @@
                                 </a>
                             </li>
 
-                            <li class="nav-item"  onclick="loadURL('{% url 'projectsla'%}', 'projectid={{ project.id }}&projectname={{ project.name }}&b=a&c=a&d=0&ofst=1&maxR=100&sStr=', 'proj-sla', 'GET');">
+                            <!-- <li class="nav-item"  onclick="loadURL('{% url 'projectsla'%}', 'projectid={{ project.id }}&projectname={{ project.name }}&b=a&c=a&d=0&ofst=1&maxR=100&sStr=', 'proj-sla', 'GET');">
                                 <a class="nav-link" data-toggle="tab" href="#project_sla" >
                                     <span class="hidden-sm-up"><i class="fas fa-users"></i></span>
                                     <span class="hidden-xs-down">Service Level Agreememt</span>
@@ -76,14 +76,17 @@
                                 <a class="nav-link" data-toggle="tab" href="#project_escalations" >
                                     <span class="hidden-sm-up"><i class="fas fa-users"></i></span>
                                     <span class="hidden-xs-down">Escalation Levels</span></a>
-                            </li>
+                            </li> -->
                             
                         </ul>
                         <!-- Tab panes -->
                         <div class="tab-content tabcontent-border">
                             <div class="tab-pane active" id="home" role="tabpanel">
                                 <div class="">
-                                   <h4 style="margin-left: 1%;margin-top: 1%;"> <strong class="font-weight-bold">Project Overview</strong> <a style="margin-left: 2px;" onclick="viewProjectDetails()" href="#"> <i class="fa fa-dedent color-primary" title="View Project Details"></i></a></h4>
+                                   <h4 style="margin-left: 1%;margin-top: 1%;"> <strong class="font-weight-bold">Project Overview</strong> 
+                                    <a style="margin-left: 2px;" onclick="viewProjectDetails()" href="#"> <i class="fa fa-dedent color-primary" title="View Project Details"></i></a>&nbsp;&nbsp;
+                                    <!-- <a style="margin-left: 2px;" onclick="manageEscalations({{ project.id }})" href="#"> <i class="fa fa-arrow-up" title="Escalations"></i></a> -->
+                                </h4>
                                     
                                     <div class="row no-gutters widget-1 shadow-base">
                                         <div class="col-sm-6 col-lg-4">
@@ -416,6 +419,21 @@
                     action: function () {
                     }
                 }
+            }
+        });
+    }
+
+    function manageEscalations(project_id){
+        urldata = "{% url 'manageSLAEscalations' %}";
+        $.ajax({
+            type: "GET",
+            cache: false,
+            data: {
+                project_id: project_id
+            },
+            url: urldata,
+            success: function (resp) {
+                
             }
         });
     }

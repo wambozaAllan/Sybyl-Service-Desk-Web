@@ -1,11 +1,12 @@
 {% load crispy_forms_tags %}
 <div class="card-body">
     <div class="basic-form">
-        <form class="form-horizontal" action="{% url 'updateProjectTeamMember' member_id %}" method="post" enctype="multipart/form-data">
+        <form class="form-horizontal">
             {% csrf_token %}
             <div class="row col-12">
                 <div class="col-12">{{ form.responsibility | as_crispy_field}}</div>
-                {{project_id}}
+                <input id="id_project" value="{{ project_id }}" style="display: none;"/>
+                <input id="id_member" value="{{ member_id }}" style="display: none;"/>
             </div>
             <div class="">
                 <div class="col-md-12">
@@ -24,6 +25,61 @@
         // $('#id_responsibility').selectpicker({
         //     size: 3
         // });
+
+    $("form").on('submit', function(event){
+        event.preventDefault();
+
+        var project_id = $("#id_project").val();
+        var member_id = $("#id_member").val();
+        var responsibility_id = $("#id_responsibility").val();
+
+        url_data = "{% url 'saveupdateTeamMember' 999%}".replace(999, member_id);
+
+        $.ajax({
+            type: "GET",
+            cache: false,
+            data: {
+                member_id: member_id,
+                responsibility_id: responsibility_id, 
+                project_id: project_id
+            },
+            url: url_data,
+            success: function (resp) {
+                $('.close-dialog').click();
+                $.ajax({
+                    type:"GET",
+                    cache: false,
+                    data:{
+                        project_id:project_id,
+                    },
+                    url: "{% url 'tabListTeam' %}",
+                    success: function(resp){
+                        $('.team-project').html(resp);
+                    }
+                });
+
+                $.confirm({
+                    title: "Success",
+                    content: 'Member role updated successfully ' ,
+                    type: 'blue',
+                    typeAnimated: true,
+                    boxWidth: '35%',
+                    useBootstrap: false,
+                    closeIcon: false,
+                        buttons: {
+                            formSubmit: {
+                                text: 'OK',
+                                btnClass: 'btn-blue close-dialog',
+                                action: function () {
+                                    
+                                }
+                            }
+                        }
+                });
+            }
+        });
+
+    });
 
 </script>
 
