@@ -2,8 +2,6 @@
     <input type="text" value="{{ project_id }}" style="display: none;">
     <input type="text" value="{{ milestone_id }}" style="display: none;">
 
-
-
 <div class="card-body task-milestone">
     <div class="row page-titles">
         <div class="col-md-8 col-sm-12 align-self-center">
@@ -36,6 +34,7 @@
                     <th>#</th>
                     <th>Name</th>
                     <th>Start Date</th>
+                    <th>End Date</th>
                     <th>Status</th>
                     <th class="text-center">Action</th>
                 </tr>
@@ -48,23 +47,20 @@
                     <td>{{ forloop.counter }}</td>
                     <td>{{ task.name }}</td>
                     <td>{{ task.start_date }}</td>
+                    <td style="color: #FF6347;">{{ task.end_date }}</td>
                     <td>{{ task.status }}</td>
                     <td class="text-center">
                         <button class="btn btn-outline-success btn-sm"
-                            onclick="editTask('{{ task.id }}', '{{ task.name }}')">
+                            onclick="editTask('{{ task.id }}', '{{ task.name }}', '{{project_id}}', '{{ milestone_id }}')">
                             <i title="Manage Task" class="fa fa-edit"></i>
                         </button>
 
-                        <button onclick="deleteTask('{{ task.id }}', '{{ task.name }}')"
+                        <button onclick="deleteTask('{{ task.id }}', '{{ task.name }}', '{{project_id}}', '{{milestone_id}}' )"
                                 class="btn btn-outline-danger btn-sm" type="button">
                             <i title="Delete Task" class="fa fa-remove"></i>
                         </button>
                     </td>
                 </tr>
-                {% empty %}
-                <tr>
-                    <td colspan="4">No tasks currently. Add the first task.</td>
-                    </tr>
                 {% endfor %}
 
             </tbody>
@@ -125,8 +121,7 @@
         })
     }
 
-    function editTask(task_id, task_name) {
-
+    function editTask(task_id, task_name, project_id, milestone_id) {
         url = "{% url 'updateMilestoneTask' 999%}".replace(999, task_id);
         $.ajax({
             url: url,
@@ -135,6 +130,8 @@
             data: {
                 task_id: task_id,
                 task_name: task_name,
+                project_id: project_id,
+                milestone_id: milestone_id
             },
             success: function (resp) {
                 $.confirm({
@@ -149,12 +146,85 @@
                     buttons: {
                         close: {
                             text: 'Close',
-                            btnClass: 'btn-gray',
+                            btnClass: 'btn-gray close-dialog',
                             action: function () {
                             }
                         }
                     }
                 });
+            }
+        });
+    }
+
+    function deleteTask(task_id, task_name, project_id, milestone_id) {
+        urldata = "{% url 'deleteTask'%}";
+        $.confirm({
+            title: '<h4>Delete Task: <strong class="text-danger">' + task_name + '</h4>',
+            content: '',
+            type: 'red',
+            typeAnimated: true,
+            boxWidth: '40%',
+            useBootstrap: false,
+            theme: 'modern',
+            icon: 'fa fa-exclamation-circle',
+            buttons: {
+                formSubmit: {
+                    text: 'Remove',
+                    btnClass: 'btn-red',
+                    action: function () {
+                        $.ajax({
+                            type: "GET",
+                            cache: false,
+                            data: {
+                                task_name: task_name,
+                                task_id: task_id
+                            },
+                            dataType: 'json',
+                            url: urldata,
+                            success: function (response_data){
+                                $('.close-dialog').click();
+                                if (response_data.success === true){
+                                    $.ajax({
+                                        type:"GET",
+                                        cache: false,
+                                        data:{
+                                            project_id:project_id,
+                                            milestone_id: milestone_id
+                                        },
+                                        url: "{% url 'milestoneTasks' %}",
+                                        success: function(resp){
+                                            $('.milestone-task').html(resp);                                                    
+                                        }
+                                    });
+                                    $.confirm({
+                                        title: "Success",
+                                        content: 'Task: ' + response_data.message,
+                                        type: 'blue',
+                                        typeAnimated: true,
+                                        boxWidth: '35%',
+                                        useBootstrap: false,
+                                        closeIcon: false,
+                                            buttons: {
+                                                formSubmit: {
+                                                    text: 'OK',
+                                                    btnClass: 'btn-blue close-dialog',
+                                                    action: function () {
+                                                        
+                                                    }
+                                                }
+                                            }
+                                    }); 
+                                }
+                            }
+                        });
+                    }
+                },
+                close: {
+                    text: 'Cancel',
+                    btnClass: 'btn-gray',
+                    action: function () {
+                    }
+                }
             }
         });
     }

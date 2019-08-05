@@ -2,10 +2,10 @@
 {% csrf_token %}
 
 <div class="project_team">
-    <input id="project_id" type="hidden" value="{{ project_id }}"/>
-    <input id="team_id" type="hidden" value="{{ team_id }}"/>
-    <input id="project_name" type="hidden" value="{{ project_name }}"/>
-    <input id="team_name" type="hidden" value="{{ team_name }}"/>
+    <input id="project_id" value="{{ project_id }}" style="display: none;"/>
+    <input id="team_id" value="{{ team_id }}" style="display: none;"/>
+    <input id="project_name" value="{{ project_name }}" style="display: none;"/>
+    <input id="team_name" value="{{ team_name }}" style="display: none;"/>
 
 
 {% if state %}
@@ -45,7 +45,7 @@
                 </td>
                 <td class="text-center">
                     <button class="btn btn-outline-success btn-sm"
-                            onclick="editProjectTeamMember('{{ member.id }}', '{{ member }}')">
+                            onclick="editProjectMember('{{ member.id }}', '{{ member }}', '{{ project_id }}')">
                         <i title="Edit Team Member" class="fa fa-edit"></i>
                     </button>
 
@@ -224,6 +224,17 @@
                             success: function (response_data) {
                                 $('.close-dialog').click();
                                 if (response_data.state === true){
+                                    $.ajax({
+                                        type:"GET",
+                                        cache: false,
+                                        data:{
+                                            project_id:project_id,
+                                        },
+                                        url: "{% url 'tabListTeam' %}",
+                                        success: function(resp){
+                                            $('.team-project').html(resp);                                                    
+                                        }
+                                    });
                                     $.confirm({
                                         title: "Success",
                                         content: 'Member: '   + response_data.success,
@@ -237,17 +248,7 @@
                                                     text: 'OK',
                                                     btnClass: 'btn-blue close-dialog',
                                                     action: function () {
-                                                        $.ajax({
-                                                            type:"GET",
-                                                            cache: false,
-                                                            data:{
-                                                                project_id:project_id,
-                                                            },
-                                                            url: "{% url 'tabListTeam' %}",
-                                                            success: function(resp){
-                                                                $('.team-project').html(resp);                                                    
-                                                            }
-                                                        });
+                                                        
                                                     }
                                                 }
                                             }
@@ -264,6 +265,41 @@
                     action: function () {
                     }
                 }
+            }
+        });
+    }
+
+    function editProjectMember(memberid, memberName, project_id) {
+
+        urldata = "{% url 'updateProjectTeamMember' 999%}".replace(999, memberid);
+        $.ajax({
+            type: "GET",
+            cache: false,
+            data: {
+                memberid: memberid,
+                project_id: project_id
+            },
+            url: urldata,
+            success: function (resp) {
+                $.confirm({
+                    title: '<h3>Member: <strong class="text-info">' + memberName + ' </strong></h3>',
+                    content: '' + resp,
+                    type: 'blue',
+                    theme: 'material',
+                    typeAnimated: true,
+                    boxWidth: '50%',
+                    height: '40%',
+                    useBootstrap: false,
+                    closeIcon: true,
+                    buttons: {
+                        close: {
+                            text: 'Close',
+                            btnClass: 'btn-gray close-dialog',
+                            action: function () {
+                            }
+                        }
+                    }
+                });
             }
         });
     }

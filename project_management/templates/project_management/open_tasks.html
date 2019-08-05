@@ -1,5 +1,5 @@
 <div class="table-responsive">
-    <table class="table table-hover" id="table_onhold_tasks">
+    <table class="table table-hover" id="table_open_tasks">
         <thead>
             <tr>
                 <th>Name</th>
@@ -13,7 +13,7 @@
         </thead>
         
         <tbody>
-            {% for task in onhold_tasks %}
+            {% for task in open_tasks %}
             <tr>
                 <td>
                     <a href="#" onclick="detailsTask('{{ task.id }}', '{{ task.name }}',  '{{ project_id }}')" style="color:black;">
@@ -21,16 +21,16 @@
                 </td>
                 <td>{{task.milestone}}</td>
                 <td>{{task.assigned_to}}</td>
-                <td>{{ task.start_date }}</td>
+                <td>{{task.start_date}}</td>
                 <td style="color: #FF6347;">{{ task.end_date }}</td>
                 <td>{{ task.status }}</td>
                 <td>
                     <button class="btn btn-outline-success btn-sm"
-                        onclick="editOnholdTask('{{ task.id }}', '{{ task.name }}', '{{ project_id}}')">
+                        onclick="editOpenTask('{{ task.id }}', '{{ task.name }}', '{{ project_id}}')">
                         <i title="Manage Task" class="fa fa-edit"></i>
                     </button>
 
-                    <button onclick="deleteOnholdTask('{{ task.id }}', '{{ task.name }}', '{{ project_id}}')"
+                    <button onclick="deleteOpenTask('{{ task.id }}', '{{ task.name }}', '{{ project_id}}')"
                             class="btn btn-outline-danger btn-sm" type="button">
                         <i title="Delete Task" class="fa fa-remove"></i>
                     </button>
@@ -43,11 +43,11 @@
 </div>
 
 <script>
-    $('#table_onhold_tasks').DataTable();
+    $('#table_open_tasks').DataTable();
 
-    function editOnholdTask(task_id, task_name, project_id, milestone_id, milestone_name) {
+    function editOpenTask(task_id, task_name, project_id, milestone_id, milestone_name) {
 
-        url = "{% url 'updateOnholdTask' 999%}".replace(999, task_id);
+        url = "{% url 'updateOpenTask' 999%}".replace(999, task_id);
         $.ajax({
             url: url,
             type: "GET",
@@ -80,7 +80,7 @@
         });
     }
 
-    function deleteOnholdTask(task_id, task_name, project_id) {
+    function deleteOpenTask(task_id, task_name, project_id) {
         urldata = "{% url 'deleteTask'%}";
         $.confirm({
             title: '<h4>Delete Task: <strong class="text-danger">' + task_name + '</h4>',
@@ -114,9 +114,9 @@
                                         data:{
                                             project_id:project_id,
                                         },
-                                        url: "{% url 'onholdTasks' %}",
+                                        url: "{% url 'openTasks' %}",
                                         success: function(resp){
-                                            $('#onholdPane').html(resp);
+                                            $('#openPane').html(resp); 
                                             $.ajax({
                                                 type:"GET",
                                                 cache: false,

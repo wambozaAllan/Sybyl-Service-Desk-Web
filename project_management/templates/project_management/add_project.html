@@ -45,6 +45,10 @@
         </div>
     </div>
 
+    <div class="row col-md-12 col-sm-12">
+        {{ project_form.description|as_crispy_field|safe }}
+    </div>
+
     <div class="row">
         <div class="col-md-4 col-sm-12">
             {{ project_form.project_code|as_crispy_field }}
@@ -57,21 +61,24 @@
         <div class="col-md-4 col-sm-12">
             {{ project_form.logo|as_crispy_field }}
         </div>
+        <div class="col-md-4 col-sm-4 ">
+            <button id="btnAddProject" class="col-md-12 col-sm-12 btn btn-success" style="margin-top: 11%;">
+                <i class="fa fa-fw fa-lg fa-save"></i>Add project
+            </button>
+        </div>
     </div> 
     
-    <div class="row col-md-12 col-sm-12">
-        {{ project_form.description|as_crispy_field|safe }}
-    </div>
+    
 
    
     
-    <div class="row">
+    <!-- <div class="row">
         <div class="col-md-12 col-sm-12 ">
             <button id="btnAddProject" class="col-md-4 col-sm-12 btn btn-success pull-right ">
                 <i class="fa fa-fw fa-lg fa-save"></i>Add project
             </button>
         </div>
-    </div>
+    </div> -->
 </form>
 <script>
 
@@ -201,8 +208,6 @@
     
 
     $("#id_name").attr('autocomplete', 'off');
-
-    $("#id_name").css("text-transform", "uppercase");
 
     $('#id_name').on('input', function () {
         var project_name = $(this).val().toUpperCase();

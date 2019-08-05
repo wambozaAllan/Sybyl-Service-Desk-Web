@@ -142,6 +142,18 @@
                 success: function (response_data) {
                     $('.close-dialog').click();
                     if (response_data.state === true){
+                        $.ajax({
+                            type:"GET",
+                            cache: false,
+                            data:{
+                                project_id:project_id,
+                            },
+                            url: "{% url 'tabListTeam' %}",
+                            success: function(resp){
+                                $('.team-project').html(resp);                                                    
+                            }
+                        });
+
                         $.confirm({
                             title: "Success",
                             content: 'Member: ' +response_data.name + " " + response_data.success,
@@ -155,17 +167,7 @@
                                         text: 'OK',
                                         btnClass: 'btn-blue',
                                         action: function () {
-                                            $.ajax({
-                                                type:"GET",
-                                                cache: false,
-                                                data:{
-                                                    project_id:project_id,
-                                                },
-                                                url: "{% url 'tabListTeam' %}",
-                                                success: function(resp){
-                                                    $('.team-project').html(resp);                                                    
-                                                }
-                                            });
+                                               
                                         }
                                     }
                                 }

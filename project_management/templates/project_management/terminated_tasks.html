@@ -6,6 +6,7 @@
                 <th>Milestone</th>
                 <th>Assigned To</th>
                 <th>Start-Date</th>
+                <th>End-Date</th>
                 <th>Status</th>
                 <th>Action</th>
             </tr>
@@ -20,15 +21,16 @@
                 </td>
                 <td>{{task.milestone}}</td>
                 <td>{{task.assigned_to}}</td>
-                <td>{{ task.end_date }}</td>
+                <td>{{ task.start_date }}</td>
+                <td style="color: #FF6347;">{{ task.end_date }}</td>
                 <td>{{ task.status }}</td>
                 <td>
                     <button class="btn btn-outline-success btn-sm"
-                        onclick="editTask('{{ task.id }}', '{{ task.name }}', '{{ project_id}}')">
+                        onclick="editTerminatedTask('{{ task.id }}', '{{ task.name }}', '{{ project_id}}')">
                         <i title="Manage Task" class="fa fa-edit"></i>
                     </button>
 
-                    <button onclick="deleteTask('{{ task.id }}', '{{ task.name }}')"
+                    <button onclick="deleteTerminatedTask('{{ task.id }}', '{{ task.name }}', '{{ project_id}}')"
                             class="btn btn-outline-danger btn-sm" type="button">
                         <i title="Delete Task" class="fa fa-remove"></i>
                     </button>
@@ -42,4 +44,126 @@
 
 <script>
     $('#table_terminated_tasks').DataTable();
+
+    function editTerminatedTask(task_id, task_name, project_id, milestone_id, milestone_name) {
+
+        url = "{% url 'updateTerminatedTask' 999%}".replace(999, task_id);
+        $.ajax({
+            url: url,
+            type: "GET",
+            cache: false,
+            data: {
+                task_id: task_id,
+                task_name: task_name,
+                project_id: project_id
+            },
+            success: function (resp) {
+                $.confirm({
+                    title: '<h3>Edit Task: <strong>'+ task_name +'</strong></h3>',
+                    content: '' + resp,
+                    type: 'blue',
+                    theme: 'material',
+                    typeAnimated: true,
+                    boxWidth: '70%',
+                    useBootstrap: false,
+                    closeIcon: true,
+                    buttons: {
+                        close: {
+                            text: 'Close',
+                            btnClass: 'btn-gray close-dialog',
+                            action: function () {
+                            }
+                        }
+                    }
+                });
+            }
+        });
+    }
+
+    function deleteTerminatedTask(task_id, task_name, project_id) {
+        urldata = "{% url 'deleteTask'%}";
+        $.confirm({
+            title: '<h4>Delete Task: <strong class="text-danger">' + task_name + '</h4>',
+            content: '',
+            type: 'red',
+            typeAnimated: true,
+            boxWidth: '40%',
+            useBootstrap: false,
+            theme: 'modern',
+            icon: 'fa fa-exclamation-circle',
+            buttons: {
+                formSubmit: {
+                    text: 'Remove',
+                    btnClass: 'btn-red',
+                    action: function () {
+                        $.ajax({
+                            type: "GET",
+                            cache: false,
+                            data: {
+                                task_name: task_name,
+                                task_id: task_id
+                            },
+                            dataType: 'json',
+                            url: urldata,
+                            success: function (response_data){
+                                $('.close-dialog').click();
+                                if (response_data.success === true){
+                                    $.ajax({
+                                        type:"GET",
+                                        cache: false,
+                                        data:{
+                                            project_id:project_id,
+                                        },
+                                        url: "{% url 'terminatedTasks' %}",
+                                        success: function(resp){
+                                            $('#terminatedPane').html(resp);
+                                            $.ajax({
+                                                type:"GET",
+                                                cache: false,
+                                                data:{
+                                                    project_id:project_id,
+                                                },
+                                                dataType: 'json',
+                                                url: "{% url 'taskCount' %}",
+                                                success: function(data){
+                                                    $("#count_open_tasks").text(data.open_count);
+                                                    $("#count_onhold_tasks").text(data.onhold_count);
+                                                    $("#count_terminated_tasks").text(data.terminated_count);
+                                                    $("#count_completed_tasks").text(data.completed_count);                                         
+                                                }
+                                            });                                                  
+                                        }
+                                    });
+                                    $.confirm({
+                                        title: "Success",
+                                        content: 'Task: ' + response_data.message,
+                                        type: 'blue',
+                                        typeAnimated: true,
+                                        boxWidth: '35%',
+                                        useBootstrap: false,
+                                        closeIcon: false,
+                                            buttons: {
+                                                formSubmit: {
+                                                    text: 'OK',
+                                                    btnClass: 'btn-blue close-dialog',
+                                                    action: function () {
+                                                        
+                                                    }
+                                                }
+                                            }
+                                    }); 
+                                }
+                            }
+                        });
+                    }
+                },
+                close: {
+                    text: 'Cancel',
+                    btnClass: 'btn-gray',
+                    action: function () {
+                    }
+                }
+            }
+        });
+    }
 </script>

@@ -113,21 +113,25 @@
                                             {{ form.logo|as_crispy_field }}
                                         </div>
                                     </div>
-                                        
-                                        
 
                                     <div class="row">
                                         <div class="col-md-12 col-sm-12">
                                             {{ form.description|as_crispy_field }}
                                         </div>
                                     </div>
-
-
                                     
-                                    <a href="{% url 'listProjects' %}" class="btn btn-inverse pull-right col-md-2" >Cancel</a>
-                                    <button id="btnUpdateProject" class="btn btn-success pull-right col-md-2">
-                                        <i class="fa fa-fw fa-lg fa-save"></i>Update
-                                    </button>
+                                    <div class="row pull-right ">
+                                        <div class="col-6" style="margin-right: -6%;">
+                                            <a href="{% url 'listProjects' %}" class="btn btn-inverse col-12" >Cancel</a>
+                                        </div>
+                                        <div class="col-6">
+                                            <button id="btnUpdateProject" class="btn btn-success">
+                                                <i class="fa fa-fw fa-lg fa-save"></i>Update
+                                            </button>
+                                        </div>
+                                        
+                                    </div>
+                                    
 
                                 </form>
                             </div>
@@ -151,6 +155,8 @@
         $("#id_estimated_end_date").attr("placeholder", "mm/dd/yyyy");
         $("#id_actual_start_date").attr("placeholder", "mm/dd/yyyy");
         $("#id_actual_end_date").attr("placeholder", "mm/dd/yyyy");
+
+        $("#div_id_company").removeClass("form-group");
 
         $('#id_estimated_start_date').datepicker({
             format: "mm/dd/yyyy",

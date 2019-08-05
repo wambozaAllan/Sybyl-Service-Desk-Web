@@ -60,9 +60,9 @@
                                                     <td>{{project.project_status}}</td>
                                                     <td>{{project.completion}}%</td>
                                                     <td class="text-center">
-                                                        <a href="{% url 'detailsProject' project.id %}">Manage</a> &nbsp;
-                                                        <a href="{% url 'updateProject' project.id %}">Update</a> &nbsp;
-                                                        <a href="{% url 'uploadDocument'  %}">Documents</a> &nbsp;
+                                                        <a class="btn btn-outline-success btn-sm" href="{% url 'detailsProject' project.id %}"><i title="Manage" class="fa fa-dedent"></i></a> &nbsp;
+                                                        <a class="btn btn-outline-success btn-sm" href="{% url 'updateProject' project.id %}"><i title="Update" class="fa fa-edit"></i></a> &nbsp;
+                                                        <a class="btn btn-outline-success btn-sm" href="{% url 'uploadDocument'  %}"><i title="Upload" class="fa fa-upload"></i></a> &nbsp;
                                                     </td>
                                                 </tr>
                                             {% endfor %}
@@ -95,8 +95,8 @@
 
                 <div class="modal-body">
 
-                    <div class="scrollbar-modal1">
-                        <div id="dialog_create_project">
+                    <div class="scrollbar-modal1" style="overflow-x: hidden !important">
+                        <div id="dialog_create_project" style="margin-top: -1%;">
 
                         </div>
                     </div>
