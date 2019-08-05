@@ -3129,6 +3129,27 @@ def make_escalation(project_id):
 
     for i in EscalationLevel.objects.filter(project=int(project_id)):
         print('-----------escalations-------------')
-        print(i.escalation_on_duration)
+        print('--'+i.escalation_on_duration+'--')
+        
+        if i.escalation_on_duration == "Second(s)":
+            print("Second(s)")
+
+        if i.escalation_on_duration == "Minute(s)":
+            print("Minute(s)")
+
+        if i.escalation_on_duration == "Hour(s)":
+            print("Hour(s)")
+
+        if i.escalation_on_duration == "Day(s)":
+            print("Day(s)")
+            d_seconds = SECONDS_PER_DAY
+            print(d_seconds)
+
+        if i.escalation_on_duration == "Week(s)":
+            print("Week(s)")
+
+        if i.escalation_on_duration == "Month(s)":
+            print("Month(s)")
+        
     pass
 
