@@ -56,6 +56,7 @@
 
 <script>
     $('#table_open_tasks').DataTable();
+    $('#table_assigned_tasks').DataTable();
 
     $(function(){
         var project_id = $("#id_project").val();
@@ -139,5 +140,21 @@
             }
         });
     }    
+
+    function assignedTaskMembers(task_id, project_id){
+        url = "{% url 'assignedTaskMembers' %}";
+        $.ajax({
+            url: url,
+            type: "GET",
+            cache: false,
+            data:{
+                task_id: task_id,
+                project_id: project_id
+            },
+            success:function (resp) {
+                $('.project_task').html(resp);
+            }
+        });
+    }
     
 </script>

@@ -25,17 +25,12 @@
                             </div>
                         </div>
                     </div>
-                    <div class="col-md-4">
+                    <div class="col-md-6 col-sm-12">
                             {{form.name|as_crispy_field}}
-                            
                     </div>
-                    <div class="col-md-4">
+                    <div class="col-md-6 col-sm-12">
                         {{form.status|as_crispy_field}}
-                    </div>
-                    <div class="col-md-4">
-                        {{ form.assigned_to|as_crispy_field }}
-                    </div>
-                    
+                    </div> 
                 </div>
                 
                 <div class="row">
@@ -99,14 +94,14 @@
 
 <script>
     $('#id_start_date').datepicker({
-        format: "mm/dd/yyyy",
+        format: "yyyy-mm-dd",
         autoclose: true,
         clearBtn: true,
         getStartDate: true,
     });
 
     $('#id_end_date').datepicker({
-        format: "mm/dd/yyyy",
+        format: "yyyy-mm-dd",
         autoclose: true,
         clearBtn: true
     });
@@ -115,26 +110,24 @@
     $("#id_actual_end_date").prop("type", "text");
 
     $('#id_actual_start_date').datepicker({
-        format: "mm/dd/yyyy",
+        format: "yyyy-mm-dd",
         autoclose: true,
         clearBtn: true
     });
 
     $('#id_actual_end_date').datepicker({
-        format: "mm/dd/yyyy",
+        format: "yyyy-mm-dd",
         autoclose: true,
         clearBtn: true
     });
 
-    $("#div_id_assigned_to").removeClass("form-group");
-
     $("#div_id_status").removeClass("form-group");
 
-    $("#id_start_date").attr("placeholder", "mm/dd/yyyy");
-    $("#id_end_date").attr("placeholder", "mm/dd/yyyy");
+    $("#id_start_date").attr("placeholder", "yyyy-mm-dd");
+    $("#id_end_date").attr("placeholder", "yyyy-mm-dd");
 
-    $("#id_actual_start_date").attr("placeholder", "mm/dd/yyyy");
-    $("#id_actual_end_date").attr("placeholder", "mm/dd/yyyy");
+    $("#id_actual_start_date").attr("placeholder", "yyyy-mm-dd");
+    $("#id_actual_end_date").attr("placeholder", "yyyy-mm-dd");
 
     $('#id_actual_end_date').on('focus', function(){
         var date = $(this).blur();
@@ -162,12 +155,6 @@
     $("#id_name").attr('autocomplete', 'off');
 
     $("#id_description").attr('autocomplete', 'off');
-
-    $('#id_assigned_to').removeAttr('multiple', "");
-    $('#id_assigned_to').attr('data-live-search', 'true');
-    $('#id_assigned_to').selectpicker({
-        size: 3,
-    });
     
     $('#id_name').on('input', function () {
         var milestone_name = $(this).val().toUpperCase();
@@ -253,27 +240,42 @@
             $('#start_date').hide();
         });
 
-        if(startDate != '' && endDate != '' && sDate > eDate){
-            document.getElementById("btnUpdateTask").disabled = true;
-            document.getElementById('id_start_date').style.borderColor = "red";
-            $('#start_date').show();
+        if(startDate != '' && endDate != '' ){
+            if(sDate <= eDate){
+                document.getElementById("btnUpdateTask").disabled = false;
+                document.getElementById('id_start_date').style.borderColor = "";
+                $('#start_date').hide();
+                document.getElementById('id_end_date').style.borderColor = "";
+                $('#end_date').hide();
+            }
+            else{
+                document.getElementById("btnUpdateTask").disabled = true;
+                document.getElementById('id_start_date').style.borderColor = "red";
+                $('#start_date').show(); 
+            }
         }
-        else if(startDate != '' && endDate != '' && sDate <= eDate){
+        else{
             document.getElementById("btnUpdateTask").disabled = false;
             document.getElementById('id_start_date').style.borderColor = "";
-            $('#start_date').hide();
-            document.getElementById('id_end_date').style.borderColor = "";
-            $('#end_date').hide();
+            $('#start_date').hide();  
         }
 
-        if(actualStartDate != '' && startDate != '' && actualSDate < sDate ){
-            document.getElementById('id_actual_start_date').style.borderColor = "red";
-            $('#equal_start').show();
+        if(actualStartDate != '' && startDate != ''){
+            if(actualSDate >= sDate){
+                document.getElementById('id_actual_start_date').style.borderColor = "";
+                $('#equal_start').hide();
+            }
+            else{
+                document.getElementById('id_actual_start_date').style.borderColor = "red";
+                $('#equal_start').show();
+                document.getElementById("btnUpdateTask").disabled = true;
+            }
         }
-        else if(actualStartDate != '' && startDate != '' && actualSDate >= sDate ){
+        else{
             document.getElementById('id_actual_start_date').style.borderColor = "";
             $('#equal_start').hide();
         }
+
     });
 
     // end date
@@ -293,17 +295,24 @@
             $('#end_date').hide();
         });
 
-        if(startDate != '' && endDate != '' && sDate > eDate){
-            document.getElementById("btnUpdateTask").disabled = true;
-            document.getElementById('id_end_date').style.borderColor = "red";
-            $('#end_date').show();
+        if(startDate != '' && endDate != ''){
+            if(sDate <= eDate){
+                document.getElementById("btnUpdateTask").disabled = false;
+                document.getElementById('id_end_date').style.borderColor = "";
+                $('#end_date').hide();
+                document.getElementById('id_start_date').style.borderColor = "";
+                $('#start_date').hide();
+            }
+            else{
+                document.getElementById("btnUpdateTask").disabled = true;
+                document.getElementById('id_end_date').style.borderColor = "red";
+                $('#end_date').show();
+            }
         }
-        else if(startDate != '' && endDate != '' && sDate <= eDate){
+        else{
             document.getElementById("btnUpdateTask").disabled = false;
             document.getElementById('id_end_date').style.borderColor = "";
             $('#end_date').hide();
-            document.getElementById('id_start_date').style.borderColor = "";
-            $('#start_date').hide();
         }
     });
 
@@ -332,31 +341,49 @@
             $('#actual_start_date').hide();
         });
 
-        if(actualStartDate != '' && actualEndDate != '' && actualSDate > actualEDate){
-            document.getElementById("btnUpdateTask").disabled = true;
-            document.getElementById('id_actual_start_date').style.borderColor = "red";
-            $('#actual_start_date').show();
+        if(actualStartDate != '' && actualEndDate != ''){
+            if(actualSDate <= actualEDate){
+                document.getElementById("btnUpdateTask").disabled = false;
+                document.getElementById('id_actual_start_date').style.borderColor = "";
+                $("#id_actual_start_date").css('borderWidth', '1px');
+                $('#actual_start_date').hide();
+                document.getElementById('id_actual_end_date').style.borderColor = "";
+                $("#id_actual_end_date").css('borderWidth', '1px');
+                $('#actual_end_date').hide();
+            }
+            else{
+                document.getElementById("btnUpdateTask").disabled = true;
+                document.getElementById('id_actual_start_date').style.borderColor = "red";
+                $('#actual_start_date').show();
+                $('#id_actual_start_date').css('border-color', red);
+            }
         }
-        else if(actualStartDate != '' && actualEndDate != '' && actualSDate <= actualEDate){
+        else{
             document.getElementById("btnUpdateTask").disabled = false;
             document.getElementById('id_actual_start_date').style.borderColor = "";
             $("#id_actual_start_date").css('borderWidth', '1px');
             $('#actual_start_date').hide();
-            document.getElementById('id_actual_end_date').style.borderColor = "";
-            $("#id_actual_end_date").css('borderWidth', '1px');
-            $('#actual_end_date').hide();
         }
-        
-        if(actualStartDate != '' && startDate != '' && actualSDate < sDate ){
-            document.getElementById('id_actual_start_date').style.borderColor = "red";
-            document.getElementById("btnUpdateTask").disabled = true;
-            $('#equal_start').show();
+
+        if(actualStartDate != '' && startDate != ''){
+            if(actualSDate >= sDate){
+                document.getElementById('id_actual_start_date').style.borderColor = "";
+                document.getElementById("btnUpdateTask").disabled = false;
+                $('#equal_start').hide();
+            }
+            else{
+                document.getElementById('id_actual_start_date').style.borderColor = "red";
+                document.getElementById("btnUpdateTask").disabled = true;
+                $('#equal_start').show();
+            }
         }
-        else if(actualStartDate != '' && startDate != '' && actualSDate >= sDate ){
+        else{
             document.getElementById('id_actual_start_date').style.borderColor = "";
             document.getElementById("btnUpdateTask").disabled = false;
             $('#equal_start').hide();
         }
+        
+        
     });
 
     // actual end date
@@ -385,21 +412,29 @@
             $('#actual_end_date').hide();
         });
 
-        if(actualStartDate != '' && actualEndDate != '' && actualSDate > actualEDate){
-            document.getElementById("btnUpdateTask").disabled = true;
-            document.getElementById('id_actual_end_date').style.borderColor = "red";
-            $("#id_actual_end_date").css('borderWidth', '1px');
-            $('#actual_end_date').show();
+        if(actualStartDate != '' && actualEndDate != ''){
+            if(actualSDate <= actualEDate){
+                document.getElementById("btnUpdateTask").disabled = false;
+                document.getElementById('id_actual_start_date').style.borderColor = "";
+                $("#id_actual_start_date").css('borderWidth', '1px');
+                $('#actual_start_date').hide();
+                document.getElementById('id_actual_end_date').style.borderColor = "";
+                $("#id_actual_end_date").css('borderWidth', '1px');
+                $('#actual_end_date').hide();
+            }   
+            else{
+                document.getElementById("btnUpdateTask").disabled = true;
+                document.getElementById('id_actual_end_date').style.borderColor = "red";
+                $("#id_actual_end_date").css('borderWidth', '1px');
+                $('#actual_end_date').show();
+            }
         }
-        else if(actualStartDate != '' && actualEndDate != '' && actualSDate <= actualEDate){
+        else{
             document.getElementById("btnUpdateTask").disabled = false;
             document.getElementById('id_actual_start_date').style.borderColor = "";
             $("#id_actual_start_date").css('borderWidth', '1px');
             $('#actual_start_date').hide();
-            document.getElementById('id_actual_end_date').style.borderColor = "";
-            $("#id_actual_end_date").css('borderWidth', '1px');
-            $('#actual_end_date').hide();
-        }
+        }        
     });
 
     // ensuring dates filled in incase status is terminated or completed
@@ -427,7 +462,6 @@
                 var description = $('#id_description').val();
                 var project_id =$('#id_project').val();
                 var milestone_id = $('#id_milestone').val();
-                var assigned_to = $("#id_assigned_to").val();
                 var task_id = $("#id_task").val();
 
                 url_data = "{% url 'saveupdateProjectTask' 999%}".replace(999, task_id);
@@ -444,9 +478,7 @@
                         description: description,
                         project_id: project_id, 
                         milestone_id: milestone_id,
-                        assigned_to: assigned_to, 
                         task_id: task_id
-                        
                     },
                     url: url_data,
                     success: function (resp) {
@@ -481,7 +513,6 @@
             var description = $('#id_description').val();
             var project_id =$('#id_project').val();
             var milestone_id = $('#id_milestone').val();
-            var assigned_to = $("#id_assigned_to").val();
             var task_id = $("#id_task").val();
 
             url_data = "{% url 'saveupdateProjectTask' 999%}".replace(999, task_id);
@@ -498,9 +529,7 @@
                     description: description,
                     project_id: project_id, 
                     milestone_id: milestone_id,
-                    assigned_to: assigned_to, 
                     task_id: task_id
-                    
                 },
                 url: url_data,
                 success: function (resp) {

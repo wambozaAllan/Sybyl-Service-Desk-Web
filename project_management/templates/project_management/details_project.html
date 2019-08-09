@@ -52,11 +52,11 @@
                                     <span class="hidden-xs-down">Tasks</span></a>
                             </li>
                             
-                            <li class="nav-item"  onclick="listProjectIncidents({{ project.id }})">
+                            <!-- <li class="nav-item"  onclick="listProjectIncidents({{ project.id }})">
                                 <a class="nav-link" data-toggle="tab" href="#incidents" >
                                     <span class="hidden-sm-up"><i class="fas fa-users"></i></span>
                                     <span class="hidden-xs-down">Incidents</span></a>
-                            </li>
+                            </li> -->
                             
                             <li class="nav-item"  onclick="listTeam({{ project.id }})">
                                 <a class="nav-link" data-toggle="tab" href="#teams" >
@@ -341,7 +341,7 @@
                     },
                     url: "{% url 'openTasks' %}",
                     success: function(resp){      
-                        $('#openPane').html(resp);                                         
+                        $('.open-tasks').html(resp);                                         
                     }
                 });
             }

@@ -117,11 +117,11 @@
         clearBtn: true
     });
 
-    $("#id_startdate").attr("placeholder", "mm/dd/yyyy");
-    $("#id_enddate").attr("placeholder", "mm/dd/yyyy");
+    $("#id_startdate").attr("placeholder", "yyyy-mm-dd");
+    $("#id_enddate").attr("placeholder", "yyyy-mm-dd");
 
-    $("#id_actual_startdate").attr("placeholder", "mm/dd/yyyy");
-    $("#id_actual_enddate").attr("placeholder", "mm/dd/yyyy");
+    $("#id_actual_startdate").attr("placeholder", "yyyy-mm-dd");
+    $("#id_actual_enddate").attr("placeholder", "yyyy-mm-dd");
 
     $('#id_actual_enddate').on('focus', function(){
         var date = $(this).blur();
@@ -179,31 +179,44 @@
         });
 
         $(".clear").on('click', function(){
-            document.getElementById("btnAddMilestone").disabled = false;
-            document.getElementById('id_actual_end_date').style.borderColor = "";
-            $('#actual_end_date').hide();
-        });
-
-        if(startDate != '' && endDate != '' && sDate > eDate){
-            document.getElementById("btnUpdateMilestone").disabled = true;
-            document.getElementById('id_startdate').style.borderColor = "red";
-            $('#start_date').show();
-        }
-        else if(startDate != '' && endDate != '' && sDate <= eDate){
             document.getElementById("btnUpdateMilestone").disabled = false;
             document.getElementById('id_startdate').style.borderColor = "";
             $('#start_date').hide();
-            document.getElementById('id_enddate').style.borderColor = "";
-            $('#end_date').hide();
+        });
+
+        if(startDate != '' && endDate != ''){
+            if(sDate <= eDate){
+                document.getElementById("btnUpdateMilestone").disabled = false;
+                document.getElementById('id_startdate').style.borderColor = "";
+                $('#start_date').hide();
+                document.getElementById('id_enddate').style.borderColor = "";
+                $('#end_date').hide();
+            }
+            else{
+                document.getElementById("btnUpdateMilestone").disabled = true;
+                document.getElementById('id_startdate').style.borderColor = "red";
+                $('#start_date').show();
+            }
+        }
+        else{
+            document.getElementById("btnUpdateMilestone").disabled = false;
+            document.getElementById('id_startdate').style.borderColor = "";
+            $('#start_date').hide();
         }
 
-        if(actualStartDate != '' && startDate != '' && actualSDate < sDate ){
-            document.getElementById('id_actual_startdate').style.borderColor = "red";
-            $('#equal_start').show();
+        if(actualStartDate != '' && startDate != ''){
+            if(actualSDate >= sDate){
+                document.getElementById('id_actual_startdate').style.borderColor = "";
+                $('#equal_start').hide();
+            }
+            else{
+                document.getElementById('id_actual_startdate').style.borderColor = "red";
+                $('#equal_start').show();
+            }
         }
-        else if(actualStartDate != '' && startDate != '' && actualSDate >= sDate ){
+        else{
             document.getElementById('id_actual_startdate').style.borderColor = "";
-            $('#equal_start').hide();
+            $('#equal_start').hide();   
         }
     });
 
@@ -220,23 +233,31 @@
         });
 
         $(".clear").on('click', function(){
-            document.getElementById("btnAddMilestone").disabled = false;
-            document.getElementById('id_actual_end_date').style.borderColor = "";
-            $('#actual_end_date').hide();
-        });
-
-        if(startDate != '' && endDate != '' && sDate > eDate){
-            document.getElementById("btnUpdateMilestone").disabled = true;
-            document.getElementById('id_enddate').style.borderColor = "red";
-            $('#end_date').show();
-        }
-        else if(startDate != '' && endDate != '' && sDate <= eDate){
             document.getElementById("btnUpdateMilestone").disabled = false;
             document.getElementById('id_enddate').style.borderColor = "";
             $('#end_date').hide();
-            document.getElementById('id_startdate').style.borderColor = "";
-            $('#start_date').hide();
+        });
+
+        if(startDate != '' && endDate != ''){
+            if(sDate <= eDate){
+                document.getElementById("btnUpdateMilestone").disabled = false;
+                document.getElementById('id_enddate').style.borderColor = "";
+                $('#end_date').hide();
+                document.getElementById('id_startdate').style.borderColor = "";
+                $('#start_date').hide();
+            }
+            else{
+                document.getElementById("btnUpdateMilestone").disabled = true;
+                document.getElementById('id_enddate').style.borderColor = "red";
+                $('#end_date').show();
+            }
         }
+        else{
+            document.getElementById("btnUpdateMilestone").disabled = false;
+            document.getElementById('id_enddate').style.borderColor = "";
+            $('#end_date').hide();
+        }
+
     });
 
     // actual start date
@@ -258,36 +279,54 @@
         });
 
         $(".clear").on('click', function(){
-            document.getElementById("btnAddMilestone").disabled = false;
-            document.getElementById('id_actual_startdate').style.borderColor = "";
-            $("#id_actual_startdate").css('borderWidth', '1px');
-            $('#actual_end_date').hide();
-        });
-
-        if(actualStartDate != '' && actualEndDate != '' && actualSDate > actualEDate){
-            document.getElementById("btnUpdateMilestone").disabled = true;
-            document.getElementById('id_actual_startdate').style.borderColor = "red";
-            $('#actual_start_date').show();
-        }
-        else if(actualStartDate != '' && actualEndDate != '' && actualSDate <= actualEDate){
             document.getElementById("btnUpdateMilestone").disabled = false;
             document.getElementById('id_actual_startdate').style.borderColor = "";
             $("#id_actual_startdate").css('borderWidth', '1px');
             $('#actual_start_date').hide();
-            document.getElementById('id_actual_enddate').style.borderColor = "";
-            $('#actual_end_date').hide();
+            $('#equal_start').hide();
+        });
+
+        if(actualStartDate != '' && actualEndDate != ''){
+            if(actualSDate <= actualEDate){
+                document.getElementById("btnUpdateMilestone").disabled = false;
+                document.getElementById('id_actual_startdate').style.borderColor = "";
+                $("#id_actual_startdate").css('borderWidth', '1px');
+                $('#actual_start_date').hide();
+                document.getElementById('id_actual_enddate').style.borderColor = "";
+                $('#actual_end_date').hide();
+            }
+            else{
+                document.getElementById("btnUpdateMilestone").disabled = true;
+                document.getElementById('id_actual_startdate').style.borderColor = "red";
+                $('#actual_start_date').show();
+                $('#id_actual_startdate').css('border-color', red);
+            }
         }
-        
-        else if(actualStartDate != '' && startDate != '' && actualSDate < sDate ){
-            document.getElementById('id_actual_startdate').style.borderColor = "red";
-            document.getElementById("btnUpdateMilestone").disabled = true;
-            $('#equal_start').show();
+        else{
+            document.getElementById("btnUpdateMilestone").disabled = false;
+            document.getElementById('id_actual_startdate').style.borderColor = "";
+            $("#id_actual_startdate").css('borderWidth', '1px');
+            $('#actual_start_date').hide();
         }
-        else if(actualStartDate != '' && startDate != '' && actualSDate >= sDate ){
+
+        if(actualStartDate != '' && startDate != ''){
+            if(actualSDate >= sDate){
+                document.getElementById('id_actual_startdate').style.borderColor = "";
+                document.getElementById("btnUpdateMilestone").disabled = false;
+                $('#equal_start').hide();
+            }
+            else{
+                document.getElementById('id_actual_startdate').style.borderColor = "red";
+                document.getElementById("btnUpdateMilestone").disabled = true;
+                $('#equal_start').show();
+            }
+        }
+        else{
             document.getElementById('id_actual_startdate').style.borderColor = "";
             document.getElementById("btnUpdateMilestone").disabled = false;
             $('#equal_start').hide();
         }
+        
     });
 
     // actual end date
@@ -305,24 +344,31 @@
         });
 
         $(".clear").on('click', function(){
-            document.getElementById("btnAddMilestone").disabled = false;
+            document.getElementById("btnUpdateMilestone").disabled = false;
             document.getElementById('id_actual_end_date').style.borderColor = "";
             $("#id_actual_startdate").css('borderWidth', '1px');
             $('#actual_end_date').hide();
         });
 
-        if(actualStartDate != '' && actualEndDate != '' && actualSDate > actualEDate){
-            document.getElementById("btnUpdateMilestone").disabled = true;
-            document.getElementById('id_actual_enddate').style.borderColor = "red";
-            $('#actual_end_date').show();
+        if(actualStartDate != '' && actualEndDate != ''){
+            if(actualSDate <= actualEDate){
+                document.getElementById("btnUpdateMilestone").disabled = false;
+                document.getElementById('id_actual_startdate').style.borderColor = ""; 
+                $('#actual_start_date').hide();
+                document.getElementById('id_actual_enddate').style.borderColor = "";
+                $("#id_actual_enddate").css('borderWidth', '1px');
+                $('#actual_end_date').hide();
+            }
+            else{
+                document.getElementById("btnUpdateMilestone").disabled = true;
+                document.getElementById('id_actual_enddate').style.borderColor = "red";
+                $('#actual_end_date').show();
+            }
         }
-        else if(actualStartDate != '' && actualEndDate != '' && actualSDate <= actualEDate){
+        else{
             document.getElementById("btnUpdateMilestone").disabled = false;
             document.getElementById('id_actual_startdate').style.borderColor = ""; 
             $('#actual_start_date').hide();
-            document.getElementById('id_actual_enddate').style.borderColor = "";
-            $("#id_actual_enddate").css('borderWidth', '1px');
-            $('#actual_end_date').hide();
         }
     });
 

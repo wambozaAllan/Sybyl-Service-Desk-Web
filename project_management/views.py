@@ -396,10 +396,10 @@ def save_update_milestone(request, pk):
     milestone.project = project
     milestone.save()
 
-    open_status = Status.objects.get(id=1)
-    onhold_status = Status.objects.get(id=2)
-    terminated_status = Status.objects.get(id=3)
-    completed_status = Status.objects.get(id=4)
+    open_status = Status.objects.get(name="Open")
+    onhold_status = Status.objects.get(name="Onhold")
+    terminated_status = Status.objects.get(name="Terminated")
+    completed_status = Status.objects.get(name="Completed")
 
     if status == completed_status:
         completed_milestones = Milestone.objects.filter(project_id=project_id, status=completed_status)
@@ -600,7 +600,7 @@ def list_project_milestones(request):
 
     template = loader.get_template('project_management/list_project_milestones.html')
     
-    open_status = Status.objects.get(id=1)
+    open_status = Status.objects.get(name="Open")
     
     if Milestone.objects.filter(project_id=project.id, status=open_status).exists():
         open_milestones = Milestone.objects.filter(project_id=project.id, status=open_status)
@@ -609,19 +609,19 @@ def list_project_milestones(request):
         open_milestones = ""
         open_count = 0
 
-    onhold_status = Status.objects.get(id=2)
+    onhold_status = Status.objects.get(name="Onhold")
     if Milestone.objects.filter(project_id=project.id, status=onhold_status).exists():
         onhold_count = Milestone.objects.filter(project_id=project.id, status=onhold_status).count()
     else:
         onhold_count = 0
 
-    terminated_status = Status.objects.get(id=3)
+    terminated_status = Status.objects.get(name="Terminated")
     if Milestone.objects.filter(project_id=project.id, status=terminated_status).exists():
         terminated_count = Milestone.objects.filter(project_id=project.id, status=terminated_status).count()
     else:
         terminated_count = 0
 
-    completed_status = Status.objects.get(id=4)
+    completed_status = Status.objects.get(name="Completed")
     if Milestone.objects.filter(project_id=project.id, status=completed_status).exists():
         completed_count = Milestone.objects.filter(project_id=project.id, status=completed_status).count()
     else:
@@ -648,8 +648,11 @@ def onhold_project_milestones(request):
 
     project = Project.objects.get(id=int(project_id))
 
+    d3 = date.today()
+    today = d3.strftime("%m %d, %Y")
+
     template = loader.get_template('project_management/onhold_milestones.html')
-    onhold_status = Status.objects.get(id=2)
+    onhold_status = Status.objects.get(name="Onhold")
 
     milestones_exist = Milestone.objects.filter(project_id=project.id).exists()
     if milestones_exist: 
@@ -660,7 +663,8 @@ def onhold_project_milestones(request):
             'project_id': project.id,
             'project_name': project.name,
             'onhold_milestones': onhold_milestones,
-            'onhold_count': onhold_count
+            'onhold_count': onhold_count,
+            'today': today
         }
 
     else:
@@ -678,12 +682,14 @@ def completed_project_milestones(request):
     list completed project milestones
     """
     project_id = request.GET.get('project_id')
-
     project = Project.objects.get(id=int(project_id))
 
     template = loader.get_template('project_management/completed_milestones.html')
 
-    completed_status = Status.objects.get(id=4)
+    d3 = date.today()
+    today = d3.strftime("%m %d, %Y")
+
+    completed_status = Status.objects.get(name="Completed")
 
     if Milestone.objects.filter(project_id=project.id, status=completed_status).exists():
         completed_milestones = Milestone.objects.filter(project_id=project.id, status=completed_status)
@@ -693,7 +699,8 @@ def completed_project_milestones(request):
             'project_id': project.id,
             'project_name': project.name,
             'completed_milestones': completed_milestones,
-            'completed_count': completed_count
+            'completed_count': completed_count,
+            'today': today
         }
 
     else:
@@ -715,8 +722,10 @@ def open_milestones(request):
     project = Project.objects.get(id=project_id)
 
     template = loader.get_template('project_management/open_milestones.html')
+    d3 = date.today()
+    today = d3.strftime("%m %d, %Y")
     
-    open_status = Status.objects.get(id=1)
+    open_status = Status.objects.get(name="Open")
     
     if Milestone.objects.filter(project_id=project.id, status=open_status).exists():
         open_milestones = Milestone.objects.filter(project_id=project.id, status=open_status)
@@ -725,19 +734,19 @@ def open_milestones(request):
         open_milestones = ""
         open_count = 0
 
-    onhold_status = Status.objects.get(id=2)
+    onhold_status = Status.objects.get(name="Onhold")
     if Milestone.objects.filter(project_id=project.id, status=onhold_status).exists():
         onhold_count = Milestone.objects.filter(project_id=project.id, status=onhold_status).count()
     else:
         onhold_count = 0
 
-    terminated_status = Status.objects.get(id=3)
+    terminated_status = Status.objects.get(name="Terminated")
     if Milestone.objects.filter(project_id=project.id, status=terminated_status).exists():
         terminated_count = Milestone.objects.filter(project_id=project.id, status=terminated_status).count()
     else:
         terminated_count = 0
 
-    completed_status = Status.objects.get(id=4)
+    completed_status = Status.objects.get(name="Completed")
     if Milestone.objects.filter(project_id=project.id, status=completed_status).exists():
         completed_count = Milestone.objects.filter(project_id=project.id, status=completed_status).count()
     else:
@@ -750,7 +759,8 @@ def open_milestones(request):
         'completed_count': completed_count,
         'onhold_count': onhold_count,
         'terminated_count': terminated_count,
-        'open_count': open_count
+        'open_count': open_count,
+        'today': today
     }
 
     return HttpResponse(template.render(context, request)) 
@@ -765,8 +775,10 @@ def terminated_project_milestones(request):
     project = Project.objects.get(id=int(project_id))
 
     template = loader.get_template('project_management/terminated_milestones.html')
+    d3 = date.today()
+    today = d3.strftime("%m %d, %Y")
 
-    terminated_status = Status.objects.get(id=3)
+    terminated_status = Status.objects.get(name="Terminated")
     if Milestone.objects.filter(project_id=project.id, status=terminated_status).exists():
         terminated_milestones = Milestone.objects.filter(project_id=project.id, status=terminated_status)
         terminated_count = Milestone.objects.filter(project_id=project.id, status=terminated_status).count()
@@ -775,7 +787,8 @@ def terminated_project_milestones(request):
             'project_id': project.id,
             'project_name': project.name,
             'terminated_milestones': terminated_milestones,
-            'terminated_count': terminated_count
+            'terminated_count': terminated_count,
+            'today': today
         }
 
     else:
@@ -795,7 +808,7 @@ def milestone_count(request):
 
     project_id = int(request.GET.get('project_id'))
     project = Project.objects.get(id=project_id)
-    open_status = Status.objects.get(id=1)
+    open_status = Status.objects.get(name="Open")
     
     if Milestone.objects.filter(project_id=project.id, status=open_status).exists():
         open_milestones = Milestone.objects.filter(project_id=project.id, status=open_status)
@@ -804,19 +817,19 @@ def milestone_count(request):
         open_milestones = ""
         open_count = 0
 
-    onhold_status = Status.objects.get(id=2)
+    onhold_status = Status.objects.get(name="Onhold")
     if Milestone.objects.filter(project_id=project.id, status=onhold_status).exists():
         onhold_count = Milestone.objects.filter(project_id=project.id, status=onhold_status).count()
     else:
         onhold_count = 0
 
-    terminated_status = Status.objects.get(id=3)
+    terminated_status = Status.objects.get(name="Terminated")
     if Milestone.objects.filter(project_id=project.id, status=terminated_status).exists():
         terminated_count = Milestone.objects.filter(project_id=project.id, status=terminated_status).count()
     else:
         terminated_count = 0
 
-    completed_status = Status.objects.get(id=4)
+    completed_status = Status.objects.get(name="Completed")
     if Milestone.objects.filter(project_id=project.id, status=completed_status).exists():
         completed_count = Milestone.objects.filter(project_id=project.id, status=completed_status).count()
     else:
@@ -842,11 +855,14 @@ def view_tasks_under_milestone(request):
 
     template = loader.get_template('project_management/list_milestone_tasks.html')
     project = get_object_or_404(Project, pk=project_id)
+
+    d3 = date.today()
+    today = d3.strftime("%m %d, %Y")
     
     milestone_exists = Milestone.objects.filter(id=milestone_id, project_id=project.id).exists()
     if milestone_exists:
         milestone = Milestone.objects.get(id=milestone_id)
-        milestone_tasks = Task.objects.filter(milestone_id=milestone.id)
+        milestone_tasks = Task.objects.filter(milestone_id=milestone.id).annotate(assigned=Count('assigned_to'))
         statuses = Status.objects.all()
 
         context = {
@@ -854,7 +870,8 @@ def view_tasks_under_milestone(request):
             'milestone_id': milestone.id,
             'milestone_tasks': milestone_tasks,
             'project_id': project.id,
-            'statuses': statuses
+            'statuses': statuses,
+            'today': today
         }
     else:
         context = {
@@ -959,7 +976,7 @@ def delete_project_milestone(request):
     project = Project.objects.get(id=project_id)
     milestone.delete()
 
-    onhold_status = Status.objects.get(id=2)
+    onhold_status = Status.objects.get(name="Onhold")
     onhold_count = Milestone.objects.filter(id=milestone.id, project_id=project.id, status=onhold_status).count()
 
     response_data = {
@@ -1088,17 +1105,9 @@ def save_project_tasks(request):
     actual_start = request.GET.get('actual_start')
     actual_end = request.GET.get('actual_end')
     created_by = request.user.id
-    assigned_to = request.GET.get('assigned_to')
+    assigned_to = json.loads(request.GET['assigned_to'])
 
     response_data = {}
-
-    if assigned_to == "":
-        assigned_to = None
-    else:
-        team = ProjectTeam.objects.get(project_id= project_id)
-        team_member = ProjectTeamMember.objects.get(member_id=assigned_to, project_team=team)
-        
-        assigned_to = team_member.id
 
     if status_id == "":
         status_id = None
@@ -1127,6 +1136,7 @@ def save_project_tasks(request):
         end_date = None
 
     project = Project.objects.get(id=project_id)
+    team = ProjectTeam.objects.get(project_id= project_id)
     
     milestone = Milestone.objects.get(id=milestone_id, project_id=project.id)
     
@@ -1134,8 +1144,16 @@ def save_project_tasks(request):
         response_data['error'] = "Name exists"
         response_data['state'] = False
     else:   
-        task = Task(name=name, description=description, status_id=status_id, milestone_id=milestone.id, project_id=project.id, start_date=start_date, end_date=end_date, creator_id=created_by, assigned_to_id=assigned_to, actual_start_date=actual_start , actual_end_date=actual_end)
+        task = Task(name=name, description=description, status_id=status_id, milestone_id=milestone.id, project_id=project.id, start_date=start_date, end_date=end_date, creator_id=created_by, actual_start_date=actual_start , actual_end_date=actual_end)
         task.save()
+        
+        for val in assigned_to:
+            if val == "":
+                project_member = None
+            else:
+                val = int(val)   
+                project_member = ProjectTeamMember.objects.get(member_id=val, project_team=team)
+                task.assigned_to.add(project_member)
 
         response_data['success'] = "Task created successfully"
         response_data['name'] = task.name
@@ -1159,7 +1177,8 @@ def save_milestone_tasks(request):
     actual_start = request.GET.get('actual_start')
     actual_end = request.GET.get('actual_end')
     created_by = request.user.id
-
+    assigned_to = json.loads(request.GET['assigned_to'])
+    print(assigned_to)
     response_data = {}
 
     if status_id == "":
@@ -1189,15 +1208,24 @@ def save_milestone_tasks(request):
         actual_end = datetime.datetime.strptime(actual_end, "%m/%d/%Y").strftime("%Y-%m-%d")
     
     project = Project.objects.get(id=project_id)
+    team = ProjectTeam.objects.get(project_id= project_id)
     
     milestone = Milestone.objects.get(id=milestone_id, project_id=project.id)
     
-    if Task.objects.filter(name=name).exists():
+    if Task.objects.filter(name=name, milestone_id=milestone.id).exists():
         response_data['error'] = "Name exists"
         response_data['state'] = False
     else:   
         task = Task(name=name, description=description, status_id=status_id, milestone_id=milestone.id, project_id=project.id, start_date=start_date, end_date=end_date, actual_start_date=actual_start, actual_end_date=actual_end, creator_id=created_by)
         task.save()
+
+        for val in assigned_to:
+            if val == "":
+                project_member = None
+            else:
+                val = int(val)   
+                project_member = ProjectTeamMember.objects.get(member_id=val, project_team=team)
+                task.assigned_to.add(project_member)
 
         response_data['success'] = "Task created successfully"
         response_data['name'] = task.name
@@ -1235,7 +1263,7 @@ class UpdateProjectTask(UpdateView):
 
 class UpdateOpenTask(UpdateView):
     model = Task
-    fields = ['name', 'status', 'description', 'start_date', 'end_date', 'actual_start_date', 'actual_end_date', 'assigned_to', 'milestone']
+    fields = ['name', 'status', 'description', 'start_date', 'end_date', 'actual_start_date', 'actual_end_date', 'milestone']
     template_name = 'project_management/update_open_task.html'
     success_url = reverse_lazy('listProjects')
 
@@ -1247,6 +1275,7 @@ class UpdateOpenTask(UpdateView):
         project = Project.objects.get(id=project_id)
         milestone_id = self.get_object().milestone_id
 
+        task = Task.objects.get(id=task_id)
         context['task_id'] = task_id
         context['project_id'] = project_id
         context['milestone_id'] = milestone_id
@@ -1269,12 +1298,15 @@ class UpdateOpenTask(UpdateView):
         else:
             context['members'] = ""
 
+        
+        
+
         return context
 
 
 class UpdateOnholdTask(UpdateView):
     model = Task
-    fields = ['name', 'status', 'description', 'start_date', 'end_date', 'actual_start_date', 'actual_end_date', 'assigned_to', 'milestone']
+    fields = ['name', 'status', 'description', 'start_date', 'end_date', 'actual_start_date', 'actual_end_date', 'milestone']
     template_name = 'project_management/update_onhold_task.html'
     success_url = reverse_lazy('listProjects')
 
@@ -1313,7 +1345,7 @@ class UpdateOnholdTask(UpdateView):
 
 class UpdateCompletedTask(UpdateView):
     model = Task
-    fields = ['name', 'status', 'description', 'start_date', 'end_date', 'actual_start_date', 'actual_end_date', 'assigned_to', 'milestone']
+    fields = ['name', 'status', 'description', 'start_date', 'end_date', 'actual_start_date', 'actual_end_date', 'milestone']
     template_name = 'project_management/update_completed_task.html'
     success_url = reverse_lazy('listProjects')
 
@@ -1351,7 +1383,7 @@ class UpdateCompletedTask(UpdateView):
 
 class UpdateTerminatedTask(UpdateView):
     model = Task
-    fields = ['name', 'status', 'description', 'start_date', 'end_date', 'actual_start_date', 'actual_end_date', 'assigned_to', 'milestone']
+    fields = ['name', 'status', 'description', 'start_date', 'end_date', 'actual_start_date', 'actual_end_date', 'milestone']
     template_name = 'project_management/update_terminated_task.html'
     success_url = reverse_lazy('listProjects')
 
@@ -1399,18 +1431,11 @@ def save_update_task(request, pk):
 
     project_id = int(request.GET.get('project_id'))
     milestone_id = int(request.GET.get('milestone_id'))
-    assigned_to = request.GET.get('assigned_to')
-
-    if assigned_to is not "":
-        assigned_to = int(request.GET.get('assigned_to'))
-        project_member = ProjectTeamMember.objects.get(id=assigned_to)
-    else:
-        assigned_to = None
-        project_member = None
 
     status = Status.objects.get(id=status_id)
     project = Project.objects.get(id=project_id)
     milestone = Milestone.objects.get(id=milestone_id)
+    team = ProjectTeam.objects.get(project_id= project_id)
 
     if start_date is not "":
         start_date = datetime.datetime.strptime(start_date, "%Y-%m-%d").strftime("%Y-%m-%d")
@@ -1443,13 +1468,12 @@ def save_update_task(request, pk):
     task.description = description
     task.project = project
     task.milestone = milestone
-    task.assigned_to = project_member
     task.save()
 
-    open_status = Status.objects.get(id=1)
-    onhold_status = Status.objects.get(id=2)
-    terminated_status = Status.objects.get(id=3)
-    completed_status = Status.objects.get(id=4)
+    open_status = Status.objects.get(name="Open")
+    onhold_status = Status.objects.get(name="Onhold")
+    terminated_status = Status.objects.get(name="Terminated")
+    completed_status = Status.objects.get(name="Completed")
 
     if status == completed_status:
         completed_tasks = Task.objects.filter(project_id=project.id, status=completed_status)
@@ -1532,6 +1556,259 @@ def save_update_task(request, pk):
     return HttpResponse(template.render(context, request))
 
 
+def assigned_task_members(request):
+    """view members assigned tasks"""
+
+    task_id = int(request.GET.get('task_id'))
+    project_id = int(request.GET.get('project_id'))
+    task = Task.objects.get(id=task_id)
+    project = Project.objects.get(id=project_id)
+
+    assigned_members = task.assigned_to.all()
+
+    context = {
+        'assigned_members': assigned_members,
+        'task': task,
+        'project_id': project.id,
+        'milestone_id': task.milestone.id
+    }
+
+    return render(request, 'project_management/assigned_task_members.html', context)
+
+
+def assigned_task_members_milestone(request):
+    """view members assigned tasks"""
+
+    task_id = int(request.GET.get('task_id'))
+    project_id = int(request.GET.get('project_id'))
+    task = Task.objects.get(id=task_id)
+    project = Project.objects.get(id=project_id)
+
+    assigned_members = task.assigned_to.all()
+
+    context = {
+        'assigned_members': assigned_members,
+        'task': task,
+        'project_id': project.id,
+        'milestone_id': task.milestone.id
+    }
+
+    return render(request, 'project_management/assigned_task_members_milestone.html', context)
+
+
+def check_team_members(request):
+    """check if project team has members yet"""
+
+    project_id = int(request.GET.get('project_id'))
+    project = Project.objects.get(id=project_id)
+
+    team = ProjectTeam.objects.get(project_id=project.id)
+    project_team = team.id
+    team_members = ProjectTeamMember.objects.filter(project_team=project_team)
+    member_list = list(team_members)
+    state = True
+
+    if len(member_list) == 0:
+        state = False
+    else:
+        state = True
+
+    data = {
+        "state": state
+    }
+
+    return JsonResponse(data)
+
+
+def check_assigned_task_members(request):
+    """check if member is already assigned to task"""
+
+    task_id = int(request.GET.get('task_id'))
+    project_id = int(request.GET.get('project_id'))
+
+    task = Task.objects.get(id=task_id)
+    assigned_members = task.assigned_to.all()
+    project = Project.objects.get(id=project_id)
+
+    team = ProjectTeam.objects.get(project_id=project.id)
+    project_team = team.id
+    team_members = ProjectTeamMember.objects.filter(project_team=project_team)
+    member_list = list(team_members)
+    old = []
+    
+    for member in member_list:
+        old_user = User.objects.get(id=member.member_id)
+        old.append(old_user)
+
+    members = old 
+    assigned_list = list(assigned_members)
+    assigned = []
+
+    for member in assigned_list:
+        assigned_user = User.objects.get(id=member.member_id)
+        assigned.append(assigned_user)
+    
+    members = set(old).difference(set(assigned))   
+    
+    diff = list(members)
+    
+    if len(diff) == 0:
+        team_state = False
+    else:
+        team_state = True
+    
+    data = {
+        'team_state': team_state
+    }
+
+    return JsonResponse(data)
+
+
+def assign_task_members(request):
+    """ assign tasks to members """
+
+    task_id = int(request.GET.get('task_id'))
+    project_id = int(request.GET.get('project_id'))
+    milestone_id = int(request.GET.get('milestone_id'))
+    task = Task.objects.get(id=task_id)
+    assigned_members = task.assigned_to.all()
+    project = Project.objects.get(id=project_id)
+
+    team = ProjectTeam.objects.get(project_id=project.id)
+    project_team = team.id
+    team_members = ProjectTeamMember.objects.filter(project_team=project_team)
+    member_list = list(team_members)
+    old = []
+
+    if len(member_list) != 0:
+        for member in member_list:
+            old_user = User.objects.get(id=member.member_id)
+            old.append(old_user)
+
+        members = old
+
+    else:
+        members = ""
+    
+
+    if assigned_members.count() == 0:
+        members = old
+    else:
+        assigned_list = list(assigned_members)
+        assigned = []
+
+        if len(assigned_list) != 0:
+            for member in assigned_list:
+                assigned_user = User.objects.get(id=member.member_id)
+                assigned.append(assigned_user)
+
+            
+            members = set(old).difference(set(assigned))   
+        else:
+            members = ""
+
+    template = loader.get_template('project_management/assign_member_task.html')
+    context = {
+        'project_id': project.id,
+        'project_name': project.name,
+        'members': members,
+        'task_id': task.id,
+        'milestone_id': milestone_id
+    }
+
+    return HttpResponse(template.render(context, request))
+
+
+def save_members_assigned_task(request):
+    """saving member attached to task"""
+
+    task_id = int(request.GET.get('task_id'))
+    project_id = int(request.GET.get('project_id'))
+    milestone_id = int(request.GET.get('milestone_id'))
+    member_list = json.loads(request.GET['memberlist'])
+
+    task = Task.objects.get(id=task_id)
+    project = Project.objects.get(id=project_id)
+    team = ProjectTeam.objects.get(project_id=project_id)
+    team_member = ProjectTeamMember.objects.filter(project_team=team)
+
+    team_list = list(team_member)
+    for user in team_list:
+
+        for member in member_list:
+            if member == user.member_id:
+                task.assigned_to.add(user.id)
+    
+    assigned_members = task.assigned_to.all()
+
+    context = {
+        'assigned_members': assigned_members,
+        'task': task,
+        'project_id': project.id,
+        'milestone_id': task.milestone.id
+    }
+
+    return render(request, 'project_management/assigned_task_members.html', context)
+
+    
+def deassign_task_members(request):
+    """deassign tasks from members"""
+
+    task_id = int(request.GET.get('task_id'))
+    project_id = int(request.GET.get('project_id'))
+    milestone_id = int(request.GET.get('milestone_id'))
+    assigned_id = int(request.GET.get('assigned_id'))
+
+    task = Task.objects.get(id=task_id)
+    project = Project.objects.get(id=project_id)
+    team = ProjectTeam.objects.get(project_id=project_id)
+    team_member = ProjectTeamMember.objects.filter(project_team=team)
+
+    team_list = list(team_member)
+    for user in team_list:
+        if assigned_id == user.member_id:
+            task.assigned_to.remove(user.id)
+    
+    assigned_members = task.assigned_to.all()
+    context = {
+        'assigned_members': assigned_members,
+        'task': task,
+        'project_id': project.id,
+        'milestone_id': task.milestone.id
+    }
+
+    return render(request, 'project_management/assigned_task_members.html', context)
+
+
+def deassign_task_members_milestone(request):
+    """deassign tasks from members under specific milestone"""
+
+    task_id = int(request.GET.get('task_id'))
+    project_id = int(request.GET.get('project_id'))
+    milestone_id = int(request.GET.get('milestone_id'))
+    assigned_id = int(request.GET.get('assigned_id'))
+
+    task = Task.objects.get(id=task_id)
+    project = Project.objects.get(id=project_id)
+    team = ProjectTeam.objects.get(project_id=project_id)
+    team_member = ProjectTeamMember.objects.filter(project_team=team)
+
+    team_list = list(team_member)
+    for user in team_list:
+        if assigned_id == user.member_id:
+            task.assigned_to.remove(user.id)
+    
+    assigned_members = task.assigned_to.all()
+    context = {
+        'assigned_members': assigned_members,
+        'task': task,
+        'project_id': project.id,
+        'milestone_id': task.milestone.id
+    }
+
+    return render(request, 'project_management/assigned_task_members_milestone.html', context)
+
+
 class UpdateMilestoneTask(UpdateView):
     model = Task
     fields = ['name', 'status', 'description', 'start_date', 'end_date', 'actual_start_date', 'actual_end_date', 'assigned_to', 'milestone']
@@ -1575,7 +1852,7 @@ def tasklist_by_project(request):
     """
     Tasks allocated to project
     """
-    project_id = request.GET.get('project_id')
+    project_id = int(request.GET.get('project_id'))
     project = get_object_or_404(Project, pk=(project_id))
 
     template = loader.get_template('project_management/list_project_tasks.html')
@@ -1586,24 +1863,24 @@ def tasklist_by_project(request):
     if Milestone.objects.filter(project_id=project_id).exists():
         
         project_tasks = Task.objects.filter(project_id=project.id)
-        open_status = Status.objects.get(id=1)
+        open_status = Status.objects.get(name="Open")
         open_tasks = Task.objects.filter(project_id=project.id, status=open_status)
 
         open_count = Task.objects.filter(project_id=project.id, status=open_status).count()
 
-        onhold_status = Status.objects.get(id=2)
+        onhold_status = Status.objects.get(name="Onhold")
         if Task.objects.filter(project_id=project.id, status=onhold_status).exists():
             onhold_count = Task.objects.filter(project_id=project.id, status=onhold_status).count()
         else:
             onhold_count = 0
         
-        terminated_status = Status.objects.get(id=3)
+        terminated_status = Status.objects.get(name="Terminated")
         if Task.objects.filter(project_id=project.id, status=terminated_status).exists():
             terminated_count = Task.objects.filter(project_id=project.id, status=terminated_status).count()
         else:
             terminated_count = 0
 
-        completed_status = Status.objects.get(id=4)
+        completed_status = Status.objects.get(name="Completed")
         if Task.objects.filter(project_id=project.id, status=completed_status).exists():
             completed_count = Task.objects.filter(project_id=project.id, status=completed_status).count()
         else:
@@ -1632,37 +1909,43 @@ def tasklist_by_project(request):
     return HttpResponse(template.render(context, request))
 
 
+
+
+
 def open_project_tasks(request):
     """open project tasks"""
-    project_id = int(request.GET.get('project_id'))
-    project = Project.objects.get(id=project_id)
+    project_id = request.GET.get("project_id")
+    project = Project.objects.get(id=int(project_id))
 
     template = loader.get_template('project_management/open_tasks.html')
 
     tasks = Task.objects.filter(project_id= project_id).exists()
     state = True
 
+    d3 = date.today()
+    today = d3.strftime("%m %d, %Y")
+
     if Milestone.objects.filter(project_id=project_id).exists():
         
         project_tasks = Task.objects.filter(project_id=project.id)
-        open_status = Status.objects.get(id=1)
-        open_tasks = Task.objects.filter(project_id=project.id, status=open_status)
+        open_status = Status.objects.get(name="Open")
+        open_tasks = Task.objects.filter(project_id=project.id, status=open_status).annotate(assigned=Count('assigned_to'))
 
         open_count = Task.objects.filter(project_id=project.id, status=open_status).count()
 
-        onhold_status = Status.objects.get(id=2)
+        onhold_status = Status.objects.get(name="Onhold")
         if Task.objects.filter(project_id=project.id, status=onhold_status).exists():
             onhold_count = Task.objects.filter(project_id=project.id, status=onhold_status).count()
         else:
             onhold_count = 0
         
-        terminated_status = Status.objects.get(id=3)
+        terminated_status = Status.objects.get(name="Terminated")
         if Task.objects.filter(project_id=project.id, status=terminated_status).exists():
             terminated_count = Task.objects.filter(project_id=project.id, status=terminated_status).count()
         else:
             terminated_count = 0
 
-        completed_status = Status.objects.get(id=4)
+        completed_status = Status.objects.get(name="Completed")
         if Task.objects.filter(project_id=project.id, status=completed_status).exists():
             completed_count = Task.objects.filter(project_id=project.id, status=completed_status).count()
         else:
@@ -1676,7 +1959,8 @@ def open_project_tasks(request):
             'open_count': open_count,
             'onhold_count': onhold_count,
             'terminated_count': terminated_count,
-            'completed_count': completed_count
+            'completed_count': completed_count,
+            'today':today
         }
 
     else:
@@ -1696,18 +1980,21 @@ def onhold_tasks(request):
     project = get_object_or_404(Project, pk=int(project_id))
 
     template = loader.get_template('project_management/onhold_tasks.html')
+    d3 = date.today()
+    today = d3.strftime("%m %d, %Y")
 
     state = True
-    onhold_status = Status.objects.get(id=2)
+    onhold_status = Status.objects.get(name="Onhold")
     if Milestone.objects.filter(project_id=project_id).exists():
         if Task.objects.filter(project_id=project.id, status=onhold_status).exists():
-            onhold_tasks = Task.objects.filter(project_id=project.id, status=onhold_status)
+            onhold_tasks = Task.objects.filter(project_id=project.id, status=onhold_status).annotate(assigned=Count('assigned_to'))
 
             context = {
                 'project_name': project.name,
                 'project_id': project.id,
                 'onhold_tasks': onhold_tasks,
                 'state': state,
+                'today':today
             }
         else:
             context = {
@@ -1734,18 +2021,21 @@ def terminated_tasks(request):
     project = get_object_or_404(Project, pk=int(project_id))
 
     template = loader.get_template('project_management/terminated_tasks.html')
+    d3 = date.today()
+    today = d3.strftime("%m %d, %Y")
 
     state = True
-    terminated_status = Status.objects.get(id=3)
+    terminated_status = Status.objects.get(name="Terminated")
 
     if Milestone.objects.filter(project_id=project_id).exists():
         if Task.objects.filter(project_id= project_id, status=terminated_status).exists():
-            terminated_tasks = Task.objects.filter(project_id=project.id, status=terminated_status)
+            terminated_tasks = Task.objects.filter(project_id=project.id, status=terminated_status).annotate(assigned=Count('assigned_to'))
             context = {
                 'project_name': project.name,
                 'project_id': project.id,
                 'terminated_tasks': terminated_tasks,
                 'state': state,
+                'today': today
             }
 
         else:
@@ -1773,19 +2063,22 @@ def completed_tasks(request):
     project = get_object_or_404(Project, pk=int(project_id))
 
     template = loader.get_template('project_management/completed_tasks.html')
+    d3 = date.today()
+    today = d3.strftime("%m %d, %Y")
 
     state = True
-    completed_status = Status.objects.get(id=4)
+    completed_status = Status.objects.get(name="Completed")
 
     if Milestone.objects.filter(project_id=project_id).exists():
         if Task.objects.filter(project_id=project.id, status=completed_status).exists():
-            completed_tasks = Task.objects.filter(project_id=project.id, status=completed_status)
+            completed_tasks = Task.objects.filter(project_id=project.id, status=completed_status).annotate(assigned=Count('assigned_to'))
 
             context = {
                 'project_name': project.name,
                 'project_id': project.id,
                 'completed_tasks': completed_tasks,
-                'state': state
+                'state': state,
+                'today': today
             }
 
         else:
@@ -1819,25 +2112,25 @@ def task_count(request):
     tasks = Task.objects.filter(project_id= project_id).exists()
         
     project_tasks = Task.objects.filter(project_id=project.id)
-    open_status = Status.objects.get(id=1)
+    open_status = Status.objects.get(name="Open")
     if Task.objects.filter(project_id=project.id, status=open_status).exists():
         open_count = Task.objects.filter(project_id=project.id, status=open_status).count()
     else:
         open_count = 0
 
-    onhold_status = Status.objects.get(id=2)
+    onhold_status = Status.objects.get(name="Onhold")
     if Task.objects.filter(project_id=project.id, status=onhold_status).exists():
         onhold_count = Task.objects.filter(project_id=project.id, status=onhold_status).count()
     else:
         onhold_count = 0
     
-    terminated_status = Status.objects.get(id=3)
+    terminated_status = Status.objects.get(name="Terminated")
     if Task.objects.filter(project_id=project.id, status=terminated_status).exists():
         terminated_count = Task.objects.filter(project_id=project.id, status=terminated_status).count()
     else:
         terminated_count = 0
 
-    completed_status = Status.objects.get(id=4)
+    completed_status = Status.objects.get(name="Completed")
     if Task.objects.filter(project_id=project.id, status=completed_status).exists():
         completed_count = Task.objects.filter(project_id=project.id, status=completed_status).count()
     else:
@@ -2011,16 +2304,16 @@ def list_project_incidents(request):
             if Incident.objects.filter(project_id=project.id).exists():
                 team_member = ProjectTeamMember.objects.filter(member=request.user, project_team=team_id)
 
-                open_status = Status.objects.get(id=1)
+                open_status = Status.objects.get(name="Open")
                 open_count = Incident.objects.filter(project_id=project.id, status=open_status).count()
 
-                onhold_status = Status.objects.get(id=2)
+                onhold_status = Status.objects.get(name="Onhold")
                 onhold_count = Incident.objects.filter(project_id=project.id, status=onhold_status).count()
 
-                terminated_status = Status.objects.get(id=3) 
+                terminated_status = Status.objects.get(name="Terminated") 
                 terminated_count = Incident.objects.filter(project_id=project.id, status=terminated_status).count()
 
-                completed_status = Status.objects.get(id=4)                
+                completed_status = Status.objects.get(name="Completed")                
                 completed_count = Incident.objects.filter(project_id=project.id, status=completed_status).count()
 
                 open_incidents = Incident.objects.filter(Q(creator=request.user)|Q(assignee__in=team_member), project_id=project.id, status=open_status).annotate(assigned=Count('assignee', distinct=True))
@@ -2147,7 +2440,7 @@ def completed_project_incidents(request):
         if team_members:
             if Incident.objects.filter(project_id=project.id).exists():
                 team_member = ProjectTeamMember.objects.filter(member=request.user, project_team=team_id)
-                completed_status = Status.objects.get(id=4)                
+                completed_status = Status.objects.get(name="Completed")                
                 completed_incidents = Incident.objects.filter(Q(creator=request.user)|Q(assignee__in=team_member), project_id=project.id, status=completed_status).annotate(assigned=Count('assignee', distinct=True))
                 state = True
                 context = {
@@ -2207,7 +2500,7 @@ def onhold_project_incidents(request):
         if team_members:
             if Incident.objects.filter(project_id=project.id).exists():
                 team_member = ProjectTeamMember.objects.filter(member=request.user, project_team=team_id)
-                onhold_status = Status.objects.get(id=2)
+                onhold_status = Status.objects.get(name="Onhold")
                 
                 onhold_incidents = Incident.objects.filter(Q(creator=request.user)|Q(assignee__in=team_member), project_id=project.id, status=onhold_status).annotate(assigned=Count('assignee', distinct=True))
                 state = True
@@ -2268,7 +2561,7 @@ def terminated_project_incidents(request):
         if team_members:
             if Incident.objects.filter(project_id=project.id).exists():
                 team_member = ProjectTeamMember.objects.filter(member=request.user, project_team=team_id)
-                terminated_status = Status.objects.get(id=3) 
+                terminated_status = Status.objects.get(name="Terminated") 
                 terminated_incidents = Incident.objects.filter(Q(creator=request.user)|Q(assignee__in=team_member), project_id=project.id, status=terminated_status).annotate(assigned=Count('assignee', distinct=True))
                 state = True
                 context = {

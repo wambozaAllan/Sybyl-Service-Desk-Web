@@ -24,16 +24,12 @@
                             </div>
                         </div>
                     </div>
-                    <div class="col-md-4">
+                    <div class="col-md-6 col-sm-12">
                         {{form.name|as_crispy_field}}
                     </div>
-                    <div class="col-md-4">
+                    <div class="col-md-6 col-sm-12">
                         {{form.status|as_crispy_field}}
                     </div>
-                    <div class="col-md-4">
-                        {{ form.assigned_to|as_crispy_field }}
-                    </div>
-                    
                 </div>
                 
                 <div class="row">
@@ -96,13 +92,13 @@
 
 <script>
     $('#id_start_date').datepicker({
-        format: "mm/dd/yyyy",
+        format: "yyyy-mm-dd",
         autoclose: true,
         clearBtn: true
     });
 
     $('#id_end_date').datepicker({
-        format: "mm/dd/yyyy",
+        format: "yyyy-mm-dd",
         autoclose: true,
         clearBtn: true
     });
@@ -111,24 +107,22 @@
     $("#id_actual_end_date").prop("type", "text");
 
     $('#id_actual_start_date').datepicker({
-        format: "mm/dd/yyyy",
+        format: "yyyy-mm-dd",
         autoclose: true,
         clearBtn: true
     });
 
     $('#id_actual_end_date').datepicker({
-        format: "mm/dd/yyyy",
+        format: "yyyy-mm-dd",
         autoclose: true,
         clearBtn: true
     });
 
-    $("#id_start_date").attr("placeholder", "mm/dd/yyyy");
-    $("#id_end_date").attr("placeholder", "mm/dd/yyyy");
+    $("#id_start_date").attr("placeholder", "yyyy-mm-dd");
+    $("#id_end_date").attr("placeholder", "yyyy-mm-dd");
 
-    $("#id_actual_start_date").attr("placeholder", "mm/dd/yyyy");
-    $("#id_actual_end_date").attr("placeholder", "mm/dd/yyyy");
-
-    $("#div_id_assigned_to").removeClass("form-group");
+    $("#id_actual_start_date").attr("placeholder", "yyyy-mm-dd");
+    $("#id_actual_end_date").attr("placeholder", "yyyy-mm-dd");
 
     $("#div_id_status").removeClass("form-group");
 
@@ -153,9 +147,7 @@
     $('#id_status').attr('data-live-search', "true"); 
     $('#id_status').selectpicker({
         size: 3
-    });
-
-    
+    });  
 
     $('#id_status').on('change', function(){
         var statusId = $(this).val();
@@ -179,12 +171,6 @@
                 }
             }
         });
-    });
-    
-    $('#id_assigned_to').removeAttr('multiple', "");
-    $('#id_assigned_to').attr('data-live-search', 'true');
-    $('#id_assigned_to').selectpicker({
-        size: 3,
     });
 
     $("#id_name").attr('autocomplete', 'off');
@@ -211,29 +197,44 @@
             $('#start_date').hide();
         });
 
-        if(startDate != '' && endDate != '' && sDate > eDate){
-            document.getElementById("btnUpdateTask").disabled = true;
-            document.getElementById('id_start_date').style.borderColor = "red";
-            $('#start_date').show();
+        if(startDate != '' && endDate != ''){
+            if(sDate <= eDate){
+                document.getElementById("btnUpdateTask").disabled = false;
+                document.getElementById('id_start_date').style.borderColor = "";
+                $('#start_date').hide();
+                document.getElementById('id_end_date').style.borderColor = "";
+                $('#end_date').hide();
+            }
+            else{
+                document.getElementById("btnUpdateTask").disabled = true;
+                document.getElementById('id_start_date').style.borderColor = "red";
+                $('#start_date').show();
+            }
         }
-        else if(startDate != '' && endDate != '' && sDate <= eDate){
+        else{
             document.getElementById("btnUpdateTask").disabled = false;
             document.getElementById('id_start_date').style.borderColor = "";
             $('#start_date').hide();
-            document.getElementById('id_end_date').style.borderColor = "";
-            $('#end_date').hide();
         }
 
-        if(actualStartDate != '' && startDate != '' && actualSDate < sDate ){
-            document.getElementById('id_actual_start_date').style.borderColor = "red";
-            document.getElementById("btnUpdateTask").disabled = true;
-            $('#equal_start').show();
+        if(actualStartDate != '' && startDate != ''){
+            if(actualSDate >= sDate){
+                document.getElementById('id_actual_start_date').style.borderColor = "";
+                document.getElementById("btnUpdateTask").disabled = false;
+                $('#equal_start').hide();  
+            }
+            else{
+                document.getElementById('id_actual_start_date').style.borderColor = "red";
+                document.getElementById("btnUpdateTask").disabled = true;
+                $('#equal_start').show();   
+            }
         }
-        else if(actualStartDate != '' && startDate != '' && actualSDate >= sDate ){
+        else{
             document.getElementById('id_actual_start_date').style.borderColor = "";
             document.getElementById("btnUpdateTask").disabled = false;
             $('#equal_start').hide();
         }
+
     });
 
     // end date
@@ -253,17 +254,24 @@
             $('#end_date').hide();
         });
 
-        if(startDate != '' && endDate != '' && sDate > eDate){
-            document.getElementById("btnUpdateTask").disabled = true;
-            document.getElementById('id_end_date').style.borderColor = "red";
-            $('#end_date').show();
+        if(startDate != '' && endDate != '' ){
+            if(sDate <= eDate){
+                document.getElementById("btnUpdateTask").disabled = false;
+                document.getElementById('id_end_date').style.borderColor = "";
+                $('#end_date').hide();
+                document.getElementById('id_start_date').style.borderColor = "";
+                $('#start_date').hide(); 
+            }
+            else{
+                document.getElementById("btnUpdateTask").disabled = true;
+                document.getElementById('id_end_date').style.borderColor = "red";
+                $('#end_date').show();
+            }
         }
-        else if(startDate != '' && endDate != '' && sDate <= eDate){
+        else{
             document.getElementById("btnUpdateTask").disabled = false;
             document.getElementById('id_end_date').style.borderColor = "";
             $('#end_date').hide();
-            document.getElementById('id_start_date').style.borderColor = "";
-            $('#start_date').hide();
         }
     });
 
@@ -289,30 +297,47 @@
             document.getElementById("btnUpdateTask").disabled = false;
             document.getElementById('id_actual_start_date').style.borderColor = "";
             $("#id_actual_start_date").css('borderWidth', '1px');
+            $('#equal_start').hide();
             $('#actual_start_date').hide();
         });
 
-        if(actualStartDate != '' && actualEndDate != '' && actualSDate > actualEDate){
-            document.getElementById("btnUpdateTask").disabled = true;
-            document.getElementById('id_actual_start_date').style.borderColor = "red";
-            $('#actual_start_date').show();
+        if(actualStartDate != '' && actualEndDate != ''){
+            if(actualSDate <= actualEDate){
+                document.getElementById("btnUpdateTask").disabled = false;
+                document.getElementById('id_actual_start_date').style.borderColor = "";
+                $('#actual_start_date').hide();
+                document.getElementById('id_actual_end_date').style.borderColor = "";
+                $('#actual_end_date').hide();
+            }
+            else{
+                document.getElementById("btnUpdateTask").disabled = true;
+                document.getElementById('id_actual_start_date').style.borderColor = "red";
+                $('#actual_start_date').show();
+                $('#id_actual_start_date').css('border-color', red);
+            }
         }
-        else if(actualStartDate != '' && actualEndDate != '' && actualSDate <= actualEDate){
+        else{
             document.getElementById("btnUpdateTask").disabled = false;
             document.getElementById('id_actual_start_date').style.borderColor = "";
             $('#actual_start_date').hide();
-            document.getElementById('id_actual_end_date').style.borderColor = "";
-            $('#actual_end_date').hide();
         }
-        
-        if(actualStartDate != '' && startDate != '' && actualSDate < sDate ){
-            document.getElementById('id_actual_start_date').style.borderColor = "red";
-            $('#equal_start').show();
+
+        if(actualStartDate != '' && startDate != ''){
+            if(actualSDate >= sDate){
+                document.getElementById('id_actual_start_date').style.borderColor = "";
+                $('#equal_start').hide();
+            }
+            else{
+                document.getElementById('id_actual_start_date').style.borderColor = "red";
+                $('#equal_start').show();
+                document.getElementById("btnUpdateTask").disabled = true;
+            }
         }
-        else if(actualStartDate != '' && startDate != '' && actualSDate >= sDate ){
+        else{
             document.getElementById('id_actual_start_date').style.borderColor = "";
             $('#equal_start').hide();
         }
+        
     });
 
     // actual end date
@@ -341,21 +366,29 @@
             $('#actual_end_date').hide();
         });
 
-        if(actualStartDate != '' && actualEndDate != '' && actualSDate > actualEDate){
-            document.getElementById("btnUpdateTask").disabled = true;
-            document.getElementById('id_actual_end_date').style.borderColor = "red";
-            $('#actual_end_date').show();
+        if(actualStartDate != '' && actualEndDate != ''){
+            if(actualSDate <= actualEDate){
+                document.getElementById("btnUpdateTask").disabled = false;
+                document.getElementById('id_actual_start_date').style.borderColor = "";
+                $('#actual_start_date').hide();
+                document.getElementById('id_actual_end_date').style.borderColor = "";
+                $('#actual_end_date').hide();
+            }
+            else{
+                document.getElementById("btnUpdateTask").disabled = true;
+                document.getElementById('id_actual_end_date').style.borderColor = "red";
+                $('#actual_end_date').show();
+            }
         }
-        else if(actualStartDate != '' && actualEndDate != '' && actualSDate <= actualEDate){
+        else{
             document.getElementById("btnUpdateTask").disabled = false;
             document.getElementById('id_actual_start_date').style.borderColor = "";
             $('#actual_start_date').hide();
-            document.getElementById('id_actual_end_date').style.borderColor = "";
-            $('#actual_end_date').hide();
         }
+
     });
 
-    $(function(){     
+    $(function(){
         if($("#id_status").val() == '1' || $("#id_status").val() == '2'){
             $("#div_id_actual_start_date").css("display", "none");
             $("#div_id_actual_end_date").css("display", "none");
@@ -391,7 +424,6 @@
                 var description = $('#id_description').val();
                 var project_id =$('#id_project').val();
                 var milestone_id = $('#id_milestone').val();
-                var assigned_to = $("#id_assigned_to").val();
                 var task_id = $("#id_task").val();
 
                 $.ajax({
@@ -419,13 +451,22 @@
                                     description: description,
                                     project_id: project_id, 
                                     milestone_id: milestone_id,
-                                    assigned_to: assigned_to, 
                                     task_id: task_id   
                                 },
                                 url: url_data,
                                 success: function (resp) {
                                     $('.close-dialog').click(); 
-                                    $('#completedPane').html(resp);
+                                    $.ajax({
+                                        type: "GET",
+                                        cache: false,
+                                        data: {
+                                            project_id: project_id
+                                        },
+                                        url: "{% url 'completedTasks' %}",
+                                        success:function(resp){
+                                            $('#completedPane').html(resp);
+                                        }
+                                    });
 
                                     $.ajax({
                                         type:"GET",
@@ -474,14 +515,23 @@
                                     description: description,
                                     project_id: project_id, 
                                     milestone_id: milestone_id,
-                                    assigned_to: assigned_to, 
                                     task_id: task_id    
                                 },
                                 url: url_data,
                                 success: function(resp) {
                                     // filling new data to terminated task tab
-                                    $('.close-dialog').click(); 
-                                    $('#terminatedPane').html(resp);
+                                    $('.close-dialog').click();
+                                    $.ajax({
+                                        type: "GET",
+                                        cache: false,
+                                        data: {
+                                            project_id: project_id
+                                        },
+                                        url: "{% url 'terminatedTasks' %}",
+                                        success:function(resp){
+                                            $('#terminatedPane').html(resp);
+                                        }
+                                    }); 
 
                                     $.ajax({
                                         type:"GET",
@@ -531,7 +581,6 @@
             var description = $('#id_description').val();
             var project_id =$('#id_project').val();
             var milestone_id = $('#id_milestone').val();
-            var assigned_to = $("#id_assigned_to").val();
             var task_id = $("#id_task").val();
 
             $.ajax({
@@ -560,18 +609,27 @@
                                 description: description,
                                 project_id: project_id, 
                                 milestone_id: milestone_id,
-                                assigned_to: assigned_to, 
                                 task_id: task_id   
                             },
                             url: url_data,
                             success: function (resp) {
                                 $('.close-dialog').click(); 
-                                $('#openPane').html(resp);
+                                $.ajax({
+                                    type: "GET",
+                                    cache: false,
+                                    data: {
+                                        project_id: project_id
+                                    },
+                                    url: "{% url 'openTasks' %}",
+                                    success:function(resp){
+                                        $('#openPane').html(resp);
+                                    }
+                                });  
                             }
                         });
                         return true;
                     }
-                    // if open status
+                    // if onhold status
                     else{
                         $.ajax({
                             type: "GET",
@@ -586,13 +644,23 @@
                                 description: description,
                                 project_id: project_id, 
                                 milestone_id: milestone_id,
-                                assigned_to: assigned_to, 
                                 task_id: task_id    
                             },
                             url: url_data,
                             success: function(resp) {
                                 // filling new data to onhold task tab
-                                $('.close-dialog').click(); 
+                                $('.close-dialog').click();
+                                $.ajax({
+                                    type: "GET",
+                                    cache: false,
+                                    data: {
+                                        project_id: project_id
+                                    },
+                                    url: "{% url 'onholdTasks' %}",
+                                    success:function(resp){
+                                        $('#onholdPane').html(resp);
+                                    }
+                                }); 
                                 $('#onholdPane').html(resp);
 
                                 $.ajax({
