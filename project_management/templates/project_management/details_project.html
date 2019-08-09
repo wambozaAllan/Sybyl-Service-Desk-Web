@@ -85,7 +85,7 @@
                                 <div class="">
                                    <h4 style="margin-left: 1%;margin-top: 1%;"> <strong class="font-weight-bold">Project Overview</strong> 
                                     <a style="margin-left: 2px;" onclick="viewProjectDetails()" href="#"> <i class="fa fa-dedent color-primary" title="View Project Details"></i></a>&nbsp;&nbsp;
-                                    <a style="margin-left: 2px;" onclick="manageEscalations({{ project.id }})" href="#"> <i class="fa fa-arrow-up" title="Escalations"></i></a>
+                                    <!-- <a style="margin-left: 2px;" onclick="manageEscalations({{ project.id }})" href="#"> <i class="fa fa-arrow-up" title="Escalations"></i></a> -->
                                 </h4>
                                     
                                     <div class="row no-gutters widget-1 shadow-base">
@@ -99,24 +99,24 @@
                                                     <span id="spark1">
                                                         <i style="display: inline-block; width: 89px; height: 35px; vertical-align: top;" width="89" height="30" class="fa fa-tasks f-s-60 color-primary"></i>
                                                     </span>
-                                                    <span>30</span>
+                                                    <span>{{ task_count }}</span>
                                                 </div><!-- card-body -->
                                                 <div class="card-footer">
                                                     <div>
                                                         <span class="tx-11">Open</span>
-                                                        <h6 class="tx-inverse text-right"><i class="fa fa-circle color-primary"></i> 3</h6>
+                                                        <h6 class="tx-inverse text-right"><i class="fa fa-circle color-primary"></i> {{ open_tasks}}</h6>
                                                     </div>
                                                     <div>
                                                         <span class="tx-11">Completed</span>
-                                                        <h6 class="tx-inverse text-right"><i class="fa fa-circle color-success"></i> 8</h6>
+                                                        <h6 class="tx-inverse text-right"><i class="fa fa-circle color-success"></i> {{completed_tasks}}</h6>
                                                     </div>
                                                     <div>
                                                         <span class="tx-11">Onhold</span>
-                                                        <h6 class="tx-inverse text-right"><i class="fa fa-circle color-warning"></i> 20</h6>
+                                                        <h6 class="tx-inverse text-right"><i class="fa fa-circle color-warning"></i> {{onhold_tasks}}</h6>
                                                     </div>
                                                     <div>
                                                         <span class="tx-11">Terminated</span>
-                                                        <h6 class="tx-inverse text-right"><i class="fa fa-circle color-danger"></i> 9</h6>
+                                                        <h6 class="tx-inverse text-right"><i class="fa fa-circle color-danger"></i> {{terminated_tasks}}</h6>
                                                     </div>
                                                 </div><!-- card-footer -->
                                             </div><!-- card -->
@@ -132,24 +132,24 @@
                                                     <span id="spark2">
                                                         <i style="display: inline-block; width: 89px; height: 35px; vertical-align: top;" width="89" height="30" class="fa fa-th-list f-s-60 color-primary"></i>
                                                     </span>
-                                                    <span class="tx-medium tx-inverse tx-32">20</span>
+                                                    <span class="tx-medium tx-inverse tx-32">{{ milestone_count }}</span>
                                                 </div><!-- card-body -->
                                                 <div class="card-footer">
                                                     <div>
                                                         <span class="tx-11">Open</span>
-                                                        <h6 class="tx-inverse text-right"><i class="fa fa-circle color-primary"></i> 1</h6>
+                                                        <h6 class="tx-inverse text-right"><i class="fa fa-circle color-primary"></i> {{ open_milestones}}</h6>
                                                     </div>
                                                     <div>
                                                         <span class="tx-11">Completed</span>
-                                                        <h6 class="tx-inverse text-right"><i class="fa fa-circle color-success"></i> 4</h6>
+                                                        <h6 class="tx-inverse text-right"><i class="fa fa-circle color-success"></i> {{ completed_milestones}}</h6>
                                                     </div>
                                                     <div>
                                                         <span class="tx-11">Onhold</span>
-                                                        <h6 class="tx-inverse text-right"><i class="fa fa-circle color-warning"></i> 0</h6>
+                                                        <h6 class="tx-inverse text-right"><i class="fa fa-circle color-warning"></i> {{ onhold_milestones}}</h6>
                                                     </div>
                                                     <div>
                                                         <span class="tx-11">Terminated</span>
-                                                        <h6 class="tx-inverse text-right"><i class="fa fa-circle color-danger"></i> 5</h6>
+                                                        <h6 class="tx-inverse text-right"><i class="fa fa-circle color-danger"></i> {{ terminated_milestones}}</h6>
                                                     </div>
                                                 </div><!-- card-footer -->
                                             </div><!-- card -->
@@ -165,24 +165,24 @@
                                                     <span id="spark3">
                                                         <i style="display: inline-block; width: 89px; height: 35px; vertical-align: top;" width="89" height="30" class="fa fa-list f-s-60 color-primary"></i>
                                                     </span>
-                                                    <span>40</span>
+                                                    <span>{{ incident_count }}</span>
                                                 </div><!-- card-body -->
                                                 <div class="card-footer">
                                                     <div>
                                                         <span class="tx-11">Open</span>
-                                                        <h6 class="tx-inverse text-right"><i class="fa fa-circle color-primary"></i> 20</h6>
+                                                        <h6 class="tx-inverse text-right"><i class="fa fa-circle color-primary"></i> {{open_incidents}}</h6>
                                                     </div>
                                                     <div>
                                                         <span class="tx-11">Completed</span>
-                                                        <h6 class="tx-inverse text-right"><i class="fa fa-circle color-success"></i> 12</h6>
+                                                        <h6 class="tx-inverse text-right"><i class="fa fa-circle color-success"></i> {{completed_incidents}}</h6>
                                                     </div>
                                                     <div>
                                                         <span class="tx-11">Onhold</span>
-                                                        <h6 class="tx-inverse text-right"><i class="fa fa-circle color-warning"></i> 3</h6>
+                                                        <h6 class="tx-inverse text-right"><i class="fa fa-circle color-warning"></i> {{onhold_incidents}}</h6>
                                                     </div>
                                                     <div>
                                                         <span class="tx-11">Terminated</span>
-                                                        <h6 class="tx-inverse text-right"><i class="fa fa-circle color-danger"></i> 18</h6>
+                                                        <h6 class="tx-inverse text-right"><i class="fa fa-circle color-danger"></i> {{terminated_incidents}}</h6>
                                                     </div>
                                                 </div><!-- card-footer -->
                                             </div><!-- card -->
@@ -230,8 +230,6 @@
                                             </div>
                                         </div>  
                                     </div>
-                                    <div class="tab-pane  p-20" id="profile2" role="tabpanel">2</div>
-                                    <div class="tab-pane p-20" id="messages2" role="tabpanel">3</div>
                                 </div>   
                             </div>
 
@@ -248,8 +246,6 @@
                                             </div>
                                         </div>  
                                     </div>
-                                    <!-- <div class="tab-pane  p-20" id="profile3" role="tabpanel">2</div>
-                                    <div class="tab-pane p-20" id="messages3" role="tabpanel">3</div> -->
                                 </div>
                                   
                             </div>
@@ -336,6 +332,18 @@
             url: urldata,
             success: function (resp) {
                 $('.task-card').html(resp);
+
+                $.ajax({
+                    type:"GET",
+                    cache: false,
+                    data:{
+                        project_id:project_id,
+                    },
+                    url: "{% url 'openTasks' %}",
+                    success: function(resp){      
+                        $('#openPane').html(resp);                                         
+                    }
+                });
             }
         });
     }
@@ -351,6 +359,18 @@
             url: urldata,
             success: function (resp) {
                 $('.milestone-card').html(resp);
+
+                $.ajax({
+                    type:"GET",
+                    cache: false,
+                    data:{
+                        project_id:project_id,
+                    },
+                    url: "{% url 'openMilestones' %}",
+                    success: function(resp){                                       
+                        $('.open-milestones').html(resp);
+                    }
+                });
             }
         });
     }

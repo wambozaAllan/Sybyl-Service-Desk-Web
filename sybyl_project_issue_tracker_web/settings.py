@@ -51,8 +51,8 @@ CKEDITOR_CONFIGS = {
     # django-ckeditor defaults
     'default': {
         # Editor Width Adaptation
-        'width':'600px',
-        'height':'150px',
+        'width':'1025px',
+        'height':'118px',
         # tab key conversion space number
         'tabSpaces': 4,
         # Toolbar Style

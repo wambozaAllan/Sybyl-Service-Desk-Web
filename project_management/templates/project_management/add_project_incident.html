@@ -9,12 +9,19 @@
 					Project<span class="asteriskField">*</span>
 				</label>
 				<div class="">
-					<input name="project" class="textinput textInput form-control" required="" id="id_project" value="{{project_id}}" type="hidden">
+					<input name="project" class="textinput textInput form-control" required="" id="id_project" value="{{project_id}}" style="display: none;">
 					<input type="text" name="" class="textinput textInput form-control" required="" value="{{project_name}}" placeholder="" disabled="">
 				</div>
 			</div>
 		</div>
-		<div class="col-6">{{ form.title|as_crispy_field }}</div>
+		<div class="col-6">
+			{{ form.title|as_crispy_field }}
+			<medium id="validate_title" class="text-muted hidden">
+				<font color="red">
+					Incident Already Exists!
+				</font>
+			</medium>
+		</div>
 		
 	</div>
 	<br>
@@ -26,6 +33,7 @@
 				</label>
 				<div class="">
 					<select name="task" class="select form-control" id="id_task">
+							<option value="" selected disabled>--Select Task--</option>
 						{% for task in tasks %}
 							<option value="{{task.id}}">{{task.name}}</option>
                         {% endfor %}
@@ -65,7 +73,7 @@
 
 	<br>
 	<div class="row">
-		<div class="col-md-6fallback">
+		<div class="col-md-6 fallback">
 			<div class="row">
 				<div class="col-md-6">
 					{{ form.document|as_crispy_field }}
@@ -76,12 +84,12 @@
 			</div>	
 		</div>
 		<div class="col-md-6">
-			<div class="row">
+			<div class="row" style="margin-top: 5%;">
 				<div class="col-md-6">
-					<button type="submit" class="btn btn-success col-12">Add Incident</button>
+					<button type="submit" class="btn btn-success col-12" id="btnaddIncident">Add Incident</button>
 				</div>
 				<div class="col-md-6">
-					<button class="btn btn-inverse col-12"><a href="{% url 'listIncidents' %}" >Cancel</a></button>
+					<a href="{% url 'listIncidents' %}" ><button class="btn btn-inverse col-12">Cancel</button></a>
 				</div>
 			</div>
 			
@@ -168,6 +176,32 @@
 					
 				}
 			})
-		})
+		});
+
+		$('#id_title').on('input', function () {
+			var title = $(this).val().toUpperCase();
+			var project_id = $("#id_project").val();
+
+			$.ajax({
+				url: "{% url 'validateIncidentName' %}",
+				data: {
+					'title': title,
+					'project_id': project_id
+				},
+				dataType: 'json',
+				success: function (data) {
+					if (data.is_taken) {
+						$("#validate_title").show();
+						document.getElementById('id_title').style.borderColor = "red";
+						document.getElementById("btnaddIncident").disabled = true;
+					} 
+					else {
+						$("#validate_title").hide();
+						document.getElementById('id_title').style.borderColor = "#e7e7e7";
+						document.getElementById("btnaddIncident").disabled = false;
+					}
+				}
+			});
+		});
 	
 	</script>

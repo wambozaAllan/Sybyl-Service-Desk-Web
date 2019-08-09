@@ -9,72 +9,33 @@
 
 {% if state %}
 <div class="card-body project-tasks">
-        <a href="#" id="add-task" class="btn btn-info pull-right" onclick="addTasks('{{project_id}}', '{{project_name}}');">
-            <i class="fa fa-fw fa-lg fa-plus"></i>Add Task
-        </a>
-        <ul class="nav nav-tabs customtab" role="tablist">
-            <li class="nav-item"> <a class="nav-link active" data-toggle="tab" href="#openPane" role="tab"><span class="hidden-sm-up"><i class="ti-home"></i></span> <span class="hidden-xs-down">Open <span class="label label-rounded label-info">{{open_count}}</span></span></a> </li>
-            <li class="nav-item" onclick="loadURL('{% url 'onholdTasks'%}', 'project_id={{ project_id }}', 'on-hold-tasks', 'GET');"> <a class="nav-link" data-toggle="tab" href="#onholdPane" role="tab"><span class="hidden-sm-up"><i class="ti-user"></i></span> <span class="hidden-xs-down">Onhold <span class="label label-rounded label-info">{{onhold_count}}</span></span></a> </li>
-            <li class="nav-item" onclick="loadURL('{% url 'terminatedTasks'%}', 'project_id={{ project_id }}', 'terminated-tasks', 'GET');"> <a class="nav-link" data-toggle="tab" href="#terminatedPane" role="tab"><span class="hidden-sm-up"><i class="ti-email"></i></span> <span class="hidden-xs-down">Terminated <span class="label label-rounded label-danger">{{terminated_count}}</span></span></a> </li>
-            <li class="nav-item" onclick="loadURL('{% url 'completedTasks'%}', 'project_id={{ project_id }}', 'completed-tasks', 'GET');"> <a class="nav-link" data-toggle="tab" href="#completedPane" role="tab"><span class="hidden-sm-up"><i class="ti-email"></i></span> <span class="hidden-xs-down">Completed <span class="label label-rounded label-danger">{{completed_count}}</span></span></a> </li>
-            
-        </ul>
-        <!-- Tab panes -->
-        <div class="tab-content">
-            <div class="tab-pane active" id="openPane" role="tabpanel">
-                <div class="card-body task-card">
-                    <div class="table-responsive">
-                        <table class="table table-hover" id="table_open_tasks">
-                            <thead>
-                                <tr>
-                                    <th>Name</th>
-                                    <th>Milestone</th>
-                                    <th>Assigned To</th>
-                                    <th>Start-Date</th>
-                                    <th>Status</th>
-                                    <th>Action</th>
-                                </tr>
-                            </thead>
-                            
-                            <tbody>
-                                {% for task in open_tasks %}
-                                <tr>
-                                    <td>
-                                        <a href="#" onclick="detailsTask('{{ task.id }}', '{{ task.name }}',  '{{ project_id }}')" style="color:black;">
-                                        {{ task.name }}</a>
-                                    </td>
-                                    <td>{{task.milestone}}</td>
-                                    <td>{{task.assigned_to}}</td>
-                                    <td>{{ task.end_date }}</td>
-                                    <td>{{ task.status }}</td>
-                                    <td>
-                                        <button class="btn btn-outline-success btn-sm"
-                                            onclick="editTask('{{ task.id }}', '{{ task.name }}', '{{ project_id}}')">
-                                            <i title="Manage Task" class="fa fa-edit"></i>
-                                        </button>
-                
-                                        <button onclick="deleteTask('{{ task.id }}', '{{ task.name }}')"
-                                                class="btn btn-outline-danger btn-sm" type="button">
-                                            <i title="Delete Task" class="fa fa-remove"></i>
-                                        </button>
-                                    </td>
-                                </tr>
-                                {% endfor %}
-                            </tbody>
-                        </table>
-                    </div>
-                </div>
-            </div>
-            <div class="tab-pane" id="onholdPane" role="tabpanel">
-                <div class="on-hold-tasks"></div>
-            </div>
-            <div class="tab-pane" id="terminatedPane" role="tabpanel">
-                <div class="terminated-tasks"></div>
-            </div>
-            <div class="tab-pane" id="completedPane" role="tabpanel">
-                <div class="completed-tasks"></div>
+    <a href="#" id="add-task" class="btn btn-info pull-right" onclick="addTasks('{{project_id}}', '{{project_name}}');">
+        <i class="fa fa-fw fa-lg fa-plus"></i>Add Task
+    </a>
+    <ul class="nav nav-tabs customtab" role="tablist">
+        <li class="nav-item" onclick="loadURL('{% url 'openTasks'%}', 'project_id={{ project_id }}', 'open-tasks', 'GET');"> <a class="nav-link active" data-toggle="tab" href="#openPane" role="tab"><span class="hidden-sm-up"><i class="ti-home"></i></span> <span class="hidden-xs-down">Open <span id="count_open_tasks" class="label label-rounded label-info">{{open_count}}</span></span></a> </li>
+        <li class="nav-item" onclick="loadURL('{% url 'onholdTasks'%}', 'project_id={{ project_id }}', 'on-hold-tasks', 'GET');"> <a class="nav-link" data-toggle="tab" href="#onholdPane" role="tab"><span class="hidden-sm-up"><i class="ti-user"></i></span> <span class="hidden-xs-down">Onhold <span id="count_onhold_tasks" class="label label-rounded" style="background-color: #FFA500;">{{onhold_count}}</span></span></a> </li>
+        <li class="nav-item" onclick="loadURL('{% url 'terminatedTasks'%}', 'project_id={{ project_id }}', 'terminated-tasks', 'GET');"> <a class="nav-link" data-toggle="tab" href="#terminatedPane" role="tab"><span class="hidden-sm-up"><i class="ti-email"></i></span> <span class="hidden-xs-down">Terminated <span id="count_terminated_tasks" class="label label-rounded label-danger">{{terminated_count}}</span></span></a> </li>
+        <li class="nav-item" onclick="loadURL('{% url 'completedTasks'%}', 'project_id={{ project_id }}', 'completed-tasks', 'GET');"> <a class="nav-link" data-toggle="tab" href="#completedPane" role="tab"><span class="hidden-sm-up"><i class="ti-email"></i></span> <span class="hidden-xs-down">Completed <span id="count_completed_tasks" class="label label-rounded" style="background-color: #44c548;">{{completed_count}}</span></span></a> </li>
+        
+    </ul>
+    <!-- Tab panes -->
+    <div class="tab-content">
+        <div class="tab-pane active" id="openPane" role="tabpanel">
+            <div class="card-body task-card">
+                <div class="open-tasks"></div>
             </div>
         </div>
+        <div class="tab-pane" id="onholdPane" role="tabpanel">
+            <div class="on-hold-tasks"></div>
+        </div>
+        <div class="tab-pane" id="terminatedPane" role="tabpanel">
+            <div class="terminated-tasks"></div>
+        </div>
+        <div class="tab-pane" id="completedPane" role="tabpanel">
+            <div class="completed-tasks"></div>            
+        </div>
+    </div>
      
 </div>
 
@@ -95,6 +56,22 @@
 
 <script>
     $('#table_open_tasks').DataTable();
+
+    $(function(){
+        var project_id = $("#id_project").val();
+
+        $.ajax({
+            type:"GET",
+            cache: false,
+            data:{
+                project_id:project_id,
+            },
+            url: "{% url 'openTasks' %}",
+            success: function(resp){      
+                $('#openPane').html(resp);                                         
+            }
+        });
+    });
     
     function addTasks(project_id, project_name){
         urlData = "{% url 'populateTaskView' %}";
@@ -120,41 +97,6 @@
                         close: {
                             text: 'Close',
                             btnClass: 'btn-gray close-dialog',
-                            action: function () {
-                            }
-                        }
-                    }
-                });
-            }
-        });
-    }
-
-    function editTask(task_id, task_name, project_id) {
-
-        url = "{% url 'updateProjectTask' 999%}".replace(999, task_id);
-        $.ajax({
-            url: url,
-            type: "GET",
-            cache: false,
-            data: {
-                task_id: task_id,
-                task_name: task_name,
-                project_id: project_id
-            },
-            success: function (resp) {
-                $.confirm({
-                    title: '<h3>Edit Task: <strong>'+ task_name +'</strong></h3>',
-                    content: '' + resp,
-                    type: 'blue',
-                    theme: 'material',
-                    typeAnimated: true,
-                    boxWidth: '70%',
-                    useBootstrap: false,
-                    closeIcon: true,
-                    buttons: {
-                        close: {
-                            text: 'Close',
-                            btnClass: 'btn-gray',
                             action: function () {
                             }
                         }
@@ -196,7 +138,6 @@
                 });
             }
         });
-        }
-    
+    }    
     
 </script>

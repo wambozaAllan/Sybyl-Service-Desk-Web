@@ -1,0 +1,64 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block content %}
+    <div>
+        <!-- Main wrapper  -->
+        <div id="main-wrapper">
+            {% include 'header.html' %}
+            {% include 'left-nav.html' %}
+            <!-- Page wrapper  -->
+            <div class="page-wrapper">
+                <!-- Bread crumb -->
+                <div class="row page-titles">
+                    <div class="col-md-5 align-self-center">
+                        <h3 class="text-primary">My Timesheets</h3>
+                    </div>
+                    <div class="col-md-7 align-self-center">
+                        <ol class="breadcrumb">
+                            <li class="breadcrumb-item"><a href="javascript:void(0)">Home</a></li>
+                            <li class="breadcrumb-item active">Timesheets</li>
+                        </ol>
+                    </div>
+                </div>
+                <!-- End Bread crumb -->
+                <!-- Container fluid  -->
+                <div class="container-fluid">
+                    <!-- Start Page Content -->
+                    <div class="row">
+                        <div class="col-12">
+                            <div class="card">
+                                <div class="card-body">
+                                    <div class="row">
+                                        <div class="col-md-12">
+                                            <button id="" class="btn btn-info pull-right" onclick="">
+                                                <i class="fa fa-fw fa-lg fa-plus"></i>Log Time
+                                            </button>
+                                        </div>
+                                    </div>
+                                    <div class="table-responsive">
+                                        <table id="table_status" class="display nowrap table table-hover"
+                                               cellspacing="0" width="100%">
+                                            <thead>
+                                            <tr>
+                                                <th>#</th>
+                                                <th>Status Name</th>
+                                                <th>Description</th>
+                                                <th class="text-center">Action</th>
+                                            </tr>
+                                            </thead>
+                                            <tbody>
+
+                                            
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}
+

@@ -333,19 +333,6 @@
         size: 3
     });
 
-    function changeDateFormat(inputDate){  // expects Y-m-d
-        var splitDate = inputDate.split('-');
-        if(splitDate.count == 0){
-            return null;
-        }
-
-        var year = splitDate[0];
-        var month = splitDate[1];
-        var day = splitDate[2]; 
-
-        return month + '\/' + day + '\/' + year;
-    }
-
     // on load function for addition of milestone
     $(function(){
         if($("#id_status").val() == '1' || $("#id_status").val() == '2'){
@@ -357,45 +344,6 @@
             $("#div_id_actual_startdate").css("display", "block");
             $("#div_id_actual_enddate").css("display", "block");
         }
-
-        var start_date = $("#id_start_date").val();
-        var endDate = $("#id_end_date").val();
-        var actualStartDate = $("#id_actual_start_date").val();
-        var actualEndDate = $("#id_actual_end_date").val();
-
-        var newStart = changeDateFormat(start_date);
-        var newEnd = changeDateFormat(endDate);
-        var newActualStart = changeDateFormat(actualStartDate);
-        var newActualEnd = changeDateFormat(actualEndDate);
-
-        if (start_date.length == 0){
-            document.getElementById('id_start_date').value = "";
-        }
-        else if(start_date.length > 0){
-            document.getElementById('id_start_date').value = newStart;
-        }
-
-        if (endDate.length == 0){
-            document.getElementById('id_end_date').value = "";
-        }
-        else if(endDate.length > 0){
-            document.getElementById('id_end_date').value = newEnd;
-        }
-
-        if (actualStartDate.length == 0){
-            document.getElementById('id_actual_start_date').value = "";
-        }
-        else if(actualStartDate.length > 0){
-            document.getElementById('id_actual_start_date').value = newActualStart;
-        }
-        
-        if(actualEndDate.length == 0){
-            document.getElementById('id_actual_end_date').value = "";
-        }
-        else if(actualEndDate.length >  0){
-            document.getElementById('id_actual_end_date').value = newActualEnd;
-        }
-        
         
     });
       
@@ -428,25 +376,119 @@
                 var description = $('#id_description').val();
                 var project_id =$('#id_project').val();
 
-                url_data = "{% url 'saveupdateProjectMilestone' 999%}".replace(999, milestone_val);
                 $.ajax({
-                    type: "GET",
-                    cache: false,
+                    url: "{% url 'checkMilestoneStatus' %}",
                     data: {
-                        name: name,
-                        status: status,
-                        startdate: startdate,
-                        enddate: enddate,
-                        actual_startdate: actual_startdate,
-                        actual_enddate: actual_enddate,
-                        description: description,
-                        project_id: project_id
-                        
+                        status_id: status
                     },
-                    url: url_data,
-                    success: function (resp) {
-                        $('.close-dialog').click();
-                        $('#openMilestonePane').html(resp);
+                    dataType: 'json',
+                    cache: false,
+                    success: function(data){
+                        var statusName = data.status_name;
+                        url_data = "{% url 'saveupdateProjectMilestone' 999%}".replace(999, milestone_val);
+
+                        if(statusName === "Terminated") {
+                            $.ajax({
+                                type: "GET",
+                                cache: false,
+                                data: {
+                                    name: name,
+                                    status: status,
+                                    startdate: startdate,
+                                    enddate: enddate,
+                                    actual_startdate: actual_startdate,
+                                    actual_enddate: actual_enddate,
+                                    description: description,
+                                    project_id: project_id
+                                    
+                                },
+                                url: url_data,
+                                success: function (resp) {
+                                    $('.close-dialog').click(); 
+                                    $('#terminatedMilestonePane').html(resp);
+
+                                    $.ajax({
+                                        type:"GET",
+                                        cache: false,
+                                        data:{
+                                            project_id:project_id,
+                                        },
+                                        dataType: 'json',
+                                        url: "{% url 'milestoneCount' %}",
+                                        success: function(data){
+                                            $("#count_open_milestones").text(data.open_count);
+                                            $("#count_onhold_milestones").text(data.onhold_count);
+                                            $("#count_terminated_milestones").text(data.terminated_count);
+                                            $("#count_completed_milestones").text(data.completed_count);  
+
+                                            $.ajax({
+                                                type:"GET",
+                                                cache: false,
+                                                data:{
+                                                    project_id:project_id,
+                                                },
+                                                url: "{% url 'openMilestones' %}",
+                                                success: function(resp){
+                                                    $('#openMilestonePane').html(resp);                                                 
+                                                }
+                                            });                                       
+                                        }
+                                    });
+                                }
+                            });
+                            return true;
+                        }
+                        else if(statusName === "Completed"){
+                            $.ajax({
+                                type: "GET",
+                                cache: false,
+                                data: {
+                                    name: name,
+                                    status: status,
+                                    startdate: startdate,
+                                    enddate: enddate,
+                                    actual_startdate: actual_startdate,
+                                    actual_enddate: actual_enddate,
+                                    description: description,
+                                    project_id: project_id  
+                                },
+                                url: url_data,
+                                success: function(resp) {
+                                    $('.close-dialog').click(); 
+                                    $('#completedMilestonePane').html(resp);
+                                    
+                                    $.ajax({
+                                        type:"GET",
+                                        cache: false,
+                                        data:{
+                                            project_id:project_id,
+                                        },
+                                        dataType: 'json',
+                                        url: "{% url 'milestoneCount' %}",
+                                        success: function(data){
+                                            $("#count_open_milestones").text(data.open_count);
+                                            $("#count_onhold_milestones").text(data.onhold_count);
+                                            $("#count_terminated_milestones").text(data.terminated_count);
+                                            $("#count_completed_milestones").text(data.completed_count);  
+
+                                            $.ajax({
+                                                type:"GET",
+                                                cache: false,
+                                                data:{
+                                                    project_id:project_id,
+                                                },
+                                                url: "{% url 'openMilestones' %}",
+                                                success: function(resp){
+                                                    $('#openMilestonePane').html(resp);                                                 
+                                                }
+                                            });                                       
+                                        }
+                                    }); 
+                                      
+                                }
+                            });
+                            return true;
+                        }                      
                     }
                 });
                 return true;
@@ -463,30 +505,94 @@
             var description = $('#id_description').val();
             var project_id =$('#id_project').val();
 
-            url_data = "{% url 'saveupdateProjectMilestone' 999%}".replace(999, milestone_val);
             $.ajax({
-                type: "GET",
-                cache: false,
-                data: {
-                    name: name,
-                    status: status,
-                    startdate: startdate,
-                    enddate: enddate,
-                    actual_startdate: actual_startdate,
-                    actual_enddate: actual_enddate,
-                    description: description,
-                    project_id: project_id
-                    
-                },
-                url: url_data,
-                success: function (resp) {
-                    
-                    $('#count_open_milestones').text("completed_count");
-                    $('#count_onhold_milestones').text("completed_count");
-                    $('.close-dialog').click();
-                    $('#onholdMilestonePane').html(resp);
-                }
-            });
+                    url: "{% url 'checkMilestoneStatus' %}",
+                    data: {
+                        status_id: status
+                    },
+                    dataType: 'json',
+                    cache: false,
+                    success: function(data){
+                        var statusName = data.status_name;
+                        url_data = "{% url 'saveupdateProjectMilestone' 999%}".replace(999, milestone_val);
+
+                        if(statusName === "Open") {
+                            $.ajax({
+                                type: "GET",
+                                cache: false,
+                                data: {
+                                    name: name,
+                                    status: status,
+                                    startdate: startdate,
+                                    enddate: enddate,
+                                    actual_startdate: actual_startdate,
+                                    actual_enddate: actual_enddate,
+                                    description: description,
+                                    project_id: project_id
+                                    
+                                },
+                                url: url_data,
+                                success: function (resp) {
+                                    $('.close-dialog').click(); 
+                                    $('#openMilestonePane').html(resp);
+                                }
+                            });
+                            return true;
+                        }
+                        else{
+                            $.ajax({
+                                type: "GET",
+                                cache: false,
+                                data: {
+                                    name: name,
+                                    status: status,
+                                    startdate: startdate,
+                                    enddate: enddate,
+                                    actual_startdate: actual_startdate,
+                                    actual_enddate: actual_enddate,
+                                    description: description,
+                                    project_id: project_id  
+                                },
+                                url: url_data,
+                                success: function(resp) {
+                                    $('.close-dialog').click(); 
+                                    
+                                    $("#onholdMilestonePane").html(resp);
+
+                                    $.ajax({
+                                        type:"GET",
+                                        cache: false,
+                                        data:{
+                                            project_id:project_id,
+                                        },
+                                        dataType: 'json',
+                                        url: "{% url 'milestoneCount' %}",
+                                        success: function(data){
+                                            $("#count_open_milestones").text(data.open_count);
+                                            $("#count_onhold_milestones").text(data.onhold_count);
+                                            $("#count_terminated_milestones").text(data.terminated_count);
+                                            $("#count_completed_milestones").text(data.completed_count);  
+
+                                            $.ajax({
+                                                type:"GET",
+                                                cache: false,
+                                                data:{
+                                                    project_id:project_id,
+                                                },
+                                                url: "{% url 'openMilestones' %}",
+                                                success: function(resp){
+                                                    $('#openMilestonePane').html(resp);                                                 
+                                                }
+                                            });                                       
+                                        }
+                                    });
+                                      
+                                }
+                            });
+                            return true;
+                        }
+                    }
+                });
             
             return true;
         }

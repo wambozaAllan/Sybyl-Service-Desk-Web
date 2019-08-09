@@ -472,3 +472,18 @@ class EscalationLevel(models.Model):
     escalation_on = models.IntegerField(default=1)
     TIME_CHOICES = (('1', 'Days'), ('2', 'Weeks'), ('3', 'Months'))
     escalation_on_duration = models.CharField(max_length=255, choices=TIME_CHOICES, default='Days')
+
+
+class Timesheet(models.Model):
+    task_day = models.DateTimeField()
+    start_time = models.TimeField()
+    end_time = models.TimeField()
+    notes = RichTextField(blank=True, null=True)
+    added_by = models.ForeignKey(User, on_delete=models.CASCADE, related_name='added_by')
+    approved = models.BooleanField(default=False)
+    approved_by = models.ForeignKey(User, on_delete=models.CASCADE, related_name='approved_by', blank=True, null=True)
+    date_approved = models.DateTimeField(auto_now=True, blank=True, null=True)
+    created_time = models.DateTimeField(auto_now_add=True)
+
+
+

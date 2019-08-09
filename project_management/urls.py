@@ -32,15 +32,24 @@ urlpatterns = [
     path('saveMilestone', views.save_milestone, name='saveMilestone'),
     path('validateMilestoneName', views.validateMilestoneName, name='validateMilestoneName'),
     path('updateProjectMilestone/<int:pk>', views.UpdateProjectMilestone.as_view(), name='updateProjectMilestone'),
+    path('updateOpenMilestone/<int:pk>', views.UpdateOpenMilestone.as_view(), name='updateOpenMilestone'),
+    path('updateOnholdMilestone/<int:pk>', views.UpdateOnholdMilestone.as_view(), name='updateOnholdMilestone'),
+    path('updateTerminatedMilestone/<int:pk>', views.UpdateTerminatedMilestone.as_view(), name='updateTerminatedMilestone'),
+    path('updateCompletedMilestone/<int:pk>', views.UpdateCompletedMilestone.as_view(), name='updateCompletedMilestone'),
     path('detailsProjectMilestone/<int:pk>', views.DetailsProjectMilestone.as_view(), name='detailsProjectMilestone'),
     path('checkMilestoneStatus/', views.check_milestone_status, name='checkMilestoneStatus'),
     path('deleteProjectMilestone/', views.delete_project_milestone, name='deleteProjectMilestone'),
     path('onholdMilestones/', views.onhold_project_milestones, name='onholdMilestones'),
+    path('openMilestones/', views.open_milestones, name='openMilestones'),
     path('terminatedMilestones/', views.terminated_project_milestones, name='terminatedMilestones'),
     path('completedMilestones/', views.completed_project_milestones, name='completedMilestones'),
+    path('saveupdateProjectMilestone/<int:pk>', views.save_update_milestone, name='saveupdateProjectMilestone'),
+    path('milestoneCount/', views.milestone_count, name='milestoneCount'),
+    
+
   
     path('populateTaskView', views.populate_task_view, name='populateTaskView'),    
-    # path('populateStatusMilestone', views.populate_status_milestone, name='populateStatusMilestone'),
+
 
     path('tasks/', views.TaskListView.as_view(), name='listTasks'),
     path('tasks/', views.TaskListView.as_view(), name='task_list'),
@@ -50,7 +59,6 @@ urlpatterns = [
     path('tasks/new/', views.TaskCreateView.as_view(), name='new_task'),
     path('task-update/<int:pk>/', views.TaskUpdateView.as_view(), name='update_task'),
     path('listProjectTasks', views.tasklist_by_project, name='listProjectTasks'),
-    # path('addProjectTasks', views.add_project_tasks, name='addProjectTasks'),
     path('validateTaskName/', views.validateTaskName, name='validateTaskName'),
     path('saveProjectTask', views.save_project_tasks, name='saveProjectTask'),
     path('milestoneTasks', views.view_tasks_under_milestone, name='milestoneTasks'),
@@ -60,9 +68,17 @@ urlpatterns = [
     path('updateProjectTask/<int:pk>', views.UpdateProjectTask.as_view(), name='updateProjectTask'),
     path('updateMilestoneTask/<int:pk>', views.UpdateMilestoneTask.as_view(), name='updateMilestoneTask'),
     path('detailsProjectTask/<int:pk>', views.DetailsProjectTask.as_view(), name='detailsProjectTask'),
+    path('deleteTask/', views.delete_task, name='deleteTask'),
+    path('openTasks/', views.open_project_tasks, name="openTasks"),
     path('onholdTasks/', views.onhold_tasks, name="onholdTasks"),
     path('terminatedTasks/', views.terminated_tasks, name="terminatedTasks"),
     path('completedTasks/', views.completed_tasks, name="completedTasks"),
+    path('updateOpenTask/<int:pk>', views.UpdateOpenTask.as_view(), name='updateOpenTask'),
+    path('updateCompletedTask/<int:pk>', views.UpdateCompletedTask.as_view(), name='updateCompletedTask'),
+    path('updateOnholdTask/<int:pk>', views.UpdateOnholdTask.as_view(), name='updateOnholdTask'),
+    path('updateTerminatedTask/<int:pk>', views.UpdateTerminatedTask.as_view(), name='updateTerminatedTask'),
+    path('saveupdateProjectTask/<int:pk>', views.save_update_task, name='saveupdateProjectTask'),
+    path('taskCount/', views.task_count, name='taskCount'),
 
     path('addIncident/', views.AddIncident.as_view(), name='addIncident'),
     path('addProjectIncident/', views.AddProjectIncident.as_view(), name='addProjectIncident'),
@@ -77,7 +93,8 @@ urlpatterns = [
     path('onholdIncidents/', views.onhold_project_incidents, name="onholdIncidents"),
     path('terminatedIncidents/', views.terminated_project_incidents, name="terminatedIncidents"),
     path('completedIncidents/', views.completed_project_incidents, name="completedIncidents"),
-
+    path('validateIncidentName/', views.validate_incident_name, name="validateIncidentName"),
+    
     path('listAllPriorities/', views.ListAllPriorities.as_view(), name='listAllPriorities'),
     path('addPriority/', views.AddPriority.as_view(), name='addPriority'),
     path('updatePriority/<int:pk>/', views.UpdatePriority.as_view(), name='updatePriority'),
@@ -112,6 +129,7 @@ urlpatterns = [
     path('deleteProjectTeamMember/', views.remove_project_team_member, name='deleteProjectTeamMember'),
     path('validateProjectTeamAssigned/', views.validateProjectTeamAssigned, name='validateProjectTeamAssigned'),
     path('saveTeamMember/', views.save_team_member, name='saveTeamMember'),
+    path('saveupdateTeamMember/<int:pk>', views.save_update_team_member, name='saveupdateTeamMember'),
 
     path('listAllRoles/', views.ListAllRoles.as_view(), name='listAllRoles'),
     path('addRole/', views.AddRole.as_view(), name='addRole'),
@@ -121,7 +139,6 @@ urlpatterns = [
 
     path('getTeamMembers/', views.get_team_members, name='getTeamMembers'),
     path('setColorCode/', views.set_priority_color_code, name='setColorCode'),
-    path('changeIncidentStatus/<int:pk>', views.change_status_on_task, name='changeIncidentStatus'),
 
     path('projectForum/', views.project_forum, name='tabProjectForum'),
     path('createForum/', views.create_project_forum, name='createProjectForum'),
@@ -151,4 +168,5 @@ urlpatterns = [
     path('auditlogsfilter/', views.filter_audit_logs, name='auditlogsfilter'),
     path('auditlogsfilter2/', views.all_companies_filter_auditlogs, name='auditlogsfilterallcomp'),
     path('manageSLAEscalations/', views.manage_sla_esclations, name='manageSLAEscalations'),
+    path('myTimesheets/', views.daily_timesheets_pane, name='myTimesheets'),
 ]

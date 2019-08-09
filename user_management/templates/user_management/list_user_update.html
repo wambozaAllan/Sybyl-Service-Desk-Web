@@ -61,9 +61,9 @@
                                             class="badge badge-secondary"><strong>Normal User</strong></span>
                                     </td>
                                 {% endif %}
-                                {% if userdetails.group %}
+                                {% if userdetails.groups.all.0.name %}
                                     <td class="text-center"><span
-                                            class="badge badge-success"><strong>{{ userdetails.group }}</strong></span>
+                                            class="badge badge-success"><strong>{{ userdetails.groups.all.0.name }}</strong></span>
                                     </td>
                                 {% else %}
                                     <td class="text-center"><span
@@ -72,12 +72,12 @@
                                 {% endif %}
                                 <td>
                                     {% if userdetails.last_login %}
-                                        <a href="#!" class="isDisabled">Resend-Email</a>
+                                        <a href="#!" class="isDisabled btn btn-outline-success btn-sm"><i title="Resend-Email" class="fa fa-share"></i></a>
                                     {% else %}
-                                        <a href="#!" onclick="functionResendEmail({{userdetails.pk}}, '{{ userdetails.username}}', '{{ userdetails.email}}', '{{userdetails.first_name}}', '{{ userdetails.last_name}}')">Resend-Email</a>
+                                        <a class="btn btn-outline-success btn-sm"href="#!" onclick="functionResendEmail({{userdetails.pk}}, '{{ userdetails.username}}', '{{ userdetails.email}}', '{{userdetails.first_name}}', '{{ userdetails.last_name}}')"><i title="Resend-Email" class="fa fa-share"></i></a>
                                     {% endif %}
-                                    <a href="{% url 'detailsUser' userdetails.id %}">View</a>
-                                    <a href="{% url 'updateUser' userdetails.id %}">Update</a>
+                                    <a class="btn btn-outline-success btn-sm" href="{% url 'detailsUser' userdetails.id %}"><i title="View" class="fa fa-dedent"></i></a>
+                                    <a class="btn btn-outline-success btn-sm" href="{% url 'updateUser' userdetails.id %}"><i title="Update" class="fa fa-edit"></i></a>
                                 </td>
                             </tr>
                             {% endfor %}
