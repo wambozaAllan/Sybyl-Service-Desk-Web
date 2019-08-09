@@ -28,8 +28,21 @@
                         <span class="badge badge-pill badge-success">{{milestone.task_set.count}}</span>
                     </a>
                 </td>
-                <td>{{ milestone.startdate }}</td>
-                <td style="color: #FF6347;">{{ milestone.enddate }}</td>
+
+                {% if milestone.startdate == None %}
+                    <td style="color:#99abb4;">Not set</td>
+                {% else %}
+                    <td>{{ milestone.startdate }}</td>
+                {% endif %}
+
+                {% if milestone.enddate == None %}
+                    <td style="color:#99abb4;">Not set</td>
+                {% elif milestone.enddate|date:"m d, Y" < today or milestone.enddate|date:"m d, Y" == today%}
+                    <td style="color:red;">{{ milestone.enddate }}</td>
+                {% else %}
+                    <td style="color:#99abb4;">{{ milestone.enddate }}</td>
+                {% endif %}
+
                 <td>{{ milestone.status }}</td>
 
                 <td class="text-center">

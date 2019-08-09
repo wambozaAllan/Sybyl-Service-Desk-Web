@@ -61,9 +61,9 @@
                                             class="badge badge-secondary"><strong>Normal User</strong></span>
                                     </td>
                                 {% endif %}
-                                {% if userdetails.group %}
+                                {% if userdetails.groups.all.0.name %}
                                     <td class="text-center"><span
-                                            class="badge badge-success"><strong>{{ userdetails.group }}</strong></span>
+                                            class="badge badge-success"><strong>{{ userdetails.groups.all.0.name }}</strong></span>
                                     </td>
                                 {% else %}
                                     <td class="text-center"><span

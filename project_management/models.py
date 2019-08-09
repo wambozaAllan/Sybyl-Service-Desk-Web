@@ -71,8 +71,8 @@ class Project(models.Model):
 
     @property
     def completion(self):
-        status_complete = Status.objects.get(id=4)
-        status_terminate = Status.objects.get(id=3)
+        status_complete = Status.objects.get(name="Completed")
+        status_terminate = Status.objects.get(name="Terminated")
         
         terminated_milestones = Milestone.objects.filter(project_id=self.id, status=status_terminate.id).count()
         completed_milestones = Milestone.objects.filter(project_id=self.id, status=status_complete.id).count()
@@ -87,8 +87,8 @@ class Project(models.Model):
     
     @property
     def task_completion(self):
-        status_complete = Status.objects.get(id=4)
-        status_terminate = Status.objects.get(id=3)
+        status_complete = Status.objects.get(name="Completed")
+        status_terminate = Status.objects.get(name="Terminated")
 
         terminated_tasks = Task.objects.filter(project_id=self.id, status=status_terminate.id).count()
         tasks_complete = Task.objects.filter(project_id=self.id, status=status_complete.id).count()
@@ -103,8 +103,8 @@ class Project(models.Model):
     
     @property
     def incident_completion(self):
-        status_complete = Status.objects.get(id=4)
-        status_terminate = Status.objects.get(id=3)
+        status_complete = Status.objects.get(name="Completed")
+        status_terminate = Status.objects.get(name="Terminated")
 
         incidents_terminated = Incident.objects.filter(project_id=self.id, status=status_terminate.id).count()
         incidents_complete = Incident.objects.filter(project_id=self.id, status=status_complete.id).count()
@@ -119,8 +119,8 @@ class Project(models.Model):
     
     @property
     def milestone_count(self):
-        status_complete = Status.objects.get(id=4)
-        status_terminate = Status.objects.get(id=3)
+        status_complete = Status.objects.get(name="Completed")
+        status_terminate = Status.objects.get(name="Terminated")
 
         milestones_terminate = Milestone.objects.filter(project_id=self.id, status=status_terminate.id).count()
         milestones_complete = Milestone.objects.filter(project_id=self.id, status=status_complete.id).count()
@@ -133,8 +133,8 @@ class Project(models.Model):
     
     @property
     def task_count(self):
-        status_complete = Status.objects.get(id=4)
-        status_terminate = Status.objects.get(id=3)
+        status_complete = Status.objects.get(name="Completed")
+        status_terminate = Status.objects.get(name="Terminated")
 
         tasks_terminate = Task.objects.filter(project_id=self.id, status=status_terminate.id).count()
         tasks_completed = Task.objects.filter(project_id=self.id, status=status_complete.id).count()
@@ -147,8 +147,8 @@ class Project(models.Model):
     
     @property
     def incident_count(self):
-        status_complete = Status.objects.get(id=4)
-        status_terminate = Status.objects.get(id=3)
+        status_complete = Status.objects.get(name="Completed")
+        status_terminate = Status.objects.get(name="Terminated")
 
         incidents_terminate = Incident.objects.filter(project_id=self.id, status=status_terminate.id).count()
         incidents_complete = Incident.objects.filter(project_id=self.id, status=status_complete.id).count()
@@ -232,8 +232,8 @@ class Milestone(models.Model):
 
     @property
     def completion(self):
-        status_complete = Status.objects.get(id=4)
-        status_terminate = Status.objects.get(id=3)
+        status_complete = Status.objects.get(name="Completed")
+        status_terminate = Status.objects.get(name="Terminated")
 
         task_terminate = Task.objects.filter(milestone_id=self.id, status=status_terminate.id).count()
         task_complete = Task.objects.filter(milestone_id=self.id, status=status_complete.id).count()
@@ -276,7 +276,7 @@ class Task(models.Model):
     milestone = models.ForeignKey(Milestone, on_delete=models.SET_NULL, null=True, blank=True)
     status = models.ForeignKey(Status, on_delete=models.SET_NULL, null=True, blank=True)
     creator = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, blank=True, related_name='task_creator')
-    assigned_to = models.ForeignKey(ProjectTeamMember, on_delete=models.SET_NULL, null=True, blank=True)
+    assigned_to = models.ManyToManyField(ProjectTeamMember, null=True, blank=True)
     start_date = models.DateField(null=True, blank=True)
     end_date = models.DateField(null=True, blank=True)
     actual_start_date = models.DateField(null=True, blank=True)
