@@ -183,3 +183,10 @@ class EscalationLevelForm(forms.ModelForm):
         fields = ('name', 'project','description', 'escalated_by', 'escalated_to', 
                     'escalation_on', 'escalation_on_duration',)
         widgets = {'name': forms.TextInput(attrs={'class': 'form-control input-flat'})}
+
+
+class ProjectTeamForm(forms.ModelForm):
+    class Meta:
+        model = ProjectTeam
+        fields = ('name', 'project',)
+        

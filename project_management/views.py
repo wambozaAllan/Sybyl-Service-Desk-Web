@@ -26,7 +26,7 @@ from django.contrib.auth.decorators import user_passes_test, permission_required
 from .models import Project, Milestone, Task, ProjectDocument, Incident, Priority, Status, ProjectTeam, ProjectTeamMember, Role, ProjectForumMessages, ProjectForum, ProjectForumMessageReplies, ServiceLevelAgreement, IncidentComment, EscalationLevel, IncidentComment
 from user_management.models import User
 from company_management.models import Company, CompanyCategory, CompanyDomain
-from .forms import CreateProjectForm, MilestoneForm, TaskForm, DocumentForm, ProjectUpdateForm, MilestoneUpdateForm, ProjectForm, IncidentForm
+from .forms import CreateProjectForm, MilestoneForm, TaskForm, DocumentForm, ProjectUpdateForm, MilestoneUpdateForm, ProjectForm, IncidentForm, ProjectTeamForm
 from django.contrib.auth.mixins import PermissionRequiredMixin
 from django.http import JsonResponse
 from django.db.models import Count
@@ -3139,6 +3139,13 @@ def list_project_team(request):
     return render(request, 'project_management/project_team.html', context=None)
 
 
+class AdminAddProjectTeam(CreateView):
+    model = ProjectTeam
+    fields = ['name', 'project']
+    template_name = 'project_management/add_project_team.html'
+    success_url = reverse_lazy('listProjectTeams')
+
+
 class ListProjectTeams(ListView):
     template_name = 'project_management/list_project_teams.html'
     context_object_name = 'project_teams'
@@ -3151,7 +3158,7 @@ class UpdateProjectTeam(UpdateView):
     model = ProjectTeam
     fields = ['name', 'project']
     template_name = 'project_management/update_project_team.html'
-    success_url = reverse_lazy('listProjects')
+    success_url = reverse_lazy('listProjectTeams')
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -3213,6 +3220,24 @@ def add_project_team_member(request):
     return HttpResponse(template.render(context, request))
 
 
+def admin_add_project_team_member(request):
+    team_id = request.GET.get('team_id')
+    team_name = request.GET.get('team_name')
+    project_id = request.GET.get('project_id')
+    project_name = request.GET.get('project_name')
+    
+    
+    template = loader.get_template('project_management/add_project_team_member.html')
+    context = {
+        'team_name': team_name,
+        'team_id': team_id,
+        'project_id': project_id,
+        'project_name': project_name
+    }
+
+    return HttpResponse(template.render(context, request))
+
+
 def save_team_member(request):
     team_id = request.GET.get('project_team')
     member = request.GET.get('member')
@@ -3236,16 +3261,6 @@ def save_team_member(request):
     return JsonResponse(response_data)
     
 
-class AddProjectTeamMember(CreateView):
-    """
-    admin view for adding project team member
-    """
-    model = ProjectTeamMember
-    template_name = 'project_management/add_project_team_member.html'
-    fields = ['member', 'project_team', 'responsibility']
-    success_url = reverse_lazy('listProjectTeams')
-
-
 class ListProjectTeamMembers(ListView):
     template_name = 'project_management/list_project_teams.html'
     context_object_name = 'project_teams'
@@ -3265,10 +3280,35 @@ class UpdateProjectTeamMember(UpdateView):
         member_id = self.request.GET.get('memberid')
         context['member_id'] = member_id
 
-        project_id = int(self.request.GET['project_id'])
+        project_id = int(self.request.GET.get('project_id'))
         project = Project.objects.get(id=project_id)
         context['project_id'] = project.id
          
+        return context
+
+
+class AdminUpdateProjectTeamMember(UpdateView):
+    """update project team member by admin"""
+
+    model = ProjectTeamMember
+    fields = ['responsibility']
+    template_name = 'project_management/admin_update_project_member.html'
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        member_id = self.request.GET.get('memberid')
+        context['member_id'] = member_id
+
+        project_id = int(self.request.GET.get('project_id'))
+        project = Project.objects.get(id=project_id)
+        context['project_id'] = project.id
+
+        team_name = self.request.GET.get('team_name')
+        team_id = int(self.request.GET.get('team_id'))
+        team = ProjectTeam.objects.get(id=team_id)
+        context['team_id'] = team.id
+        context['team_name'] = team.name
+        
         return context
 
 
@@ -3285,6 +3325,21 @@ def detail_team_member(request):
     }
 
     return render(request, 'project_management/details_team_member.html', context)
+
+
+def admin_detail_team_member(request):
+    team_id = request.GET.get('tid')
+    team_name = request.GET.get('teamName')
+    
+    team_members = ProjectTeamMember.objects.filter(project_team=int(team_id))
+    team = ProjectTeam.objects.get(id=team_id)
+
+    context = {
+        'team_member': team_members,
+        'team': team
+    }
+
+    return render(request, 'project_management/admin_details_team_member.html', context)
 
 
 def validateProjectTeamAssigned(request):
@@ -3335,12 +3390,11 @@ def save_update_team_member(request, pk):
 
     ProjectTeamMember.objects.filter(pk=int(pk)).update(responsibility_id=responsibility_id)
 
-    template = loader.get_template('project_management/project_team.html')
-    context = {
-        'project_id': project_id,
-    } 
+    response_data = {
+        "success": True
+    }
 
-    return HttpResponse(template.render(context, request))
+    return JsonResponse(response_data)
 
 
 def remove_project_team_member(request):

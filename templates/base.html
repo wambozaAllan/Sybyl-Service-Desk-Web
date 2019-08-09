@@ -1015,8 +1015,10 @@
         }
 
         function deleteProjectTeam(teamId, teamName, teamMembers) {
+            var members = parseInt(teamMembers, 10);
+
             urldata = "{% url 'deleteProjectTeam' 999%}".replace(999, teamId);
-            if (teamMembers === 0) {
+            if (members === 0) {
                 $.confirm({
                     title: '<h4>Delete ProjectTeam: <strong class="text-danger">' + teamName + ' </strong>!</h4>',
                     content: '',
@@ -1296,7 +1298,8 @@
         }
 
         function viewTeamMembers(team_id, teamName) {
-            urldata = "{% url 'detailProjectTeamMembers'%}";
+
+            urldata = "{% url 'adminDetailProjectTeamMembers'%}";
 
             $.ajax({
                 type: "GET",
@@ -1307,19 +1310,22 @@
                 },
                 url: urldata,
                 success: function (resp) {
-                    $('.page-wrapper').html(resp);
+                    $('.list-all-teams').html(resp);
                 }
             });
         }
 
-        function editProjectTeamMember(memberid, memberName) {
+        function editProjectTeamMember(memberid, memberName, project_id, team_id, team_name ) {
 
-            urldata = "{% url 'updateProjectTeamMember' 999%}".replace(999, memberid);
+            urldata = "{% url 'adminUpdateProjectTeamMember' 999%}".replace(999, memberid);
             $.ajax({
                 type: "GET",
                 cache: false,
                 data: {
-                    memberid: memberid
+                    memberid: memberid,
+                    project_id: project_id,
+                    team_id: team_id,
+                    team_name: team_name
                 },
                 url: urldata,
                 success: function (resp) {
@@ -1336,7 +1342,7 @@
                         buttons: {
                             close: {
                                 text: 'Close',
-                                btnClass: 'btn-gray',
+                                btnClass: 'btn-gray close-dialog',
                                 action: function () {
                                 }
                             }
