@@ -1,33 +1,46 @@
-<!-- {% load crispy_forms_tags %}
+{% load crispy_forms_tags %}
 
 <div class="card-body">
     <div class="basic-form">
-        <form class="form-horizontal" action="" method="post" enctype="multipart/form-data">
+        <form class="form-horizontal" action="{% url 'adminAddProjectTeam' %}" method="post" enctype="multipart/form-data">
             {% csrf_token %}
-
-            <div class="row col-12">
-                <div class="col-6">
-                    {{ form.name|as_crispy_field }}
-                    <medium id="validate_team_name" class="text-muted hidden">
-                        <font color="red">
-                            Team name already created
-                        </font>
-                    </medium>
+            <div class="col-12">
+                <div class="row">
+                    <div class="col-8">
+                        {{ form.project|as_crispy_field }}
+                        <medium id="validate_project_name" class="text-muted hidden">
+                            <font color="red">
+                                Project already assigned Team
+                            </font>
+                        </medium>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-8">
+                        {{ form.name|as_crispy_field }}
+                        <medium id="validate_team_name" class="text-muted hidden">
+                            <font color="red">
+                                Team name already created
+                            </font>
+                        </medium>
+                    </div>
+                </div>
+                
+                <div class="row">
+                    <div class="col-8">
+                        <button id="btnAddProjectTeam" class=" col-md-8 btn btn-success pull-right">
+                            <i class="fa fa-fw fa-lg fa-save"></i>Save
+                        </button>
+                    </div>
                 </div>
             </div>
-d
-            <div class="row col-12">
-                <div class="col-6">
-                    <button id="btnAddProjectTeam" class="btn btn-success pull-right">
-                        <i class="fa fa-fw fa-lg fa-save"></i>Save
-                    </button>
-                </div>
-            </div>
+            
         </form>
     </div>
 </div>
 
 <script>
+    $("#div_id_project").removeClass("form-group");
     $("#id_name").attr("placeholder", "Enter Project Team Name");
 
     $("#id_name").attr('autocomplete', 'off');
@@ -45,10 +58,13 @@ d
                 if (data.is_taken) {
                     $("#validate_team_name").show();
                     document.getElementById('id_name').style.borderColor = "red";
+                    document.getElementById("validate_project_name").show();
+                    
                     document.getElementById("btnAddProjectTeam").disabled = true;
                 } else {
                     $("#validate_team_name").hide();
                     document.getElementById('id_name').style.borderColor = "#e7e7e7";
+                    document.getElementById("validate_project_name").hide();
                     document.getElementById("btnAddProjectTeam").disabled = false;
                 }
             }
@@ -86,4 +102,8 @@ d
         });
     });
 
-</script> -->
+    $(function(){
+        $('#id_project').css({ "border": '1px solid #ced4da'}); 
+    });
+
+</script>

@@ -123,6 +123,7 @@ urlpatterns = [
     path('uploadDocument/', views.UploadDocument.as_view(), name="uploadDocument" ),
 
     path('addProjectTeam/', views.add_project_team, name='addProjectTeam'),
+    path('adminAddProjectTeam/', views.AdminAddProjectTeam.as_view(), name='adminAddProjectTeam'),
     path('listProjectTeams/', views.ListProjectTeams.as_view(), name='listProjectTeams'),
     path('updateProjectTeam/<int:pk>', views.UpdateProjectTeam.as_view(), name='updateProjectTeam'),
     path('deleteProjectTeam/<int:pk>', views.DeleteProjectTeam.as_view(), name='deleteProjectTeam'),
@@ -130,10 +131,12 @@ urlpatterns = [
     path('validateProjectAssigned/', views.validateProjectAssigned, name='validateProjectAssigned'),
 
     path('addProjectTeamMember/', views.add_project_team_member, name='addProjectTeamMember'),
-    path('adminAddProjectTeamMember/', views.AddProjectTeamMember.as_view(), name='adminAddProjectTeamMember'),
+    path('adminAddProjectTeamMember/', views.admin_add_project_team_member, name='adminAddProjectTeamMember'),
     path('listProjectTeamMembers/', views.ListProjectTeamMembers.as_view(), name='listProjectTeamMembers'),
     path('updateProjectTeamMember/<int:pk>', views.UpdateProjectTeamMember.as_view(), name='updateProjectTeamMember'),
+    path('adminUpdateProjectTeamMember/<int:pk>', views.AdminUpdateProjectTeamMember.as_view(), name='adminUpdateProjectTeamMember'),
     path('detailProjectTeamMembers/', views.detail_team_member, name='detailProjectTeamMembers'),
+    path('adminDetailProjectTeamMembers/', views.admin_detail_team_member, name='adminDetailProjectTeamMembers'),
     path('deleteProjectTeamMember/', views.remove_project_team_member, name='deleteProjectTeamMember'),
     path('validateProjectTeamAssigned/', views.validateProjectTeamAssigned, name='validateProjectTeamAssigned'),
     path('saveTeamMember/', views.save_team_member, name='saveTeamMember'),

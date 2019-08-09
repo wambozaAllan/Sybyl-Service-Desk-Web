@@ -1,81 +1,183 @@
 {% load crispy_forms_tags %}
+<div>
+    <input type="text" value="{{project_id}}" style="display: none;" id='id_project'/>
+</div>
 <div class="card-body">
     <div class="basic-form">
-        <form class="form-horizontal" action="{% url 'adminAddProjectTeamMember' %}" method="post" enctype="multipart/form-data">
+        <form class="form-horizontal" method='GET' id="teamForm">
             {% csrf_token %}
+
             <div class="row col-12">
                 <div class="col-12">
-                    {{form.project_team|as_crispy_field}}
+                    <label class="col-form-label  requiredField">Project Team<span
+                        class="asteriskField">*</span></label>
+                    <div class="" >
+                        <input type="text" value="{{team_name}}" id='id_project_team' class="form-control" name="member"/>
+                        <input type="text" value="{{team_id}}" id='id_project_team_id' class="form-control" name="member" style="display: none;"/>
+                    </div> 
                 </div>
+                <br>
                 <div class="col-12">
-                    {{ form.member|as_crispy_field }}
-                    <medium id="validate_member_name" class="text-muted hidden">
-                        <font color="red">
-                            Member already added to team
-                        </font>
-                    </medium>
+                    <label class="col-form-label  requiredField">Member<span
+                        class="asteriskField">*</span></label>
+                    <div class="">
+                        <select id='id_member' required class="select form-control" name="member"></select>
+                    </div> 
                 </div>
-                <div class="col-12">{{form.responsibility | as_crispy_field}}</div>
-            </div>
-            <div>
-                <div class="col-md-12">
-                    <button id="btnAddProjectMember" class="btn btn-success pull-right">
-                        <i class="fa fa-fw fa-lg fa-save"></i>Save
-                    </button>
+                <br>
+                <div class="col-12">
+                    <label class="col-form-label  requiredField">Responsibility<span
+                        class="asteriskField">*</span></label>
+                    <div class="">
+                        <select id='id_responsibility' class="select form-control" name="responsibility" required></select>
+                    </div> 
+                </div>
+                <br>
+                <div class="col-12" style="display: none;">
+                        <input id="id_project" type="hidden" value="{{ project_id }}"/>
+                        <input id="team_id" type="hidden" value="{{ team_id }}"/>
+                        <input id="project_name" type="hidden" value="{{ project_name }}"/>
+                        <input id="team_name" type="hidden" value="{{ team_name }}"/>
                 </div>
             </div>
+            
+            <!-- <div class="col-md-6"> -->
+                <button id="id_btnAddProjectMember" class="btn btn-success pull-right" >
+                    <i class="fa fa-fw fa-lg fa-save"></i>Add Member
+                </button>
+            <!-- </div> -->
+            
 
         </form>
     </div>
 </div>
 
 <script>
-    $('#id_member').html("");
-    $('#id_project_team').prop("selectedIndex", -1);
-    $("#id_project_team").removeAttr("multiple", "");
-
-    // $('#id_project_team').attr('data-live-search', "true");
-    // $('#id_project_team').selectpicker({
-    //     size: 3
-    // });
     
-    // member    
+    $('#id_project_team').attr( 'readOnly' , 'true' );
+
+    // member  
+    $('#id_member').html("");  
     $('#id_member').attr('data-live-search', "true"); 
     $('#id_member').selectpicker({
         size: 3
     });
+
     // responsibility
     $('#id_responsibility').attr('data-live-search', "true"); 
     $('#id_responsibility').selectpicker({
         size: 3
     });
-    $("#id_project_team").prop("selectedIndex", -1);
-    $("#id_project_team").prepend('<option value="-1"> -----Select Team----- </option>');
-    $("#id_project_team").selectpicker('refresh');
-    // on selecting project team
-    $('#id_project_team').on('change', function () {
-    
-        var projectTeam = $(this).val();
+
+  
+    // on load function for project team addition
+    $(function(){
+        var projectTeam = $('#id_project_team_id').val();
+
         $.ajax({
-            url: "{% url 'validateProjectTeamAssigned' %}",
+            url: '{% url 'validateProjectTeamAssigned' %}',
+
             data: {
                project_team: projectTeam
             },
             dataType: 'json',
             success: function (data) {
-                var newData = JSON.parse(data.users);
-                console.log(newData);
+
+                let newData = JSON.parse(data.users);
+                
                 let actual = '';
                 $("#id_member").html("");
-                $("#id_member").prepend('<option value="-1"> -----Select Member----- </option>');
+                $("#id_member").prepend('<option value=""> -----Select Member----- </option>');
                 for(i=0; i<newData.length; i++){
                     actual = newData[i];
                     
                     $('#id_member').append('<option value="' + actual["pk"] + '">' + actual["fields"]["first_name"] + " " + actual["fields"]["last_name"] + '</option>');
                     $("#id_member").selectpicker('refresh');
                 }
+
+                let newRoles = JSON.parse(data.roles);
+                
+                let assign = '';
+                $("#id_responsibility").html("");
+                $("#id_responsibility").prepend('<option value=""> -----Select Responsibility----- </option>');
+                for(i=0; i<newRoles.length; i++){
+                    assign = newRoles[i];
+                    
+                    $('#id_responsibility').append('<option value="' + assign["pk"] + '">' + assign["fields"]["name"] + '</option>');
+                    $("#id_responsibility").selectpicker('refresh');
+                }
                     
             }
         });
     });
+
+    $('#teamForm').on('submit', function(){
+        event.preventDefault();
+        saveMember();
+    })
+
+
+    // adding chosen member to team
+    function saveMember(){
+        let project_id = $('#id_project').val();
+        let team_id = $('#id_project_team_id').val();
+        let member = $('#id_member').val();
+        let responsibility = $('#id_responsibility').val();
+        let teamname = $('#id_project_team').val();
+
+        if (member != ""){
+            $.ajax({
+                url: "{% url 'saveTeamMember' %}",
+                data: {
+                    project_id: project_id,
+                    project_team: team_id,
+                    member: member, 
+                    responsibility: responsibility
+                },
+                cache:false,
+                dataType: 'json',
+                success: function (response_data) {
+                    $('.close-dialog').click();
+                    if (response_data.state === true){
+                        urldata = "{% url 'adminDetailProjectTeamMembers'%}";
+                        $.ajax({
+                            type: "GET",
+                            cache: false,
+                            data: {
+                                tid: team_id,
+                                teamName: teamname
+                            },
+                            url: urldata,
+                            success: function (resp) {
+                                $('.list-all-teams').html(resp);
+                            }
+                        });
+                        $.confirm({
+                            title: "Success",
+                            content: 'Member: ' +response_data.name + " " + response_data.success,
+                            type: 'blue',
+                            typeAnimated: true,
+                            boxWidth: '35%',
+                            useBootstrap: false,
+                            closeIcon: true,
+                                buttons: {
+                                    formSubmit: {
+                                        text: 'OK',
+                                        btnClass: 'btn-blue',
+                                        action: function () {
+                                               
+                                        }
+                                    }
+                                }
+                        }); 
+                    }
+                    
+                        
+                }
+            });
+        }
+            
+           
+    }
+
 </script>

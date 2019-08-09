@@ -124,10 +124,6 @@
         let member = $('#id_member').val();
         let responsibility = $('#id_responsibility').val();
 
-        console.log("responsibility is "+ responsibility);
-        console.log("member is "+member);
-        console.log("team_Id is "+team_id)
-
         if (member != ""){
             $.ajax({
                 url: "{% url 'saveTeamMember' %}",
@@ -177,8 +173,7 @@
                         
                 }
             });
-        }
-            
+        }        
            
     }
 
