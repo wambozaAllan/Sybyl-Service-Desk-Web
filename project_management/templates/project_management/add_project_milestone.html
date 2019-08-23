@@ -369,11 +369,13 @@
     
     $('#id_name').on('input', function () {
         var milestone_name = $(this).val().toUpperCase();
+        var project_id = $("#id_project").val();
 
         $.ajax({
             url: "{% url 'validateMilestoneName' %}",
             data: {
-                'milestoneName': milestone_name
+                'milestoneName': milestone_name,
+                project_id: project_id
             },
             dataType: 'json',
             success: function (data) {

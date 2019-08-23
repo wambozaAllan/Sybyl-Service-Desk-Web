@@ -85,7 +85,7 @@ class GroupExtend(models.Model):
     group = models.OneToOneField(Group, on_delete=models.CASCADE)
     description = models.CharField(max_length=255, blank=True)
     active = models.BooleanField(default=True)
-    created_by = models.ForeignKey(User, default=1, on_delete=models.CASCADE)
+    created_by = models.ForeignKey(User, on_delete=models.CASCADE)
 
     def get_permissions_count(self):
         return Permission.objects.filter(group=self.group).count()

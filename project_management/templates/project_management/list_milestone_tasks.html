@@ -261,6 +261,7 @@
             },
             success:function (resp) {
                 $('.task-milestone').html(resp);
+                $('#table_assigned_tasks').DataTable();
             }
         });
     }
