@@ -275,8 +275,11 @@ def populate_milestone_status(request):
 
 def validateMilestoneName(request):
     milestone_name = request.GET.get('milestoneName', None)
+    project_id = int(request.GET.get('project_id'))
+    project = Project.objects.get(id=project_id)
+
     data = {
-        'is_taken': Milestone.objects.filter(name=milestone_name).exists()
+        'is_taken': Milestone.objects.filter(name=milestone_name, project_id=project.id).exists()
     }
     return JsonResponse(data)
 
@@ -296,7 +299,7 @@ def save_milestone(request):
     """
     add milestone to database
     """
-    project_id = request.GET.get('project_id')
+    project_id = int(request.GET.get('project_id'))
     project_name = request.GET.get('project_name')
     name = request.GET.get('name')
     description = request.GET.get('description')
@@ -330,8 +333,10 @@ def save_milestone(request):
     else:
         actual_end = None
 
-    if Milestone.objects.filter(name=name).exists():
-        milestone = Milestone.objects.get(name=name)
+    project = Project.objects.get(id=project_id)
+
+    if Milestone.objects.filter(name=name, project_id=project.id).exists():
+        milestone = Milestone.objects.get(name=name, project_id=project.id)
         response_data = {
             'error': "Name exists",
             'name': milestone.name,
@@ -1178,7 +1183,7 @@ def save_milestone_tasks(request):
     actual_end = request.GET.get('actual_end')
     created_by = request.user.id
     assigned_to = json.loads(request.GET['assigned_to'])
-    print(assigned_to)
+
     response_data = {}
 
     if status_id == "":
@@ -1208,7 +1213,6 @@ def save_milestone_tasks(request):
         actual_end = datetime.datetime.strptime(actual_end, "%m/%d/%Y").strftime("%Y-%m-%d")
     
     project = Project.objects.get(id=project_id)
-    team = ProjectTeam.objects.get(project_id= project_id)
     
     milestone = Milestone.objects.get(id=milestone_id, project_id=project.id)
     
@@ -1223,9 +1227,11 @@ def save_milestone_tasks(request):
             if val == "":
                 project_member = None
             else:
-                val = int(val)   
-                project_member = ProjectTeamMember.objects.get(member_id=val, project_team=team)
-                task.assigned_to.add(project_member)
+                if ProjectTeam.objects.filter(project_id= project_id).exists():
+                    team = ProjectTeam.objects.get(project_id= project_id)
+                    val = int(val)   
+                    project_member = ProjectTeamMember.objects.get(member_id=val, project_team=team)
+                    task.assigned_to.add(project_member)
 
         response_data['success'] = "Task created successfully"
         response_data['name'] = task.name
@@ -1602,16 +1608,18 @@ def check_team_members(request):
     project_id = int(request.GET.get('project_id'))
     project = Project.objects.get(id=project_id)
 
-    team = ProjectTeam.objects.get(project_id=project.id)
-    project_team = team.id
-    team_members = ProjectTeamMember.objects.filter(project_team=project_team)
-    member_list = list(team_members)
-    state = True
+    if ProjectTeam.objects.filter(project_id=project.id).exists():
+        team = ProjectTeam.objects.get(project_id=project.id)
+        project_team = team.id
+        team_members = ProjectTeamMember.objects.filter(project_team=project_team)
+        member_list = list(team_members)  
 
-    if len(member_list) == 0:
-        state = False
+        if len(member_list) == 0:
+            state = False
+        else:
+            state = True
     else:
-        state = True
+        state = False
 
     data = {
         "state": state
@@ -1907,9 +1915,6 @@ def tasklist_by_project(request):
         }
 
     return HttpResponse(template.render(context, request))
-
-
-
 
 
 def open_project_tasks(request):

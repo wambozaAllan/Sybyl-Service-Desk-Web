@@ -259,6 +259,7 @@ def save_user_group(request):
     name = request.GET.get('name')
     desc = request.GET.get('desc')
     active = request.GET.get('active')
+    user_id = request.user.id
 
     group_obj = Group(name=name)
     group_obj.save()
@@ -266,10 +267,10 @@ def save_user_group(request):
     if group_obj.id != "":
         if desc != "":
             group_extend_obj = GroupExtend(
-                group_id=group_obj.id, description=desc, active=active)
+                group_id=group_obj.id, description=desc, active=active, created_by_id = user_id)
         else:
             group_extend_obj = GroupExtend(
-                group_id=group_obj.id, active=active)
+                group_id=group_obj.id, active=active, created_by_id = user_id)
         group_extend_obj.save()
 
     return HttpResponse(template.render(context, request))
@@ -285,6 +286,7 @@ def save_global_user_group(request):
     name = request.GET.get('name')
     desc = request.GET.get('desc')
     active = request.GET.get('active')
+    user_id = request.user.id
 
     group_obj = Group(name=name)
     group_obj.save()
@@ -292,10 +294,10 @@ def save_global_user_group(request):
     if group_obj.id != "":
         if desc != "":
             group_extend_obj = GroupExtend(
-                group_id=group_obj.id, description=desc, active=active)
+                group_id=group_obj.id, description=desc, active=active, created_by_id = user_id)
         else:
             group_extend_obj = GroupExtend(
-                group_id=group_obj.id, active=active)
+                group_id=group_obj.id, active=active, created_by_id = user_id)
         group_extend_obj.save()
 
     return HttpResponse(template.render(context, request))
@@ -311,6 +313,7 @@ def save_global_user_group(request):
     name = request.GET.get('name')
     desc = request.GET.get('desc')
     active = request.GET.get('active')
+    user_id = request.user.id
 
     group_obj = Group(name=name)
     group_obj.save()
@@ -318,10 +321,10 @@ def save_global_user_group(request):
     if group_obj.id != "":
         if desc != "":
             group_extend_obj = GroupExtend(
-                group_id=group_obj.id, description=desc, active=active)
+                group_id=group_obj.id, description=desc, active=active, created_by_id = user_id)
         else:
             group_extend_obj = GroupExtend(
-                group_id=group_obj.id, active=active)
+                group_id=group_obj.id, active=active, created_by_id = user_id)
         group_extend_obj.save()
 
     return HttpResponse(template.render(context, request))

@@ -51,22 +51,28 @@
             active = 0;
         }
 
-        $.ajax({
-            type: "GET",
-            cache: false,
-            data: {
-                name: name,
-                grpextid: grp_ext_id,
-                grpid: grp_id,
-                desc: description,
-                active: active
-            },
-            url: urldata,
-            success: function (resp) {
-                $('.close-dialog').click();
-                $('.table-responsive').html(resp);
+        if (name < 1) {
+            if (name < 1) {
+                $('#id_name2').css({ "border": '2px solid #00635a' });
             }
-        });
+        }else{
+            $.ajax({
+                type: "GET",
+                cache: false,
+                data: {
+                    name: name,
+                    grpextid: grp_ext_id,
+                    grpid: grp_id,
+                    desc: description,
+                    active: active
+                },
+                url: urldata,
+                success: function (resp) {
+                    $('.close-dialog').click();
+                    $('.table-responsive').html(resp);
+                }
+            });
+        }
 
     });
 </script>

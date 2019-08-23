@@ -46,7 +46,6 @@
             url: url_data,
             success: function (response_data) {
                 $('.close-dialog').click();
-                console.log(response_data);
                 if(response_data.success == true){
                     $.ajax({
                         type:"GET",
@@ -57,8 +56,11 @@
                         url: "{% url 'tabListTeam' %}",
                         success: function(resp){
                             $('.team-project').html(resp);
+                            $('#table_teams').DataTable();
                         }
                     });
+                    
+
                     $.confirm({
                         title: "Success",
                         content: 'Member role updated successfully ' ,
@@ -92,13 +94,9 @@
                             alert('Confirmed!');
                         }
                     });
-                }
-                
-
-                
+                }    
             }
         });
-
     });
 
 </script>
