@@ -49,9 +49,9 @@
                                                     <thead>
                                                     <tr>
                                                         <th>#</th>
+                                                        <th>User</th>
                                                         <th>Task</th>
                                                         <th>Log Date</th>
-                                                        <th>User</th>
                                                         <th>Date Created</th>
                                                         <th>Date Submitted</th>
                                                         <th class="text-left">Action</th>
@@ -62,8 +62,12 @@
                                                     {% for tm in timesheet_list %}
                                                         <tr>
                                                             <td>{{ forloop.counter }}</td>
+                                                            <td>
+                                                                <span class="badge badge-success">
+                                                                    <strong>{{ tm.project_team_member }}</strong>
+                                                                </span>
+                                                            </td>
                                                             <td>{{ tm.task }}</td>
-                                                            <td>{{ tm.project_team_member }}</td>
                                                             <td>{{ tm.log_day | date:"D, d M, Y"}}</td>
                                                             <td>{{tm.created_time | date:"D, d M, Y"}}</td>
                                                             <td>{{tm.date_submitted | date:"D, d M, Y"}}</td>
@@ -147,7 +151,7 @@
                         listTimesheetApproval = [];
                         $('.approve-time-sheet-pane').html(resp);
                         $(".timesheet-checkbox2").prop('checked', false);
-                        $('#table-appr-tm3').DataTable();
+                        $('#table-approvals').DataTable();
                     }
                 });
             } else {

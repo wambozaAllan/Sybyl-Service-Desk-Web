@@ -232,7 +232,8 @@
                                         },
                                         url: "{% url 'tabListTeam' %}",
                                         success: function(resp){
-                                            $('.team-project').html(resp);                                                    
+                                            $('.team-project').html(resp);   
+                                            $('#table_teams').DataTable();                                                 
                                         }
                                     });
                                     $.confirm({
@@ -254,6 +255,21 @@
                                             }
                                     }); 
                                     
+                                }
+                                else{
+                                    $.alert({
+                                        type: 'blue',
+                                        typeAnimated: true,
+                                        boxWidth: '40%',
+                                        useBootstrap: false,
+                                        theme: 'modern',
+                                        title: 'Alert!',
+                                        icon: 'fa fa-exclamation-circle',
+                                        content: 'Failed to update',
+                                        confirm: function () {
+                                            alert('Confirmed!');
+                                        }
+                                    });
                                 }
                             }
                         });

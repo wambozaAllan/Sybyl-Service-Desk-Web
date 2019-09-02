@@ -505,7 +505,8 @@
                             },
                             url: "{% url 'milestoneTasks' %}",
                             success: function(resp){
-                                $('.task-milestone').html(resp);                                                    
+                                $('.task-milestone').html(resp);  
+                                $('#table_tasks').DataTable();                                          
                             }
                         });
                         $.confirm({

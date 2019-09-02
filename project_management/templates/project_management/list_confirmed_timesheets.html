@@ -18,7 +18,11 @@
         {% for tm in timesheet_list %}
             <tr>
                 <td>{{ forloop.counter }}</td>
-                <td>{{ tm.project_team_member }}</td>
+                <td>
+                    <span class="badge badge-secondary">
+                        <strong>{{ tm.project_team_member }}</strong>
+                    </span>
+                </td>
                 <td>{{ tm.task }}</td>
                 {% if tm.status == 'ACCEPTED'%}
                     <td class="text-center">

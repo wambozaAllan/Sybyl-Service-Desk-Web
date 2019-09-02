@@ -1,0 +1,211 @@
+<!-- Bread crumb -->
+<div class="row page-titles">
+        <div class="col-md-5 align-self-center">
+            <h3 class="text-primary">Team Members</h3>
+        </div>
+        <div class="col-md-7 align-self-center">
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item"><a href="javascript:void(0)">Home</a></li>
+                <li class="breadcrumb-item"><a href="{% url 'listProjectTeams' %}">ProjectTeam</a></li>
+                <li class="breadcrumb-item active">Add Project Team Members</li>
+            </ol>
+        </div>
+    </div>
+    <!-- End Bread crumb -->
+    <!-- Container fluid  -->
+    <div class="container-fluid">
+        <!-- Start Page Content -->
+        <div class="row">
+            <div class="col-12">
+                <div class="card-body admin-view-members">
+                    <!-- <h4 class="card-title">Project Team Members</h4> -->
+                    <div class="row">
+                        <div class="col-md-12">
+                            <button id="" class="btn btn-info pull-right" onclick="addProjectTeamMember('{{ team.id }}', '{{ team.name }}', '{{ team.project.id }}', '{{team.project}}');">
+                                <i class="fa fa-fw fa-lg fa-plus"></i>Add Project Team Members
+                            </button>
+                        </div>
+                    </div>
+                    <div class="table-responsive">
+                        <large>{{ team.name }}</large>
+                        <table id="table_team_members" class="display nowrap table table-hover"
+                                cellspacing="0"
+                                width="100%">
+                            <thead>
+
+                            <tr>
+                                <th>#</th>
+                                <th>Member Name</th>
+                                <th>Role</th>
+                                <th class="text-center">Action</th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            {% for member in team_member %}
+                            <tr>
+                                <td>
+                                    {{forloop.counter}}
+                                </td>
+                                <td>
+                                    {{member.member}}
+                                </td>
+                                <td>
+                                    <span class="badge badge-pill badge-success">{{ member.responsibility }}</span>
+                                </td>
+                                <td class="text-center">
+                                    <button class="btn btn-outline-success btn-sm"
+                                            onclick="editProjectTeamMember('{{ member.id }}', '{{ member }}', '{{ team.project.id }}', '{{team.id}}', '{{team.name}}')">
+                                        <i title="Edit Team Member" class="fa fa-edit"></i>
+                                    </button>
+
+                                    <button onclick="deleteProjectTeamMember({{ member.id }}, '{{ member.member }}', '{{ team.id }}', '{{ team.name }}')"
+                                            class="btn btn-outline-danger btn-sm" type="button">
+                                        <i title="Delete Team Member" class="fa fa-remove"></i>
+                                    </button>
+                                </td>
+                            </tr>
+                            {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+                
+                <!-- End Page Content -->
+            </div>
+            <!-- End Container fluid  -->
+        </div>
+        <!-- End Page wrapper  -->
+    </div>
+    
+    <script>
+        $("#table_team_members").DataTable({});
+
+        function addProjectTeamMember(team_id, team_name, project_id, project_name) {
+            urldata = "{% url 'adminAddProjectTeamMember'%}";
+
+            $.ajax({
+                type: "GET",
+                cache: false,
+                data: {
+                    team_id: team_id,
+                    team_name: team_name,
+                    project_id: project_id,
+                    project_name: project_name
+                },
+                url: urldata,
+                success: function (resp) {
+                    $.confirm({
+                        title: '<h3>Add Project Members: </h3>',
+                        content: '' + resp,
+                        type: 'blue',
+                        theme: 'material',
+                        typeAnimated: true,
+                        boxWidth: '50%',
+                        height: '40%',
+                        useBootstrap: false,
+                        closeIcon: true,
+                        buttons: {
+                            close: {
+                                text: 'Close',
+                                btnClass: 'btn-gray close-dialog',
+                                action: function () {
+                                }
+                            }
+                        }
+                    });
+                }
+            });
+        }
+        
+        function deleteProjectTeamMember(memberid, membername, teamid, teamname) {
+                urldata = "{% url 'deleteProjectTeamMember'%}";
+                $.confirm({
+                    title: '<h4>Remove Member: <strong class="text-danger">"' + membername + ' "</strong>! from Team</h4>',
+                    content: '',
+                    type: 'red',
+                    typeAnimated: true,
+                    boxWidth: '40%',
+                    useBootstrap: false,
+                    theme: 'modern',
+                    icon: 'fa fa-exclamation-circle',
+                    buttons: {
+                        formSubmit: {
+                            text: 'Remove',
+                            btnClass: 'btn-red',
+                            action: function () {
+                                $.ajax({
+                                    type: "GET",
+                                    cache: false,
+                                    data: {
+                                        memberid: memberid,
+                                        teamname: teamname,
+                                        teamid: teamid
+                                    },
+                                    url: urldata,
+                                    dataType: "json",
+                                    success: function (response_data) {
+                                        if (response_data.state === true){
+                                            urldata = "{% url 'adminDetailProjectTeamMembers'%}";
+
+                                            $.ajax({
+                                                type: "GET",
+                                                cache: false,
+                                                data: {
+                                                    tid: teamid,
+                                                    teamName: teamname
+                                                },
+                                                url: urldata,
+                                                success: function (resp) {
+                                                    $('.list-all-teams').html(resp);
+                                                }
+                                            });
+                                            $.confirm({
+                                                title: "Success",
+                                                content: 'Member: '   + response_data.success,
+                                                type: 'blue',
+                                                typeAnimated: true,
+                                                boxWidth: '35%',
+                                                useBootstrap: false,
+                                                closeIcon: true,
+                                                    buttons: {
+                                                        formSubmit: {
+                                                            text: 'OK',
+                                                            btnClass: 'btn-blue close-dialog',
+                                                            action: function () {
+                                                                
+                                                            }
+                                                        }
+                                                    }
+                                            }); 
+                                            
+                                        }
+                                        else{
+                                            $.alert({
+                                                type: 'red',
+                                                typeAnimated: true,
+                                                boxWidth: '40%',
+                                                useBootstrap: false,
+                                                theme: 'modern',
+                                                title: 'Alert!',
+                                                icon: 'fa fa-exclamation-circle',
+                                                content: 'Cannot delete project member',
+                                                confirm: function () {
+                                                    alert('Confirmed!');
+                                                }
+                                            });
+                                        }
+                                    }
+                                });
+                            }
+                        },
+                        close: {
+                            text: 'Cancel',
+                            btnClass: 'btn-gray',
+                            action: function () {
+                            }
+                        }
+                    }
+                });
+            }
+    
+    </script>

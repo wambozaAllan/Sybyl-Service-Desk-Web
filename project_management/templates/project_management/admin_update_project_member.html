@@ -7,6 +7,8 @@
                 <div class="col-12">{{ form.responsibility | as_crispy_field}}</div>
                 <input id="id_project" value="{{ project_id }}" style="display: none;"/>
                 <input id="id_member" value="{{ member_id }}" style="display: none;"/>
+                <input id="id_team" value="{{ team_id }}" style="display: none;"/>
+                <input id="id_team_name" value="{{ team_name }}" style="display: none;"/>
             </div>
             <div class="">
                 <div class="col-md-12">
@@ -20,17 +22,14 @@
 </div>
 
 <script>
-        // $("#id_responsibility").removeAttr("multiple", "");
-        // $('#id_responsibility').attr('data-live-search', "true"); 
-        // $('#id_responsibility').selectpicker({
-        //     size: 3
-        // });
 
     $("form").on('submit', function(event){
         event.preventDefault();
 
         var project_id = $("#id_project").val();
         var member_id = $("#id_member").val();
+        var team_id = $("#id_team").val();
+        var team_name = $("#id_team_name").val();
         var responsibility_id = $("#id_responsibility").val();
 
         url_data = "{% url 'saveupdateTeamMember' 999%}".replace(999, member_id);
@@ -48,18 +47,17 @@
                 $('.close-dialog').click();
                 if(response_data.success == true){
                     $.ajax({
-                        type:"GET",
+                        type: "GET",
                         cache: false,
-                        data:{
-                            project_id:project_id,
+                        data: {
+                            tid: team_id,
+                            teamName: team_name
                         },
-                        url: "{% url 'tabListTeam' %}",
-                        success: function(resp){
-                            $('.team-project').html(resp);
-                            $('#table_teams').DataTable();
+                        url:"{% url 'adminDetailProjectTeamMembers'%}" ,
+                        success: function (resp) {
+                            $('.list-all-teams').html(resp);
                         }
                     });
-                    
 
                     $.confirm({
                         title: "Success",
@@ -94,9 +92,11 @@
                             alert('Confirmed!');
                         }
                     });
-                }    
+                }
+                
             }
         });
+
     });
 
 </script>

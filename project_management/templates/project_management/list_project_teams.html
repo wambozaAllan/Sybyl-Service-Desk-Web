@@ -28,7 +28,7 @@
                     <div class="row">
                         <div class="col-12">
                             <div class="card">
-                                <div class="card-body">
+                                <div class="card-body list-all-teams">
                                     <h4 class="card-title">Project Teams</h4>
                                     <div class="row">
                                         <div class="col-12">
@@ -44,8 +44,8 @@
                                             <thead>
                                             <tr>
                                                 <th>#</th>
-                                                <th>Project Team</th>
                                                 <th class="text-center">Projects</th>
+                                                <th>Project Team</th>
                                                 <th class="text-center">Members</th>
                                                 <th class="text-center">Action</th>
                                             </tr>
@@ -55,8 +55,8 @@
                                             {% for team in project_teams %}
                                                 <tr>
                                                     <td>{{ forloop.counter }}</td>
-                                                    <td>{{ team.name }}</td>
                                                     <td class="text-center">{{team.project}}</td>
+                                                    <td>{{ team.name }}</td>
                                                     <td class="text-center">
                                                         <span class="badge badge-pill badge-success">{{ team.num_members }}</span>
                                                     </td>
@@ -89,9 +89,40 @@
                     </div>
                     <!-- End Page wrapper  -->
                 </div>
+                <script>
+
+                        function functAddProjectTeam() {
+                            console.log("hello");
+                            urldata = "{% url 'adminAddProjectTeam'%}";
+                            $.ajax({
+                                type: "GET",
+                                cache: false,
+                                data: {},
+                                url: urldata,
+                                success: function (resp) {
+                                    $.confirm({
+                                        title: '<h3>Add Project Team</h3>',
+                                        content: '' + resp,
+                                        type: 'blue',
+                                        typeAnimated: true,
+                                        boxWidth: '30%',
+                                        useBootstrap: false,
+                                        closeIcon: true,
+                                        buttons: {
+                                            close: {
+                                                text: 'Cancel',
+                                                btnClass: 'btn-gray',
+                                                action: function () {
+                                                }
+                                            }
+                                        }
+                                    });
+                                }
+                            });
+                        }
+                    
+                    </script>
             </div>
         </div>
     </div>
 {% endblock %}
-
-
