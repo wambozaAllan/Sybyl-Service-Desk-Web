@@ -5,7 +5,9 @@
         <!-- Main wrapper  -->
         <div id="main-wrapper">
             {% include 'header.html' %}
+            
             {% include 'left-nav.html' %}
+            {% load humanize %}
             <!-- Page wrapper  -->
             <div class="page-wrapper">
                 <!-- Bread crumb -->
@@ -24,41 +26,340 @@
                 <!-- Container fluid  -->
                 <div class="container-fluid">
                     <!-- Start Page Content -->
-                    <div class="row">
-                        <div class="col-12">
-                            <div class="card">
-                                <div class="card-body">
-                                    <div class="row">
-                                        <div class="col-md-12">
-                                            <button id="" class="btn btn-info pull-right" onclick="">
-                                                <i class="fa fa-fw fa-lg fa-plus"></i>Log Time
-                                            </button>
+                        <div class="card" style="margin-top: -2%;">
+                            <div class="card-body">
+
+                                <ul class="nav nav-tabs" role="tablist">
+                                    <li class="nav-item"> <a class="nav-link active" data-toggle="tab" href="#timesheet_home" role="tab"><span class="hidden-sm-up"><i class="ti-home"></i></span> <span class="hidden-xs-down">Daily Time Logs</span></a></li>
+                                    <li class="nav-item" onclick="loadURL('{% url 'timesheetPendingApproval'%}', '', 'timesheet-pendings', 'GET');"> <a class="nav-link" data-toggle="tab" href="#pending_approval" role="tab"><span class="hidden-sm-up"><i class="fa fa-share"></i></span> <span class="hidden-xs-down">Pending Approval</span></a> </li>
+                                    <li class="nav-item" onclick="loadURL('{% url 'userApprovedTimesheets'%}', '', 'approved-tm-pane1', 'GET');"> <a class="nav-link" data-toggle="tab" href="#appoved_tm" role="tab"><span class="hidden-sm-up"><i class="ti-email"></i></span> <span class="hidden-xs-down">Approved Timesheets</span></a> </li>
+                                </ul>
+                                <!-- Tab panes -->
+                                <div class="tab-content tabcontent-border" style="padding-left: 1%;padding-right: 1%;">
+                                    <div class="tab-pane active" id="timesheet_home" role="tabpanel">
+                                        <div class="row p-10">
+                                            <div class="col-md-12">
+                                                <button id="" class="btn btn-info pull-right" onclick="functionAddNewTimesheet()">
+                                                    <i class="fa fa-fw fa-lg fa-plus"></i>Log Time
+                                                </button>
+                                            </div>
+                                        </div>
+                                        <div class="timesheet-pane">
+                                            {% if timesheet_list %}
+                                            <div class="" style="max-height: 345px; overflow-y: scroll;">
+                                                <div class="table-responsive">
+                                                    <div id="accordion" role="tablist">
+                                                        {% for sheet in timesheet_list %}
+                                                            <div class="card-header" role="tab" id="headingOne">
+                                                                <h5 class="mb-0 ">
+                                                                <a  id="heading{{ forloop.counter }}" class="collapsed text-primary font-weight-bold" data-toggle="collapse" href="#collapse{{ forloop.counter |apnumber|title }}" aria-expanded="false" aria-controls="collapse{{ forloop.counter |apnumber|title }}">
+                                                                    {{ sheet.tim | date:"D, d M, Y"}}
+                                                                </a>
+                                                                </h5>
+                                                            </div>
+                                                            <div id="collapse{{ forloop.counter |apnumber|title }}" class="collapse" role="tabpanel" aria-labelledby="heading{{ forloop.counter |apnumber|title }}" data-parent="#accordion">
+                                                                <div class="card-body">
+                                                                    <table id="table_timesheets" class="table table-hover table-sm">
+                                                                        <thead class="">
+                                                                            <tr>
+                                                                                <th>#</th>
+                                                                                <th>Task</th>
+                                                                                <th>Day</th>
+                                                                                <th>Start Time</th>
+                                                                                <th>End Time</th>
+                                                                                <th class="text-center">Action</th>
+                                                                            </tr>
+                                                                            </thead>
+                                                                            <tbody>
+                                                                                {% for tm in sheet.dictt %}
+                                                                                    <tr>
+                                                                                        <td>{{ forloop.counter }}</td>
+                                                                                        <td>{{ tm.task }}</td>
+                                                                                        <td>{{ tm.log_day }}</td>
+                                                                                        <td>{{ tm.start_time | date:'H:i A' }}</td>
+                                                                                        <td>{{ tm.end_time | date:'H:i A' }}</td>
+                                                                                        <td class="text-center">
+                                                                                            <form class="form">
+                                                                                                <input type="checkbox" id="itemcheckbox{{tm.id}}" onclick="functionManageTimesheets({{tm.id}})" class="timesheet-checkbox"/>&nbsp;
+                                                                                                <button onclick="functionEditTimesheet({{ tm.id }}, '{{ tm.log_day | date:"d-m-Y"}}', '{{ tm.start_time  | date:'H:i A'}}', '{{ tm.end_time  | date:'H:i A'}}', '{{ tm.task }}', {{tm.task_id}})"
+                                                                                                        class="btn btn-outline-success btn-sm" type="button">
+                                                                                                    <i title="Edit Group" class="fa fa-edit"></i>
+                                                                                                </button> &nbsp;
+                                                                                                <button onclick="functionDeleteTimesheet({{ tm.id }}, '{{ tm.log_day | date:"d-m-Y"}}', '{{ tm.start_time  | date:'H:i A'}}', '{{ tm.end_time  | date:'H:i A'}}', '{{ tm.task }}')" class="btn btn-outline-danger btn-sm" type="button">
+                                                                                                    <i title="Delete Timesheet" class="fa fa-remove"></i>
+                                                                                                </button> &nbsp;
+                                                                                            </form>
+                                                                                        </td>
+                                                                                    </tr>
+                                                                                {% endfor %}
+                                                                        </tbody>
+                                                                    </table>
+                                                                </div>
+                                                            </div>
+                                                        {% endfor %}
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="">
+                                                <button onclick="functionsubmitForApproval()" style="margin-top: 1%; margin-right: 1%;" title="Send Timesheets For Approval!" id="submitForApproval" class="btn btn-success pull-right">
+                                                    <i class="fa fa-fw fa-lg fa-share"></i>Send For Approval
+                                                </button>
+                                            </div><br><br><br>
+                                            {% else %}
+                                                <h3><span class="text-info">No Timesheets Added.</span></h3> 
+                                            {% endif %}
                                         </div>
                                     </div>
-                                    <div class="table-responsive">
-                                        <table id="table_status" class="display nowrap table table-hover"
-                                               cellspacing="0" width="100%">
-                                            <thead>
-                                            <tr>
-                                                <th>#</th>
-                                                <th>Status Name</th>
-                                                <th>Description</th>
-                                                <th class="text-center">Action</th>
-                                            </tr>
-                                            </thead>
-                                            <tbody>
 
+                                    <div class="tab-pane  p-20" id="pending_approval" role="tabpanel">
+                                        <!-- Pending Approval -->
+                                        <div class="text-center timesheet-pendings">
+                                            <i class="fa fa-spinner fa-spin fa-4x"></i>
+                                        </div>
+                                    </div>
+
+                                    <div class="tab-pane p-20" id="appoved_tm" role="tabpanel">
+                                        <ul class="nav nav-tabs customtab" role="tablist">
+                                            <li class="nav-item"> <a class="nav-link active" data-toggle="tab" href="#tm_approved" role="tab"><span class="hidden-sm-up"><i class="fa fa-list"></i></span> <span class="hidden-xs-down"><i class="fa fa-check text-primary"></i> Aproved</span></a> </li>
+                                            <li class="nav-item" onclick="loadURL('{% url 'userRejectedTimesheets'%}', '', 'rejected-tm-pane1', 'GET');"> <a class="nav-link" data-toggle="tab" href="#tm_rejected" role="tab"><span class="hidden-sm-up"><i class="fa fa-list"></i></span> </i> <span class="hidden-xs-down"><i class="fa fa-times text-danger"> </i> Rejected</span></a> </li>
+                                        </ul>
+                                        <!-- Tab panes -->
+                                        <div class="tab-content">
+                                            <div class="tab-pane active" id="tm_approved" role="tabpanel">
+                                                <div class="p-20">
+                                                    <!-- Approved -->
+                                                    <div class="text-center approved-tm-pane1">
+                                                        <i class="fa fa-spinner fa-spin fa-4x"></i>
+                                                    </div>
+                                                </div>
+                                            </div>
+
+                                            <div class="tab-pane  p-20" id="tm_rejected" role="tabpanel">
+                                                <!-- Rejected -->
+                                                <div class="text-center rejected-tm-pane1">
+                                                    <i class="fa fa-spinner fa-spin fa-4x"></i>
+                                                </div>
+                                            </div>
                                             
-                                            </tbody>
-                                        </table>
+                                        </div>
                                     </div>
                                 </div>
-                            </div>
+                            </div>                            
                         </div>
+                    </div>
+                </div>
+        </div>
+    </div>
+
+    <!-- The Modal -->
+<div class="">
+    <div id="timesheetFormModalDialog" class="modalDialog2">
+        <div>
+            <div id="head">
+                <a href="#close" title="Close" class="close2">X</a>
+                <h5 class="modalDialog-title font-weight-bold">Add Timesheet</h5>
+            </div>
+            <hr>
+
+            <div class="modal-body">
+                <div class="scrollbar-modal1">
+                    <div id="dialog_time_sheet">
+
                     </div>
                 </div>
             </div>
         </div>
     </div>
+</div>
+<!-- END The Modal -->
+
+    <script>
+        var checktimesheetset = new Set();
+        var listTimesheet = [];
+        
+        $( "#heading1" ).removeClass( "collapsed");
+        $( "#collapseOne" ).addClass( "show" );
+        $(".timesheet-checkbox").prop('checked', false);
+
+        function functionsubmitForApproval(){
+            if (checktimesheetset.size !== 0) {
+
+                $.confirm({
+                    title: '<h3 class="font-weight-bold">Timesheet Submission!</h3>',
+                    content: '<h4>Send: <b class="text-info">'+ checktimesheetset.size +'</b> Timesheet(s) for Approval!</h4>',
+                    type: 'green',
+                    typeAnimated: true,
+                    boxWidth: '40%',
+                    useBootstrap: false,
+                    icon: 'fa fa-warning',
+                    closeIcon: true,
+                    buttons: {
+                        formSubmit: {
+                            text: 'Send',
+                            btnClass: 'btn-green',
+                            action: function () {
+                                urldata = "{% url 'sendTimesheetForApproval'%}";
+
+                                for (const k of checktimesheetset) {
+                                    listTimesheet.push({tm: k});
+                                }
+
+                                $.ajax({
+                                    type: 'GET',
+                                    data: {
+                                        listTimesheet: JSON.stringify(listTimesheet)
+                                    },
+                                    url: urldata,
+                                    success: function (resp) {
+                                        checktimesheetset = new Set();
+                                        listTimesheet = [];
+                                        $('.timesheet-pane').html(resp);
+                                        $( "#heading1" ).removeClass( "collapsed");
+                                        $( "#collapseOne" ).addClass( "show" );
+                                    }
+                                });
+                            }
+                        },
+                        close: {
+                            text: 'Cancel',
+                            btnClass: 'btn-gray',
+                            action: function () {
+                            }
+                        }
+                    }
+                });
+            } else {
+                $.confirm({
+                    title: '<h3>Alert!</h3>',
+                    content: 'Please Tick Timesheets you want to send for Approval!',
+                    type: 'orange',
+                    typeAnimated: true,
+                    useBootstrap: false,
+                    closeIcon: true,
+                    boxWidth: '30%',
+                    icon: 'fa fa-warning',
+                    buttons: {
+                        close: {
+                            text: 'Close',
+                            btnClass: 'btn-gray',
+                            action: function () {
+
+                            }
+                        }
+                    }
+                });
+            }
+        }
+
+        function functionAddNewTimesheet() {
+            urldata = "{% url 'addNewTimesheet'%}";
+            $.ajax({
+                type: "GET",
+                cache: false,
+                data: {},
+                url: urldata,
+                success: function (resp) {
+                    $('#dialog_time_sheet').html(resp);
+
+                    window.location = '#timesheetFormModalDialog';
+                    initDialog('modalDialog2');
+                }
+            });
+        }
+
+        function functionEditTimesheet(timesheet_id, log_day, start_time, end_time, task, task_id) {
+            urldata = "{% url 'updateTimesheet' %}";
+            $.ajax({
+                type: "GET",
+                cache: false,
+                data: {
+                    timesheet_id: timesheet_id, 
+                    log_day: log_day,
+                    start_time: start_time,
+                    end_time: end_time,
+                    task: task,
+                    task_id: task_id
+                },
+                url: urldata,
+                success: function (resp) {
+                    $.confirm({
+                        title: '<h3>Edit Timesheet.</h3>',
+                        content: '' + resp,
+                        type: 'blue',
+                        typeAnimated: true,
+                        boxWidth: '55%',
+                        useBootstrap: false,
+                        closeIcon: true,
+                        buttons: {
+                            close: {
+                                text: 'Close',
+                                btnClass: 'btn-gray close-dialog',
+                                action: function () {
+                                }
+                            }
+                        }
+                    });
+                }
+            });
+        }
+
+        function functionDeleteTimesheet(timesheet_id, day, s_time, e_time, task){
+            urldata = "{% url 'deleteTimesheet'%}";
+            $.confirm({
+                title: '<h3 class="font-weight-bold">Delete Timesheet!</h3>',
+                content: '<h4>Day: <span class="text-info">'+ day +'</span></h4>'+
+                        '<h4>Task: <span class="text-info">'+ task +'</span></h4>'+
+                        '<h4>Time: <span class="text-info">'+ s_time +' - '+e_time+'</span></h4>',
+                type: 'red',
+                typeAnimated: true,
+                boxWidth: '40%',
+                useBootstrap: false,
+                theme: 'modern',
+                icon: 'fa fa-exclamation-circle',
+                closeIcon: true,
+                buttons: {
+                    formSubmit: {
+                        text: 'Remove',
+                        btnClass: 'btn-red',
+                        action: function () {
+                            $.ajax({
+                                type: "GET",
+                                cache: false,
+                                data: {
+                                    timesheet_id: timesheet_id
+                                },
+                                url: urldata,
+                                success: function (resp) {
+                                    $('.close-dialog').click();
+                                    $('.timesheet-pane').html(resp);
+                                    $( "#heading1" ).removeClass( "collapsed");
+                                    $( "#collapseOne" ).addClass( "show" );
+                                }
+                            });
+                        }
+                    },
+                    close: {
+                        text: 'Cancel',
+                        btnClass: 'btn-gray',
+                        action: function () {
+                        }
+                    }
+                }
+            });
+        }
+
+        function functionManageTimesheets(timesheetid) {
+            var checkBox = document.getElementById("itemcheckbox" + timesheetid);
+            if (checkBox.checked === true) {
+                if (!checktimesheetset.has(timesheetid)) {
+                    checktimesheetset.add(timesheetid);
+                }
+            }else{
+                if (checktimesheetset.has(timesheetid)) {
+                    checktimesheetset.delete(timesheetid);
+                }
+            }
+        }
+    </script>
 {% endblock %}
 

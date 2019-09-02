@@ -1,0 +1,67 @@
+{% load humanize %}
+<div class="timesheet-pane">
+    {% if timesheet_list %}
+        <div class="" style="max-height: 345px; overflow-y: scroll;">
+            <div class="table-responsive">
+                <div id="accordion" role="tablist">
+                    {% for sheet in timesheet_list %}
+                        <div class="card-header" role="tab" id="headingOne">
+                            <h5 class="mb-0 ">
+                            <a  id="heading{{ forloop.counter }}" class="collapsed text-primary font-weight-bold" data-toggle="collapse" href="#collapse{{ forloop.counter |apnumber|title }}" aria-expanded="false" aria-controls="collapse{{ forloop.counter |apnumber|title }}">
+                                {{ sheet.tim | date:"D, d M, Y"}}
+                            </a>
+                            </h5>
+                        </div>
+                        <div id="collapse{{ forloop.counter |apnumber|title }}" class="collapse" role="tabpanel" aria-labelledby="heading{{ forloop.counter |apnumber|title }}" data-parent="#accordion">
+                            <div class="card-body">
+                                <table id="table_timesheets" class="table table-hover table-sm">
+                                    <thead class="">
+                                        <tr>
+                                            <th>#</th>
+                                            <th>Task</th>
+                                            <th>Day</th>
+                                            <th>Start Time</th>
+                                            <th>End Time</th>
+                                            <th class="text-center">Action</th>
+                                        </tr>
+                                        </thead>
+                                        <tbody>
+                                            {% for tm in sheet.dictt %}
+                                                <tr>
+                                                    <td>{{ forloop.counter }}</td>
+                                                    <td>{{ tm.task }}</td>
+                                                    <td>{{ tm.log_day }}</td>
+                                                    <td>{{ tm.start_time | date:'H:i A' }}</td>
+                                                    <td>{{ tm.end_time | date:'H:i A' }}</td>
+                                                    <td class="text-center">
+                                                        <form class="form">
+                                                            <input type="checkbox" id="itemcheckbox{{tm.id}}" onclick="functionManageTimesheets({{tm.id}})" class="timesheet-checkbox"/>&nbsp;
+                                                            <button onclick="functionEditTimesheet({{ tm.id }}, '{{ tm.log_day | date:"d-m-Y"}}', '{{ tm.start_time  | date:'H:i A'}}', '{{ tm.end_time  | date:'H:i A'}}', '{{ tm.task }}', {{tm.task_id}})"
+                                                                    class="btn btn-outline-success btn-sm" type="button">
+                                                                <i title="Edit Group" class="fa fa-edit"></i>
+                                                            </button> &nbsp;
+                                                            <button onclick="functionDeleteTimesheet({{ tm.id }}, '{{ tm.log_day | date:"d-m-Y"}}', '{{ tm.start_time  | date:'H:i A'}}', '{{ tm.end_time  | date:'H:i A'}}', '{{ tm.task }}')" class="btn btn-outline-danger btn-sm" type="button">
+                                                                <i title="Delete Timesheet" class="fa fa-remove"></i>
+                                                            </button> &nbsp;
+                                                        </form>
+                                                    </td>
+                                                </tr>
+                                            {% endfor %}
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+        <div class="">
+            <button onclick="functionsubmitForApproval()" style="margin-top: 1%; margin-right: 1%;" title="Send Timesheets For Approval!" id="submitForApproval" class="btn btn-success pull-right">
+                <i class="fa fa-fw fa-lg fa-share"></i>Send For Approval
+            </button>
+        </div><br><br><br>
+    {% else %}
+        <h3><span class="text-info">No Timesheets Added.</span></h3> 
+    {% endif %}
+</div>
+    

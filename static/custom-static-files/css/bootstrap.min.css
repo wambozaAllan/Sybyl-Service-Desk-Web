@@ -100,7 +100,7 @@
 
 
 .modalDialog2 > div {
-    width: 50%;
+    width: 53%;
     height: 75%;
     position: relative;
     margin: 2% auto;
@@ -134,4 +134,44 @@
 
 .right {
 	float:right;
+}
+
+[data-toggle="collapse"]:after {
+    display: inline-block;
+    font: normal normal normal 14px/1 FontAwesome;
+    font-size: inherit;
+    text-rendering: auto;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    content: "\f054";
+    transform: rotate(90deg) ;
+    transition: all linear 0.25s;
+    float: right;
+}   
+[data-toggle="collapse"].collapsed:after {
+    transform: rotate(0deg) ;
+}
+
+.form input[type="checkbox"]:before {
+    display: inline-block;
+    font: normal normal normal 14px/1 FontAwesome;
+    font-size: inherit;
+    text-rendering: auto;
+    -webkit-font-smoothing: antialiased;
+    content: "\f096";
+    opacity: 1 !important;
+    margin-top: -25px;
+    appearance: none;
+    background: #fff;
+}
+
+.form input[type="checkbox"]:checked:before {
+    content: "\f046";
+}
+
+.form input[type="checkbox"] {
+    font-size: 22px;
+    appearance: none;
+    -webkit-appearance: none;
+    -moz-appearance: none;
 }

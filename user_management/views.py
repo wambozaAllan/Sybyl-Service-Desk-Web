@@ -170,7 +170,6 @@ class DetailsUser(DetailView):
         return context
 
 
-
 class UpdateUser(UpdateView):
     model = User
     fields = ['first_name', 'last_name', 'gender', 'company', 'department', 'groups',

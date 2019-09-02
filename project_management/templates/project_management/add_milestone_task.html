@@ -46,7 +46,7 @@
                         </label>
                         <div class="">
                             <select name="assigned_to" class="select form-control" id="id_assigned_to">
-                                <option value="" selected disabled>--Select member--</option>
+                                <option value="" selected>--Select member--</option>
                                 {% for member in members %}
                                     <option value="{{member.id}}">{{member.first_name}} {{member.last_name}}</option>
                                 {% endfor %}  
@@ -189,6 +189,7 @@
     $('#div_id_assigned_to').removeClass("form-group");
 
     $('#id_assigned_to').attr('data-live-search', "true"); 
+    $('#id_assigned_to').attr('multiple', "multiple"); 
     $('#id_assigned_to').selectpicker({
         size: 3
     });
@@ -466,6 +467,12 @@
                     event.preventDefault(); 
                 }
             }
+
+            var selectednumbers = [];
+            $('#id_assigned_to :selected').each(function(i, selected) {
+                selectednumbers[i] = $(selected).val();
+            });
+            var assigned_to = JSON.stringify(selectednumbers);
         
             urlData = "{% url 'saveMilestoneTask'%}"
             $.ajax({
@@ -483,7 +490,8 @@
                     actual_end: actual_end,
                     description: description,
                     milestone: milestone_id,
-                    status_id:status_id
+                    status_id:status_id,
+                    assigned_to: assigned_to,
                 },
                 success: function(response_data){
                     $('.close-dialog').click();

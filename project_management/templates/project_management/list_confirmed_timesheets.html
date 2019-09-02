@@ -1,0 +1,73 @@
+<div class="table-responsive confirmed-time-sheet-pane">
+    <table id="table-approved-timesheet" class=" table table-hover" cellspacing="0" width="100%">
+        <thead>
+        <tr>
+            <th>#</th>
+            <th>User</th>
+            <th>Task</th>
+            <th>Status</th>
+            <th>Log Date</th>
+            <th>Date Submitted</th>
+            <th>Date Approved</th>
+            <th>Approved By</th>
+            <th class="text-center">Update</th>
+        </tr>
+        </thead>
+        <tbody>
+
+        {% for tm in timesheet_list %}
+            <tr>
+                <td>{{ forloop.counter }}</td>
+                <td>{{ tm.project_team_member }}</td>
+                <td>{{ tm.task }}</td>
+                {% if tm.status == 'ACCEPTED'%}
+                    <td class="text-center">
+                        <span class="badge badge-success"><strong>{{tm.status}}</strong></span>
+                    </td>
+                {% else %}
+                    <td class="text-center">
+                        <span class="badge badge-danger"><strong>{{tm.status}}</strong></span>
+                    </td>
+                {% endif %}
+                <td>{{ tm.log_day | date:"D, d M, Y"}}</td>
+                <td>{{tm.date_submitted | date:"D, d M, Y"}}</td>
+                <td>{{tm.date_approved | date:"D, d M, Y"}}</td>
+                <td>{{tm.approved_by}}</td>
+                <td class="text-center">
+                    <select id="edit-approval{{tm.id}}" class="form-control input-sm" onchange="updateTimesheetApprovals({{tm.id}}, '{{tm.status}}')">
+                        {% if tm.status == 'ACCEPTED'%}
+                            <option value="ACCEPTED">Accept</option>
+                            <option value="REJECTED">Reject</option>
+                        {% else %}
+                            <option value="REJECTED">Reject</option>
+                            <option value="ACCEPTED">Accept</option>
+                        {% endif %}
+                    </select>
+                </td>
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+</div>
+
+<script>
+    $('#table-approved-timesheet').DataTable();
+
+    function updateTimesheetApprovals(tm_id, status){
+        var status_val = $('#edit-approval'+tm_id).val();
+        urldata = "{% url 'updateTimesheetApproval'%}";
+
+        $.ajax({
+            type: 'GET',
+            url: urldata,
+            data: {
+                tm_id: tm_id,
+                status_val: status_val
+            },
+            success: function (resp) {
+                $('.confirmed-time-sheet-pane').html(resp);
+                $('#table-approved-timesheet').DataTable();
+            }
+        }); 
+    }
+</script>
