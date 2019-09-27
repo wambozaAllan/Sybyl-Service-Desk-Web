@@ -23,7 +23,7 @@ from .forms import MilestoneForm
 
 from django.contrib.auth.decorators import user_passes_test, permission_required
 
-from .models import Project, Milestone, Task, ProjectDocument, Incident, Priority, Status, ProjectTeam, ProjectTeamMember, Role, ProjectForumMessages, ProjectForum, ProjectForumMessageReplies, ServiceLevelAgreement, IncidentComment, EscalationLevel, IncidentComment
+from .models import Project, Milestone, Task, ProjectDocument, Incident, Priority, Status, ProjectTeam, ProjectTeamMember, Role, ProjectForumMessages, ProjectForum, ProjectForumMessageReplies, ServiceLevelAgreement, IncidentComment, EscalationLevel, IncidentComment, Timesheet
 from user_management.models import User
 from company_management.models import Company, CompanyCategory, CompanyDomain
 from .forms import CreateProjectForm, MilestoneForm, TaskForm, DocumentForm, ProjectUpdateForm, MilestoneUpdateForm, ProjectForm, IncidentForm, ProjectTeamForm
@@ -31,6 +31,7 @@ from django.contrib.auth.mixins import PermissionRequiredMixin
 from django.http import JsonResponse
 from django.db.models import Count
 import json
+import time;
 
 # Custom Views
 class ProjectCreateView(PermissionRequiredMixin, CreateView):
@@ -4131,43 +4132,439 @@ def all_companies_filter_auditlogs(request):
     return HttpResponse(template.render(context, request))
 
 def manage_sla_esclations(request):
-    project_id = request.GET.get('project_id')
-    print(project_id)
+    # project_id = request.GET.get('project_id')
+    # print(project_id)
 
-    date_now = datetime.datetime.now(timezone.utc)
-    print('------------------------')
-    print(date_now)
+    # date_now = datetime.datetime.now(timezone.utc)
+    # print('------------------------')
+    # print(date_now)
 
 
-    if Incident.objects.all():
-        for i in Incident.objects.all():
-            print(i.close_time)
-            state = i.status
-            print(state)
-            if state is not None:
-                if i.status is not 'Completed':
-                    print(i.resolution_time)
-                    if i.close_time >= date_now:
-                        print("------------Don't  Escalate. Ignore------------------")
-                    else:
-                        print('fetch escalation levels, calculate time when to escalte to who, send emails, ')
-                        print("create a function for running escalations, with arg projectid, it counts  seconds and triggers an escalation")
-                        print("------------- Escalate -------------------")
+    # if Incident.objects.all():
+    #     for i in Incident.objects.all():
+    #         print(i.close_time)
+    #         state = i.status
+    #         print(state)
+    #         if state is not None:
+    #             if i.status is not 'Completed':
+    #                 print(i.resolution_time)
+    #                 if i.close_time >= date_now:
+    #                     print("------------Don't  Escalate. Ignore------------------")
+    #                 else:
+    #                     print('fetch escalation levels, calculate time when to escalte to who, send emails, ')
+    #                     print("create a function for running escalations, with arg projectid, it counts  seconds and triggers an escalation")
+    #                     print("------------- Escalate -------------------")
 
-    make_escalation(int(project_id))
-    template = loader.get_template('project_management/escalate_new_user.html')
-    context = {}
+    # make_escalation(int(project_id))
+    # template = loader.get_template('project_management/escalate_new_user.html')
+    # context = {}
 
-    return HttpResponse(template.render(context, request))
+    # return HttpResponse(template.render(context, request))
+    pass
+
 
 def make_escalation(project_id):
     #Define the constants
-    SECONDS_PER_MINUTE  = 60
-    SECONDS_PER_HOUR    = 3600
-    SECONDS_PER_DAY     = 86400
+    # SECONDS_PER_MINUTE  = 60
+    # SECONDS_PER_HOUR    = 3600
+    # SECONDS_PER_DAY     = 86400
 
-    for i in EscalationLevel.objects.filter(project=int(project_id)):
-        print('-----------escalations-------------')
-        print(i.escalation_on_duration)
+    # for i in EscalationLevel.objects.filter(project=int(project_id)):
+    #     print('-----------escalations-------------')
+    #     print('--'+i.escalation_on_duration+'--')
+        
+    #     if i.escalation_on_duration == "Second(s)":
+    #         print("Second(s)")
+
+    #     if i.escalation_on_duration == "Minute(s)":
+    #         print("Minute(s)")
+
+    #     if i.escalation_on_duration == "Hour(s)":
+    #         print("Hour(s)")
+
+    #     if i.escalation_on_duration == "Day(s)":
+    #         print("Day(s)")
+    #         d_seconds = SECONDS_PER_DAY
+    #         print(d_seconds)
+
+    #     if i.escalation_on_duration == "Week(s)":
+    #         print("Week(s)")
+
+    #     if i.escalation_on_duration == "Month(s)":
+    #         print("Month(s)")
+        
     pass
 
+
+def daily_timesheets_pane(request):
+    uid = request.user.id
+    company_id = request.session['company_id']
+
+    timesheets_exist = Timesheet.objects.filter(status='INITIAL', project_team_member_id=uid, company_id=company_id).exists()
+
+    if timesheets_exist == True:
+        timesheet_list1 = Timesheet.objects.filter(status='INITIAL', project_team_member_id=uid, company_id=company_id)
+        new_list = []
+
+        for i in timesheet_list1:
+	        new_list.append(i.log_day)            
+
+        new_list2 = []
+        new_list = set(new_list)
+        new_list = sorted(new_list, reverse = True)
+        for tm in new_list:
+            new_dict = {}
+            new_dict['tim'] = tm
+            daily_tm = Timesheet.objects.filter(log_day=tm, status='INITIAL', project_team_member_id=uid, company_id=company_id)
+            new_dict['dictt'] = daily_tm
+            new_list2.append(new_dict)
+    else: 
+        new_list2 = False
+
+    template = loader.get_template('project_management/daily_timesheets_pane.html')
+    context = {
+        'timesheet_list': new_list2,
+    }
+
+    return HttpResponse(template.render(context, request))
+
+
+def add_new_timesheet(request):
+    company_id = request.session['company_id']
+
+    project_list = Project.objects.filter(company=int(company_id))
+    
+    template = loader.get_template('project_management/add_time_sheet.html')
+    context = {
+        'project_list': project_list
+    }
+
+    return HttpResponse(template.render(context, request))
+
+    
+def fetch_milestones_by_project(request):
+    project_id = request.GET.get('project_id')
+    
+    list_project_milestones = Milestone.objects.filter(project_id=int(project_id))
+    data = {
+        'mil': serializers.serialize("json", list_project_milestones)
+    }
+    return JsonResponse(data)
+
+
+def fetch_tasks_by_milestone(request):
+    id_milestone = request.GET.get('id_milestone')
+    
+    list_milestone_tasks = Task.objects.filter(milestone_id=int(id_milestone))
+    data = {
+        'task': serializers.serialize("json", list_milestone_tasks)
+    }
+    return JsonResponse(data)
+
+
+def save_new_timesheet(request):
+    uid = request.user.id
+    company_id = request.session['company_id']
+    id_log_day = request.GET.get('id_log_day')
+    id_task = request.GET.get('id_task')
+    start_time = request.GET.get('start_time')
+    end_time = request.GET.get('end_time')
+
+    log_day = datetime.datetime.strptime(id_log_day, '%d-%m-%Y')
+    
+    obj = Timesheet(log_day=log_day, start_time=start_time, end_time=end_time, added_by_id=uid, task_id=int(id_task), project_team_member_id=uid, company_id=int(company_id), last_updated_date=datetime.date.today(), last_updated_by_id=uid)
+    obj.save()
+
+    timesheets_exist = Timesheet.objects.filter(status='INITIAL', project_team_member_id=uid, company_id=company_id).exists()
+    uid = request.user.id
+
+    if timesheets_exist == True:
+        timesheet_list1 = Timesheet.objects.filter(status='INITIAL', project_team_member_id=uid, company_id=company_id)
+        new_list = []
+
+        for i in timesheet_list1:
+	        new_list.append(i.log_day)            
+
+        new_list2 = []
+        new_list = set(new_list)
+        new_list = sorted(new_list, reverse = True)
+        for tm in new_list:
+            new_dict = {}
+            new_dict['tim'] = tm
+            daily_tm = Timesheet.objects.filter(log_day=tm, status='INITIAL', project_team_member_id=uid, company_id=company_id)
+            new_dict['dictt'] = daily_tm
+            new_list2.append(new_dict)
+    else: 
+        new_list2 = False
+
+    template = loader.get_template('project_management/list_timesheet.html')
+    context = {
+        'timesheet_list': new_list2,
+    }
+
+    return HttpResponse(template.render(context, request))
+
+
+def update_timesheet(request):
+    company_id = request.session['company_id']
+    log_day = request.GET.get('log_day')
+    start_time = request.GET.get('start_time')
+    end_time = request.GET.get('end_time')
+    task = request.GET.get('task')
+    timesheet_id = int(request.GET.get('timesheet_id'))
+    task_id = int(request.GET.get('task_id'))
+
+    obj_task = Task.objects.get(id=int(task_id))
+    project_name = obj_task.project
+    project_id = obj_task.project_id
+    milestone_id = obj_task.milestone_id
+    milestone_name = obj_task.milestone    
+
+    project_list = Project.objects.filter(~Q(id = int(project_id)))
+    list_project_milestones = Milestone.objects.filter(Q(project_id=int(project_id)), ~Q(id = int(milestone_id)))
+    list_milestone_tasks = Task.objects.filter(Q(milestone_id=int(milestone_id)), ~Q(id = task_id))
+
+    template = loader.get_template('project_management/update_timesheet.html')
+    context = {
+        'log_day': log_day,
+        'start_time': start_time,
+        'end_time': end_time,
+        'task': task,
+        'timesheet_id': timesheet_id,
+        'project_list': project_list,
+        'list_milestone_tasks': list_milestone_tasks,
+        'list_project_milestones': list_project_milestones,
+        'milestone_id': milestone_id,
+        'milestone_name': milestone_name,
+        'project_name': project_name,
+        'project_id': project_id,
+        'task_id': task_id
+
+    }
+
+    return HttpResponse(template.render(context, request))
+
+
+def save_update_timesheet(request):
+    company_id = request.session['company_id']
+
+    log_day = request.GET.get('id_log_day')
+    start_time = request.GET.get('start_time')
+    end_time = request.GET.get('end_time')
+    task = int(request.GET.get('id_task'))
+    timesheet_id = int(request.GET.get('timesheet_id'))
+    uid = request.user.id
+
+    log_day = datetime.datetime.strptime(log_day, '%d-%m-%Y')
+    
+    Timesheet.objects.filter(pk=int(timesheet_id)).update(log_day=log_day, start_time=start_time, end_time=end_time, task_id=task, last_updated_date=datetime.date.today(), last_updated_by_id=uid)
+
+    timesheets_exist = Timesheet.objects.filter(status='INITIAL', project_team_member_id=uid, company_id=company_id).exists()
+    if timesheets_exist == True:
+        timesheet_list1 = Timesheet.objects.filter(status='INITIAL', project_team_member_id=uid, company_id=company_id)
+        new_list = []
+
+        for i in timesheet_list1:
+	        new_list.append(i.log_day)            
+
+        new_list2 = []
+        new_list = set(new_list)
+        new_list = sorted(new_list, reverse = True)
+
+        for tm in new_list:
+            new_dict = {}
+            new_dict['tim'] = tm
+            daily_tm = Timesheet.objects.filter(log_day=tm, status='INITIAL', project_team_member_id=uid, company_id=company_id)
+            new_dict['dictt'] = daily_tm
+            new_list2.append(new_dict)
+    
+    template = loader.get_template('project_management/list_timesheet.html')
+    context = {
+        'timesheet_list': new_list2,
+    }
+
+    return HttpResponse(template.render(context, request))
+
+
+def delete_timesheet(request):
+    company_id = request.session['company_id']
+    uid = request.user.id
+
+    timesheet_id = request.GET.get('timesheet_id')
+    Timesheet.objects.filter(id=int(timesheet_id)).delete()
+
+    timesheets_exist = Timesheet.objects.filter(status='INITIAL', project_team_member_id=uid, company_id=company_id).exists()
+
+    if timesheets_exist == True:
+        timesheet_list1 = Timesheet.objects.filter(status='INITIAL', project_team_member_id=uid, company_id=company_id)
+        new_list = []
+
+        for i in timesheet_list1:
+	        new_list.append(i.log_day)            
+
+        new_list2 = []
+        new_list = set(new_list)
+        new_list = sorted(new_list, reverse = True)
+        for tm in new_list:
+            new_dict = {}
+            new_dict['tim'] = tm
+            daily_tm = Timesheet.objects.filter(log_day=tm, status='INITIAL', project_team_member_id=uid, company_id=company_id)
+            new_dict['dictt'] = daily_tm
+            new_list2.append(new_dict)
+    else: 
+        new_list2 = False
+
+    template = loader.get_template('project_management/list_timesheet.html')
+    context = {
+        'timesheet_list': new_list2,
+    }
+
+    return HttpResponse(template.render(context, request))
+
+
+def send_timesheet_for_approval(request):
+    company_id = request.session['company_id']
+
+    timesheet_list = request.GET.get('listTimesheet')
+    json_data = json.loads(timesheet_list)
+    uid = request.user.id
+
+    for timesheet_id in json_data:
+        tm_id = timesheet_id['tm']
+        Timesheet.objects.filter(pk=int(tm_id)).update(status='SUBMITTED', is_submitted=True, date_submitted=datetime.date.today(), submitted_by_id=uid)
+
+    timesheets_exist = Timesheet.objects.filter(status='INITIAL', project_team_member_id=uid, company_id=company_id).exists()
+    if timesheets_exist == True:
+        timesheet_list1 = Timesheet.objects.filter(status='INITIAL', project_team_member_id=uid, company_id=company_id)
+        new_list = []
+
+        for i in timesheet_list1:
+	        new_list.append(i.log_day)            
+
+        new_list2 = []
+        new_list = set(new_list)
+        new_list = sorted(new_list, reverse = True)
+        for tm in new_list:
+            new_dict = {}
+            new_dict['tim'] = tm
+            daily_tm = Timesheet.objects.filter(log_day=tm, status='INITIAL', project_team_member_id=uid, company_id=company_id)
+            new_dict['dictt'] = daily_tm
+            new_list2.append(new_dict)
+    else: 
+        new_list2 = False
+
+    template = loader.get_template('project_management/list_timesheet.html')
+    context = {
+        'timesheet_list': new_list2,
+    }
+    return HttpResponse(template.render(context, request))
+
+
+def timesheet_pending_approval(request):
+    uid = request.user.id
+    company_id = request.session['company_id']
+
+    timesheet_list1 = Timesheet.objects.filter(status='SUBMITTED', company_id=company_id)
+
+    template = loader.get_template('project_management/list_timesheets_pending_approval.html')
+    context = {
+        'timesheet_list': timesheet_list1,
+    }
+
+    return HttpResponse(template.render(context, request))
+
+
+def approve_timesheet_pane(request):
+    uid = request.user.id
+    company_id = request.session['company_id']
+
+    timesheet_list1 = Timesheet.objects.filter(status='SUBMITTED', company_id=company_id)
+
+    template = loader.get_template('project_management/approve_timesheet_pane.html')
+    context = {
+        'timesheet_list': timesheet_list1,
+    }
+
+    return HttpResponse(template.render(context, request))
+
+
+def save_timesheet_approvals(request):
+    company_id = request.session['company_id']
+    timesheet_list = request.GET.get('listTimesheetApproval')
+    json_data = json.loads(timesheet_list)
+    uid = request.user.id
+
+    for timesheet_id in json_data:
+        tm_id = timesheet_id['tm']
+        tm_approve_status = timesheet_id['status']
+        Timesheet.objects.filter(pk=int(tm_id)).update(status=tm_approve_status, approved=True, date_approved=datetime.date.today(), approved_by_id=uid, last_updated_date=datetime.date.today(), last_updated_by_id=uid)
+
+    
+    timesheet_list1 = Timesheet.objects.filter(status='SUBMITTED', company_id=company_id)
+    template = loader.get_template('project_management/list_approve_timesheets.html')
+    context = {
+        'timesheet_list': timesheet_list1,
+    }
+    return HttpResponse(template.render(context, request))
+
+
+def manage_approved_timesheets(request):
+    uid = request.user.id
+    company_id = request.session['company_id']
+
+    timesheet_list1 = Timesheet.objects.filter(Q(status='ACCEPTED')|Q(status='REJECTED'), company_id=company_id)
+
+    template = loader.get_template('project_management/list_confirmed_timesheets.html')
+    context = {
+        'timesheet_list': timesheet_list1,
+    }
+
+    return HttpResponse(template.render(context, request))
+
+
+def update_timesheet_approval(request):
+    timesheet_id = request.GET.get('tm_id')
+    new_status = request.GET.get('status_val')
+    uid = request.user.id
+    company_id = request.session['company_id']
+
+    Timesheet.objects.filter(pk=int(timesheet_id)).update(status=new_status, last_updated_date=datetime.date.today(), last_updated_by_id=uid)
+
+    timesheet_list1 = Timesheet.objects.filter(Q(status='ACCEPTED')|Q(status='REJECTED'), company_id=company_id)
+    template = loader.get_template('project_management/list_confirmed_timesheets.html')
+    context = {
+        'timesheet_list': timesheet_list1,
+    }
+
+    return HttpResponse(template.render(context, request))
+
+
+def view_user_approved_timesheets(request):
+    uid = request.user.id
+    company_id = request.session['company_id']
+
+    timesheet_list1 = Timesheet.objects.filter(status='ACCEPTED', company_id=company_id, project_team_member_id=uid)
+
+    template = loader.get_template('project_management/list_user_accepted_timesheets.html')
+    context = {
+        'timesheet_list': timesheet_list1,
+    }
+
+    return HttpResponse(template.render(context, request))
+
+
+def view_user_rejected_timesheets(request):
+    uid = request.user.id
+    company_id = request.session['company_id']
+
+    timesheet_list1 = Timesheet.objects.filter(status='REJECTED', company_id=company_id, project_team_member_id=uid)
+
+    template = loader.get_template('project_management/list_user_rejected_timesheets.html')
+    context = {
+        'timesheet_list': timesheet_list1,
+    }
+
+    return HttpResponse(template.render(context, request))
+
+
+    

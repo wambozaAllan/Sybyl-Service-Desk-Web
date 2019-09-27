@@ -36,6 +36,10 @@
 </div>
 
 <script>
+    $('#id_name2').on('input', function () {
+        $('#id_name2').css({ "border": '1px solid #ced4da' });
+    });
+
     $('#update-user-group').on('submit', function (event) {
         event.preventDefault();
         var name = $('#id_name2').val();
@@ -73,6 +77,5 @@
                 }
             });
         }
-
     });
 </script>

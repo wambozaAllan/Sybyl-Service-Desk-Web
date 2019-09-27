@@ -31,7 +31,7 @@ urlpatterns = [
 
     # SYSTEM USERS
     path('addUser/', views.AddUser.as_view(), name='addUser'),
-    path('', views.user_createview, name='saveUser'),
+    path('saveUser', views.user_createview, name='saveUser'),
     path('listUsers/', views.ListUsers.as_view(), name='listUsers'),
     path('detailsUser/<int:pk>/', views.DetailsUser.as_view(), name='detailsUser'),
     path('updateUser/<int:pk>/', views.UpdateUser.as_view(), name='updateUser'),
@@ -39,8 +39,8 @@ urlpatterns = [
     path('validateUserName', views.validate_user_name, name='validateUserName'),
     path('searchUnAssignedUsers', views.search_unassigned_users, name='searchUnAssignedUsers'),
     path('searchUnAssignedGlobalUsers', views.search_unassigned_global_users, name='searchUnAssignedGlobalUsers'),
-    path('save', views.save_user_to_group, name='saveUserToGroup'),
-    path('save', views.save_user_to_global_group, name='saveUserToGlobalGroup'),
+    path('saveToGroup', views.save_user_to_group, name='saveUserToGroup'),
+    path('saveToGlobalGrp', views.save_user_to_global_group, name='saveUserToGlobalGroup'),
     path('removeUser', views.remove_user_from_group, name='removeUserFromGroup'),
     path('removeUserGlobal', views.remove_user_from_global_group, name='removeUserFromGlobalGroup'),
     path('addUserToGlobalGroup', views.add_user_to_global_group, name='addUserToGlobalGroup'),

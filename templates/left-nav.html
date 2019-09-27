@@ -204,6 +204,23 @@
                     </li>
 
                     <li><a href="{% url 'listauditlogs' %}"><i class="fa fa-info"></i> Audit Logs</a></li>
+
+                    <li class="">
+                        <a class="has-arrow" href="#" aria-expanded="false"><i class="fa fa-clock-o"></i>
+                            <span class="hide-menu">TIMESHEETS</span></a>
+                        <ul aria-expanded="false" class="collapse">
+                            <li onclick="">
+                                <a href="{% url 'myTimesheets' %}" aria-expanded="false"><i class="fa fa-calendar"></i>
+                                    <span class="hide-menu">Daily Timesheets </span>
+                                </a>
+                            </li>
+                            <li onclick="">
+                                <a href="{% url 'approveTimesheets' %}" aria-expanded="false"><i class="fa fa-calendar-check-o"></i>
+                                    <span class="hide-menu">Approvals </span>
+                                </a>
+                            </li>
+                        </ul>
+                    </li>
                 {% endif %}
 
             </ul>

@@ -179,4 +179,23 @@ urlpatterns = [
     path('auditlogsfilter/', views.filter_audit_logs, name='auditlogsfilter'),
     path('auditlogsfilter2/', views.all_companies_filter_auditlogs, name='auditlogsfilterallcomp'),
     path('manageSLAEscalations/', views.manage_sla_esclations, name='manageSLAEscalations'),
+    
+    
+    # TIMESHEETS
+    path('addTimesheet/', views.add_new_timesheet, name='addNewTimesheet'),
+    path('projectMilestone', views.fetch_milestones_by_project, name='selectMilestonesByProject'),
+    path('tasksMilestone', views.fetch_tasks_by_milestone, name='selectTasksByMilestone'),
+    path('myTimesheets/', views.daily_timesheets_pane, name='myTimesheets'),
+    path('approveTimesheets/', views.approve_timesheet_pane, name='approveTimesheets'),
+    path('saveTimeSheet', views.save_new_timesheet, name='saveTimeSheet'),
+    path('updateTimesheet', views.update_timesheet, name='updateTimesheet'),
+    path('saveUpdateTimesheet', views.save_update_timesheet, name='saveUpdateTimesheet'),
+    path('deleteTimesheet', views.delete_timesheet, name='deleteTimesheet'),
+    path('sendTimesheet', views.send_timesheet_for_approval, name='sendTimesheetForApproval'),
+    path('pendingApproval', views.timesheet_pending_approval, name='timesheetPendingApproval'),
+    path('saveTimesheetApprovals', views.save_timesheet_approvals, name='saveTimesheetApprovals'),
+    path('approvedTimesheetsTab', views.manage_approved_timesheets, name='approvedTimesheetsTab'),
+    path('updateTimesheetApproval', views.update_timesheet_approval, name='updateTimesheetApproval'),
+    path('userApprovedTimesheets', views.view_user_approved_timesheets, name='userApprovedTimesheets'),
+    path('userRejectedTimesheets', views.view_user_rejected_timesheets, name='userRejectedTimesheets'),
 ]

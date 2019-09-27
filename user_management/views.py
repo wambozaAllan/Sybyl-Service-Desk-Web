@@ -170,7 +170,6 @@ class DetailsUser(DetailView):
         return context
 
 
-
 class UpdateUser(UpdateView):
     model = User
     fields = ['first_name', 'last_name', 'gender', 'company', 'department', 'groups',
@@ -503,8 +502,7 @@ def save_user_to_global_group(request):
     user_id1.groups.add(groupid1)
 
     group_users = User.objects.filter(groups=int(group_id))
-    template = loader.get_template(
-        'user_management/list_global_group_users.html')
+    template = loader.get_template('user_management/list_global_group_users.html')
     context = {
         'group_users': group_users,
         'grp': grpname,

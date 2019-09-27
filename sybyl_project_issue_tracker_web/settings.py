@@ -45,6 +45,7 @@ INSTALLED_APPS = [
     'chat',
     'background_task',
     'simple_history',
+    'django.contrib.humanize',
 ]
 
 CKEDITOR_CONFIGS = {
