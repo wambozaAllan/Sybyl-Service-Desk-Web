@@ -128,8 +128,7 @@
                 {% if user.is_superuser %}
                     <li>
                         <a class="has-arrow  " href="#" aria-expanded="false"><i class="fa fa-bar-chart"></i><span
-                                class="hide-menu">User
-              Groups</span></a>
+                                class="hide-menu">User Groups</span></a>
                         <ul aria-expanded="false" class="collapse">
                             <li><a href="{% url 'listUserGroups' %}">User Groups</a></li>
                             <li><a href="{% url 'manageGlobalGroups' %}">Group Management</a></li>
@@ -210,13 +209,30 @@
                             <span class="hide-menu">TIMESHEETS</span></a>
                         <ul aria-expanded="false" class="collapse">
                             <li onclick="">
-                                <a href="{% url 'myTimesheets' %}" aria-expanded="false"><i class="fa fa-calendar"></i>
+                                <a href="{% url 'myTimesheets' %}" aria-expanded="false"><i class="fa fa-calendar-plus-o"></i>
                                     <span class="hide-menu">Daily Timesheets </span>
                                 </a>
                             </li>
                             <li onclick="">
                                 <a href="{% url 'approveTimesheets' %}" aria-expanded="false"><i class="fa fa-calendar-check-o"></i>
                                     <span class="hide-menu">Approvals </span>
+                                </a>
+                            </li>
+                            <li onclick="">
+                                <a href="{% url 'analyseAllTimesheets' %}" aria-expanded="false"><i class="fa fa-calendar"></i>
+                                    <span class="hide-menu">Calender </span>
+                                </a>
+                            </li>
+                        </ul>
+                    </li>
+
+                    <li class="">
+                        <a class="has-arrow" href="#" aria-expanded="false"><i class="fa fa-clock-o"></i>
+                            <span class="hide-menu">Planning/Schedules</span></a>
+                        <ul aria-expanded="false" class="collapse">
+                            <li onclick="">
+                                <a href="{% url 'schedulePlan' %}" aria-expanded="false"><i class="fa fa-calendar-o"></i>
+                                    <span class="hide-menu">Schedule Plan </span>
                                 </a>
                             </li>
                         </ul>

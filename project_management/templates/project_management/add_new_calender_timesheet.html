@@ -2,7 +2,7 @@
 {% block content %}
 
     <style>
-        .daterangepicker {
+        .daterangepicker{
             z-index: 999999999999999999;
         }
     </style>
@@ -16,8 +16,8 @@
             <div id="div_id_log_day" class="form-group">
                 <label for="id_log_day" class="col-form-label  requiredField">Log Date<span class="asteriskField">*</span>
                 </label>                    
-                <div class="">
-                    <input onkeypress="return false;" type="text" name="id_log_day" class="dateinput form-control" id="id_log_day" placeholder="dd-mm-yyyy">
+                <div class=""> 
+                    <input type="text" name="id_log_day" class="dateinput form-control" id="id_log_day" value="{{log_date}}" disabled>
                 </div>
             </div>
         </div>
@@ -121,9 +121,9 @@
         }).on('show.daterangepicker', function (ev, picker) {
             picker.container.find(".calendar-table").hide();
         }).on('change.daterangepicker', function (ev, picker) {
-            durationCalculating();
+            durationCalculating5();
         });
-        durationCalculating();
+        durationCalculating5();
     
         $('#id_project').change(function () {
             $('#id_milestone').val(null).trigger('change');
@@ -256,25 +256,23 @@
                     end_time: end_time,
                     notes: id_timesheet_notes
                 };
-                url_data = "{% url 'saveTimeSheet'%}";
+                url_data = "{% url 'savePaginatorTimeSheet'%}";
                 $.ajax({
                     type: "GET",
                     cache: false,
                     data: data3,
                     url: url_data,
                     success: function (resp) {
-                        $('.timesheet-pane').html(resp);
-                        $('.timesheet-pane').html(resp);
-                        window.location = '#close';
-                        $( "#heading1" ).removeClass( "collapsed");
-                        $( "#collapseOne" ).addClass( "show" );
+                        $('.close-dialog').click();
+                        $('.container-fluid').html(resp);
+                        
                         document.getElementById("btnSaveTimesheet").disabled=true;
                     }
                 });
             }
         });
 
-        function durationCalculating(){
+        function durationCalculating5(){
             var id_workedtime = $('#id_workedtime').val();
             var worked_time_ranges = id_workedtime.split(" - ");
             

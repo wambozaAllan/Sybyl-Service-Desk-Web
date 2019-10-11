@@ -7,10 +7,10 @@
             <th>Task</th>
             <th>Status</th>
             <th>Log Date</th>
-            <th>Date Submitted</th>
-            <th>Date Approved</th>
-            <th>Approved By</th>
+            <th>Duration</th>
+            <th class="text-center">Resubmissions</th>
             <th class="text-center">Update</th>
+            <th class="text-center">Details</th>
         </tr>
         </thead>
         <tbody>
@@ -23,7 +23,7 @@
                         <strong>{{ tm.project_team_member }}</strong>
                     </span>
                 </td>
-                <td>{{ tm.task }}</td>
+                <td><a href="#" onclick="functionViewTaskDetails({{ tm.task_id }})" title="View Task Details!" class="text-info font-weight-bold">{{ tm.task | truncatechars:17 }}</a></td>
                 {% if tm.status == 'ACCEPTED'%}
                     <td class="text-center">
                         <span class="badge badge-success"><strong>{{tm.status}}</strong></span>
@@ -33,12 +33,21 @@
                         <span class="badge badge-danger"><strong>{{tm.status}}</strong></span>
                     </td>
                 {% endif %}
-                <td>{{ tm.log_day | date:"D, d M, Y"}}</td>
-                <td>{{tm.date_submitted | date:"D, d M, Y"}}</td>
-                <td>{{tm.date_approved | date:"D, d M, Y"}}</td>
-                <td>{{tm.approved_by}}</td>
+                <td>{{ tm.log_day | date:"D, d M, Y" }}</td>
+                <td class="text-info">{{tm.duration}}</td>
+                {% if tm.get_resubmission_count == 0 %}
+                    <td class="text-center">
+                        None
+                    </td>
+                {% else %}
+                    <td class="text-center">
+                        <span class="label label-rounded label-success">
+                            <a href="#" style="color: #fff" onclick="functionViewResubmissions({{tm.id}})">{{tm.get_resubmission_count}} </a>
+                        </span>
+                    </td>   
+                {% endif %}
                 <td class="text-center">
-                    <select id="edit-approval{{tm.id}}" class="form-control input-sm" onchange="updateTimesheetApprovals({{tm.id}}, '{{tm.status}}')">
+                    <select id="edit-approval{{tm.id}}" class="form-control input-sm" onchange="updateTimesheetApprovals({{tm.id}}, '{{tm.status}}', '{{tm.approver_notes}}')">
                         {% if tm.status == 'ACCEPTED'%}
                             <option value="ACCEPTED">Accept</option>
                             <option value="REJECTED">Reject</option>
@@ -47,6 +56,11 @@
                             <option value="ACCEPTED">Accept</option>
                         {% endif %}
                     </select>
+                </td>
+                <td class="text-center">
+                    <button onclick="functionViewApprovedTimesheetDesc('{{ tm.task }}', '{{ tm.notes }}', '{{  tm.start_time  | date:'H:i A' }} - {{ tm.end_time  | date:'H:i A' }}', '{{tm.created_time | date:"D, d M, Y"}}', '{{tm.date_submitted | date:"d-m-y"}}', '{{tm.submitted_by}}', '{{tm.approved_by}}', '{{ tm.date_approved | date:"D, d M, Y" }}', '{{tm.approver_notes}}')" class="btn btn-outline-success btn-sm" type="button">
+                        <i title="View Timesheet Description" class="fa fa-dedent"></i>
+                    </button>
                 </td>
             </tr>
         {% endfor %}
@@ -57,7 +71,10 @@
 <script>
     $('#table-approved-timesheet').DataTable();
 
-    function updateTimesheetApprovals(tm_id, status){
+    function updateTimesheetApprovals(tm_id, status, approver_notes){
+        if(approver_notes === '' || approver_notes === null || approver_notes === 'None'){
+            approver_notes = ''
+        }
         var status_val = $('#edit-approval'+tm_id).val();
         urldata = "{% url 'updateTimesheetApproval'%}";
 
@@ -71,6 +88,51 @@
             success: function (resp) {
                 $('.confirmed-time-sheet-pane').html(resp);
                 $('#table-approved-timesheet').DataTable();
+                $.confirm({
+                    title: '<h3>Add/Update Approver Notes!</h3>',
+                    content: '' +
+                        '<form action="" class="formName">' +
+                        '<div class="form-group">' +
+                        '<label>Approver Comment (optional)</label>' +
+                        '<textarea id="approver_comment2" class="form-control approver-comment" rows="2" placeholder="Enter Approver Comment ">'+approver_notes+'</textarea>'+
+                        '</div>' +
+                        '</form>',
+                    type: 'blue',
+                    typeAnimated: true,
+                    boxWidth: '30%',
+                    useBootstrap: false,
+                    closeIcon: true,
+                    icon: 'fa fa-edit',
+                    buttons: {
+                        formSubmit: {
+                            text: 'OK',
+                            btnClass: 'btn-blue',
+                            action: function () {
+                                urldata = "{% url 'updateApproverComment'%}";
+                                var appr_comment = this.$content.find('#approver_comment2').val();
+                                $.ajax({
+                                    type: "GET",
+                                    cache: false,
+                                    data: {
+                                        appr_comment: appr_comment,
+                                        tm_id: tm_id
+                                    },
+                                    url: urldata,
+                                    success: function (resp) {
+                                        $('.table-responsive').html(resp);
+                                        $('#table-approved-timesheet').DataTable();
+                                    }
+                                });
+                            }
+                        },
+                        close: {
+                            text: 'Cancel',
+                            btnClass: 'btn-gray',
+                            action: function () {
+                            }
+                        }
+                    }
+                });
             }
         }); 
     }

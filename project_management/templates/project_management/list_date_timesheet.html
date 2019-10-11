@@ -1,0 +1,328 @@
+{% load humanize %}
+
+<table id="table_timesheets22" class="table table-hover table-sm">
+    <thead class="">
+        <tr>
+            <th>#</th>
+            <th>Task</th>
+            <th>Duration</th>
+            <th>Start Time</th>
+            <th>End Time</th>
+            <th>Status</th>
+            <th class="text-center">Action</th>
+        </tr>
+        </thead>
+        <tbody>
+            {% if initial_status %}
+                <h5 class="text-info pull-right"><form class="form"><a onclick="functionCheckAll()" href="#"><input type="checkbox" class="select-all-check text-info" id="select_all_timesheets"/></a> Select All</form></h5>
+            {% endif %}
+            {% for tm in timesheet_list %}
+                <tr class="">
+                    <td>{{ forloop.counter }}</td>
+                    <td><a href="#" onclick="functionViewTaskDetails({{ tm.task_id }})" title="View Task Details!" class="text-info font-weight-bold">{{ tm.task | truncatechars:17 }}</a></td>
+                    <td><span class="badge badge-success"><strong>{{ tm.duration }}</strong></span></td>
+                    <td>{{ tm.start_time | time:"TIME_FORMAT" }}</td>
+                    <td>{{ tm.end_time | time:"TIME_FORMAT" }}</td>
+
+                    {% if tm.status == 'INITIAL' %}
+                        <td class="font-weight-bold text-primary">NOT SUBMITTED</td>
+                    {% elif tm.status == 'SUBMITTED' %}
+                        <td class="font-weight-bold text-primary">Pending Approval</td>
+                    {% elif tm.status == 'REJECTED' %}
+                        <td class="font-weight-bold text-danger">REJECTED</td>
+                    {% else %}
+                        <td class="font-weight-bold text-success">APPROVED</td>
+                    {% endif %}
+
+                    {% if tm.status == 'INITIAL' %}
+                        <td class="text-center">
+                            <form class="form">
+                                <input type="checkbox" id="itemcheckbox{{tm.id}}" onclick="functionManageTimesheets({{tm.id}})" class="timesheet-checkbox" name="rowSelectCheckBox"/>&nbsp;
+                                
+                                <button onclick="functionCalendarTimesheetSheetDetails({{tm.id}})" class="btn btn-outline-success btn-sm" type="button">
+                                    <i title="View Timesheet Description" class="fa fa-dedent"></i>
+                                </button> &nbsp;
+
+                                <button onclick="functionEditTimesheet({{ tm.id }}, '{{ tm.log_day | date:"d-m-Y"}}', '{{ tm.start_time  | date:'H:i A'}}', '{{ tm.end_time  | date:'H:i A'}}', '{{ tm.task }}', {{tm.task_id}}, '{{tm.notes}}')"
+                                    class="btn btn-outline-success btn-sm" type="button">
+                                    <i title="Edit Group" class="fa fa-edit"></i>
+                                </button> &nbsp;
+                                
+                                <button onclick="functionDeleteTimesheet({{ tm.id }}, '{{ tm.log_day | date:"d-m-Y"}}', '{{ tm.start_time  | date:'H:i A'}}', '{{ tm.end_time  | date:'H:i A'}}', '{{ tm.task }}')" class="btn btn-outline-danger btn-sm" type="button">
+                                    <i title="Delete Timesheet" class="fa fa-remove"></i>
+                                </button> &nbsp;
+                            </form>
+                        </td>
+                    {% elif tm.status == 'SUBMITTED' %}
+                        <td class="text-center">
+                            <form class="form">
+                                <button onclick="functionCalendarTimesheetSheetDetails({{tm.id}})" class="btn btn-outline-success btn-sm" type="button">
+                                    <i title="View Timesheet Description" class="fa fa-dedent"></i>
+                                </button>
+                            </form>
+                        </td>
+                    {% elif tm.status == 'REJECTED' %}
+                        <td class="text-center">
+                            <form class="form">
+                                <button onclick="functionCalendarTimesheetSheetDetails({{tm.id}})" class="btn btn-outline-success btn-sm" type="button">
+                                    <i title="View Timesheet Description" class="fa fa-dedent"></i>
+                                </button> &nbsp;
+
+                                <button onclick="paginatorResubmitTimesheets({{ tm.id }}, '{{ tm.log_day | date:"d-m-Y"}}', '{{ tm.start_time  | date:'H:i A'}}', '{{ tm.end_time  | date:'H:i A'}}', '{{ tm.task }}', {{tm.task_id}}, '{{tm.notes}}')" class="btn btn-outline-success btn-sm" type="button">
+                                    <i title="Re-submit Timesheet for Approval!" class="fa fa-repeat"></i>
+                                </button>
+                            </form>
+                        </td>
+                    {% else %}
+                        <td class="text-center">
+                            <form class="form">
+                                <button onclick="functionCalendarTimesheetSheetDetails({{tm.id}})" class="btn btn-outline-success btn-sm" type="button">
+                                    <i title="View Timesheet Description" class="fa fa-dedent"></i>
+                                </button>
+                            </form>
+                        </td>
+                    {% endif %}
+                </tr>
+            {% endfor %}
+    </tbody>
+</table>
+{% if initial_status %}
+    <div class="">
+        <button onclick="functionsubmitForApproval04()" style="margin-top: 3%;" title="Send Timesheets For Approval!" id="submitForApproval" class="btn btn-success pull-right">
+            <i class="fa fa-fw fa-lg fa-share"></i>Send For Approval
+        </button>
+    </div>
+{% else %}
+    <h4 class="text-center">No Recorded Timesheets on this Date!</h4>    
+{% endif %}
+
+
+<script>
+    var checktimesheetset = new Set();
+    var listTimesheet = [];
+
+    function functionsubmitForApproval04(){
+        if (checktimesheetset.size !== 0) {
+
+            $.confirm({
+                title: '<h3 class="font-weight-bold">Confirm Timesheet Submission!</h3>',
+                content: '<h4>Send: <b class="text-info">'+ checktimesheetset.size +'</b> Timesheet(s) for Approval!</h4>',
+                type: 'green',
+                typeAnimated: true,
+                boxWidth: '40%',
+                useBootstrap: false,
+                icon: 'fa fa-warning',
+                closeIcon: true,
+                buttons: {
+                    formSubmit: {
+                        text: 'Send',
+                        btnClass: 'btn-green',
+                        action: function () {
+                            urldata = "{% url 'sendPaginatorTimesheetForApproval'%}";
+
+                            for (const k of checktimesheetset) {
+                                listTimesheet.push({tm: k});
+                            }
+                            var date_selected = $('#date_selected_val').val();
+                            $.ajax({
+                                type: 'GET',
+                                data: {
+                                    listTimesheet: JSON.stringify(listTimesheet),
+                                    dateSelected: date_selected
+                                },
+                                url: urldata,
+                                success: function (resp) {
+                                    checktimesheetset = new Set();
+                                    listTimesheet = [];
+                                    $('#timesheet-manage-pane').html(resp);
+                                }
+                            });
+                        }
+                    },
+                    close: {
+                        text: 'Cancel',
+                        btnClass: 'btn-gray',
+                        action: function () {
+                        }
+                    }
+                }
+            });
+        } else {
+            $.confirm({
+                title: '<h3>Alert!</h3>',
+                content: 'Please Tick Timesheets you want to send for Approval!',
+                type: 'orange',
+                typeAnimated: true,
+                useBootstrap: false,
+                closeIcon: true,
+                boxWidth: '30%',
+                icon: 'fa fa-warning',
+                buttons: {
+                    close: {
+                        text: 'Close',
+                        btnClass: 'btn-gray',
+                        action: function () {
+
+                        }
+                    }
+                }
+            });
+        }
+    }
+
+    function functionEditTimesheet(timesheet_id, log_day, start_time, end_time, task, task_id, notes) {
+        urldata = "{% url 'updateTimesheetPaginator' %}";
+        $.ajax({
+            type: "GET",
+            cache: false,
+            data: {
+                timesheet_id: timesheet_id, 
+                log_day: log_day,
+                start_time: start_time,
+                end_time: end_time,
+                task: task,
+                task_id: task_id,
+                notes: notes
+            },
+            url: urldata,
+            success: function (resp) {
+                $.confirm({
+                    title: '<h3>Edit Timesheet.</h3>',
+                    content: '' + resp,
+                    type: 'blue',
+                    typeAnimated: true,
+                    boxWidth: '55%',
+                    useBootstrap: false,
+                    closeIcon: true,
+                    buttons: {
+                        close: {
+                            text: 'Close',
+                            btnClass: 'btn-gray close-dialog',
+                            action: function () {
+                            }
+                        }
+                    }
+                });
+            }
+        });
+    }
+
+    function functionDeleteTimesheet(timesheet_id, day, s_time, e_time, task){
+        var date_selected = $('#date_selected_val').val();
+        urldata = "{% url 'deleteTimesheetPaginator'%}";
+        $.confirm({
+            title: '<h3 class="font-weight-bold">Delete Timesheet!</h3>',
+            content: '<h4>Day: <span class="text-info">'+ day +'</span></h4>'+
+                    '<h4>Task: <span class="text-info">'+ task +'</span></h4>'+
+                    '<h4>Time: <span class="text-info">'+ s_time +' - '+e_time+'</span></h4>',
+            type: 'red',
+            typeAnimated: true,
+            boxWidth: '40%',
+            useBootstrap: false,
+            theme: 'modern',
+            icon: 'fa fa-exclamation-circle',
+            closeIcon: true,
+            buttons: {
+                formSubmit: {
+                    text: 'Remove',
+                    btnClass: 'btn-red',
+                    action: function () {
+                        $.ajax({
+                            type: "GET",
+                            cache: false,
+                            data: {
+                                timesheet_id: timesheet_id,
+                                dateSelected: date_selected
+                            },
+                            url: urldata,
+                            success: function (resp) {
+                                $('.close-dialog').click();
+                                $('#timesheet-manage-pane').html(resp);
+                            }
+                        });
+                    }
+                },
+                close: {
+                    text: 'Cancel',
+                    btnClass: 'btn-gray',
+                    action: function () {
+                    }
+                }
+            }
+        });
+    }
+
+    function functionManageTimesheets(timesheetid) {
+        var checkBox = document.getElementById("itemcheckbox" + timesheetid);
+        if (checkBox.checked === true) {
+            if (!checktimesheetset.has(timesheetid)) {
+                checktimesheetset.add(timesheetid);
+            }
+        }else{
+            $(".select-all-check").prop('checked', false);
+            if (checktimesheetset.has(timesheetid)) {
+                checktimesheetset.delete(timesheetid);
+            }
+        }
+    }
+
+    function functionCheckAll(){
+        var selectAllCheckbox=document.getElementById("select_all_timesheets");
+        if(selectAllCheckbox.checked==true){
+            var checkboxes =  document.getElementsByName("rowSelectCheckBox");
+            for(var i=0, n=checkboxes.length;i<n;i++) {
+                checkboxes[i].checked = true;
+                var timesheetid2 = (checkboxes[i].id).slice(12);
+                if (!checktimesheetset.has(parseInt(timesheetid2))) {
+                    checktimesheetset.add(parseInt(timesheetid2));
+                }
+            }
+        }else {
+            var checkboxes =  document.getElementsByName("rowSelectCheckBox");
+            for(var i=0, n=checkboxes.length;i<n;i++) {
+                checkboxes[i].checked = false;
+                var timesheetid2 = (checkboxes[i].id).slice(12);
+                if (checktimesheetset.has(parseInt(timesheetid2))) {
+                    checktimesheetset.delete(parseInt(timesheetid2));
+                }
+            }
+        }
+    }
+
+    function paginatorResubmitTimesheets(timesheet_id, log_day, start_time, end_time, task, task_id, notes) {
+        urldata = "{% url 'paginatorResubmitTimesheet' %}";
+        $.ajax({
+            type: "GET",
+            cache: false,
+            data: {
+                timesheet_id: timesheet_id, 
+                log_day: log_day,
+                start_time: start_time,
+                end_time: end_time,
+                task: task,
+                task_id: task_id,
+                notes: notes
+            },
+            url: urldata,
+            success: function (resp) {
+                $.confirm({
+                    title: '<h3>Re-submit Timesheet.</h3>',
+                    content: '' + resp,
+                    type: 'blue',
+                    typeAnimated: true,
+                    boxWidth: '55%',
+                    useBootstrap: false,
+                    closeIcon: true,
+                    buttons: {
+                        close: {
+                            text: 'Close',
+                            btnClass: 'btn-gray close-dialog',
+                            action: function () {
+                            }
+                        }
+                    }
+                });
+            }
+        });
+    }
+</script>
