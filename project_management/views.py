@@ -5215,7 +5215,7 @@ def filter_users_timesheets_by_week(request):
             new_dict = {}
             new_dict['memberid'] = mem.id
             new_dict['member'] = mem.first_name + " " + mem.last_name
-            for i in range((enddate - startdate +1).days):
+            for i in range((enddate - startdate).days):
                 days_list['name'] = "User"
                 days_list['day'+str(i)] = startdate + i*day_delta
                 days_list['no'] = "#"
@@ -5226,9 +5226,6 @@ def filter_users_timesheets_by_week(request):
                     sum_duration = ii.durationsec()
                 new_dict['day'+str(i)] = compute_duration(sum_duration)
             all_member_tms.append(new_dict)
-
-        # print(all_member_tms)
-        print(days_list)
 
     template = loader.get_template('project_management/list_users_timesheet_by_week.html')
     context = {
