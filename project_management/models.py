@@ -513,6 +513,15 @@ class Timesheet(models.Model):
     def get_resubmission_count(self):
         return ResubmittedTimesheet.objects.filter(timesheet=self.id).count()
 
+    def durationsec(self):
+        start = self.start_time
+        end = self.end_time
+        start_sec= (start.hour*60+start.minute)*60+start.second
+        end_sec= (end.hour*60+end.minute)*60+end.second
+        delta = end_sec-start_sec
+        
+        return delta
+
     
 class ResubmittedTimesheet(models.Model):
     date_resubmitted = models.DateTimeField(auto_now=True)

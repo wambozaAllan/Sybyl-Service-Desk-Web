@@ -212,6 +212,7 @@ urlpatterns = [
     path('viewTaskDetails/<int:pk>', views.DetailsProjectTask.as_view(), name='viewTaskDetails'),
     path('userRejectedTimesheets', views.manage_rejected_timesheets, name='userRejectedTimesheets'),
     path('resubmitTimesheet', views.resubmit_timesheet, name='resubmitTimesheet'),
+    path('saveResentTimesheet', views.save_resent_timesheet, name='saveResentTimesheet'),
     path('paginatorResubmitTimesheet', views.paginator_resubmit_timesheet, name='paginatorResubmitTimesheet'),
     path('saveResentPaginatorTimesheet', views.save_resent_paginator_timesheet, name='saveResentPaginatorTimesheet'),
     path('viewTimesheetResubmissions', views.manage_timesheet_resubmissions, name='viewTimesheetResubmissions'),
@@ -219,6 +220,8 @@ urlpatterns = [
     path('savecalenderTimeSheet', views.save_calender_timesheet, name='savecalenderTimeSheet'),
     path('savePaginatorTimeSheet', views.save_paginator_timesheet, name='savePaginatorTimeSheet'),
     path('calenderTimesheetView', views.calenderTimesheetView, name='calenderTimesheetView'),
+    path('timesheetWeeklyReport', views.timesheets_weekly_report, name='timesheetWeeklyReport'),
+    path('filterTimesheetsByWeek', views.filter_users_timesheets_by_week, name='filterTimesheetsByWeek'),
 
     # Schedules plans 
     path('schedulePlan', views.timesheets_schedule_pane, name='schedulePlan'),

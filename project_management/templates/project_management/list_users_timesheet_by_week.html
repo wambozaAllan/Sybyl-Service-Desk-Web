@@ -1,0 +1,90 @@
+<style>
+</style>
+<div class="table-responsive">
+    <table id="users-weekly-timesheet" class=" table table-hover" cellspacing="0" width="100%">
+        <thead>
+                <tr>
+                    <th>{{ days_list.no }}</th>
+                    <th>{{ days_list.name }}</th>
+                    <th>{{ days_list.day0 | date:"D, d M" }}</th>
+                    <th>{{ days_list.day1 | date:"D, d M"}}</th>
+                    <th>{{ days_list.day2 | date:"D, d M"}}</th>
+                    <th>{{ days_list.day3 | date:"D, d M"}}</th>
+                    <th>{{ days_list.day4 | date:"D, d M"}}</th>
+                    <th>{{ days_list.day5 | date:"D, d M"}}</th>
+                </tr>
+        </thead>
+        <tbody>
+
+            {% for tm in timesheet_list %}
+            <tr>
+                <td>{{ forloop.counter }}</td>
+                <td class="font-weight-bold">{{ tm.member }}</td>
+                {% if tm.day0 == "0:00:00" %}
+                    <td class="text-center">
+                        <span class="label label-rounded label-warning">{{ tm.day0}}</span>
+                    </td>
+                {% else %}
+                    <td class="text-center">
+                        <span class="label label-rounded label-success">{{ tm.day0}}</span>
+                    </td>   
+                {% endif %}
+
+                {% if tm.day1 == "0:00:00" %}
+                    <td class="text-center">
+                        <span class="label label-rounded label-warning">{{ tm.day1}}</span>
+                    </td>
+                {% else %}
+                    <td class="text-center">
+                        <span class="label label-rounded label-success">{{ tm.day1}}</span>
+                    </td>   
+                {% endif %}
+
+                {% if tm.day2 == "0:00:00" %}
+                    <td class="text-center">
+                        <span class="label label-rounded label-warning">{{ tm.day2}}</span>
+                    </td>
+                {% else %}
+                    <td class="text-center">
+                        <span class="label label-rounded label-success">{{ tm.day2}}</span>
+                    </td>   
+                {% endif %}
+
+                {% if tm.day3 == "0:00:00" %}
+                    <td class="text-center">
+                        <span class="label label-rounded label-warning">{{ tm.day3}}</span>
+                    </td>
+                {% else %}
+                    <td class="text-center">
+                        <span class="label label-rounded label-success">{{ tm.day3}}</span>
+                    </td>   
+                {% endif %}
+
+                {% if tm.day4 == "0:00:00" %}
+                    <td class="text-center">
+                        <span class="label label-rounded label-warning">{{ tm.day4}}</span>
+                    </td>
+                {% else %}
+                    <td class="text-center">
+                        <span class="label label-rounded label-success">{{ tm.day4}}</span>
+                    </td>   
+                {% endif %}
+
+                {% if tm.day5 == "0:00:00" %}
+                    <td class="text-center">
+                        <span class="label label-rounded label-warning">{{ tm.day5}}</span>
+                    </td>
+                {% else %}
+                    <td class="text-center">
+                        <span class="label label-rounded label-success">{{ tm.day5}}</span>
+                    </td>   
+                {% endif %}
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+
+<script>
+    $('#users-weekly-timesheet').DataTable();
+</script>

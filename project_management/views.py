@@ -1,7 +1,7 @@
 import csv, io, xlwt
 import xlsxwriter
 import datetime
-from datetime import date, timezone
+from datetime import date, timezone, timedelta
 
 from django.shortcuts import render, get_object_or_404, redirect
 from django.views.generic import CreateView, ListView, DetailView, UpdateView, DeleteView
@@ -32,6 +32,7 @@ from django.http import JsonResponse
 from django.db.models import Count
 import json
 import time
+from django.db.models import Sum
 
 # Custom Views
 class ProjectCreateView(PermissionRequiredMixin, CreateView):
@@ -5179,3 +5180,63 @@ def save_resent_paginator_timesheet(request):
     }
 
     return HttpResponse(template.render(context, request))
+
+
+def timesheets_weekly_report(request):
+    company_id = request.session['company_id']
+
+    template = loader.get_template('project_management/timesheet_weekly_report_pane.html')
+    context = {}
+
+    return HttpResponse(template.render(context, request))
+
+
+def filter_users_timesheets_by_week(request):
+    uid = request.user.id
+    company_id = request.session['company_id']
+    start_date1 = request.GET.get('start_date')
+    end_date1 = request.GET.get('end_date')
+    
+    startdate = datetime.datetime.strptime(start_date1, '%d-%m-%Y')
+    enddate = datetime.datetime.strptime(end_date1, '%d-%m-%Y')
+    # delta = timedelta(days=1)
+
+    min_dt = datetime.datetime.combine(startdate, datetime.time.min)
+    max_dt = datetime.datetime.combine(enddate, datetime.time.max)
+    day_delta = timedelta(days=1) 
+    
+
+    company_members_exist = User.objects.filter(company_id=company_id).exists()
+    if company_members_exist == True:
+        company_members = User.objects.filter(company_id=company_id)
+        all_member_tms = []
+        days_list = {}
+        for mem in company_members:
+            new_dict = {}
+            new_dict['memberid'] = mem.id
+            new_dict['member'] = mem.first_name + " " + mem.last_name
+            for i in range((enddate - startdate +1).days):
+                days_list['name'] = "User"
+                days_list['day'+str(i)] = startdate + i*day_delta
+                days_list['no'] = "#"
+
+                duration = Timesheet.objects.filter(log_day=(startdate + i*day_delta), project_team_member_id=mem.id, company_id=company_id)
+                sum_duration = 0
+                for ii in duration:
+                    sum_duration = ii.durationsec()
+                new_dict['day'+str(i)] = compute_duration(sum_duration)
+            all_member_tms.append(new_dict)
+
+        # print(all_member_tms)
+        print(days_list)
+
+    template = loader.get_template('project_management/list_users_timesheet_by_week.html')
+    context = {
+        'timesheet_list': all_member_tms,
+        'days_list': days_list
+    }
+
+    return HttpResponse(template.render(context, request))
+
+def compute_duration(sec):
+    return '{}'.format(str(timedelta(seconds=sec)))
