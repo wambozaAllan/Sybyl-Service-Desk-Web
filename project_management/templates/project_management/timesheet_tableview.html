@@ -13,7 +13,7 @@
             <div class="col-4"></div>
             <div style="margin-left: 11%;">
                 <button onclick="calendarPicker2.changeDate(new Date())" type="button" style="width: 70px" class="btn btn-outline-secondary col-3">Today</button>&nbsp;
-                <button id="" class="btn btn-info" onclick="functionAddNewTimesheet2()">
+                <button id="btn_add_timesheet02" class="btn btn-info" onclick="functionAddNewTimesheet2()">
                     <i class="fa fa-fw fa-lg fa-plus"></i>Log Time
                 </button>&nbsp;
                 <span class="btn-group " style="height: 35px; padding: 0%; margin-top: 1px;">
@@ -60,6 +60,7 @@
 <!-- END The Modal -->
     
 <script>
+    document.getElementById("btn_add_timesheet02").disabled = false;
     var calendarPicker2 = $("#calendar_filter").calendarPicker({
         monthNames: ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"],
         dayNames: ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"],
@@ -73,29 +74,57 @@
             $('#date_selected_val').val(moment(cal.currentDate).format('YYYY-MM-DD'));
 
             var todayDate = new Date();
-            console.log(todayDate);
-            console.log(cal.currentDate);
             var endDate= new Date(Date.parse(cal.currentDate));
 
-            if (endDate > TodayDate) {
-                console.log('cnt add TM');
-            }else{
-                console.log('add TM');
-            }
+            if (endDate > todayDate) {
+                document.getElementById("btn_add_timesheet02").disabled = true;
+                $.confirm({
+                    title: 'Alert!',
+                    content: 'Cant Add timesheet to a date beyond Today!',
+                    type: 'orange',
+                    typeAnimated: true,
+                    boxWidth: '25%',
+                    useBootstrap: false,
+                    closeIcon: true,
+                    buttons: {
+                        formSubmit: {
+                            text: 'close',
+                            btnClass: 'btn-gray close-dialog',
+                        },
+                    },
+                    onContentReady: function () {}
+                });
 
-            // $.ajax({
-            //     type: "GET",
-            //     cache: false,
-            //     data: {
-            //         dateSelected: dateSelected2
-            //     },
-            //     url: '{% url 'filterTimesheetsByDate' %}',
-            //     success: function (resp) {
-            //         $('#timesheet-manage-pane').html('');
-            //         $('#timesheet-manage-pane').html('<i class="fa fa-spinner fa-spin fa-5x text-center" style="margin-left: 50%;"></i>');
-            //         $('#timesheet-manage-pane').html(resp);
-            //     }
-            // });
+                $.ajax({
+                    type: "GET",
+                    cache: false,
+                    data: {
+                        dateSelected: dateSelected2
+                    },
+                    url: '{% url 'filterTimesheetsByDate' %}',
+                    success: function (resp) {
+                        $('#timesheet-manage-pane').html('');
+                        $('#timesheet-manage-pane').html('<i class="fa fa-spinner fa-spin fa-5x text-center" style="margin-left: 50%;"></i>');
+                        $('#timesheet-manage-pane').html(resp);
+                    }
+                });
+
+            }else{
+                document.getElementById("btn_add_timesheet02").disabled = false;
+                $.ajax({
+                    type: "GET",
+                    cache: false,
+                    data: {
+                        dateSelected: dateSelected2
+                    },
+                    url: '{% url 'filterTimesheetsByDate' %}',
+                    success: function (resp) {
+                        $('#timesheet-manage-pane').html('');
+                        $('#timesheet-manage-pane').html('<i class="fa fa-spinner fa-spin fa-5x text-center" style="margin-left: 50%;"></i>');
+                        $('#timesheet-manage-pane').html(resp);
+                    }
+                });
+            }
         }
     });
 

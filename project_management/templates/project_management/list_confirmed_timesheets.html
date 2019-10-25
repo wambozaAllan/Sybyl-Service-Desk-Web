@@ -89,7 +89,7 @@
                 $('.confirmed-time-sheet-pane').html(resp);
                 $('#table-approved-timesheet').DataTable();
                 $.confirm({
-                    title: '<h3>Add/Update Approver Notes!</h3>',
+                    title: '<h3>Reason!</h3>',
                     content: '' +
                         '<form action="" class="formName">' +
                         '<div class="form-group">' +
@@ -110,19 +110,24 @@
                             action: function () {
                                 urldata = "{% url 'updateApproverComment'%}";
                                 var appr_comment = this.$content.find('#approver_comment2').val();
-                                $.ajax({
-                                    type: "GET",
-                                    cache: false,
-                                    data: {
-                                        appr_comment: appr_comment,
-                                        tm_id: tm_id
-                                    },
-                                    url: urldata,
-                                    success: function (resp) {
-                                        $('.table-responsive').html(resp);
-                                        $('#table-approved-timesheet').DataTable();
-                                    }
-                                });
+                                if(!appr_comment){
+                                    $.alert('Please provide Update Reason!');
+                                    return false;
+                                }else{
+                                    $.ajax({
+                                        type: "GET",
+                                        cache: false,
+                                        data: {
+                                            appr_comment: appr_comment,
+                                            tm_id: tm_id
+                                        },
+                                        url: urldata,
+                                        success: function (resp) {
+                                            $('.table-responsive').html(resp);
+                                            $('#table-approved-timesheet').DataTable();
+                                        }
+                                    });
+                                }
                             }
                         },
                         close: {

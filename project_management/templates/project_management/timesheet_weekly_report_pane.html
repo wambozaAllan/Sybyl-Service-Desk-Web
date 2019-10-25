@@ -1,0 +1,131 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block content %}
+<!-- Main wrapper  -->
+{% include 'header.html' %}
+{% include 'left-nav.html' %}
+
+
+<script type="text/javascript" src="{% static 'template-static-files/javascript/lib/calendar-2/moment.latest.min.js' %}"></script>
+
+<div id="main-wrapper">
+
+    <!-- Page wrapper  -->
+    <div class="page-wrapper">
+        <!-- Bread crumb -->
+        <div class="row page-titles">
+            <div class="col-md-5 align-self-center">
+                <h3 class="text-primary">Schedule Plan</h3>
+            </div>
+            <div class="col-md-7 align--selfcenter">
+                <ol class="breadcrumb">
+                    <li class="breadcrumb-item"><a href="javascript:void(0)">Home</a></li>
+                    <li class="breadcrumb-item active">Timesheet</li>
+                </ol>
+            </div>
+        </div>
+        <!-- Container fluid  -->
+        <div class="container-fluid">
+            <div class="p-5">
+                <div class="card">
+                    <div class="card-body">
+
+                        <div class="">
+                            <div class="row ">
+                                <div class="col-5">
+                                    <div id="" class="form-group">
+                                        <label class="col-form-label requiredField">Select Week</label>                    
+                                        <div class="week-select">
+                                            <input onkeypress="return false;" type="text" name="week" class="form-control" id="" placeholder="">
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div id="weekly_users_data">
+
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    $(document).ready(function(){
+        var applyStyle = function (e, cssClass) {
+            var tr = e.parent('tr');
+            var index = e.index();
+
+            e.addClass(cssClass);
+            var daysRemainingInWeek = 6 - index;
+            var carryOver = 6 - daysRemainingInWeek;
+
+            for (var i = 0; i <= daysRemainingInWeek; i++) {
+                var pos = index + i;
+                tr.find('td:eq(' + pos + ')').addClass(cssClass);
+            }
+
+            if (carryOver > 0) {
+                var nextTr = tr.next('tr');
+                for (var i = 0; i < carryOver; i++) {
+                    nextTr.find('td:eq(' + i + ')').addClass(cssClass);
+                }
+            }
+        };
+
+        var highlightRange = function (e) {
+            var input = e.currentTarget;
+
+            $('.week-active', '.datepicker-days').removeClass('week-active');
+            var thisDay = $('td.active.day', '.datepicker-days');
+            applyStyle(thisDay, 'week-active');
+
+            var date = new Date(e.date);
+            var start_date = moment(date);
+            var end_date = moment(date).add(6, 'days');
+            var friendly_string = start_date.format('DD-MM-YYYY') + ' - '
+                + end_date.format('DD-MM-YYYY');
+
+            $(input).val(friendly_string);
+
+            $.ajax({
+                type: "GET",
+                cache: false,
+                data: {
+                    start_date: start_date.format('DD-MM-YYYY'),
+                    end_date: end_date.format('DD-MM-YYYY')
+                },
+                url: '{% url 'filterTimesheetsByWeek' %}',
+                success: function (resp) {
+                    $('#weekly_users_data').html(resp);
+                }
+            });
+        };
+
+        highlightRange({currentTarget: document.getElementsByName('week')[0], date: new Date() });
+
+        $('input[name=week]').datepicker({
+            format: "dd-mm-yyyy",
+            autoclose: true,
+            orientation: 'top auto'
+        }).on('show', function (e) {
+            var td = $('td', '.datepicker-days');
+            td.mouseover(function () {
+                applyStyle($(this), 'week');
+            }).mouseout(function () {
+                $('.week', '.datepicker-days').removeClass('week');
+            });
+
+            highlightRange(e);
+        }).on('hide', function (e) {
+            highlightRange(e);
+        });
+
+        $('.input-group-addon', '.week-select').click(function () { $('input[name=week]').datepicker('show'); 
+        });
+    });
+</script>
+{% endblock %}
