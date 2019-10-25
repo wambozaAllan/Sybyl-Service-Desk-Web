@@ -1603,4 +1603,185 @@
             $(".username-focus").prop("disabled", false);
             $(".username-focus").focus();
         } 
+
+        function functionViewTaskDetails(taskid) {
+            urldata = "{% url 'viewTaskDetails' 999%}".replace(999, taskid);
+            $.ajax({
+                type: "GET",
+                cache: false,
+                data: {},
+                url: urldata,
+                success: function (resp) {
+                    $.confirm({
+                        title: '<h3>Task Details!</h3>',
+                        content: '' + resp,
+                        type: 'blue',
+                        typeAnimated: true,
+                        boxWidth: '50%',
+                        useBootstrap: false,
+                        closeIcon: true,
+                        icon: 'fa fa-tasks',
+                        buttons: {
+                            close: {
+                                text: 'Close',
+                                btnClass: 'btn-gray',
+                                action: function () {
+                                    
+                                }
+                            }
+                        }
+                    });
+                }
+            });
+        }
+
+        function functionViewTimesheetDesc(task, notes, time, datecreated){
+            if(notes < 1 || notes === '' || notes === null || notes === 'None'){
+                $.confirm({
+                    title: '<h3>Timesheet Description</h3>',
+                    content: '<strong>Task: <font class="text-info">'+task+'</font></strong><br> <strong>Time: <font class="text-info">'+time+'</font></strong><br> <strong>Datecreated: <font class="text-info">'+datecreated+'</font></strong><br> <span><strong>Notes: </strong> No Added Notes!</span>',
+                    type: 'blue',
+                    typeAnimated: true,
+                    boxWidth: '30%',
+                    useBootstrap: false,
+                    closeIcon: true,
+                    buttons: {
+                        close: {
+                            text: 'Close',
+                            btnClass: 'btn-gray',
+                            action: function () {
+                            }
+                        }
+                    }
+                });
+            }else{
+                $.confirm({
+                    title: '<h3>Timesheet Description</h3>',
+                    content: '<strong>Task: <font class="text-info">'+task+'</font></strong><br> <strong>Time: <font class="text-info">'+time+'</font></strong><br> <strong>Datecreated: <font class="text-info">'+datecreated+'</font></strong><br> <strong>Notes: <font class="text-info">'+notes+'</font></strong>',
+                    type: 'blue',
+                    typeAnimated: true,
+                    boxWidth: '30%',
+                    useBootstrap: false,
+                    closeIcon: true,
+                    buttons: {
+                        close: {
+                            text: 'Close',
+                            btnClass: 'btn-gray',
+                            action: function () {
+                            }
+                        }
+                    }
+                });
+            }
+        }
+
+        function functionCalendarTimesheetSheetDetails(tm_id){
+            $.ajax({
+                type: "GET",
+                cache: false,
+                data: {
+                    timesheet_id: tm_id
+                },
+                url: '{% url 'calenderTimesheetView'%}',
+                success: function (resp) {
+                    $.confirm({
+                        title: 'Timesheet Details!',
+                        content: '' + resp,
+                        type: 'blue',
+                        typeAnimated: true,
+                        boxWidth: '70%',
+                        useBootstrap: false,
+                        closeIcon: true,
+                        buttons: {
+                            formSubmit: {
+                                text: 'close',
+                                btnClass: 'btn-gray close-dialog',
+                                action: function () {
+                                    
+                                }
+                            },
+                        },
+                        onContentReady: function () {}
+                    });
+                }
+            });
+        }
+
+        function functionViewResubmissions(timesheetid) {
+            urldata = "{% url 'viewTimesheetResubmissions'%}";
+            $.ajax({
+                type: "GET",
+                cache: false,
+                data: {timesheetid: timesheetid},
+                url: urldata,
+                success: function (resp) {
+                    $.confirm({
+                        title: '<h3>Resubmission Details!</h3>',
+                        content: '' + resp,
+                        type: 'blue',
+                        typeAnimated: true,
+                        boxWidth: '60%',
+                        useBootstrap: false,
+                        closeIcon: true,
+                        icon: 'fa fa-repeat',
+                        buttons: {
+                            close: {
+                                text: 'Close',
+                                btnClass: 'btn-gray',
+                                action: function () {
+                                    
+                                }
+                            }
+                        }
+                    });
+                }
+            });
+        }
+
+        function functionViewApprovedTimesheetDesc(task, notes, time, datecreated, submission_date, submitted_by, approved_by, date_approved, approver_notes){
+            if(approver_notes === '' || approver_notes === null || approver_notes === 'None'){
+                approver_notes = 'No added comments!'
+            }
+            if(notes < 1){
+                $.confirm({
+                    title: '<h3>Timesheet Description</h3>',
+                    content: '<strong>Task: <font class="text-info">'+task+'</font></strong><br><br> <strong>Time: <font class="text-info">'+time+'</font></strong><br><br> <strong>Datecreated: <font class="text-info">'+datecreated+'</font></strong><br><br> <span><strong>Notes: </strong> No Added Notes!</span><br><br>'+
+                    '<strong>Date Submitted: <font class="text-info">'+submission_date+'</font></strong><br><br> <strong>Submitted By: <font class="text-info">'+submitted_by+'</font></strong><br><br>'+
+                    '<strong>Date Approved: <font class="text-info">'+date_approved+'</font></strong><br><br> <strong>Approved By: <font class="text-info">'+approved_by+'</font></strong><br><br> <strong>Approver Comments: <strong>'+approver_notes+'</strong></strong>',
+                    type: 'blue',
+                    typeAnimated: true,
+                    boxWidth: '40%',
+                    useBootstrap: false,
+                    closeIcon: true,
+                    buttons: {
+                        close: {
+                            text: 'Close',
+                            btnClass: 'btn-gray',
+                            action: function () {
+                            }
+                        }
+                    }
+                });
+            }else{
+                $.confirm({
+                    title: '<h3>Timesheet Description</h3>',
+                    content: '<strong>Task: <font class="text-info">'+task+'</font></strong><br><br> <strong>Time: <font class="text-info">'+time+'</font></strong><br><br> <strong>Datecreated: <font class="text-info">'+datecreated+'</font></strong><br><br> <strong>Notes: <font class="text-info">'+notes+'</font></strong><br><br>'+
+                    '<strong>Date Submitted: <font class="text-info">'+submission_date+'</font></strong><br><br> <strong>Submitted By: <font class="text-info">'+submitted_by+'</font></strong><br><br>'+
+                    '<strong>Date Approved: <font class="text-info">'+date_approved+'</font></strong><br><br> <strong>Approved By: <font class="text-info">'+approved_by+'</font></strong><br><br> <strong>Approver Comments: <strong>'+approver_notes+'</strong></strong>',
+                    type: 'blue',
+                    typeAnimated: true,
+                    boxWidth: '40%',
+                    useBootstrap: false,
+                    closeIcon: true,
+                    buttons: {
+                        close: {
+                            text: 'Close',
+                            btnClass: 'btn-gray',
+                            action: function () {
+                            }
+                        }
+                    }
+                });
+            }
+        }
     </script>

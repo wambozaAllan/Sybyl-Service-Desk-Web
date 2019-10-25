@@ -1,0 +1,33 @@
+<div class="card">
+    <div class="card-title">
+
+    </div>
+    <div class="card-body">
+        <div class="table-responsive">
+            <table class="table">
+                <tbody>
+                    <tr>
+                        <td class="text-left">Task Name: <strong class="text-info">{{timesheetdetails.task}}</strong></td>
+                        <td class="text-left">Log Date: <strong class="text-info">{{timesheetdetails.log_day | date:"D, d M, Y"}}</strong></td>
+                    </tr>
+                    <tr>
+                        <td class="text-left">Start Time: <strong class="text-info">{{timesheetdetails.start_time | time:"TIME_FORMAT"}}</strong></td>
+                        <td class="text-left">End Time: <strong class="text-info">{{timesheetdetails.end_time | time:"TIME_FORMAT"}}</strong></td>
+                    </tr>
+                    <tr class="text-center">
+                        {% if timesheetdetails.is_submitted %}
+                            <td class="text-left">Submission Date: <strong class="text-info">{{timesheetdetails.date_submitted | date:"D, d M, Y"}}</strong></td>
+                            <td class="text-left">Submitted By: <strong class="text-info">{{timesheetdetails.submitted_by}}</strong></td>
+                        {% endif %}
+                    </tr>
+                    <tr class="text-center">
+                        {% if timesheetdetails.approved %}
+                            <td class="text-left">Approve Date: <strong class="text-info">{{timesheetdetails.date_approved | date:"D, d M, Y"}}</strong></td>
+                            <td class="text-left">Approved By: <strong class="text-info">{{timesheetdetails.approved_by}}</strong></td>
+                        {% endif %}
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>

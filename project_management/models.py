@@ -1,5 +1,5 @@
-import datetime
-from datetime import date, datetime
+import datetime, time
+from datetime import date, datetime, timedelta
 from django.db import models
 from django.conf import settings
 from django.utils import timezone
@@ -475,7 +475,7 @@ class EscalationLevel(models.Model):
 
 
 class Timesheet(models.Model):
-    log_day = models.DateTimeField()
+    log_day = models.DateField()
     start_time = models.TimeField()
     end_time = models.TimeField()
     notes = RichTextField(blank=True, null=True)
@@ -493,3 +493,44 @@ class Timesheet(models.Model):
     status = models.CharField(max_length=255, default='INITIAL')
     last_updated_date = models.DateTimeField(auto_now_add=True, blank=True, null=True)
     last_updated_by = models.ForeignKey(User, on_delete=models.CASCADE, related_name='last_updated_by', blank=True, null=True)
+    is_resubmitted = models.BooleanField(default=False)
+    approver_notes = RichTextField(blank=True, null=True)
+
+    def duration(self):
+        start = self.start_time
+        end = self.end_time
+        start_sec= (start.hour*60+start.minute)*60+start.second
+        end_sec= (end.hour*60+end.minute)*60+end.second
+        delta = end_sec-start_sec
+        if delta >= 3600:
+            convert_srt = 'hr(s)'
+        elif delta <= 3599 and delta >= 60 :
+            convert_srt = 'min(s)'
+        else:
+            convert_srt = 'sec(s)'
+        return '{} {}'.format(str(timedelta(seconds=delta)), convert_srt)
+
+    def get_resubmission_count(self):
+        return ResubmittedTimesheet.objects.filter(timesheet=self.id).count()
+
+    
+class ResubmittedTimesheet(models.Model):
+    date_resubmitted = models.DateTimeField(auto_now=True)
+    comment = RichTextField(blank=True, null=True)
+    resubmitted_by = models.ForeignKey(User, on_delete=models.CASCADE, related_name='resubmitted_by')
+    timesheet = models.ForeignKey(Timesheet, on_delete=models.CASCADE)
+    
+
+# class SchedulePlan(models.Model):
+#     title = models.CharField(max_length=255)
+#     start_date = models.DateTimeField()
+#     end_date = models.DateTimeField()
+#     notes = RichTextField(blank=True, null=True)
+#     added_by = models.ForeignKey(User, on_delete=models.CASCADE, related_name='added_by')
+#     created_time = models.DateTimeField(auto_now_add=True)
+#     task = models.ForeignKey(Task, on_delete=models.CASCADE)
+#     project_team_member = models.ForeignKey(User, on_delete=models.CASCADE, related_name='project_team_member', null=True)
+#     company = models.ForeignKey(Company, on_delete=models.CASCADE)
+#     status = models.CharField(max_length=255, default='INITIAL')
+#     last_updated_date = models.DateTimeField(auto_now_add=True, blank=True, null=True)
+#     last_updated_by = models.ForeignKey(User, on_delete=models.CASCADE, related_name='last_updated_by', blank=True, null=True)

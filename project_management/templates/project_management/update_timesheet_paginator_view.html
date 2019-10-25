@@ -101,14 +101,14 @@
     </div>
     
     <div class="col-6">
-        <button style="margin-top: 18%;" id="btnUpdateTimesheet" class="btn btn-success pull-right col-10">
+        <button style="margin-top: 18%;" id="btnUpdateTimesheet22" class="btn btn-success pull-right col-10">
             <span class="btn-update-timesheet"><i class="fa fa-fw fa-lg fa-save"></i>Save</span>
         </button>
     </div>
 </div>
 
 <script>
-    document.getElementById("btnUpdateTimesheet").disabled=false;
+    document.getElementById("btnUpdateTimesheet22").disabled=false;
     var start_default_time = $('#start_default_time').val();
     var end_default_time = $('#end_default_time').val();
 
@@ -132,10 +132,10 @@
     }).on('show.daterangepicker', function (ev, picker) {
         picker.container.find(".calendar-table").hide();
     }).on('change.daterangepicker', function (ev, picker) {
-        durationCalculating2();
+        durationCalculating21();
     });
 
-    durationCalculating2();
+    durationCalculating21();
 
 
     $('#id_project').change(function () {
@@ -232,7 +232,7 @@
         $('#id_task').css({"border": '1px solid #ced4da'});
     });
 
-    $('#btnUpdateTimesheet').click(function () { 
+    $('#btnUpdateTimesheet22').click(function () { 
         var id_log_day = $('#id_log_day').val();
         var id_project = $('#id_project').val();
         var id_milestone = $('#id_milestone').val();
@@ -263,15 +263,17 @@
             }
 
         } else {
+            var date_selected = $('#date_selected_val').val();
             data3 = {
                 id_log_day: id_log_day,
                 id_task: id_task,
                 start_time: start_time,
                 end_time: end_time,
                 timesheet_id: timesheet_id,
-                notes: id_timesheet_notes
+                notes: id_timesheet_notes,
+                dateSelected: date_selected
             };
-            url_data = "{% url 'saveUpdateTimesheet'%}";
+            url_data = "{% url 'saveUpdateTimesheetPaginator'%}";
             $.ajax({
                 type: "GET",
                 cache: false,
@@ -279,16 +281,14 @@
                 url: url_data,
                 success: function (resp) {
                     $('.close-dialog').click();
-                    $('.timesheet-pane').html(resp);
-                    $( "#heading1" ).removeClass( "collapsed");
-                    $( "#collapseOne" ).addClass( "show" );
-                    document.getElementById("btnUpdateTimesheet").disabled=true;
+                    $('#timesheet-manage-pane').html(resp);
+                    document.getElementById("btnUpdateTimesheet22").disabled=true;
                 }
             });
         }
     });
 
-    function durationCalculating2(){
+    function durationCalculating21(){
             var id_workedtime = $('#id_workedtime').val();
             var worked_time_ranges = id_workedtime.split(" - ");
             

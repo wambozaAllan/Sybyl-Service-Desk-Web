@@ -1,0 +1,152 @@
+{% load humanize %}
+
+    <!-- Start Page Content -->
+    <div class="card" style="margin-top: -2%;">
+        <div class="card-body container-fluid2">
+
+            <ul class="nav nav-tabs" role="tablist">
+                <li class="nav-item"> <a class="nav-link active" data-toggle="tab" href="#timesheet_home" role="tab"><span class="hidden-sm-up"><i class="ti-home"></i></span> <span class="hidden-xs-down">Daily Time Logs</span></a></li>
+                <li class="nav-item" onclick="loadURL('{% url 'timesheetPendingApproval'%}', '', 'timesheet-pendings', 'GET');"> <a class="nav-link" data-toggle="tab" href="#pending_approval" role="tab"><span class="hidden-sm-up"><i class="fa fa-share"></i></span> <span class="hidden-xs-down">Pending Approval</span></a> </li>
+                <li class="nav-item" onclick="loadURL('{% url 'userApprovedTimesheets'%}', '', 'approved-tm-pane1', 'GET');"> <a class="nav-link" data-toggle="tab" href="#appoved_tm" role="tab"><span class="hidden-sm-up"><i class="ti-email"></i></span> <span class="hidden-xs-down">Approved Timesheets</span></a> </li>
+                <div class="btn-group" style="margin-left: 44%;">
+                    <button type="button" title="Vertical Timesheet List" class="btn btn-info" id="view-vertical"><i class="fa fa-list" aria-hidden="true"></i></button>
+                    <button type="button" onclick="loadURL('{% url 'tableTimesheetView'%}', '', 'container-fluid2', 'GET');" title="Table Timesheet List" class="btn btn-default" id="table-horizontal"><i class="fa fa-table" aria-hidden="true"></i></button>
+                </div>
+            </ul>
+
+            <!-- Tab panes -->
+            <div class="tab-content tabcontent-border" style="padding-left: 1%;padding-right: 1%;">
+                <div class="tab-pane active" id="timesheet_home" role="tabpanel">
+                    <div class="row p-10">
+                        <div class="col-md-12 container">
+                            
+                            <button id="" class="btn btn-info pull-right" onclick="functionAddNewTimesheet()">
+                                <i class="fa fa-fw fa-lg fa-plus"></i>Log Time
+                            </button>
+                        </div>
+                    </div>
+                    <div class="timesheet-pane">
+                        {% include "project_management/list_timesheet.html" %}
+                    </div>
+                </div>
+
+                <div class="tab-pane  p-20" id="pending_approval" role="tabpanel">
+                    <!-- Pending Approval -->
+                    <div class="col-12 row">  
+                        <div class="col-8"></div>   
+                        <div class="col-3">
+                            <label for="">Filter by Log Date</label>
+                            <input style="height: 42px; border-radius: 0; box-shadow: none; border-color: #e7e7e7; font-family: 'Poppins', sans-serif; display: block; width: 100%; height: calc(2.25rem + 2px); padding: .375rem .75rem; padding-left: 0.75rem; font-size: 1rem; line-height: 1.5; color: #495057; background-color: #fff; background-clip: padding-box; border: 1px solid #ced4da; border-top-color: rgb(206, 212, 218); border-right-color: rgb(206, 212, 218); border-bottom-color: rgb(206, 212, 218); border-left-color: rgb(206, 212, 218); border-radius: .25rem; transition: border-color .15s ease-in-out,box-shadow .15s ease-in-out; flex: 1 1 auto; width: 100%; margin-bottom: 0; margin-top: 2%" class="daterange" name="datefilter1" id="apenddingTMsDateFilter" type="text" />
+                        </div>
+                    
+                        <div class="col-1"  style="margin-top: 33px; margin-left: -2%;">
+                            <button class="btn btn-info" onclick="functionFilterPendingApprovals()" type="button">
+                                <i class="fa fa-lg fa-fw fa-search"></i>
+                            </button>
+                        </div>
+                    </div>                                        
+                    <div class="text-center timesheet-pendings">
+                        <i class="fa fa-spinner fa-spin fa-4x"></i>
+                    </div>
+                </div>
+
+                <div class="tab-pane p-20" id="appoved_tm" role="tabpanel">
+                        <ul class="nav nav-tabs customtab" role="tablist">
+                            <li class="nav-item"> <a class="nav-link active" data-toggle="tab" href="#accepted_tm" role="tab"><span class="hidden-sm-up"><i class="ti-home"></i></span> <span class="hidden-xs-down">Accepted</span></a> </li>
+                            <li class="nav-item"> <a class="nav-link" onclick="loadURL('{% url 'userRejectedTimesheets'%}', '', 'rejected-timesheet', 'GET');" data-toggle="tab" href="#rejected_tm" role="tab"><span class="hidden-sm-up"><i class="ti-dedent"></i></span> <span class="hidden-xs-down">Rejected <span id="relected-tm-count" class="label label-rounded label-danger">{{rejected_count}}</span></span></a> </li>
+                        </ul>
+                        <div class="tab-content">
+                            <div class="tab-pane active" id="accepted_tm" role="tabpanel">
+                                <div class="col-12 row">  
+                                    <div class="col-8"></div>   
+                                    <div class="col-3">
+                                        <label for="">Filter by Log Date</label>
+                                        <input style="height: 42px; border-radius: 0; box-shadow: none; border-color: #e7e7e7; font-family: 'Poppins', sans-serif; display: block; width: 100%; height: calc(2.25rem + 2px); padding: .375rem .75rem; padding-left: 0.75rem; font-size: 1rem; line-height: 1.5; color: #495057; background-color: #fff; background-clip: padding-box; border: 1px solid #ced4da; border-top-color: rgb(206, 212, 218); border-right-color: rgb(206, 212, 218); border-bottom-color: rgb(206, 212, 218); border-left-color: rgb(206, 212, 218); border-radius: .25rem; transition: border-color .15s ease-in-out,box-shadow .15s ease-in-out; flex: 1 1 auto; width: 100%; margin-bottom: 0; margin-top: 2%" class="daterange" name="datefilter2" id="approvedTMsDateFilter" type="text" />
+                                    </div>
+                                
+                                    <div class="col-1"  style="margin-top: 33px; margin-left: -2%;">
+                                        <button class="btn btn-info" onclick="functionFilterApprovedTimesheets33()" type="button">
+                                            <i class="fa fa-lg fa-fw fa-search"></i>
+                                        </button>
+                                    </div>
+                                </div> 
+                                <div class="text-center approved-tm-pane1">
+                                    <i class="fa fa-spinner fa-spin fa-4x"></i>
+                                </div>   
+                            </div>
+
+                            <div class="tab-pane rejected-timesheet" id="rejected_tm" role="tabpanel">
+                        
+                            </div>
+                        </div>
+                </div>
+            </div>
+        </div>                            
+    </div>
+
+
+<script>
+    // DATERANGEPICKER-1
+    $('input[name="datefilter1"]').daterangepicker({
+        autoUpdateInput: false,
+        locale: {
+            format: 'DD-MM-YYYY',
+            cancelLabel: 'Clear'
+        }
+    });
+
+    $('input[name="datefilter1"]').on('apply.daterangepicker', function(ev, picker) {
+        $(this).val(picker.startDate.format('DD-MM-YYYY') + ' - ' + picker.endDate.format('DD-MM-YYYY'));
+    });
+
+    $('input[name="datefilter1"]').on('cancel.daterangepicker', function(ev, picker) {
+        $(this).val('');
+    });
+
+
+    // DATE RANGE PICKER2
+    $('input[name="datefilter2"]').daterangepicker({
+        autoUpdateInput: false,
+        locale: {
+            format: 'DD-MM-YYYY',
+            cancelLabel: 'Clear'
+        }
+    });
+
+    $('input[name="datefilter2"]').on('apply.daterangepicker', function(ev, picker) {
+        $(this).val(picker.startDate.format('DD-MM-YYYY') + ' - ' + picker.endDate.format('DD-MM-YYYY'));
+    });
+
+    $('input[name="datefilter2"]').on('cancel.daterangepicker', function(ev, picker) {
+        $(this).val('');
+    });
+    
+    function functionFilterApprovedTimesheets33() {
+        var date_range = $('#approvedTMsDateFilter').val();
+        var aud_dates = date_range.split(" - ");
+        var start_date_1 = aud_dates[0];
+        var end_date_1 = aud_dates[1];
+
+        $('#approvedTMsDateFilter').on('change', function () {
+            $('#approvedTMsDateFilter').css({ "border": '1px solid #ced4da' });
+        });
+
+        if (date_range < 1) {
+            $('#approvedTMsDateFilter').css({ "border": '2px solid #00635a' });
+        }else{
+            urldata2 = "{% url 'filterDailyProvedTimesheets'%}";
+            $.ajax({
+                type: 'GET',
+                data: {
+                    start_date: start_date_1,
+                    end_date: end_date_1,
+                },
+                url: urldata2,
+                success: function (rep) {
+                    $('.approved-tm-pane1').html('');
+                    $('.approved-tm-pane1').html(rep);
+                }
+            });
+        }
+    }
+</script>
