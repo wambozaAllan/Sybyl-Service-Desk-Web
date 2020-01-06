@@ -21,11 +21,6 @@
     <div class="row">
         <div class="col-md-4 col-sm-12">
             {{ project_form.estimated_cost|as_crispy_field }}
-            <medium id="cost_check" class="text-muted hidden">
-                <font color="red">
-                    Minimum Cost is 500,000
-                </font>
-            </medium>
         </div> 
         <div class="col-md-4 col-sm-12">
             {{ project_form.estimated_start_date|as_crispy_field }}
@@ -68,17 +63,6 @@
         </div>
     </div> 
     
-    
-
-   
-    
-    <!-- <div class="row">
-        <div class="col-md-12 col-sm-12 ">
-            <button id="btnAddProject" class="col-md-4 col-sm-12 btn btn-success pull-right ">
-                <i class="fa fa-fw fa-lg fa-save"></i>Add project
-            </button>
-        </div>
-    </div> -->
 </form>
 <script>
 
@@ -98,20 +82,10 @@
     $('#id_project_status').selectpicker({
         size: 3,
     });
-
-
-    $('#id_created_by').removeAttr('multiple', "");
-    $('#id_created_by').attr('data-live-search', "true"); 
-    $('#id_created_by').selectpicker({
-        size: 3,
-    });
     
     $('#id_name').on('input', function(){
         var name = $(this).val().toUpperCase();
     });
-
-    $('#id_title').attr('placeholder', 'Document Title');
-    $('#id_title').attr('autocomplete', 'off');
 
     // date input fields
     $('#id_estimated_start_date').datepicker({
@@ -188,58 +162,14 @@
 
     // setting default value for estimated cost
 
-    $('#id_estimated_cost').attr('placeholder', '500,000');
+    $('#id_estimated_cost').attr('placeholder', '0');
 
-    $('#id_estimated_cost').attr('value', '500000');
-
-    $("#id_estimated_cost").on('input', function(){
-        var cost = $(this).val();
-        if (cost < 500000){
-            $("#cost_check").show();
-            document.getElementById('id_estimated_cost').style.borderColor = "red";
-            document.getElementById('btnAddProject').disabled = true;
-        }
-        else if(cost >= 500000){
-            $("#cost_check").hide();
-            document.getElementById('id_estimated_cost').style.borderColor = "";
-            document.getElementById('btnAddProject').disabled = false;
-        }
-    })
-    
+    $("#id_estimated_cost").attr('autocomplete', 'off');
 
     $("#id_name").attr('autocomplete', 'off');
 
     $('#id_name').on('input', function () {
         var project_name = $(this).val().toUpperCase();
-
-        if (project_name != "" ){
-            var upper = project_name.toUpperCase();
-            var caps = titleCase(upper);
-            var matches = caps.match(/\b(\w)/g);
-            var acronym = matches.join(''); // JSON
-
-            if (upper != ''){
-                var acronymDate = new Date();
-                var day = acronymDate.getUTCDate();
-                var month = acronymDate.getUTCMonth()+1;
-                var year = acronymDate.getUTCFullYear();
-                var randCode = Math.floor(Math.random() * 1000000000);
-                var final = acronym + "-" + day + "/" + month + "/" + year + "-" + randCode;
-
-                document.getElementById('id_project_code').value=final;
-                $("#project_code").hide();
-                document.getElementById("btnAddProject").disabled = false;
-                document.getElementById('id_project_code').style.borderColor = "";
-            }
-            else{
-                document.getElementById('id_project_code').style.borderColor = "red";
-                document.getElementById("btnAddProject").disabled = true;
-                $("#project_code").show();
-            }
-        }
-        else{
-            document.getElementById('id_project_code').value = "";
-        }
 
         $.ajax({
             url: "{% url 'validateProjectName' %}",
@@ -261,9 +191,6 @@
             }
         });
     });
-
-   
-    $('#id_project_code').attr( 'readOnly' , 'true' );
     
     $("#id_project_code").attr('autocomplete', 'off');
 
@@ -275,59 +202,18 @@
         
         return splitStr.join(' '); 
     }
-
-    // $(function(){
-    //     $(".projectDocument").css("display", "none");
-    // });
-
-    // $('#addDocument').on('change', function () {
-    //     if ($(this).is(":checked")) {
-    //         $(".projectDocument").css("display", "block");
-    //     }
-    //     else {
-    //         $(".projectDocument").css("display", "none");
-    //     }
-    // });
-
-    // $("#addProject").on('submit', function(){
-    //     event.preventDefault();
-    //     console.log("Success has come");
-    //     var data = new FormData(this);
-    //     console.log(data);
-    //     var docs = $("#id_description").html();
-    //     alert(docs);
-    //     console.log(docs + " here");
-    //     $.ajax({
-    //         url: "{% url 'addProject' %}",
-    //         type: 'POST',
-    //         data: data,
-    //         cache: false,
-    //         processData: false,
-    //         contentType: false,
-    //         success: function(data) {
-    //             if(data.success === true){
-    //                 $.confirm({
-    //                     title: "Success",
-    //                     content: data.message,
-    //                     type: 'blue',
-    //                     typeAnimated: true,
-    //                     boxWidth: '25%',
-    //                     useBootstrap: false,
-    //                     closeIcon: true,
-    //                         buttons: {
-    //                             formSubmit: {
-    //                                 text: 'OK',
-    //                                 btnClass: 'btn-blue',
-    //                                 action: function () {
-                                        
-    //                                 }
-    //                             }
-    //                         }
-    //                 });
-    //             }
-
-    //         }
-    //     });
-    // });
  
 </script>
+
+<style>
+    /* remove increment and decrement arrow from number */
+    input[type="number"] {
+    -webkit-appearance: textfield;
+        -moz-appearance: textfield;
+            appearance: textfield;
+    }
+    input[type=number]::-webkit-inner-spin-button, 
+    input[type=number]::-webkit-outer-spin-button { 
+    -webkit-appearance: none;
+    }
+</style>
