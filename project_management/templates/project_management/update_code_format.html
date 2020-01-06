@@ -1,0 +1,26 @@
+{% load crispy_forms_tags %}
+<div class="card-body">
+    <div class="basic-form">
+        <form class="form-horizontal" action="{% url 'updateCodeFormat'  code_id %}" method="post"
+              enctype="multipart/form-data">
+            {% csrf_token %}
+            <div class="row col-12">
+                <div class="col-6">
+                    {{ form.project_code|as_crispy_field }}
+                    <small id="validate_priority_name2" class="text-muted hidden">
+                        <font color="red">
+                            Can't Update. Code Already Exists!
+                        </font>
+                    </small>
+                </div>
+            </div>
+            <div class="">
+                <div class="col-md-12">
+                    <button id="btnUpdateProjectCode" class="btn btn-success pull-right">
+                        <i class="fa fa-fw fa-lg fa-save"></i>Update
+                    </button>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>

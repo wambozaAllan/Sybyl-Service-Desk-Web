@@ -139,6 +139,8 @@
         var date = $(this).blur();
     });
 
+    var statusText = $("#id_status option:selected").text().toLowerCase();
+
     $('#id_status').on('change', function(){
         var statusId = $(this).val();
         
@@ -384,7 +386,7 @@
 
     // on load function for addition of milestone
     $(function(){
-        if($("#id_status").val() == '1' || $("#id_status").val() == '2'){
+        if(statusText == 'open' || statusText == 'onhold'){
             $("#div_id_actual_startdate").css("display", "none");
             $("#div_id_actual_enddate").css("display", "none");
             document.getElementById("btnUpdateMilestone").disabled = false;
@@ -405,7 +407,7 @@
     $("form").on('submit', function(event){
         event.preventDefault();
 
-        if($("#id_status").val() == '3' || $("#id_status").val() == '4'){
+        if(statusText == 'completed' || statusText == 'terminated'){
             if ($('#id_actual_startdate').val().length < 1){
                 $('#id_actual_startdate').css({ "border": '2px solid #00635a' });
                 event.preventDefault();

@@ -1,6 +1,7 @@
 import csv, io, xlwt
 import xlsxwriter
 import datetime
+import calendar
 from datetime import date, timezone, timedelta
 
 from django.shortcuts import render, get_object_or_404, redirect
@@ -23,7 +24,7 @@ from .forms import MilestoneForm
 
 from django.contrib.auth.decorators import user_passes_test, permission_required
 
-from .models import Project, Milestone, Task, ProjectDocument, Incident, Priority, Status, ProjectTeam, ProjectTeamMember, Role, ProjectForumMessages, ProjectForum, ProjectForumMessageReplies, ServiceLevelAgreement, IncidentComment, EscalationLevel, IncidentComment, Timesheet, ResubmittedTimesheet
+from .models import Project, Milestone, Task, ProjectDocument, Incident, Priority, Status, ProjectTeam, ProjectTeamMember, Role, ProjectForumMessages, ProjectForum, ProjectForumMessageReplies, ServiceLevelAgreement, IncidentComment, EscalationLevel, IncidentComment, Timesheet, ResubmittedTimesheet, ProjectCode
 from user_management.models import User
 from company_management.models import Company, CompanyCategory, CompanyDomain
 from .forms import CreateProjectForm, MilestoneForm, TaskForm, DocumentForm, ProjectUpdateForm, MilestoneUpdateForm, ProjectForm, IncidentForm, ProjectTeamForm
@@ -80,8 +81,8 @@ def model_form_upload(request):
 
 
 def load_project_documents(request):
-    project_id = request.GET.get('project')
-    documents = ProjectDocument.objects.all
+    project_id = int(request.GET.get('project'))
+    documents = ProjectDocument.objects.all()
     return render(request, 'project_management/document_dropdown_list_options.html', {'documents': documents})
 
 
@@ -200,18 +201,20 @@ class MilestoneCreateView(LoginRequiredMixin, CreateView):
     def form_valid(self, form):
         milestone_name = form.cleaned_data['name']
         project = form.cleaned_data['project']
+        status = form.cleaned_data['status']
         start = form.cleaned_data['startdate']
         finish = form.cleaned_data['enddate']
         current_user = self.request.user
         name = current_user.username
         
-        milestone = Milestone(name=milestone_name, project=project, startdate=start, enddate=finish, creator=current_user)
+        milestone = Milestone(name=milestone_name, project=project, status=status, startdate=start, enddate=finish, creator=current_user)
         milestone.save()
 
         context = {
             'name': name,
             'milestone_name': milestone_name,
             'project': project,
+            'status': status,
             'startdate': start,
             'enddate': finish,
         }
@@ -223,23 +226,105 @@ class MilestoneCreateView(LoginRequiredMixin, CreateView):
         mail_to_send = EmailMessage(subject, message, to=recipient_list, from_email=email_from)
         mail_to_send = EmailMessage(subject, message, to=recipient_list, from_email=email_from)
         mail_to_send.content_subtype = 'html'
-        # mail_to_send.send()
+        mail_to_send.send()
 
         return HttpResponseRedirect('/projectManagement/milestones')
 
     success_url = reverse_lazy('milestones')
 
 
-class MilestoneListView(ListView):
+class MilestoneListView(ListView, LoginRequiredMixin):
     context_object_name = 'milestones'
 
     def get_queryset(self):
-        return Milestone.objects.all()
+        user = self.request.user
+        members = ProjectTeamMember.objects.filter(member=user)
+        team_list = []
+        for value in members:  
+            team_members = ProjectTeamMember.project_team.through.objects.filter(projectteammember=value.id)
+
+            for obj in team_members:
+                team_name = obj.projectteam
+                team_list.append(team_name)
+        
+        project_list = []
+        milestone_list = []
+        for team in team_list:
+            project_id = team.project_id
+            
+            project = Project.objects.get(id=project_id)
+
+            milestone = Milestone.objects.filter(project_id=project.id)
+            milestone_list.append(milestone)
+       
+            return milestone
+
+
+def project_milestones_by_user(request):
+    user = request.user
+    members = ProjectTeamMember.objects.filter(member=user)
+    team_list = []
+    for value in members:  
+        team_members = ProjectTeamMember.project_team.through.objects.filter(projectteammember=value.id)
+
+        for obj in team_members:
+            team_name = obj.projectteam
+            team_list.append(team_name)
+    
+    project_list = []
+    milestone_list = []
+    for team in team_list:
+        project_id = team.project_id
+        
+        project = Project.objects.get(id=project_id)
+
+        milestones = Milestone.objects.filter(project_id=project.id)
+        for value in milestones:
+            milestone_list.append(value)
+    
+    template = loader.get_template('project_management/milestone_list.html')
+    context = {
+        'milestones': milestone_list
+    }
+
+    return HttpResponse(template.render(context, request))
 
 
 def milestone_list_by_project(request, project_id):
     project_milestones = Milestone.objects.filter(project_id=project_id)
     return render(request, 'project_management/milestone_list.html', {'milestones': project_milestones})
+
+
+def load_add_milestone(request):
+    """load page for milestones"""
+    current_user = request.user.id
+    members = ProjectTeamMember.objects.filter(member=current_user)
+    team_list = []
+    for value in members:  
+        team_members = ProjectTeamMember.project_team.through.objects.filter(projectteammember=value.id)
+
+        for obj in team_members:
+            team_name = obj.projectteam
+            team_list.append(team_name)
+    
+    project_list = []
+    for team in team_list:
+        project_id = team.project_id
+        
+        project = Project.objects.get(id=project_id)
+        project_dict = {}
+        project_dict['id'] = project.id
+        project_dict['name'] = project.name
+
+        project_list.append(project_dict)
+
+    statuses = Status.objects.all()
+
+    context = {
+        "project_list": project_list,
+        "statuses" : statuses
+    }
+    return render(request, 'project_management/milestone_form.html', context=context)
 
 
 def populate_milestone_view(request):
@@ -302,10 +387,10 @@ def save_milestone(request):
     add milestone to database
     """
     project_id = int(request.GET.get('project_id'))
-    project_name = request.GET.get('project_name')
+    # project_name = request.GET.get('project_name')
     name = request.GET.get('name')
     description = request.GET.get('description')
-    status_id = request.GET.get('status_id')
+    status_id = int(request.GET.get('status_id'))
     start = request.GET.get('start_date')
     end = request.GET.get('end_date')
     actual_start = request.GET.get('actual_start')
@@ -315,23 +400,26 @@ def save_milestone(request):
     if status_id == "":
         status_id = None
 
+    if description == "":
+        description = None
+
     if end != "null":
-        end = datetime.datetime.strptime(end, "%m/%d/%Y").strftime("%Y-%m-%d")
+        end = datetime.datetime.strptime(end, "%d/%m/%Y").strftime("%Y-%m-%d")
     else:
         end = None
 
     if start != "null":
-        start = datetime.datetime.strptime(start, "%m/%d/%Y").strftime("%Y-%m-%d")
+        start = datetime.datetime.strptime(start, "%d/%m/%Y").strftime("%Y-%m-%d")
     else:
         start = None
 
     if actual_start != "null":
-        actual_start = datetime.datetime.strptime(actual_start, "%m/%d/%Y").strftime("%Y-%m-%d")
+        actual_start = datetime.datetime.strptime(actual_start, "%d/%m/%Y").strftime("%Y-%m-%d")
     else:
         actual_start = None
 
     if actual_end != "null":
-        actual_end = datetime.datetime.strptime(actual_end, "%m/%d/%Y").strftime("%Y-%m-%d")
+        actual_end = datetime.datetime.strptime(actual_end, "%d/%m/%Y").strftime("%Y-%m-%d")
     else:
         actual_end = None
 
@@ -340,7 +428,7 @@ def save_milestone(request):
     if Milestone.objects.filter(name=name, project_id=project.id).exists():
         milestone = Milestone.objects.get(name=name, project_id=project.id)
         response_data = {
-            'error': "Name exists",
+            'error': "Milestone Name exists",
             'name': milestone.name,
             'state':False
         }
@@ -1042,6 +1130,39 @@ class TaskCreateView(LoginRequiredMixin, CreateView):
         return super().form_valid(form)
 
 
+def create_tasks_by_project(request):
+    """return tasks by project"""
+    current_user = request.user.id
+    members = ProjectTeamMember.objects.filter(member=current_user)
+    team_list = []
+    for value in members:  
+        team_members = ProjectTeamMember.project_team.through.objects.filter(projectteammember=value.id)
+
+        for obj in team_members:
+            team_name = obj.projectteam
+            team_list.append(team_name)
+    
+    project_list = []
+    old = []
+    for team in team_list:
+        project_id = team.project_id
+        
+        project = Project.objects.get(id=project_id)
+        project_dict = {}
+        project_dict['id'] = project.id
+        project_dict['name'] = project.name
+
+        project_list.append(project_dict)
+
+    statuses = Status.objects.all()
+
+    context = {
+        "project_list": project_list,
+        "statuses" : statuses
+    }
+    return render(request, 'project_management/task_form.html', context=context)
+
+
 def populate_task_view(request):
     """
     populate project_task view
@@ -1102,10 +1223,10 @@ def save_project_tasks(request):
     """
     save project tasks
     """
-    project_id = request.GET.get('project_id')
+    project_id = int(request.GET.get('project_id'))
     name = request.GET.get('name')
-    status_id = request.GET.get('status_id')
-    milestone_id = request.GET.get('milestone')
+    status_id = int(request.GET.get('status_id'))
+    milestone_id = int(request.GET.get('milestone'))
     description = request.GET.get('description')
     start_date = request.GET.get('start_date')
     end_date = request.GET.get('end_date')
@@ -1123,22 +1244,22 @@ def save_project_tasks(request):
         description = None
 
     if start_date != "null":
-        start_date = datetime.datetime.strptime(start_date, "%m/%d/%Y").strftime("%Y-%m-%d")
+        start_date = datetime.datetime.strptime(start_date, "%d/%m/%Y").strftime("%Y-%m-%d")
     else:
         start_date = None
 
     if actual_start != "null":
-        actual_start = datetime.datetime.strptime(actual_start, "%m/%d/%Y").strftime("%Y-%m-%d")
+        actual_start = datetime.datetime.strptime(actual_start, "%d/%m/%Y").strftime("%Y-%m-%d")
     else:
         actual_start = None
 
     if actual_end != "null":
-        actual_end = datetime.datetime.strptime(actual_end, "%m/%d/%Y").strftime("%Y-%m-%d")
+        actual_end = datetime.datetime.strptime(actual_end, "%d/%m/%Y").strftime("%Y-%m-%d")
     else:
         actual_end = None
 
     if end_date != "null":
-        end_date = datetime.datetime.strptime(end_date, "%m/%d/%Y").strftime("%Y-%m-%d")
+        end_date = datetime.datetime.strptime(end_date, "%d/%m/%Y").strftime("%Y-%m-%d")
     else:
         end_date = None
 
@@ -1244,7 +1365,7 @@ def save_milestone_tasks(request):
 
 class UpdateProjectTask(UpdateView):
     model = Task
-    fields = ['name', 'status', 'description', 'start_date', 'end_date', 'actual_start_date', 'actual_end_date', 'assigned_to']
+    fields = ['name', 'status', 'description', 'start_date', 'end_date', 'actual_start_date', 'actual_end_date']
     template_name = 'project_management/update_project_task.html'
     success_url = reverse_lazy('listProjects')
 
@@ -1252,8 +1373,11 @@ class UpdateProjectTask(UpdateView):
         context = super().get_context_data(**kwargs)
         task_id = int(self.request.GET['task_id'])
         project_id = int(self.request.GET['project_id'])
-        context['task_id'] = task_id
+        milestone_id = int(self.request.GET['milestone_id'])
 
+        context['task_id'] = task_id
+        context['project_id'] = project_id
+        context['milestone_id'] = milestone_id
         team = ProjectTeam.objects.get(project_id=project_id)
         project_team = team.id
         team_members = ProjectTeamMember.objects.filter(project_team=project_team)
@@ -1304,11 +1428,8 @@ class UpdateOpenTask(UpdateView):
             context['members'] = old
         
         else:
-            context['members'] = ""
-
+            context['members'] = ""    
         
-        
-
         return context
 
 
@@ -2177,17 +2298,67 @@ def delete_task(request):
     return JsonResponse(response_data)
 
 
-class TaskListView(ListView):
+class TaskListView(ListView, LoginRequiredMixin):
     template_name = 'project_management/task_list.html'
     context_object_name = 'tasks'
 
     def get_queryset(self):
-        return Task.objects.all()
+        user = self.request.user
+        members = ProjectTeamMember.objects.filter(member=user)
+        team_list = []
+        for value in members:  
+            team_members = ProjectTeamMember.project_team.through.objects.filter(projectteammember=value.id)
 
+            for obj in team_members:
+                team_name = obj.projectteam
+                team_list.append(team_name)
+        
+        project_list = []
+        task_list = []
+        for team in team_list:
+            project_id = team.project_id
+            
+            project = Project.objects.get(id=project_id)
+
+            tasks = Task.objects.filter(project_id=project.id)
+            
+            for task in tasks:
+                task_list.append(tasks)
+            
+            return task_list
 
 # def task_list_by_project(request, project_id):
 #     project_tasks = Task.objects.filter(project_id=project_id)
 #     return render(request, 'project_management/task_list.html', {'tasks': project_tasks})
+
+def task_list_by_users(request):
+    user = request.user
+    members = ProjectTeamMember.objects.filter(member=user)
+    team_list = []
+    for value in members:  
+        team_members = ProjectTeamMember.project_team.through.objects.filter(projectteammember=value.id)
+
+        for obj in team_members:
+            team_name = obj.projectteam
+            team_list.append(team_name)
+    
+    project_list = []
+    task_list = []
+    for team in team_list:
+        project_id = team.project_id
+        
+        project = Project.objects.get(id=project_id)
+
+        tasks = Task.objects.filter(project_id=project.id)
+        for value in tasks:
+            task_list.append(value)
+
+    template = loader.get_template('project_management/task_list.html')
+    context = {
+        'tasks': task_list
+    }
+
+    return HttpResponse(template.render(context, request))
 
 
 def task_list_by_milestone(request, milestone_id):
@@ -2899,8 +3070,7 @@ def ValidateRoleName(request):
 def addProject(request):
     if request.method == 'POST':
         project_form = ProjectForm(request.POST, request.FILES)
-        # document_form = DocumentForm(request.FILES)
-
+    
         if project_form.is_valid():
             data = request.POST.copy()
             name = data.get('name')
@@ -2913,7 +3083,41 @@ def addProject(request):
             end_date = data.get('estimated_end_date')
             project_status = data.get('project_status')
             created_by = request.user.id 
+
+            project_count = Project.objects.all().count()            
+            project_number = project_count + 1
+
+            test_string = str(project_number)
+
+            # only pick short year
+            current_year_short = datetime.datetime.now().strftime('%y')
+            str_date = str(current_year_short)
             
+            result = ""
+            final_result_code = ""
+
+            # retrieve project code format from database
+            codes = ProjectCode.objects.all().first()
+            code = codes.project_code
+
+            if len(project_code) != 0:
+                final_result_code = project_code
+            else:
+                if len(test_string) ==  1:
+                    N=2
+                    result = test_string.zfill(N + len(test_string)) 
+                    final_result_code = code + "/" + str_date + "/" + result
+                elif len(test_string) == 2:
+                    N=1
+                    result = test_string.zfill(N + len(test_string)) 
+                    final_result_code = code + "/"  + str_date + "/" + result
+                else:
+                    result = test_string
+                    final_result_code = code + "/"  + str_date + "/" + result
+
+
+            if estimated_cost == "":
+                estimated_cost = 0;
             
             if start_date == "":
                 start_date = None
@@ -2932,9 +3136,10 @@ def addProject(request):
             else:            
                 status = Status.objects.get(id=project_status)
 
+            estimate = float(estimated_cost)
             user_id = User.objects.get(id=created_by)
 
-            project = Project(name=name.title(), description=description, project_code=project_code, estimated_cost=estimated_cost,
+            project = Project(name=name.title(), description=description, project_code=final_result_code, estimated_cost=estimate,
             logo=logo, estimated_start_date=estimated_start_date, estimated_end_date=estimated_end_date,
             project_status=status, created_by=user_id)
 
@@ -2942,37 +3147,35 @@ def addProject(request):
             for value in company:
                 p = project.company.add(value)
                 
-            # project_id = Project.objects.get(pk=project.id)
-
-            # if project:
-            #     # save project document information
-            #     form = request.POST.copy()
-            #     if form.is_valid():
-            #         title = form.get('title')
-            #         description = form.get('description')
-            #         creator = request.user.id
-            #         user = User.objects.get(id=creator)
-            #         document = request.FILES['document']
-            #         doc = ProjectDocument(title=title, description=description, project=project_id, document=document, created_by=user)
-            #         doc.save()
-                
             return redirect('listProjects')
     else:
         project_form = ProjectForm()
-        # document_form = DocumentForm()
 
     return render(request, 'project_management/add_project.html', {
             'project_form': project_form,
-            # 'document_form': document_form
     })
 
 
-class ListProjects(ListView):
-    template_name = 'project_management/list_projects.html'
-    context_object_name = 'all_projects'
+# class ListProjects(ListView):
+#     template_name = 'project_management/list_projects.html'
+#     context_object_name = 'all_projects'
 
-    def get_queryset(self):
-        return Project.objects.all()
+#     def get_queryset(self):
+#         return Project.objects.all()
+
+
+def list_projects(request):
+    company_id = request.session['company_id']
+
+    # project_list = Project.objects.filter(company=int(company_id))
+    project_list = Project.objects.all()
+    
+    template = loader.get_template('project_management/list_projects.html')
+    context = {
+        'all_projects': project_list
+    }
+
+    return HttpResponse(template.render(context, request))
 
 
 class UpdateProject(UpdateView):
@@ -4236,8 +4439,28 @@ def daily_timesheets_pane(request):
 
 def add_new_timesheet(request):
     company_id = request.session['company_id']
+    user = request.user.id
 
-    project_list = Project.objects.filter(company=int(company_id))
+    # project_list = Project.objects.filter(company=int(company_id))
+    members = ProjectTeamMember.objects.filter(member=user)
+    team_list = []
+    for value in members:  
+        team_members = ProjectTeamMember.project_team.through.objects.filter(projectteammember=value.id)
+
+        for obj in team_members:
+            team_name = obj.projectteam
+            team_list.append(team_name)
+    
+    project_list = []
+    for team in team_list:
+        project_id = team.project_id
+        
+        project = Project.objects.get(id=project_id)
+        project_dict = {}
+        project_dict['id'] = project.id
+        project_dict['name'] = project.name
+
+        project_list.append(project_dict)
     
     template = loader.get_template('project_management/add_time_sheet.html')
     context = {
@@ -5237,3 +5460,246 @@ def filter_users_timesheets_by_week(request):
 
 def compute_duration(sec):
     return '{}'.format(str(timedelta(seconds=sec)))
+
+
+# project code format
+class ListCodeFormat(ListView):
+    template_name = 'project_management/list_code_format.html'
+    context_object_name = 'list_code_formats'
+
+    def get_queryset(self):
+        return ProjectCode.objects.all()
+
+
+class AddCodeFormat(CreateView):
+    model = ProjectCode
+    fields = ['project_code']
+    template_name = 'project_management/add_code_format.html'
+    success_url = reverse_lazy('listCodeFormat')
+
+
+class UpdateCodeFormat(UpdateView):
+    model = ProjectCode
+    fields = ['project_code']
+    template_name = 'project_management/update_code_format.html'
+    success_url = reverse_lazy('listCodeFormat')
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        code_id = int(self.request.GET['code_id'])
+        context['code_id'] = code_id
+        return context
+
+
+class DeleteCodeFormat(DeleteView):
+    model = ProjectCode
+    success_url = reverse_lazy('listCodeFormat')
+
+    def get(self, request, *args, **kwargs):
+        return self.post(request, *args, **kwargs)
+
+
+def validate_project_code(request):
+    """checking if project_code has already been created"""
+
+    project_code_count = ProjectCode.objects.all().count()
+    data = {}
+    if project_code_count == 0:
+
+        data = {
+            "count": True
+        }
+    else:
+        data = {
+            "count" : False
+        }
+
+    return JsonResponse(data)
+
+
+def populate_upload_document(request):
+    project_id = request.GET.get('project_id')
+
+    project = Project.objects.get(id= project_id)
+    project_name = project.name
+      
+    template = loader.get_template('project_management/upload_document.html')
+    context = {
+        'project_id': project_id,
+        'project_name': project_name
+    }
+
+    return HttpResponse(template.render(context, request))
+
+
+def upload_document(request):
+    if request.method == 'POST' and request.is_ajax():
+        project_id = request.POST.get('project')
+        title = request.POST.get("title")
+        description = request.POST.get('document_description')
+        document = request.FILES['document']
+        created_by = request.user.id
+
+        if title == "":
+            title = None
+        if description == "":
+            description = None
+        project = Project.objects.get(id=project_id)
+
+        user_id = User.objects.get(id=created_by)
+
+        document_upload = ProjectDocument(title=title, document=document, document_description=description,
+        created_by=user_id, project=project)
+
+        document_upload.save()
+
+        response_data = {
+            'success': 'Document uploaded successfully',
+            'state': True,
+        }
+        
+        return JsonResponse(response_data)
+
+def staff_utilization(request):
+    """generate staff utilization report"""
+    # timesheets = Timesheet.objects.filter(submitted_by=request.user.id)
+    
+    # end_time = []
+    # start_time = []
+    # for object in timesheets:
+
+    #     difference = object.durationsec()
+
+    #     total_hours = difference / 3600
+    #     end_time.append(total_hours)
+
+    # print(f"{end_time} is the end")
+
+    # sum_list = sum(end_time)
+
+    # print(f"The difference is {sum_list}")
+
+    # return render(request, 'project_management/staff_report.html', {
+    #     'total': str(sum_list),
+    #     'timesheets': timesheets,
+    #     'user': request.user
+    #     })
+    
+
+
+    return render(request, 'project_management/staff_report.html', context=None)
+    
+
+def render_calendar(request):
+    """ returns timesheet values for single individual """
+    company_id = request.session['company_id']
+
+    start_time = request.GET.get('start', None)
+    end_time = request.GET.get('end', None)
+
+    print(f"{start_time} is the start")
+    print(f"{end_time} is the end time")
+
+    convert_start = datetime.datetime.strptime(start_time, "%d-%m-%Y").strftime("%Y-%m-%d")
+    convert_end = datetime.datetime.strptime(end_time, "%d-%m-%Y").strftime("%Y-%m-%d")
+
+    new_start = datetime.datetime.strptime(convert_start, "%Y-%m-%d")
+    new_end = datetime.datetime.strptime(convert_end, "%Y-%m-%d")
+
+    start = date(new_start.year, new_start.month, new_start.day)
+    end = date(new_end.year, new_end.month, new_end.day)
+    
+    # getting the days in between start date and end date
+    delta = end - start
+    
+    timesheet = Timesheet.objects.filter(company_id=company_id)
+    list_timesheet_user = []
+    all_users = User.objects.filter(company_id=company_id)
+    days_list = []
+
+    for time in timesheet:
+        logged_day = time.log_day.strftime("%Y-%m-%d")
+        timesheet_dict = {}
+        users = User.objects.filter(id= time.added_by.id)
+
+        for user in users:
+            timesheet_dict["user"] = user.last_name
+            timesheet_dict["user_id"] = user.id
+
+            for i in range(delta.days + 1):
+                day = start + timedelta(days=i)
+                new_day = day.strftime("%Y-%m-%d")           
+
+                if new_day == logged_day:
+                    duration_in_seconds = time.durationsec()
+                    duration_in_hours = duration_in_seconds/3600
+                    timesheet_dict["user_hours"] = duration_in_hours
+                    list_timesheet_user.append(timesheet_dict)
+                
+
+    #  getting the user total time 
+    print(list_timesheet_user)
+    # sum_list = sum(list_timesheet_user)
+    # final_list = round(sum_list, 2)
+
+    user_list = []
+    for user in all_users:
+        hours = 0
+        user_dict = {}
+        for obj in list_timesheet_user:
+            print(f"{obj} is the one")
+            if user.id == obj['user_id']:
+                hours += obj['user_hours']
+                
+            user_dict['user_id'] = user.id
+            user_dict['first_name'] = user.first_name
+            user_dict['last_name'] = user.last_name
+            user_dict['hours'] = hours
+            
+        user_list.append(user_dict)
+
+    
+    print(user_list) 
+    list_users = json.dumps(user_list)
+    print(f"{list_users} is the list of users")
+    return JsonResponse(list_users)
+
+
+def daily_logged_hours(request):
+    """daily logged hours"""
+
+    return render(request, 'project_management/daily_logged_hours.html', context=None)
+
+
+def fetch_members_by_project(request):
+    """return project team_members in project"""
+    project_id = int(request.GET.get('project_id'))
+
+    project = Project.objects.get(id=project_id)
+    
+    list_project_milestones = Milestone.objects.filter(project_id=int(project_id))
+
+    if ProjectTeam.objects.filter(project_id=int(project_id)).exists():
+        team = ProjectTeam.objects.get(project_id=project.id)
+        project_team = team.id
+        team_members = ProjectTeamMember.objects.filter(project_team=project_team)
+        member_list = list(team_members)
+    
+        old = []
+
+        if len(member_list) != 0:
+            for member in member_list:
+                old_user = User.objects.get(id=member.member_id)
+                old.append(old_user)
+ 
+        members = old
+
+    else:
+        members = ""
+
+
+    data = {
+        'mil': serializers.serialize("json", list_project_milestones),
+        'members': serializers.serialize("json", members)
+    }
+    return JsonResponse(data)

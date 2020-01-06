@@ -56,38 +56,61 @@
                 </ul>
                 </li>
 
-                <!-- {% if perms.project_management.add_milestone or perms.project_management.view_milestone or perms.project_management.delete_milestone or perms.project_management.change_milestone %}
-                    <li>
+                {% if user.is_staff%}
+                <li class="">
+                    <a class="has-arrow" href="#" aria-expanded="false"><i class="fa fa-clock-o"></i>
+                        <span class="hide-menu">TIMESHEETS</span></a>
+                    <ul aria-expanded="false" class="collapse">
+                        <li onclick="">
+                            <a href="{% url 'myTimesheets' %}" aria-expanded="false"><i class="fa fa-calendar-plus-o"></i>
+                                <span class="hide-menu">Daily Timesheets </span>
+                            </a>
+                        </li>
+                        {% if user.is_superuser%}
+                        <li onclick="">
+                            <a href="{% url 'approveTimesheets' %}" aria-expanded="false"><i class="fa fa-calendar-check-o"></i>
+                                <span class="hide-menu">Approvals </span>
+                            </a>
+                        </li>
+                        <li onclick="">
+                            <a href="{% url 'analyseAllTimesheets' %}" aria-expanded="false"><i class="fa fa-calendar"></i>
+                                <span class="hide-menu">Calender </span>
+                            </a>
+                        </li>
+
+                        <li onclick="">
+                            <a href="{% url 'timesheetWeeklyReport' %}" aria-expanded="false"><i class="fa fa-line-chart"></i>
+                                <span class="hide-menu">Review </span>
+                            </a>
+                        </li>
+
+                        <!-- <li onclick="">
+                            <a href="{% url 'staffUtilization' %}" aria-expanded="false"><i class="fa fa-line-chart"></i>
+                                <span class="hide-menu">Staff Utilization </span>
+                            </a>
+                        </li> -->
+                        {% endif %}
+                    </ul>
+                </li>
+                {% endif %}
+
+                <li>
                     <a class="has-arrow" href="#" aria-expanded="false"><i class="fa fa-suitcase"></i><span
                             class="hide-menu">Milestones</span></a>
-                {% endif %}
-
-                <ul aria-expanded="false" class="collapse">
-                    {% if perms.project_management.view_milestone %}
+                    <ul aria-expanded="false" class="collapse">
                         <li><a href="{% url 'milestone_list' %}">Project Milestones</a></li>
-                    {% endif %}
-                    {% if perms.project_management.add_milestone %}
-                        <li><a href="{% url 'new_milestone' %}">New</a></li>
-                    {% endif %}
-                </ul>
+                    </ul>
                 </li>
 
-                {% if perms.project_management.add_task or perms.project_management.view_task or perms.project_management.delete_task or perms.project_management.change_task %}
-                    <li>
+                <li>
                     <a class="has-arrow  " href="#" aria-expanded="false"><i class="fa fa-suitcase"></i><span
                             class="hide-menu">Tasks</span></a>
-                {% endif %}
-                <ul aria-expanded="false" class="collapse">
-                    {% if perms.project_management.view_task %}
-                        <li><a href="{% url 'listTasks' %}">Task List</a></li>
-                    {% endif %}
-                    {% if perms.project_management.add_task %}
-                        <li><a href="{% url 'new_task' %}">New</a></li>
-                    {% endif %}
-                </ul>
+                    <ul aria-expanded="false" class="collapse">
+                        <li><a href="{% url 'task_list' %}">Task List</a></li>
+                    </ul>
                 </li>
 
-                {% if perms.project_management.add_incident or perms.project_management.view_incident or perms.project_management.delete_incident or perms.project_management.change_incident %}
+                <!-- {% if perms.project_management.add_incident or perms.project_management.view_incident or perms.project_management.delete_incident or perms.project_management.change_incident %}
                     <li>
                     <a class="has-arrow  " href="#" aria-expanded="false"><i class="fa fa-suitcase"></i><span
                             class="hide-menu">Incidents</span></a>
@@ -188,6 +211,7 @@
                             <li><a href="{% url 'listAllPriorities' %}"><i class="fa fa-list"></i> Priorities</a></li>
                             <li><a href="{% url 'listAllStatuses' %}"><i class="fa fa-list"></i> Statuses</a></li>
                             <li><a href="{% url 'listAllRoles' %}"><i class="fa fa-list"></i> Member Roles</a></li>
+                            <li><a href="{% url 'listCodeFormat' %}"><i class="fa fa-list"></i> Project Code Format</a></li>
                         </ul>
                     </li>
                     <li class="">
@@ -203,35 +227,6 @@
                     </li>
 
                     <li><a href="{% url 'listauditlogs' %}"><i class="fa fa-info"></i> Audit Logs</a></li>
-
-                    <li class="">
-                        <a class="has-arrow" href="#" aria-expanded="false"><i class="fa fa-clock-o"></i>
-                            <span class="hide-menu">TIMESHEETS</span></a>
-                        <ul aria-expanded="false" class="collapse">
-                            <li onclick="">
-                                <a href="{% url 'myTimesheets' %}" aria-expanded="false"><i class="fa fa-calendar-plus-o"></i>
-                                    <span class="hide-menu">Daily Timesheets </span>
-                                </a>
-                            </li>
-                            <li onclick="">
-                                <a href="{% url 'approveTimesheets' %}" aria-expanded="false"><i class="fa fa-calendar-check-o"></i>
-                                    <span class="hide-menu">Approvals </span>
-                                </a>
-                            </li>
-                            <li onclick="">
-                                <a href="{% url 'analyseAllTimesheets' %}" aria-expanded="false"><i class="fa fa-calendar"></i>
-                                    <span class="hide-menu">Calender </span>
-                                </a>
-                            </li>
-
-                            <li onclick="">
-                                <a href="{% url 'timesheetWeeklyReport' %}" aria-expanded="false"><i class="fa fa-line-chart"></i>
-                                    <span class="hide-menu">Review </span>
-                                </a>
-                            </li>
-
-                        </ul>
-                    </li>
 
                     <li class="">
                         <a class="has-arrow" href="#" aria-expanded="false"><i class="fa fa-clock-o"></i>

@@ -149,6 +149,8 @@
         size: 3
     });  
 
+    var statusText = $("#id_status option:selected").text().toLowerCase();
+
     $('#id_status').on('change', function(){
         var statusId = $(this).val();
         $.ajax({
@@ -389,7 +391,7 @@
     });
 
     $(function(){
-        if($("#id_status").val() == '1' || $("#id_status").val() == '2'){
+        if(statusText == 'open' || statusText == 'onhold'){
             $("#div_id_actual_start_date").css("display", "none");
             $("#div_id_actual_end_date").css("display", "none");
             document.getElementById("btnUpdateTask").disabled = false;
@@ -403,7 +405,7 @@
     $("form").on('submit', function(event){
         event.preventDefault();
         
-        if($("#id_status").val() == '3' || $("#id_status").val() == '4'){
+        if(statusText == 'completed' || statusText == 'terminated'){
             if ($('#id_actual_start_date').val().length < 1){
                 $('#id_actual_start_date').css({ "border": '2px solid #00635a' });
                 event.preventDefault();
