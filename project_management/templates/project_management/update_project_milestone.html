@@ -7,7 +7,7 @@
     
 </div>
 <div class="card-body">
-    <div class="basic-form">
+    <div class="basic-form" id="updateMilestoneForm">
         <form class="form-horizontal" >
             {% csrf_token %}
             <div class="col-12">
@@ -90,38 +90,28 @@
 <script>
     $('#div_id_status').removeClass("form-group");
 
-    $('#id_startdate').datepicker({
-        format: "yyyy-mm-dd",
+    var options =  {
+        format: 'yyyy-mm-dd',
         autoclose: true,
         clearBtn: true
-    });
+    }
 
-    $('#id_enddate').datepicker({
-        format: "yyyy-mm-dd",
-        autoclose: true,
-        clearBtn: true
-    });
+    $('#id_startdate').datepicker(options);
+
+    $('#id_enddate').datepicker(options);
 
     $("#id_actual_startdate").prop("type", "text");
     $("#id_actual_enddate").prop("type", "text");
 
-    $('#id_actual_startdate').datepicker({
-        format: "yyyy-mm-dd",
-        autoclose: true,
-        clearBtn: true
-    });
+    $('#id_actual_startdate').datepicker(options);
 
-    $('#id_actual_enddate').datepicker({
-        format: "yyyy-mm-dd",
-        autoclose: true,
-        clearBtn: true
-    });
+    $('#id_actual_enddate').datepicker(options);
 
-    $("#id_startdate").attr("placeholder", "mm/dd/yyyy");
-    $("#id_enddate").attr("placeholder", "mm/dd/yyyy");
+    $("#id_startdate").attr("placeholder", "yyyy-mm-dd");
+    $("#id_enddate").attr("placeholder", "yyyy-mm-dd");
 
-    $("#id_actual_startdate").attr("placeholder", "mm/dd/yyyy");
-    $("#id_actual_enddate").attr("placeholder", "mm/dd/yyyy");
+    $("#id_actual_startdate").attr("placeholder", "yyyy-mm-dd");
+    $("#id_actual_enddate").attr("placeholder", "yyyy-mm-dd");
 
     $('#id_actual_enddate').on('focus', function(){
         var date = $(this).blur();
@@ -346,9 +336,12 @@
         return month + '\/' + day + '\/' + year;
     }
 
+    
+
     // on load function for addition of milestone
     $(function(){
-        if($("#id_status").val() == '1' || $("#id_status").val() == '2'){
+        var statusText = $("#id_status option:selected").text().toLowerCase();
+        if(statusText == 'open' ||statusText == 'onhold'){
             $("#div_id_actual_startdate").css("display", "none");
             $("#div_id_actual_enddate").css("display", "none");
             document.getElementById("btnUpdateMilestone").disabled = false;
@@ -404,92 +397,84 @@
     $("#id_description").attr('autocomplete', 'off');
 
     var milestone_val = {{milestone_id}};
+
+    function updateMilestone(name, status, startdate, enddate, actual_startdate, actual_enddate, description, project_id){
+        url_data = "{% url 'saveupdateProjectMilestone' 999%}".replace(999, milestone_val);
+        $.ajax({
+            type: "GET",
+            cache: false,
+            data: {
+                name: name,
+                status: status,
+                startdate: startdate,
+                enddate: enddate,
+                actual_startdate: actual_startdate,
+                actual_enddate: actual_enddate,
+                description: description,
+                project_id: project_id  
+            },
+            url: url_data,
+            success: function (resp) {
+                $('.close-dialog').click();
+                $.confirm({
+                    title: "Success",
+                    content: "Successfully updated",
+                    type: 'blue',
+                    typeAnimated: true,
+                    boxWidth: '35%',
+                    useBootstrap: false,
+                    closeIcon: true,
+                        buttons: {
+                            formSubmit: {
+                                text: 'OK',
+                                btnClass: 'btn-blue',
+                                action: function () {
+                                    // reloading window after success
+                                    location.reload(true);     
+                                }
+                            }
+                        }
+                });
+            }
+        });
+    }
     
-    $("form").on('submit', function(event){
+    $("#updateMilestoneForm").on('submit', function(event){
         event.preventDefault();
 
-        if($("#id_status").val() == '3' || $("#id_status").val() == '4'){
-            if ($('#id_actual_startdate').val().length < 1){
-                $('#id_actual_startdate').css({ "border": '2px solid #00635a' });
-                event.preventDefault();
+        var name = $('#id_name').val();
+        var status = $('#id_status').val();
+        var startdate = $('#id_startdate').val();
+        var enddate = $('#id_enddate').val();
+        var actual_startdate = $('#id_actual_startdate').val();
+        var actual_enddate = $('#id_actual_enddate').val();
+        var description = $('#id_description').val();
+        var project_id =$('#id_project').val();
+        var statusText = $("#id_status option:selected").text().toLowerCase();
+
+        if(statusText == "open" || statusText == "onhold"){
+            updateMilestone(name, status, startdate, enddate, actual_startdate, actual_enddate, description, project_id);
+        }
+
+        if(statusText == 'completed' || statusText == 'terminated'){
+            if(actual_startdate.length < 1 || actual_enddate.length < 1){
+                if (actual_startdate.length < 1){
+                    $('#id_actual_startdate').css({ "border": '2px solid #00635a' });
+                    event.preventDefault();
+                }
+
+                if (actual_enddate.length < 1){
+                    $('#id_actual_enddate').css({ "border": '2px solid #00635a' });
+                    event.preventDefault();
+                }
             }
 
-            else if ($('#id_actual_enddate').val().length < 1){
-                $('#id_actual_enddate').css({ "border": '2px solid #00635a' });
-                event.preventDefault();
-            }
-            else{
-                var name = $('#id_name').val();
-                var status = $('#id_status').val();
-                var startdate = $('#id_startdate').val();
-                var enddate = $('#id_enddate').val();
-                var actual_startdate = $('#id_actual_startdate').val();
-                var actual_enddate = $('#id_actual_enddate').val();
-                var description = $('#id_description').val();
-                var project_id =$('#id_project').val();
-
-                url_data = "{% url 'saveupdateProjectMilestone' 999%}".replace(999, milestone_val);
-                $.ajax({
-                    type: "GET",
-                    cache: false,
-                    data: {
-                        name: name,
-                        status: status,
-                        startdate: startdate,
-                        enddate: enddate,
-                        actual_startdate: actual_startdate,
-                        actual_enddate: actual_enddate,
-                        description: description,
-                        project_id: project_id
-                        
-                    },
-                    url: url_data,
-                    success: function (resp) {
-                        $('.close-dialog').click();
-                        $('#openMilestonePane').html(resp);
-                    }
-                });
-                return true;
-            }
+            if(actual_startdate.length > 1 && actual_enddate.length > 1){
+                updateMilestone(name, status, startdate, enddate, actual_startdate, actual_enddate, description, project_id);
+            }  
+            
         }       
         
-        else{
-            var name = $('#id_name').val();
-            var status = $('#id_status').val();
-            var startdate = $('#id_startdate').val();
-            var enddate = $('#id_enddate').val();
-            var actual_startdate = $('#id_actual_startdate').val();
-            var actual_enddate = $('#id_actual_enddate').val();
-            var description = $('#id_description').val();
-            var project_id =$('#id_project').val();
-
-            url_data = "{% url 'saveupdateProjectMilestone' 999%}".replace(999, milestone_val);
-            $.ajax({
-                type: "GET",
-                cache: false,
-                data: {
-                    name: name,
-                    status: status,
-                    startdate: startdate,
-                    enddate: enddate,
-                    actual_startdate: actual_startdate,
-                    actual_enddate: actual_enddate,
-                    description: description,
-                    project_id: project_id
-                    
-                },
-                url: url_data,
-                success: function (resp) {
-                    
-                    $('#count_open_milestones').text("completed_count");
-                    $('#count_onhold_milestones').text("completed_count");
-                    $('.close-dialog').click();
-                    $('#onholdMilestonePane').html(resp);
-                }
-            });
-            
-            return true;
-        }
     });
 
 </script>

@@ -16,7 +16,7 @@ urlpatterns = [
     path('download-project-csv/', views.projects_download, name='download_projects_csv'),
     path('download-project-excel/', views.export_projects_xls, name='export_projects_xls'),
 
-    path('milestones/', views.MilestoneListView.as_view(), name='milestone_list'),
+    path('milestones/', views.project_milestones_by_user, name='milestone_list'),
     path('milestone/detail/<int:pk>/', views.MilestoneDetailView.as_view(), name='milestone_details'),
     re_path(r'^project-milestones/(?P<project_id>\d+)/$', views.milestone_list_by_project,
             name='project_milestone_list'),
@@ -49,10 +49,10 @@ urlpatterns = [
 
   
     path('populateTaskView', views.populate_task_view, name='populateTaskView'),    
+    path('createTask', views.create_tasks_by_project, name="createTask"),
 
-
-    path('tasks/', views.TaskListView.as_view(), name='listTasks'),
-    path('tasks/', views.TaskListView.as_view(), name='task_list'),
+    # path('tasks/', views.TaskListView.as_view(), name='listTasks'),
+    path('tasks/', views.task_list_by_users, name='task_list'),
     path('task/<int:pk>/', views.TaskDetailView.as_view(), name='task_details'),
     # re_path(r'^tasks-project/(?P<project_id>\d+)/$', views.task_list_by_project, name='project_task_list'),
     re_path(r'^tasks-milestone/(?P<milestone_id>\d+)/$', views.task_list_by_milestone, name='milestone_task_list'),
@@ -116,11 +116,12 @@ urlpatterns = [
     path('validateStatusName/', views.ValidateStatusName, name='validateStatusName'),
 
     path('addProject/', views.addProject, name='addProject'),
-    path('listProjects/', views.ListProjects.as_view(), name='listProjects'),
+    # path('listProjects/', views.ListProjects.as_view(), name='listProjects'),
+    path('listProjects/', views.list_projects, name='listProjects'),
     path('updateProject/<int:pk>', views.UpdateProject.as_view(), name='updateProject'),
     path('detailsProject/<int:pk>', views.DetailProject.as_view(), name='detailsProject'),
     path('validateProjectName/', views.validateProjectName, name='validateProjectName'),
-    path('uploadDocument/', views.UploadDocument.as_view(), name="uploadDocument" ),
+    path('uploadDocument/', views.upload_document, name="uploadDocument" ),
 
     path('addProjectTeam/', views.add_project_team, name='addProjectTeam'),
     path('adminAddProjectTeam/', views.AdminAddProjectTeam.as_view(), name='adminAddProjectTeam'),
@@ -235,4 +236,18 @@ urlpatterns = [
     # Schedules plans 
     path('schedulePlan', views.timesheets_schedule_pane, name='schedulePlan'),
     
+    # REPORTS
+    path('staffUtilization/', views.staff_utilization, name="staffUtilization"),
+    path('reCalendar/', views.render_calendar, name="reCalendar"),
+    path('dailyLoggedHours/', views.daily_logged_hours, name="dailyLoggedHours"),
+
+    # Project code
+    path('listCodeFormat/', views.ListCodeFormat.as_view(), name='listCodeFormat'),
+    path('addCodeFormat/', views.AddCodeFormat.as_view(), name='addCodeFormat'),
+    path('updateCodeFormat/<int:pk>/', views.UpdateCodeFormat.as_view(), name='updateCodeFormat'),
+    path('deleteCodeFormat/<int:pk>', views.DeleteCodeFormat.as_view(), name="deleteCodeFormat"),
+    path('validateProjectCode/', views.validate_project_code, name='validateProjectCode'),
+    path('populateUpload/', views.populate_upload_document, name='populateUpload'),
+    path('addMilestone/', views.load_add_milestone, name='addMilestone'),
+    path('selectMembersByProject', views.fetch_members_by_project, name='selectMembersByProject'),
 ]

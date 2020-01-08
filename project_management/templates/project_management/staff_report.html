@@ -1,0 +1,414 @@
+{% extends 'base.html' %}
+{% load static %}
+{% load crispy_forms_tags %}
+{% block content %}
+    <div>
+        <!-- Main wrapper  -->
+        <div id="main-wrapper">
+            {% include 'header.html' %}
+            {% include 'left-nav.html' %}
+            <!-- Page wrapper  -->
+            <div class="page-wrapper">
+                <!-- Bread crumb -->
+                <div class="row page-titles top-bar">
+                    <div class="col-md-5 align-self-center">
+                        <h3 class="text-primary">Staff Utilization</h3>
+                    </div>
+                    <div class="col-md-7 align-self-center">
+                        <ol class="breadcrumb">
+                            <li class="breadcrumb-item"><a href="javascript:void(0)">Home</a></li>
+                            <li class="breadcrumb-item active">Project List</li>
+                        </ol>
+                    </div>
+                </div>
+                <!-- End Bread crumb -->
+                <!-- Container fluid  -->
+                <div class="container-fluid">
+                    <!-- Start Page Content -->
+                    <div class="row">
+                        <div class="col-md-9 main-content">
+                            <div class="card">
+                                <div class="card-body">
+                                    <h4 class="card-title">Staff Utilization</h4>
+                                    <h6 id="date-range"></h6>
+                                    <div class="row">
+                                        <!-- <div class="col-md-12">
+                                            <button id="" class="btn btn-info pull-right" onclick="functAddNewProject();">
+                                                <i class="fa fa-fw fa-lg fa-plus"></i>Filter 
+                                            </button>
+                                        </div> -->
+                                    </div>
+
+                                    <div class="table-responsive m-t-40">
+                                        <div class="dataTables_wrapper">
+                                                <table id="table_report" class="display nowrap table table-hover"
+                                                cellspacing="0" width="100%">
+                                             <thead>
+                                             <tr>
+                                                 <th>Name</th>
+                                                 <th>Available Hrs</th>
+                                                 <th>Scheduled Hrs</th>
+                                                 <th>Scheduled/Available%</th>
+                                                 <th>Timesheet Hrs</th>
+                                                 <th>Timesheet/Available%</th>
+                                                 <th>Billable Hrs</th>
+                                                 <th>Billable Available %</th>
+                                                 <th>Invoiced Hrs</th>
+                                                 <th>Invoiced Billable %</th>
+                                             </tr>
+                                             </thead>
+                                             <tbody>
+                                                 <tr>
+                                                     <td></td>
+                                                     <td id="total_hours"></td>
+                                                 </tr>
+                                                 
+                                             </tbody>
+                                         </table>
+                                        </div>
+                                        
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            {% include 'footer.html' %}
+                            <!-- End Page Content -->
+                        </div>
+                        <div class="col-md-3 sidenav" >
+                            <div class="main-view" style="overflow-y:scroll;">
+                                <ul>
+                                    <li class="data-style">
+                                        <label class="col-form-label  requiredField">Date range<span
+                                            class="asteriskField">*</span></label>
+                                        <div class="">
+                                            <select name="date-range" class="select form-control" id="id_date_range">
+                                                <option value="" selected>--Select Range--</option>
+                                                <option value="1">This week</option> 
+                                                <option value="2">This month</option> 
+                                                <option value="3">Last month</option> 
+                                            </select>
+                                        </div>
+                                    </li>
+                                    <li class="data-style">
+                                        <label class="col-form-label  requiredField">Start Date</label>
+                                        <div class="input-icons">
+                                            <!-- <input type="text" id='id_start_date' class="form-control"/> -->
+                                            <input type="" id='id_start' class="form-control" value="" name="date" onchange="checkStart()" />
+                                        </div>
+                                        
+                                        <medium id="start_date" class="text-muted hidden">
+                                            <font color="red">
+                                                Start date has to be less or equal to end date
+                                            </font>
+                                        </medium>
+                                    </li>
+                                    <li class="data-style">
+                                        <label class="col-form-label  requiredField">End Date</label>
+                                        <div class="input-icons">
+                                            <input type="text" id='id_end' class="form-control" onchange="checkEnd()" />
+                                        </div>
+                                        
+                                        <medium id="end_date" class="text-muted hidden">
+                                            <font color="red">
+                                                End date has to be less or equal to end date
+                                            </font>
+                                        </medium>
+                                    </li>
+                                </ul>
+                            </div>
+                            <div class="divPreview">
+                                <ul>
+                                    <li class="data-style">
+                                        <label class="col-form-label  requiredField"></label>
+                                        <button id="btn_preview" class="col-md-12 btn btn-info btnPreview" onclick="btnReport()">
+                                            Preview
+                                        </button>
+                                    </li>
+                                </ul>
+                            </div>
+                            
+
+                        </div>
+                        <!-- End Container fluid  -->
+                    </div>
+                    <!-- End Page wrapper  -->
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+    <script>
+        // on load page
+        $(function(){
+
+            var options =  {
+                format: "dd-mm-yyyy",
+                autoclose: true,
+                clearBtn: true
+            }
+    
+            $('#id_start').datepicker(options);
+            $('#id_end').datepicker(options);
+    
+        });
+
+        $("#id_start").attr("placeholder", "dd-mm-yyyy");
+        $("#id_end").attr("placeholder", "dd-mm-yyyy");
+
+        $('#id_start').on('focus', function(){
+            $(this).blur();
+        });
+
+        $('#id_end').on('focus', function(){
+            $(this).blur();
+        });
+
+        // check for startdate < end date
+        function checkStart() {
+
+            var startDate = $("#id_start").val();
+            var endDate = $("#id_end").val();
+            
+            $("#id_start").css('border','');
+            $('#start_date').hide();
+
+            $(".clear").on('click', function(){
+                document.getElementById("btn_preview").disabled = false;
+                document.getElementById('id_start').style.borderColor = "";
+                $('#start_date').hide();
+            });
+
+            var sDate = new Date(reverseDate(startDate));
+            var eDate = new Date(reverseDate(endDate));
+
+            console.log(sDate);
+            console.log(eDate);
+
+            if(startDate != '' && endDate != '' && sDate > eDate){
+                document.getElementById("btn_preview").disabled = true;
+                document.getElementById('id_start').style.borderColor = "red";
+                $('#start_date').show();
+            }
+            else if(startDate != '' && endDate != '' && sDate <= eDate){
+                document.getElementById("btn_preview").disabled = false;
+                document.getElementById('id_start').style.borderColor = "";
+                $('#start_date').hide();
+                document.getElementById('id_end').style.borderColor = "";
+                $('#end_date').hide();
+            }
+        }
+
+        // check if end date > start date
+        function checkEnd(){
+            var startDate = $("#id_start").val();
+            var endDate = $("#id_end").val();
+            
+            $('#end_date').hide();
+            $("#id_end").css('border','');
+
+            var sDate = new Date(reverseDate(startDate));
+            var eDate = new Date(reverseDate(endDate));
+
+            console.log(sDate);
+            console.log(eDate);
+
+            $(".clear").on('click', function(){
+                document.getElementById("btn_preview").disabled = false;
+                document.getElementById('id_end').style.borderColor = "";
+                $('#end_date').hide();
+            });
+
+            if(startDate != '' && endDate != '' && sDate > eDate){
+                document.getElementById("btn_preview").disabled = true;
+                document.getElementById('id_end').style.borderColor = "red";
+                $('#end_date').show();
+            }
+            else if(startDate != '' && endDate != '' && sDate <= eDate){
+                document.getElementById("btn_preview").disabled = false;
+                document.getElementById('id_end').style.borderColor = "";
+                $('#end_date').hide();
+                document.getElementById('id_start').style.borderColor = "";
+                $('#start_date').hide();
+            }
+            
+        }
+
+
+        function setDateReport(){
+            var start = $("#id_start").val();
+            var end = $("#id_end").val();
+
+            if(start < 1 || end < 1){
+                if (start === "" || start < 1){
+                    $('#id_start').css({ "border": '2px solid #00635a' }); 
+                }
+
+                if (end === "" || end < 1){
+                    $('#id_end').css({ "border": '2px solid #00635a' }); 
+                }
+
+                return false;
+            }
+            else{
+                if(start > 1){
+                    $('#id_start').css({ "border": '' });
+                }
+
+                if (end > 1){
+                    $('#id_end').css({ "border": '' });
+                }
+            }
+
+            var startDate = reverseDate(start);
+            var endDate = reverseDate(end);
+
+            var st = new Date(startDate);
+            var en = new Date(endDate);
+
+            var startDay = st.getUTCDate().toString();
+            var startMonth = st.getUTCMonth();
+            var startYear = st.getFullYear();     
+
+            var endDay = en.getUTCDate().toString();
+            var endMonth = en.getUTCMonth();
+            var endYear = en.getFullYear();
+
+            var dayStart = transformDay(startDay);
+            var monthStart = transformMonth(startMonth);
+
+            var dayEnd = transformDay(endDay);
+            var monthEnd = transformMonth(endMonth);
+
+            var j = dayStart + " " + monthStart + " " + startYear;
+            var k = dayEnd + " " + monthEnd + " " + endYear;
+
+            document.getElementById("date-range").textContent = j + " - " + k;
+        }
+
+        // submit input to view the preview
+        function btnReport(){       
+            setDateReport();
+
+            var start = $('#id_start').val();
+            var end = $("#id_end").val();
+
+            console.log("start is "+start);
+            console.log("End is "+end);
+
+            if (start === "" || end === ""){
+                return false;
+            }
+
+            else{
+                urlData = "{% url 'reCalendar' %}";
+                $.ajax({
+                    type: "GET",
+                    cache: false,
+                    dataType: 'json',
+                    data: {
+                        start: start,
+                        end: end,
+                    },
+                    url: urlData,
+                    success: function(response_data){ 
+                        console.log(response_data);
+                        
+                        // document.getElementById('total_hours').innerHTML = response_data.total;
+                    }
+                });
+            }
+                       
+        }
+
+        // transform day from 1 to 01
+        function transformDay(day){
+            if (day.length === 1){
+               day =  "0" + day;
+               return day;
+            }
+            else{
+                return ""+day;
+            }
+        }
+
+        // transform month from number e.g. 9 to month e.g Sept
+        function transformMonth(month){
+            var months = [ "Jan", "Feb", "Mar", "Apr", "May", "Jun", 
+                    "Jul", "Aug", "Sep", "Oct", "Nov", "Dec" ];
+
+            var selectedMonthName = months[month];
+            return selectedMonthName;
+        }
+
+        // reverse date function from dd-mm-yyyy to yyyy-mm-dd
+        function reverseDate(date){
+            return date.split("-").reverse().join("-");
+        }
+
+        // control action of select date range
+        $('#id_date_range').on('click', function(){
+            var selected = $(this).children(":selected").text();
+
+            if(selected === 'This week'){
+                var d = new Date();
+                var day = d.getDay();
+                var fir = new Date(d.getFullYear(), d.getMonth(), d.getDate() + (day == 0?-6:1)-day );
+                var last = new Date(d.getFullYear(), d.getMonth(), d.getDate() + (day == 0?0:7)-day );
+
+                var month = fir.getMonth() + 1;
+                var lastMonth = last.getMonth() + 1;
+                
+                var firstDateWeek = fir.getDate() + "-" + month + "-" + fir.getFullYear(); 
+                $("#id_start").val(firstDateWeek);
+                $("#id_start").datepicker('update', firstDateWeek );
+
+                var lastDateWeek = last.getDate() + "-" + lastMonth+ "-" + last.getFullYear();
+                $("#id_end").val(lastDateWeek);    
+                $("#id_end").datepicker('update', lastDateWeek);                          
+
+            }
+            else if(selected === 'This month'){
+                var date = new Date();
+                var firstDay = new Date(date.getFullYear(), date.getMonth(), 1);
+                var lastDay = new Date(date.getFullYear(), date.getMonth() + 1, 0);
+
+                var month = firstDay.getMonth() + 1;
+
+                var firstDateMonth = firstDay.getDate() + "-" + month + "-" + firstDay.getFullYear(); 
+                $("#id_start").val(firstDateMonth);
+                $("#id_start").datepicker('update', firstDateMonth );
+
+                var lastDateMonth = lastDay.getDate() + "-" + month + "-" + lastDay.getFullYear();
+                $("#id_end").val(lastDateMonth);  
+                $("#id_end").datepicker('update', lastDateMonth );              
+
+            }
+            else if(selected === 'Last month'){
+                var date = new Date();
+                var firstDay = new Date(date.getFullYear(), date.getMonth()-1, 1);
+                var lastDay = new Date(date.getFullYear(), date.getMonth(), 0);
+
+                var firstDayMonth = firstDay.getMonth() + 1;
+                var lastDayMonth = lastDay.getMonth() + 1;
+
+                var firstDateMonth = firstDay.getDate() + "-" + firstDayMonth + "-" + firstDay.getFullYear(); 
+                $("#id_start").val(firstDateMonth);
+                $("#id_start").datepicker('update', firstDateMonth );
+
+                var lastDateMonth = lastDay.getDate() + "-" + lastDayMonth + "-" + lastDay.getFullYear();
+                $("#id_end").val(lastDateMonth);  
+                $("#id_end").datepicker('update', lastDateMonth );              
+                             
+            }
+            
+            else{
+                console.log("hello")
+            }
+
+        });            
+        
+    </script>
+{% endblock %}
+
+

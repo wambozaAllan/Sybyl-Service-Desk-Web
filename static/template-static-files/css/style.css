@@ -8734,6 +8734,98 @@ div.on-hover:hover {
   border-radius: 3px;
 }
 
+
+/* newly created side bar for staff utilization */
+.sidenav {
+  /* Full-height: remove this if you want "auto" height */
+  /* height: 100%;  */
+  /* height: 100vh; */
+  border-left: 0.2px solid #c9c7c7;
+  position: fixed !important;
+  right: 0;
+  bottom: 0;
+  width:250px;
+  top: 120px;
+  
+  transition: all .3s ease-out;
+  background-color: white;
+  box-sizing: border-box;
+}
+
+.main-view{
+  height: 80%;
+  position: absolute;
+  overflow-y: scroll;
+  bottom: 5.4em !important;
+  /* top: 59px; */
+  width: 92%;
+  -webkit-overflow-scrolling: touch;
+  transition: all .3s ease-out;
+}
+
+.sidenav ul {
+  margin: 0;
+  padding: 0;
+}
+
+/* The navigation menu links */
+.sidenav a {
+  text-decoration: none;
+  font-size: 15px;
+  color: #818181;
+  display: block;
+}
+
+.data-style{
+  padding: 0.2px;
+}
+
+.input-icons i { 
+  position: absolute; 
+} 
+
+.input-icons { 
+  width: 100%; 
+  margin-bottom: 10px; 
+} 
+
+#icon { 
+  right: 1%;
+  margin-top: -15%;
+  margin-right: 2%;
+} 
+
+.input-field { 
+  width: 100%; 
+  padding: 10px; 
+  text-align: center; 
+} 
+
+.btnPreview{    
+  position: static !important;
+  
+}
+
+.divPreview{
+  border-top: 1px solid #ddd;
+  position: absolute !important;
+  display:block;
+  left: 0;
+  right: 0;
+  bottom: 0 !important;
+  background-color: white;
+}
+
+.top-bar{
+  position: fixed !important;
+  width: 83%;
+}
+
+.main-content{
+  top: 54px;
+}
+
+
 .widget-1 > div:first-child .card {
   border-left: 0;
   border-top-left-radius: 3px;

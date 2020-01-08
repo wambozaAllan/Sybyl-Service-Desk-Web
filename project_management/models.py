@@ -53,7 +53,7 @@ class Project(models.Model):
     project_status = models.ForeignKey(Status, null=True, blank=True, on_delete=models.SET_NULL)
     company = models.ManyToManyField(Company)
     description = RichTextField(null=True, blank=True)
-    project_code = models.CharField(max_length=255)
+    project_code = models.CharField(max_length=255, null=True, blank=True)
     estimated_cost = models.FloatField(default=0.00)
     final_cost = models.FloatField(null=True, blank=True)
     logo = models.ImageField(null=True, blank=True, upload_to='logos/')
@@ -543,3 +543,25 @@ class ResubmittedTimesheet(models.Model):
 #     status = models.CharField(max_length=255, default='INITIAL')
 #     last_updated_date = models.DateTimeField(auto_now_add=True, blank=True, null=True)
 #     last_updated_by = models.ForeignKey(User, on_delete=models.CASCADE, related_name='last_updated_by', blank=True, null=True)
+
+
+class DailyLoggedHours(models.Model):
+    """class to view exact hours to be logged daily"""
+    logged_hours = models.TimeField()
+    created_time = models.DateTimeField(auto_now_add=True)
+    modified_time = models.DateTimeField(auto_now=True, blank=True, null=True)
+    created_by = models.ForeignKey(User, on_delete=models.CASCADE, null=True, blank=True)
+    updated_by = models.ForeignKey(User, on_delete=models.CASCADE, blank=True, null=True, related_name="updated_by")
+
+    class Meta():
+        db_table = 'daily_logged_hours'
+
+
+class ProjectCode(models.Model):
+    """input to standardize project code for projects"""
+    project_code = models.CharField(max_length=255)
+    created_time = models.DateTimeField(auto_now_add=True)
+    updated_time = models.DateTimeField(auto_now=True)
+
+    class Meta():
+        db_table = 'project_code'

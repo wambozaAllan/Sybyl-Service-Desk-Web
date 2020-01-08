@@ -62,7 +62,8 @@
                                                     <td class="text-center">
                                                         <a class="btn btn-outline-success btn-sm" href="{% url 'detailsProject' project.id %}"><i title="Manage" class="fa fa-dedent"></i></a> &nbsp;
                                                         <a class="btn btn-outline-success btn-sm" href="{% url 'updateProject' project.id %}"><i title="Update" class="fa fa-edit"></i></a> &nbsp;
-                                                        <a class="btn btn-outline-success btn-sm" href="{% url 'uploadDocument'  %}"><i title="Upload" class="fa fa-upload"></i></a> &nbsp;
+                                                        <a class="btn btn-outline-success btn-sm" onclick="uploadDocument({{ project.id }})" href="#" ><i title="Upload" class="fa fa-upload"></i></a> &nbsp;
+                                                        <!-- <a class="btn btn-outline-success btn-sm" href="{% url 'uploadDocument'  %}"><i title="Upload" class="fa fa-upload"></i></a> &nbsp; -->
                                                     </td>
                                                 </tr>
                                             {% endfor %}
@@ -96,7 +97,7 @@
                 <div class="modal-body">
 
                     <div class="scrollbar-modal1" style="overflow-x: hidden !important">
-                        <div id="dialog_create_project" style="margin-top: -1%;">
+                        <div id="dialog_create_project">
 
                         </div>
                     </div>
@@ -122,6 +123,41 @@
                     initDialog('modalDialog');
                 }
             });
+        }
+
+        function uploadDocument(project_id){
+            urldata = "{% url 'populateUpload' %}";
+            
+            $.ajax({
+                type: 'GET',
+                cache: false,
+                data: {
+                    project_id: project_id
+                },
+                url: urldata,
+                success: function (resp) {
+                    $.confirm({
+                        title: '<h3>Upload Documents</h3>',
+                        content: '' + resp,
+                        type: 'blue',
+                        theme: 'material',
+                        typeAnimated: true,
+                        boxWidth: '50%',
+                        useBootstrap: false,
+                        closeIcon: true,
+                        buttons: {
+                            close: {
+                                text: 'Close',
+                                btnClass: 'btn-gray close-dialog',
+                                action: function () {
+                                }
+                            }
+                        }
+                    });
+                }
+            });
+
+            
         }
     </script>
 {% endblock %}
