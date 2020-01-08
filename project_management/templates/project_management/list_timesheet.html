@@ -85,6 +85,7 @@
 
 
     function functionsubmitForApproval(){
+        var id_user_dept = parseInt($('#id_user_dept').val());
         if (checktimesheetset.size !== 0) {
 
             $.confirm({
@@ -110,7 +111,8 @@
                             $.ajax({
                                 type: 'GET',
                                 data: {
-                                    listTimesheet: JSON.stringify(listTimesheet)
+                                    listTimesheet: JSON.stringify(listTimesheet),
+                                    id_user_dept: id_user_dept,
                                 },
                                 url: urldata,
                                 success: function (resp) {
@@ -155,11 +157,14 @@
     }
 
     function functionAddNewTimesheet() {
+        var id_user_dept = parseInt($('#id_user_dept').val());
         urldata = "{% url 'addNewTimesheet'%}";
         $.ajax({
             type: "GET",
             cache: false,
-            data: {},
+            data: {
+                id_user_dept : id_user_dept
+            },
             url: urldata,
             success: function (resp) {
                 $('#dialog_time_sheet').html(resp);
@@ -172,6 +177,7 @@
 
     function functionEditTimesheet(timesheet_id, log_day, start_time, end_time, task, task_id, notes) {
         urldata = "{% url 'updateTimesheet' %}";
+        var id_user_dept = parseInt($('#id_user_dept').val());
         $.ajax({
             type: "GET",
             cache: false,
@@ -182,7 +188,8 @@
                 end_time: end_time,
                 task: task,
                 task_id: task_id,
-                notes: notes
+                notes: notes,
+                id_user_dept: id_user_dept
             },
             url: urldata,
             success: function (resp) {
@@ -209,6 +216,7 @@
 
     function functionDeleteTimesheet(timesheet_id, day, s_time, e_time, task){
         urldata = "{% url 'deleteTimesheet'%}";
+        var id_user_dept = parseInt($('#id_user_dept').val());
         $.confirm({
             title: '<h3 class="font-weight-bold">Delete Timesheet!</h3>',
             content: '<h4>Day: <span class="text-info">'+ day +'</span></h4>'+
@@ -230,7 +238,8 @@
                             type: "GET",
                             cache: false,
                             data: {
-                                timesheet_id: timesheet_id
+                                timesheet_id: timesheet_id,
+                                id_user_dept: id_user_dept
                             },
                             url: urldata,
                             success: function (resp) {
@@ -267,6 +276,7 @@
     }
 
     function functionFilterPendingApprovals() {
+        var id_user_dept = parseInt($('#id_user_dept').val());
         var date_range = $('#apenddingTMsDateFilter').val();
         var aud_dates = date_range.split(" - ");
         var start_date_1 = aud_dates[0];
@@ -285,6 +295,7 @@
                 data: {
                     start_date: start_date_1,
                     end_date: end_date_1,
+                    id_user_dept : id_user_dept,
                 },
                 url: urldata2,
                 success: function (rep) {

@@ -4,7 +4,7 @@
     <div class="scroll-sidebar">
         <!-- Sidebar navigation-->
         <nav class="sidebar-nav">
-            <ul id="sidebarnav">
+            <ul id="sidebarnav" style="max-height: 590px; overflow-y: scroll; scrollbar-width: thin;">
                 <li class="nav-devider"></li>
                 <li class="nav-label">Home - <span class="text-info">{{ request.session.company }} : {{ request.session.department }}</span></li>
                 <li>
@@ -227,6 +227,41 @@
                     </li>
 
                     <li><a href="{% url 'listauditlogs' %}"><i class="fa fa-info"></i> Audit Logs</a></li>
+
+                    <li class="">
+                        <a class="has-arrow" href="#" aria-expanded="false"><i class="fa fa-clock-o"></i>
+                            <span class="hide-menu">TIMESHEETS</span></a>
+                        <ul aria-expanded="false" class="collapse">
+                            <li onclick="">
+                                <a href="{% url 'myTimesheets' %}" aria-expanded="false"><i class="fa fa-calendar-plus-o"></i>
+                                    <span class="hide-menu">Daily Timesheets </span>
+                                </a>
+                            </li>
+                            <li onclick="">
+                                <a href="{% url 'approveTimesheets' %}" aria-expanded="false"><i class="fa fa-calendar-check-o"></i>
+                                    <span class="hide-menu">Approvals </span>
+                                </a>
+                            </li>
+                            <li onclick="">
+                                <a href="{% url 'analyseAllTimesheets' %}" aria-expanded="false"><i class="fa fa-calendar"></i>
+                                    <span class="hide-menu">Calender </span>
+                                </a>
+                            </li>
+
+                            <li onclick="">
+                                <a href="{% url 'timesheetWeeklyReport' %}" aria-expanded="false"><i class="fa fa-line-chart"></i>
+                                    <span class="hide-menu">Weekly Review </span>
+                                </a>
+                            </li>
+
+                            <li onclick="">
+                                <a href="{% url 'timesheetProjectReport' %}" aria-expanded="false"><i class="fa fa-list-alt"></i>
+                                    <span class="hide-menu">Project Timesheets </span>
+                                </a>
+                            </li>
+
+                        </ul>
+                    </li>
 
                     <li class="">
                         <a class="has-arrow" href="#" aria-expanded="false"><i class="fa fa-clock-o"></i>

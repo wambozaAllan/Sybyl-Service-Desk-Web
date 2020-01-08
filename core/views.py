@@ -80,6 +80,7 @@ class Login(LoginView):
                 request.session['company_id'] = user.company.id
                 request.session['branch'] = user.branch.name
                 request.session['department'] = user.department.name
+                request.session['department_id'] = user.department.id
                 if user_login_state:
                     return redirect("/home/")
                 else:

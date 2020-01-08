@@ -223,14 +223,19 @@ urlpatterns = [
     path('calenderTimesheetView', views.calenderTimesheetView, name='calenderTimesheetView'),
     path('timesheetWeeklyReport', views.timesheets_weekly_report, name='timesheetWeeklyReport'),
     path('filterTimesheetsByWeek', views.filter_users_timesheets_by_week, name='filterTimesheetsByWeek'),
-
-    # Schedules plans 
-    path('schedulePlan', views.timesheets_schedule_pane, name='schedulePlan'),
     path('filterTimesheetsByDate', views.filter_timesheets_by_date, name='filterTimesheetsByDate'),
     path('tableTimesheetView', views.table_timesheet_view, name='tableTimesheetView'),
     path('listTimesheetView', views.list_timesheet_view, name='listTimesheetView'),
     path('saveUpdateTimesheetPaginator', views.save_update_paginator_timesheet, name='saveUpdateTimesheetPaginator'),
 
+    path('timesheetProjectReport', views.timesheets_project_report, name='timesheetProjectReport'),
+    path('filterProjectTimesheetsByWeek', views.filter_project_timesheets_by_week, name='filterProjectTimesheetsByWeek'),
+    path('selectDailyTimesheetsByUser', views.select_daily_timesheets_by_user, name='selectDailyTimesheetsByUser'),
+    path('selectTableTimesheetsByUser', views.select_table_timesheets_by_user, name='selectTableTimesheetsByUser'),
+
+    # Schedules plans 
+    path('schedulePlan', views.timesheets_schedule_pane, name='schedulePlan'),
+    
     # REPORTS
     path('staffUtilization/', views.staff_utilization, name="staffUtilization"),
     path('reCalendar/', views.render_calendar, name="reCalendar"),

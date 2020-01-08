@@ -26,7 +26,7 @@
                 <label for="" class="col-form-label  requiredField">User<span class="asteriskField">*</span>
                 </label>                    
                 <div class="">
-                    <input type="text" maxlength="255" class="textinput textInput form-control" required="" value="{{request.session.first_name }} {{ request.session.last_name }}" disabled>
+                    <input type="text" maxlength="255" class="textinput textInput form-control" required="" value="{{user_name}}" disabled>
                 </div>
             </div>
         </div>
@@ -225,6 +225,7 @@
             var id_milestone = $('#id_milestone').val();
             var id_task = $('#id_task').val();
             var id_timesheet_notes = $('#id_timesheet_notes').val();
+            var uid = {{user_id}};
 
             var id_workedtime = $('#id_workedtime').val();
             var worked_time_ranges = id_workedtime.split(" - ");
@@ -254,7 +255,8 @@
                     id_task: id_task,
                     start_time: start_time,
                     end_time: end_time,
-                    notes: id_timesheet_notes
+                    notes: id_timesheet_notes,
+                    uid: uid
                 };
                 url_data = "{% url 'savePaginatorTimeSheet'%}";
                 $.ajax({
@@ -264,7 +266,10 @@
                     url: url_data,
                     success: function (resp) {
                         $('.close-dialog').click();
-                        $('.container-fluid').html(resp);
+                        window.location = '#close';
+                        $('#timesheet-manage-pane').html('');
+                        $('#timesheet-manage-pane').html('<i class="fa fa-spinner fa-spin fa-5x text-center" style="margin-left: 50%;"></i>');
+                        $('#timesheet-manage-pane').html(resp);
                         
                         document.getElementById("btnSaveTimesheet").disabled=true;
                     }

@@ -1,17 +1,18 @@
 <style>
 </style>
 <div class="table-responsive">
-    <table id="users-weekly-timesheet" class=" table table-hover" cellspacing="0" width="100%">
+    <table id="example23" class=" table table-hover" cellspacing="0" width="100%">
         <thead>
                 <tr>
                     <th>{{ days_list.no }}</th>
-                    <th>{{ days_list.name }}</th>
-                    <th>{{ days_list.day0 | date:"D, d M" }}</th>
-                    <th>{{ days_list.day1 | date:"D, d M"}}</th>
-                    <th>{{ days_list.day2 | date:"D, d M"}}</th>
-                    <th>{{ days_list.day3 | date:"D, d M"}}</th>
-                    <th>{{ days_list.day4 | date:"D, d M"}}</th>
-                    <th>{{ days_list.day5 | date:"D, d M"}}</th>
+                    <th style="font-size: 90%;">{{ days_list.name }}</th>
+                    <th style="font-size: 90%;">{{ days_list.day0 | date:"D, d M" }}</th>
+                    <th style="font-size: 90%;">{{ days_list.day1 | date:"D, d M"}}</th>
+                    <th style="font-size: 90%;">{{ days_list.day2 | date:"D, d M"}}</th>
+                    <th style="font-size: 90%;">{{ days_list.day3 | date:"D, d M"}}</th>
+                    <th style="font-size: 90%;">{{ days_list.day4 | date:"D, d M"}}</th>
+                    <th style="font-size: 90%;">{{ days_list.day5 | date:"D, d M"}}</th>
+                    <th style="font-size: 90%;">{{ days_list.day6 | date:"D, d M"}}</th>
                 </tr>
         </thead>
         <tbody>
@@ -79,6 +80,16 @@
                         <span class="label label-rounded label-success">{{ tm.day5}}</span>
                     </td>   
                 {% endif %}
+
+                {% if tm.day6 == "0:00:00" %}
+                    <td class="text-center">
+                        <span class="label label-rounded label-warning">{{ tm.day6}}</span>
+                    </td>
+                {% else %}
+                    <td class="text-center">
+                        <span class="label label-rounded label-success">{{ tm.day6}}</span>
+                    </td>   
+                {% endif %}
             </tr>
             {% endfor %}
         </tbody>
@@ -86,5 +97,5 @@
 </div>
 
 <script>
-    $('#users-weekly-timesheet').DataTable();
+    $('#example23').DataTable();
 </script>
