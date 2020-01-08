@@ -11,12 +11,16 @@
         <div class="row">
             <div class="col-3"><h5><span class="text-info font-weight-bold" id="selected_day_timesheet">{% now "jS D, F, Y" %}</span></h5></div>
             <div class="col-4">
+                
                 <select name="project" class="select form-control id_user_dept_tb" id="id_user_dept_tb" style="margin-top: -3%;">
                     <option selected="" value="{{user_id}}">{{user_name}}</option>
-                    {% for usr in dept_users %}
-                        <option value="{{usr.id}}">{{usr.first_name}} {{usr.last_name}}</option>
-                    {% endfor %}
+                    {% if user.is_superuser%}
+                        {% for usr in dept_users %}
+                            <option value="{{usr.id}}">{{usr.first_name}} {{usr.last_name}}</option>
+                        {% endfor %}
+                    {% endif %}
                 </select>
+                
             </div>
             <div style="margin-left: 11%;">
                 <button onclick="calendarPicker2.changeDate(new Date())" type="button" style="width: 70px" class="btn btn-outline-secondary col-3">Today</button>&nbsp;

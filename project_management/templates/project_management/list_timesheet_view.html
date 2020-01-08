@@ -12,12 +12,16 @@
                 <li class="nav-item" onclick="functionPeddingApprovalsHome()"> <a class="nav-link tab-tm-2" data-toggle="tab" href="#pending_approval" role="tab"><span class="hidden-sm-up"><i class="fa fa-share"></i></span> <span class="hidden-xs-down">Pending Approval</span></a> </li>
                 <li class="nav-item" onclick="functionApprovedTimesheetsHome()"> <a class="nav-link tab-tm-3" data-toggle="tab" href="#appoved_tm" role="tab"><span class="hidden-sm-up"><i class="ti-email"></i></span> <span class="hidden-xs-down">Approved Timesheets</span></a> </li>
                 <div class="btn-group" style="margin-left: 71%;">
+                    
                     <select name="project" class="select form-control id_user_dept2" id="id_user_dept">
                         <option selected="" value="{{user_id}}">{{user_name}}</option>
-                        {% for usr in dept_users %}
-                            <option value="{{usr.id}}">{{usr.first_name}} {{usr.last_name}}</option>
-                        {% endfor %}
+                        {% if user.is_superuser%}
+                            {% for usr in dept_users %}
+                                <option value="{{usr.id}}">{{usr.first_name}} {{usr.last_name}}</option>
+                            {% endfor %}
+                        {% endif %}
                     </select>&nbsp;&nbsp;
+                    
                     <button type="button" title="Vertical Timesheet List" class="btn btn-info" id="view-vertical"><i class="fa fa-list" aria-hidden="true"></i></button>
                     <button type="button" onclick="loadURL('{% url 'tableTimesheetView'%}', '', 'container-fluid2', 'GET');" title="Table Timesheet List" class="btn btn-default" id="table-horizontal"><i class="fa fa-table" aria-hidden="true"></i></button>
                 </div>

@@ -67,28 +67,28 @@
                             </a>
                         </li>
                         {% if user.is_superuser%}
-                        <li onclick="">
-                            <a href="{% url 'approveTimesheets' %}" aria-expanded="false"><i class="fa fa-calendar-check-o"></i>
-                                <span class="hide-menu">Approvals </span>
-                            </a>
-                        </li>
-                        <li onclick="">
-                            <a href="{% url 'analyseAllTimesheets' %}" aria-expanded="false"><i class="fa fa-calendar"></i>
-                                <span class="hide-menu">Calender </span>
-                            </a>
-                        </li>
+                            <li onclick="">
+                                <a href="{% url 'approveTimesheets' %}" aria-expanded="false"><i class="fa fa-calendar-check-o"></i>
+                                    <span class="hide-menu">Approvals </span>
+                                </a>
+                            </li>
+                            <li onclick="">
+                                <a href="{% url 'analyseAllTimesheets' %}" aria-expanded="false"><i class="fa fa-calendar"></i>
+                                    <span class="hide-menu">Calender </span>
+                                </a>
+                            </li>
 
-                        <li onclick="">
-                            <a href="{% url 'timesheetWeeklyReport' %}" aria-expanded="false"><i class="fa fa-line-chart"></i>
-                                <span class="hide-menu">Review </span>
-                            </a>
-                        </li>
+                            <li onclick="">
+                                <a href="{% url 'timesheetWeeklyReport' %}" aria-expanded="false"><i class="fa fa-line-chart"></i>
+                                    <span class="hide-menu">Weekly Review </span>
+                                </a>
+                            </li>
 
-                        <!-- <li onclick="">
-                            <a href="{% url 'staffUtilization' %}" aria-expanded="false"><i class="fa fa-line-chart"></i>
-                                <span class="hide-menu">Staff Utilization </span>
-                            </a>
-                        </li> -->
+                            <li onclick="">
+                                <a href="{% url 'timesheetProjectReport' %}" aria-expanded="false"><i class="fa fa-list-alt"></i>
+                                    <span class="hide-menu">Project Timesheets </span>
+                                </a>
+                            </li>
                         {% endif %}
                     </ul>
                 </li>
@@ -228,42 +228,9 @@
 
                     <li><a href="{% url 'listauditlogs' %}"><i class="fa fa-info"></i> Audit Logs</a></li>
 
-                    <li class="">
-                        <a class="has-arrow" href="#" aria-expanded="false"><i class="fa fa-clock-o"></i>
-                            <span class="hide-menu">TIMESHEETS</span></a>
-                        <ul aria-expanded="false" class="collapse">
-                            <li onclick="">
-                                <a href="{% url 'myTimesheets' %}" aria-expanded="false"><i class="fa fa-calendar-plus-o"></i>
-                                    <span class="hide-menu">Daily Timesheets </span>
-                                </a>
-                            </li>
-                            <li onclick="">
-                                <a href="{% url 'approveTimesheets' %}" aria-expanded="false"><i class="fa fa-calendar-check-o"></i>
-                                    <span class="hide-menu">Approvals </span>
-                                </a>
-                            </li>
-                            <li onclick="">
-                                <a href="{% url 'analyseAllTimesheets' %}" aria-expanded="false"><i class="fa fa-calendar"></i>
-                                    <span class="hide-menu">Calender </span>
-                                </a>
-                            </li>
+                    
 
-                            <li onclick="">
-                                <a href="{% url 'timesheetWeeklyReport' %}" aria-expanded="false"><i class="fa fa-line-chart"></i>
-                                    <span class="hide-menu">Weekly Review </span>
-                                </a>
-                            </li>
-
-                            <li onclick="">
-                                <a href="{% url 'timesheetProjectReport' %}" aria-expanded="false"><i class="fa fa-list-alt"></i>
-                                    <span class="hide-menu">Project Timesheets </span>
-                                </a>
-                            </li>
-
-                        </ul>
-                    </li>
-
-                    <li class="">
+                    <!-- <li class="">
                         <a class="has-arrow" href="#" aria-expanded="false"><i class="fa fa-clock-o"></i>
                             <span class="hide-menu">Planning/Schedules</span></a>
                         <ul aria-expanded="false" class="collapse">
@@ -273,7 +240,7 @@
                                 </a>
                             </li>
                         </ul>
-                    </li>
+                    </li> -->
                 {% endif %}
 
             </ul>
