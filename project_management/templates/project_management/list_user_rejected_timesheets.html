@@ -63,6 +63,7 @@
     }
 
     function resentTimesheet(timesheet_id, log_day, start_time, end_time, task, task_id, notes) {
+        var id_user_dept = parseInt($('#id_user_dept').val());
         urldata = "{% url 'resubmitTimesheet' %}";
         $.ajax({
             type: "GET",
@@ -74,7 +75,8 @@
                 end_time: end_time,
                 task: task,
                 task_id: task_id,
-                notes: notes
+                notes: notes,
+                id_user_dept: id_user_dept,
             },
             url: urldata,
             success: function (resp) {

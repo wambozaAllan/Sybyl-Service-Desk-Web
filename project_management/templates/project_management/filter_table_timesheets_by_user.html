@@ -1,0 +1,80 @@
+<div id="calendar_filter">
+
+</div><hr>
+<div id="timesheet-manage-pane" style="margin-top: -13px; max-height: 60%; overflow-y: scroll;">
+
+</div>
+
+<input type="hidden" value="" id="date_selected_val">
+
+<script>   
+    var calendarPicker2 = $("#calendar_filter").calendarPicker({
+        monthNames: ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"],
+        dayNames: ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"],
+        years: 1,
+        months: 4,
+        days: 5,
+        showDayArrows: true,
+        callback: function (cal) {
+            $("#selected_day_timesheet").html(moment(cal.currentDate).format('DD dddd, MMMM, YYYY'));
+            var dateSelected2 = moment(cal.currentDate).format('DD-MM-YYYY');
+            $('#date_selected_val').val(moment(cal.currentDate).format('YYYY-MM-DD'));
+
+            var todayDate = new Date();
+            var endDate= new Date(Date.parse(cal.currentDate));
+            var id_user_dept = parseInt($('.id_user_dept_tb').val());
+            
+            if (endDate > todayDate) {
+                document.getElementById("btn_add_timesheet02").disabled = true;
+                $.confirm({
+                    title: 'Alert!',
+                    content: 'Cant Add timesheet to a date beyond Today!',
+                    type: 'orange',
+                    typeAnimated: true,
+                    boxWidth: '25%',
+                    useBootstrap: false,
+                    closeIcon: true,
+                    buttons: {
+                        formSubmit: {
+                            text: 'close',
+                            btnClass: 'btn-gray close-dialog',
+                        },
+                    },
+                    onContentReady: function () {}
+                });
+
+                $.ajax({
+                    type: "GET",
+                    cache: false,
+                    data: {
+                        dateSelected: dateSelected2,
+                        id_user_dept: id_user_dept
+                    },
+                    url: '{% url 'filterTimesheetsByDate' %}',
+                    success: function (resp) {
+                        $('#timesheet-manage-pane').html('');
+                        $('#timesheet-manage-pane').html('<i class="fa fa-spinner fa-spin fa-5x text-center" style="margin-left: 50%;"></i>');
+                        $('#timesheet-manage-pane').html(resp);
+                    }
+                });
+
+            }else{
+                document.getElementById("btn_add_timesheet02").disabled = false;
+                $.ajax({
+                    type: "GET",
+                    cache: false,
+                    data: {
+                        dateSelected: dateSelected2,
+                        id_user_dept: id_user_dept
+                    },
+                    url: '{% url 'filterTimesheetsByDate' %}',
+                    success: function (resp) {
+                        $('#timesheet-manage-pane').html('');
+                        $('#timesheet-manage-pane').html('<i class="fa fa-spinner fa-spin fa-5x text-center" style="margin-left: 50%;"></i>');
+                        $('#timesheet-manage-pane').html(resp);
+                    }
+                });
+            }
+        }
+    }); 
+</script>

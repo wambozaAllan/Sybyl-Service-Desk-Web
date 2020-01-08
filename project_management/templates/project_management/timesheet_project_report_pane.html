@@ -15,7 +15,7 @@
         <!-- Bread crumb -->
         <div class="row page-titles">
             <div class="col-md-5 align-self-center">
-                <h3 class="text-primary">Weekly Report</h3>
+                <h3 class="text-primary">Timesheet Project Report</h3>
             </div>
             <div class="col-md-7 align--selfcenter">
                 <ol class="breadcrumb">
@@ -49,11 +49,10 @@
                                         </div>
                                     </div>
                                 </div>
-
                             </div>
                         </div>
 
-                        <div id="weekly_users_data">
+                        <div id="weekly_project_data">
                             <i class="fa fa-spinner fa-spin fa-5x" style="align-content: center;margin-left: 50%;"></i>
                         </div>
                     </div>
@@ -114,10 +113,10 @@
                     start_date: start_date.format('DD-MM-YYYY'),
                     end_date: end_date.format('DD-MM-YYYY')
                 },
-                url: '{% url 'filterTimesheetsByWeek' %}',
+                url: '{% url 'filterProjectTimesheetsByWeek' %}',
                 success: function (resp) {
-                    $('#weekly_users_data').html('');
-                    $('#weekly_users_data').html(resp);
+                    $('#weekly_project_data').html('');
+                    $('#weekly_project_data').html(resp);
                 }
             });
         };
@@ -165,10 +164,10 @@
                     start_date: start_date.format('DD-MM-YYYY'),
                     end_date: end_date.format('DD-MM-YYYY')
                 },
-                url: '{% url 'filterTimesheetsByWeek' %}',
+                url: '{% url 'filterProjectTimesheetsByWeek' %}',
                 success: function (resp) {
-                    $('#weekly_users_data').html('');
-                    $('#weekly_users_data').html(resp);
+                    $('#weekly_project_data').html('');
+                    $('#weekly_project_data').html(resp);
                 }
             });
             return false;
@@ -191,10 +190,10 @@
                     start_date: start_date.format('DD-MM-YYYY'),
                     end_date: end_date.format('DD-MM-YYYY')
                 },
-                url: '{% url 'filterTimesheetsByWeek' %}',
+                url: '{% url 'filterProjectTimesheetsByWeek' %}',
                 success: function (resp) {
-                    $('#weekly_users_data').html('');
-                    $('#weekly_users_data').html(resp);
+                    $('#weekly_project_data').html('');
+                    $('#weekly_project_data').html(resp);
                 }
             });
             return false;

@@ -24,7 +24,7 @@
             <label for="" class="col-form-label  requiredField">User<span class="asteriskField">*</span>
             </label>                    
             <div class="">
-                <input type="text" maxlength="255" class="textinput textInput form-control" required="" value="{{request.session.first_name }} {{ request.session.last_name }}" disabled>
+                <input type="text" maxlength="255" class="textinput textInput form-control" required="" value="{{user_name}}" disabled>
             </div>
         </div>
     </div>
@@ -254,6 +254,7 @@
         var worked_time_ranges = id_workedtime.split(" - ");
         var start_time = worked_time_ranges[0];
         var end_time = worked_time_ranges[1];
+        var id_user_dept = {{user_id}};
 
         if (id_log_day < 1 || id_project < 1 || id_milestone < 1  || id_task < 1) {
             if (id_log_day < 1) {
@@ -280,7 +281,8 @@
                 end_time: end_time,
                 timesheet_id: timesheet_id,
                 notes: id_timesheet_notes,
-                comment: id_timesheet_comment
+                comment: id_timesheet_comment,
+                id_user_dept: id_user_dept,
             };
             url_data = "{% url 'saveResentTimesheet' %}";
             $.ajax({

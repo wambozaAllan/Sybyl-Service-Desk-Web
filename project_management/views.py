@@ -4201,6 +4201,7 @@ def make_escalation(project_id):
 def daily_timesheets_pane(request):
     uid = request.user.id
     company_id = request.session['company_id']
+    department_id = request.session['department_id']
 
     rejected_count = Timesheet.objects.filter(Q(status='REJECTED'), company_id=company_id, project_team_member_id=uid).count()
 
@@ -4225,10 +4226,14 @@ def daily_timesheets_pane(request):
     else: 
         new_list2 = ''
 
+    dept_users = User.objects.filter(Q(department_id=int(department_id)), ~Q(id = int(uid)))
     template = loader.get_template('project_management/daily_timesheets_pane.html')
     context = {
         'timesheet_list': new_list2,
-        'rejected_count': rejected_count
+        'rejected_count': rejected_count,
+        'dept_users': dept_users,
+        'user_id' : uid,
+        'user_name' : User.objects.get(id=int(uid))
     }
 
     return HttpResponse(template.render(context, request))
@@ -4236,12 +4241,15 @@ def daily_timesheets_pane(request):
 
 def add_new_timesheet(request):
     company_id = request.session['company_id']
+    id_user_dept = int(request.GET.get('id_user_dept'))
 
     project_list = Project.objects.filter(company=int(company_id))
     
     template = loader.get_template('project_management/add_time_sheet.html')
     context = {
-        'project_list': project_list
+        'project_list': project_list,
+        'user_id' : id_user_dept,
+        'user_name' : User.objects.get(id=int(id_user_dept))
     }
 
     return HttpResponse(template.render(context, request))
@@ -4268,26 +4276,27 @@ def fetch_tasks_by_milestone(request):
 
 
 def save_new_timesheet(request):
-    uid = request.user.id
+    uid = request.GET.get('uid')
     company_id = request.session['company_id']
     id_log_day = request.GET.get('id_log_day')
     id_task = request.GET.get('id_task')
     start_time = request.GET.get('start_time')
     end_time = request.GET.get('end_time')
     id_timesheet_notes = request.GET.get('notes')
+    dept_uid = int(request.GET.get('uid'))
 
     log_day = datetime.datetime.strptime(id_log_day, '%d-%m-%Y')
     start_time1 = datetime.datetime.strptime(start_time, '%I:%M %p')
     end_time1 =   datetime.datetime.strptime(end_time, '%I:%M %p')
     
-    obj = Timesheet(log_day=log_day, start_time=start_time1, end_time=end_time1, added_by_id=uid, task_id=int(id_task), project_team_member_id=uid, company_id=int(company_id), last_updated_date=datetime.date.today(), last_updated_by_id=uid, notes=id_timesheet_notes)
+    obj = Timesheet(log_day=log_day, start_time=start_time1, end_time=end_time1, added_by_id=uid, task_id=int(id_task), project_team_member_id=dept_uid, company_id=int(company_id), last_updated_date=datetime.date.today(), last_updated_by_id=uid, notes=id_timesheet_notes)
     obj.save()
 
-    timesheets_exist = Timesheet.objects.filter(status='INITIAL', project_team_member_id=uid, company_id=company_id).exists()
+    timesheets_exist = Timesheet.objects.filter(status='INITIAL', project_team_member_id=dept_uid, company_id=company_id).exists()
     uid = request.user.id
 
     if timesheets_exist == True:
-        timesheet_list1 = Timesheet.objects.filter(status='INITIAL', project_team_member_id=uid, company_id=company_id)
+        timesheet_list1 = Timesheet.objects.filter(status='INITIAL', project_team_member_id=dept_uid, company_id=company_id)
         new_list = []
 
         for i in timesheet_list1:
@@ -4299,7 +4308,7 @@ def save_new_timesheet(request):
         for tm in new_list:
             new_dict = {}
             new_dict['tim'] = tm
-            daily_tm = Timesheet.objects.filter(log_day=tm, status='INITIAL', project_team_member_id=uid, company_id=company_id)
+            daily_tm = Timesheet.objects.filter(log_day=tm, status='INITIAL', project_team_member_id=dept_uid, company_id=company_id)
             new_dict['dictt'] = daily_tm
             new_list2.append(new_dict)
     else: 
@@ -4322,6 +4331,7 @@ def update_timesheet(request):
     timesheet_id = int(request.GET.get('timesheet_id'))
     task_id = int(request.GET.get('task_id'))
     notes = request.GET.get('notes')
+    id_user_dept = request.GET.get('id_user_dept')
 
     obj_task = Task.objects.get(id=int(task_id))
     project_name = obj_task.project
@@ -4348,8 +4358,9 @@ def update_timesheet(request):
         'project_name': project_name,
         'project_id': project_id,
         'task_id': task_id,
-        'notes': notes
-
+        'notes': notes,
+        'user_id' : id_user_dept,
+        'user_name' : User.objects.get(id=int(id_user_dept))
     }
 
     return HttpResponse(template.render(context, request))
@@ -4363,6 +4374,7 @@ def update_timesheet_paginator(request):
     timesheet_id = int(request.GET.get('timesheet_id'))
     task_id = int(request.GET.get('task_id'))
     notes = request.GET.get('notes')
+    id_user_dept = request.GET.get('id_user_dept')
 
     obj_task = Task.objects.get(id=int(task_id))
     project_name = obj_task.project
@@ -4389,8 +4401,9 @@ def update_timesheet_paginator(request):
         'project_name': project_name,
         'project_id': project_id,
         'task_id': task_id,
-        'notes': notes
-
+        'notes': notes,
+        'user_id' : id_user_dept,
+        'user_name' : User.objects.get(id=int(id_user_dept))
     }
 
     return HttpResponse(template.render(context, request))
@@ -4405,6 +4418,7 @@ def resubmit_timesheet(request):
     timesheet_id = int(request.GET.get('timesheet_id'))
     task_id = int(request.GET.get('task_id'))
     notes = request.GET.get('notes')
+    id_user_dept = int(request.GET.get('id_user_dept'))
 
     obj_task = Task.objects.get(id=int(task_id))
     project_name = obj_task.project
@@ -4431,8 +4445,9 @@ def resubmit_timesheet(request):
         'project_name': project_name,
         'project_id': project_id,
         'task_id': task_id,
-        'notes': notes
-
+        'notes': notes,
+        'user_id' : id_user_dept,
+        'user_name' : User.objects.get(id=id_user_dept)
     }
 
     return HttpResponse(template.render(context, request))
@@ -4447,6 +4462,7 @@ def paginator_resubmit_timesheet(request):
     timesheet_id = int(request.GET.get('timesheet_id'))
     task_id = int(request.GET.get('task_id'))
     notes = request.GET.get('notes')
+    id_user_dept = int(request.GET.get('id_user_dept'))
 
     obj_task = Task.objects.get(id=int(task_id))
     project_name = obj_task.project
@@ -4473,7 +4489,9 @@ def paginator_resubmit_timesheet(request):
         'project_name': project_name,
         'project_id': project_id,
         'task_id': task_id,
-        'notes': notes
+        'notes': notes,
+        'user_id' : id_user_dept,
+        'user_name' : User.objects.get(id=id_user_dept)
 
     }
 
@@ -4484,6 +4502,7 @@ def save_update_timesheet(request):
     company_id = request.session['company_id']
 
     log_day = request.GET.get('id_log_day')
+    dept_uid = int(request.GET.get('uid'))
     start_time = request.GET.get('start_time')
     end_time = request.GET.get('end_time')
     task = int(request.GET.get('id_task'))
@@ -4497,9 +4516,9 @@ def save_update_timesheet(request):
     
     Timesheet.objects.filter(pk=int(timesheet_id)).update(log_day=log_day, start_time=start_time1, end_time=end_time1, task_id=task, last_updated_date=datetime.date.today(), last_updated_by_id=uid, notes=notes)
 
-    timesheets_exist = Timesheet.objects.filter(status='INITIAL', project_team_member_id=uid, company_id=company_id).exists()
+    timesheets_exist = Timesheet.objects.filter(status='INITIAL', project_team_member_id=dept_uid, company_id=company_id).exists()
     if timesheets_exist == True:
-        timesheet_list1 = Timesheet.objects.filter(status='INITIAL', project_team_member_id=uid, company_id=company_id)
+        timesheet_list1 = Timesheet.objects.filter(status='INITIAL', project_team_member_id=dept_uid, company_id=company_id)
         new_list = []
 
         for i in timesheet_list1:
@@ -4512,7 +4531,7 @@ def save_update_timesheet(request):
         for tm in new_list:
             new_dict = {}
             new_dict['tim'] = tm
-            daily_tm = Timesheet.objects.filter(log_day=tm, status='INITIAL', project_team_member_id=uid, company_id=company_id)
+            daily_tm = Timesheet.objects.filter(log_day=tm, status='INITIAL', project_team_member_id=dept_uid, company_id=company_id)
             new_dict['dictt'] = daily_tm
             new_list2.append(new_dict)
     
@@ -4526,15 +4545,14 @@ def save_update_timesheet(request):
 
 def delete_timesheet(request):
     company_id = request.session['company_id']
-    uid = request.user.id
-
+    dept_uid = int(request.GET.get('id_user_dept'))
     timesheet_id = request.GET.get('timesheet_id')
     Timesheet.objects.filter(id=int(timesheet_id)).delete()
 
-    timesheets_exist = Timesheet.objects.filter(status='INITIAL', project_team_member_id=uid, company_id=company_id).exists()
+    timesheets_exist = Timesheet.objects.filter(status='INITIAL', project_team_member_id=dept_uid, company_id=company_id).exists()
 
     if timesheets_exist == True:
-        timesheet_list1 = Timesheet.objects.filter(status='INITIAL', project_team_member_id=uid, company_id=company_id)
+        timesheet_list1 = Timesheet.objects.filter(status='INITIAL', project_team_member_id=dept_uid, company_id=company_id)
         new_list = []
 
         for i in timesheet_list1:
@@ -4546,7 +4564,7 @@ def delete_timesheet(request):
         for tm in new_list:
             new_dict = {}
             new_dict['tim'] = tm
-            daily_tm = Timesheet.objects.filter(log_day=tm, status='INITIAL', project_team_member_id=uid, company_id=company_id)
+            daily_tm = Timesheet.objects.filter(log_day=tm, status='INITIAL', project_team_member_id=dept_uid, company_id=company_id)
             new_dict['dictt'] = daily_tm
             new_list2.append(new_dict)
     else: 
@@ -4566,14 +4584,15 @@ def send_timesheet_for_approval(request):
     timesheet_list = request.GET.get('listTimesheet')
     json_data = json.loads(timesheet_list)
     uid = request.user.id
+    id_user_dept = int(request.GET.get('id_user_dept'))
 
     for timesheet_id in json_data:
         tm_id = timesheet_id['tm']
         Timesheet.objects.filter(pk=int(tm_id)).update(status='SUBMITTED', is_submitted=True, date_submitted=datetime.date.today(), submitted_by_id=uid)
 
-    timesheets_exist = Timesheet.objects.filter(status='INITIAL', project_team_member_id=uid, company_id=company_id).exists()
+    timesheets_exist = Timesheet.objects.filter(status='INITIAL', project_team_member_id=id_user_dept, company_id=company_id).exists()
     if timesheets_exist == True:
-        timesheet_list1 = Timesheet.objects.filter(status='INITIAL', project_team_member_id=uid, company_id=company_id)
+        timesheet_list1 = Timesheet.objects.filter(status='INITIAL', project_team_member_id=id_user_dept, company_id=company_id)
         new_list = []
 
         for i in timesheet_list1:
@@ -4585,7 +4604,7 @@ def send_timesheet_for_approval(request):
         for tm in new_list:
             new_dict = {}
             new_dict['tim'] = tm
-            daily_tm = Timesheet.objects.filter(log_day=tm, status='INITIAL', project_team_member_id=uid, company_id=company_id)
+            daily_tm = Timesheet.objects.filter(log_day=tm, status='INITIAL', project_team_member_id=id_user_dept, company_id=company_id)
             new_dict['dictt'] = daily_tm
             new_list2.append(new_dict)
     else: 
@@ -4599,10 +4618,10 @@ def send_timesheet_for_approval(request):
 
 
 def timesheet_pending_approval(request):
-    uid = request.user.id
+    id_user_dept = request.GET.get('id_user_dept')
     company_id = request.session['company_id']
 
-    timesheet_list1 = Timesheet.objects.filter(status='SUBMITTED', company_id=company_id, project_team_member_id=uid)
+    timesheet_list1 = Timesheet.objects.filter(status='SUBMITTED', company_id=company_id, project_team_member_id=id_user_dept)
 
     template = loader.get_template('project_management/list_timesheets_pending_approval.html')
     context = {
@@ -4615,8 +4634,9 @@ def timesheet_pending_approval(request):
 def approve_timesheet_pane(request):
     uid = request.user.id
     company_id = request.session['company_id']
+    department_id = request.session['department_id']
 
-    timesheet_list1 = Timesheet.objects.filter(status='SUBMITTED', company_id=company_id)
+    timesheet_list1 = Timesheet.objects.filter(status='SUBMITTED', company_id=company_id, project_team_member__department_id=department_id)
 
     template = loader.get_template('project_management/approve_timesheet_pane.html')
     context = {
@@ -4628,7 +4648,9 @@ def approve_timesheet_pane(request):
 
 def save_timesheet_approvals(request):
     company_id = request.session['company_id']
+    department_id = request.session['department_id']
     timesheet_list = request.GET.get('listTimesheetApproval')
+
     json_data = json.loads(timesheet_list)
     uid = request.user.id
 
@@ -4638,7 +4660,7 @@ def save_timesheet_approvals(request):
         approver_comment = timesheet_id['approver_comment']
         Timesheet.objects.filter(pk=int(tm_id)).update(status=tm_approve_status, approved=True, date_approved=datetime.date.today(), approved_by_id=uid, last_updated_date=datetime.date.today(), last_updated_by_id=uid, approver_notes=approver_comment)
     
-    timesheet_list1 = Timesheet.objects.filter(status='SUBMITTED', company_id=company_id)
+    timesheet_list1 = Timesheet.objects.filter(status='SUBMITTED', company_id=company_id, project_team_member__department_id=department_id)
     template = loader.get_template('project_management/list_approve_timesheets.html')
     context = {
         'timesheet_list': timesheet_list1,
@@ -4649,8 +4671,9 @@ def save_timesheet_approvals(request):
 def manage_approved_timesheets(request):
     uid = request.user.id
     company_id = request.session['company_id']
+    department_id = request.session['department_id']
 
-    timesheet_list1 = Timesheet.objects.filter(Q(status='ACCEPTED')|Q(status='REJECTED'), company_id=company_id)
+    timesheet_list1 = Timesheet.objects.filter(Q(status='ACCEPTED')|Q(status='REJECTED'), company_id=company_id, project_team_member__department_id=department_id)
 
     template = loader.get_template('project_management/list_confirmed_timesheets.html')
     context = {
@@ -4665,10 +4688,11 @@ def update_timesheet_approval(request):
     new_status = request.GET.get('status_val')
     uid = request.user.id
     company_id = request.session['company_id']
+    department_id = request.session['department_id']
 
     Timesheet.objects.filter(pk=int(timesheet_id)).update(status=new_status, last_updated_date=datetime.date.today(), last_updated_by_id=uid)
 
-    timesheet_list1 = Timesheet.objects.filter(Q(status='ACCEPTED')|Q(status='REJECTED'), company_id=company_id)
+    timesheet_list1 = Timesheet.objects.filter(Q(status='ACCEPTED')|Q(status='REJECTED'), company_id=company_id, project_team_member__department_id=department_id)
     template = loader.get_template('project_management/list_confirmed_timesheets.html')
     context = {
         'timesheet_list': timesheet_list1,
@@ -4678,10 +4702,10 @@ def update_timesheet_approval(request):
 
 
 def view_user_approved_timesheets(request):
-    uid = request.user.id
+    id_user_dept = request.GET.get('id_user_dept')
     company_id = request.session['company_id']
 
-    timesheet_list1 = Timesheet.objects.filter(Q(status='ACCEPTED'), company_id=company_id, project_team_member_id=uid)
+    timesheet_list1 = Timesheet.objects.filter(Q(status='ACCEPTED'), company_id=company_id, project_team_member_id=id_user_dept)
 
     template = loader.get_template('project_management/list_user_accepted_timesheets.html')
     context = {
@@ -4692,10 +4716,10 @@ def view_user_approved_timesheets(request):
 
 
 def manage_rejected_timesheets(request):
-    uid = request.user.id
+    id_user_dept = request.GET.get('id_user_dept')
     company_id = request.session['company_id']
 
-    timesheet_list1 = Timesheet.objects.filter(Q(status='REJECTED'), company_id=company_id, project_team_member_id=uid)
+    timesheet_list1 = Timesheet.objects.filter(Q(status='REJECTED'), company_id=company_id, project_team_member_id=id_user_dept)
 
     template = loader.get_template('project_management/list_user_rejected_timesheets.html')
     context = {
@@ -4706,7 +4730,7 @@ def manage_rejected_timesheets(request):
 
 
 def filter_pending_daily_timesheets_by_date(request):
-    uid = request.user.id
+    uid = int(request.GET.get('id_user_dept'))
     company_id = request.session['company_id']
     start_date1 = request.GET.get('start_date')
     end_date1 = request.GET.get('end_date')
@@ -4728,7 +4752,7 @@ def filter_pending_daily_timesheets_by_date(request):
 
 
 def filter_daily_proved_timesheets(request):
-    uid = request.user.id
+    uid = int(request.GET.get('id_user_dept'))
     company_id = request.session['company_id']
     start_date1 = request.GET.get('start_date')
     end_date1 = request.GET.get('end_date')
@@ -4754,6 +4778,7 @@ def filter_all_member_unapproved_timesheets(request):
     company_id = request.session['company_id']
     start_date1 = request.GET.get('start_date')
     end_date1 = request.GET.get('end_date')
+    department_id = request.session['department_id']
 
     startdate = datetime.datetime.strptime(start_date1, '%d-%m-%Y')
     enddate = datetime.datetime.strptime(end_date1, '%d-%m-%Y')
@@ -4761,7 +4786,7 @@ def filter_all_member_unapproved_timesheets(request):
     min_dt = datetime.datetime.combine(startdate, datetime.time.min)
     max_dt = datetime.datetime.combine(enddate, datetime.time.max)
     
-    timesheet_list1 = Timesheet.objects.filter(status='SUBMITTED', company_id=company_id, log_day__range=(min_dt, max_dt))
+    timesheet_list1 = Timesheet.objects.filter(status='SUBMITTED', company_id=company_id, log_day__range=(min_dt, max_dt), project_team_member__department_id=department_id)
     template = loader.get_template('project_management/list_approve_timesheets.html')
     context = {
         'timesheet_list': timesheet_list1,
@@ -4841,6 +4866,7 @@ def save_resent_timesheet(request):
     notes = request.GET.get('notes')
     comment = request.GET.get('comment')
     uid = request.user.id
+    id_user_dept = int(request.GET.get('id_user_dept'))
 
     log_day = datetime.datetime.strptime(log_day, '%d-%m-%Y')
     start_time1 = datetime.datetime.strptime(start_time, '%I:%M %p')
@@ -4851,9 +4877,9 @@ def save_resent_timesheet(request):
     obj1 = ResubmittedTimesheet(comment=comment, resubmitted_by_id=uid, timesheet_id=int(timesheet_id))
     obj1.save()
 
-    timesheet_list1 = Timesheet.objects.filter(Q(status='REJECTED'), company_id=company_id, project_team_member_id=uid)
+    timesheet_list1 = Timesheet.objects.filter(Q(status='REJECTED'), company_id=company_id, project_team_member_id=id_user_dept)
     template = loader.get_template('project_management/list_user_rejected_timesheets.html')
-    rejected_count = Timesheet.objects.filter(Q(status='REJECTED'), company_id=company_id, project_team_member_id=uid).count()
+    rejected_count = Timesheet.objects.filter(Q(status='REJECTED'), company_id=company_id, project_team_member_id=id_user_dept).count()
     context = {
         'timesheet_list': timesheet_list1,
         'rejected_count': rejected_count
@@ -4910,13 +4936,16 @@ def add_new_timesheet_from_calender(request):
 def add_new_timesheet_from_datepaginator(request):
     company_id = request.session['company_id']
     log_date = request.GET.get('log_date')
+    id_user_dept = int(request.GET.get('id_user_dept'))
 
     project_list = Project.objects.filter(company=int(company_id))
     
     template = loader.get_template('project_management/add_new_calender_timesheet.html')
     context = {
         'project_list': project_list,
-        'log_date': datetime.datetime.strptime(log_date, "%Y-%m-%d").strftime("%d-%m-%Y")
+        'log_date': datetime.datetime.strptime(log_date, "%Y-%m-%d").strftime("%d-%m-%Y"),
+        'user_id' : id_user_dept,
+        'user_name' : User.objects.get(id=int(id_user_dept))
     }
 
     return HttpResponse(template.render(context, request))
@@ -4952,16 +4981,27 @@ def save_paginator_timesheet(request):
     start_time = request.GET.get('start_time')
     end_time = request.GET.get('end_time')
     id_timesheet_notes = request.GET.get('notes')
+    id_dept_user = int(request.GET.get('uid'))
 
     log_day = datetime.datetime.strptime(id_log_day, '%d-%m-%Y')
     start_time1 = datetime.datetime.strptime(start_time, '%I:%M %p')
     end_time1 =   datetime.datetime.strptime(end_time, '%I:%M %p')
     
-    obj = Timesheet(log_day=log_day, start_time=start_time1, end_time=end_time1, added_by_id=uid, task_id=int(id_task), project_team_member_id=uid, company_id=int(company_id), last_updated_date=datetime.date.today(), last_updated_by_id=uid, notes=id_timesheet_notes)
+    obj = Timesheet(log_day=log_day, start_time=start_time1, end_time=end_time1, added_by_id=uid, task_id=int(id_task), project_team_member_id=id_dept_user, company_id=int(company_id), last_updated_date=datetime.date.today(), last_updated_by_id=uid, notes=id_timesheet_notes)
     obj.save()
 
-    template = loader.get_template('project_management/timesheet_tableview.html')
-    context = {}
+    timesheet_list1 = Timesheet.objects.filter(log_day=log_day, company_id=company_id, project_team_member_id=id_dept_user)
+    
+    if Timesheet.objects.filter(log_day=log_day, status='INITIAL', company_id=company_id, project_team_member_id=id_dept_user).exists():
+        intial_state = True
+    else:
+        intial_state = False
+
+    template = loader.get_template('project_management/list_date_timesheet.html')
+    context = {
+        'timesheet_list': timesheet_list1,
+        'initial_status': intial_state
+    }
 
     return HttpResponse(template.render(context, request))
 
@@ -4988,14 +5028,14 @@ def timesheets_schedule_pane(request):
 
 
 def filter_timesheets_by_date(request):
-    uid = request.user.id
+    id_user_dept = int(request.GET.get('id_user_dept'))
     company_id = request.session['company_id']
     dateSelected = request.GET.get('dateSelected')
     log_day = datetime.datetime.strptime(dateSelected, '%d-%m-%Y')
 
-    timesheet_list1 = Timesheet.objects.filter(log_day=log_day, company_id=company_id, project_team_member_id=uid)
+    timesheet_list1 = Timesheet.objects.filter(log_day=log_day, company_id=company_id, project_team_member_id=id_user_dept)
 
-    if Timesheet.objects.filter(log_day=log_day, status='INITIAL', company_id=company_id, project_team_member_id=uid).exists():
+    if Timesheet.objects.filter(log_day=log_day, status='INITIAL', company_id=company_id, project_team_member_id=id_user_dept).exists():
         intial_state = True
     else:
         intial_state = False
@@ -5012,9 +5052,15 @@ def filter_timesheets_by_date(request):
 def table_timesheet_view(request):
     uid = request.user.id
     company_id = request.session['company_id']
+    department_id = request.session['department_id']
+    dept_users = User.objects.filter(Q(department_id=int(department_id)), ~Q(id = int(uid)))
 
     template = loader.get_template('project_management/timesheet_tableview.html')
-    context = {}
+    context = {
+        'dept_users': dept_users,
+        'user_id' : uid,
+        'user_name' : User.objects.get(id=int(uid))
+    }
 
     return HttpResponse(template.render(context, request))
 
@@ -5022,6 +5068,7 @@ def table_timesheet_view(request):
 def list_timesheet_view(request):
     uid = request.user.id
     company_id = request.session['company_id']
+    department_id = request.session['department_id']
 
     rejected_count = Timesheet.objects.filter(Q(status='REJECTED'), company_id=company_id, project_team_member_id=uid).count()
 
@@ -5046,10 +5093,15 @@ def list_timesheet_view(request):
     else: 
         new_list2 = ''
 
+    dept_users = User.objects.filter(Q(department_id=int(department_id)), ~Q(id = int(uid)))
+
     template = loader.get_template('project_management/list_timesheet_view.html')
     context = {
         'timesheet_list': new_list2,
-        'rejected_count': rejected_count
+        'rejected_count': rejected_count,
+        'dept_users': dept_users,
+        'user_id' : uid,
+        'user_name' : User.objects.get(id=int(uid))
     }
 
     return HttpResponse(template.render(context, request))
@@ -5062,14 +5114,15 @@ def send_timesheet_for_approval_paginator(request):
     log_day = datetime.datetime.strptime(dateSelected, '%Y-%m-%d')
     json_data = json.loads(timesheet_list)
     uid = request.user.id
+    id_user_dept = int(request.GET.get('id_user_dept'))
 
     for timesheet_id in json_data:
         tm_id = timesheet_id['tm']
         Timesheet.objects.filter(pk=int(tm_id)).update(status='SUBMITTED', is_submitted=True, date_submitted=datetime.date.today(), submitted_by_id=uid)
 
-    timesheet_list1 = Timesheet.objects.filter(log_day=log_day, company_id=company_id, project_team_member_id=uid)
+    timesheet_list1 = Timesheet.objects.filter(log_day=log_day, company_id=company_id, project_team_member_id=id_user_dept)
 
-    if Timesheet.objects.filter(log_day=log_day, status='INITIAL', company_id=company_id, project_team_member_id=uid).exists():
+    if Timesheet.objects.filter(log_day=log_day, status='INITIAL', company_id=company_id, project_team_member_id=id_user_dept).exists():
         intial_state = True
     else:
         intial_state = False
@@ -5085,16 +5138,16 @@ def send_timesheet_for_approval_paginator(request):
 
 def delete_timesheet_in_paginator(request):
     company_id = request.session['company_id']
-    uid = request.user.id
     dateSelected = request.GET.get('dateSelected')
+    id_user_dept = int(request.GET.get('id_user_dept'))
     log_day = datetime.datetime.strptime(dateSelected, '%Y-%m-%d')
 
     timesheet_id = request.GET.get('timesheet_id')
     Timesheet.objects.filter(id=int(timesheet_id)).delete()
 
-    timesheet_list1 = Timesheet.objects.filter(log_day=log_day, company_id=company_id, project_team_member_id=uid)
+    timesheet_list1 = Timesheet.objects.filter(log_day=log_day, company_id=company_id, project_team_member_id=id_user_dept)
 
-    if Timesheet.objects.filter(log_day=log_day, status='INITIAL', company_id=company_id, project_team_member_id=uid).exists():
+    if Timesheet.objects.filter(log_day=log_day, status='INITIAL', company_id=company_id, project_team_member_id=id_user_dept).exists():
         intial_state = True
     else:
         intial_state = False
@@ -5112,6 +5165,7 @@ def save_update_paginator_timesheet(request):
     log_day = datetime.datetime.strptime(dateSelected, '%Y-%m-%d')
     company_id = request.session['company_id']
 
+    id_user_dept = int(request.GET.get('id_user_dept'))
     log_day = request.GET.get('id_log_day')
     start_time = request.GET.get('start_time')
     end_time = request.GET.get('end_time')
@@ -5126,9 +5180,9 @@ def save_update_paginator_timesheet(request):
     
     Timesheet.objects.filter(pk=int(timesheet_id)).update(log_day=log_day, start_time=start_time1, end_time=end_time1, task_id=task, last_updated_date=datetime.date.today(), last_updated_by_id=uid, notes=notes)
 
-    timesheet_list1 = Timesheet.objects.filter(log_day=log_day, company_id=company_id, project_team_member_id=uid)
+    timesheet_list1 = Timesheet.objects.filter(log_day=log_day, company_id=company_id, project_team_member_id=id_user_dept)
 
-    if Timesheet.objects.filter(log_day=log_day, status='INITIAL', company_id=company_id, project_team_member_id=uid).exists():
+    if Timesheet.objects.filter(log_day=log_day, status='INITIAL', company_id=company_id, project_team_member_id=id_user_dept).exists():
         intial_state = True
     else:
         intial_state = False
@@ -5156,6 +5210,7 @@ def save_resent_paginator_timesheet(request):
     notes = request.GET.get('notes')
     comment = request.GET.get('comment')
     uid = request.user.id
+    id_user_dept = int(request.GET.get('uid'))
 
     log_day = datetime.datetime.strptime(log_day, '%d-%m-%Y')
     start_time1 = datetime.datetime.strptime(start_time, '%I:%M %p')
@@ -5166,9 +5221,9 @@ def save_resent_paginator_timesheet(request):
     obj1 = ResubmittedTimesheet(comment=comment, resubmitted_by_id=uid, timesheet_id=int(timesheet_id))
     obj1.save()
 
-    timesheet_list1 = Timesheet.objects.filter(log_day=selected_day, company_id=company_id, project_team_member_id=uid)
+    timesheet_list1 = Timesheet.objects.filter(log_day=selected_day, company_id=company_id, project_team_member_id=id_user_dept)
     
-    if Timesheet.objects.filter(log_day=log_day, status='INITIAL', company_id=company_id, project_team_member_id=uid).exists():
+    if Timesheet.objects.filter(log_day=log_day, status='INITIAL', company_id=company_id, project_team_member_id=id_user_dept).exists():
         intial_state = True
     else:
         intial_state = False
@@ -5183,8 +5238,6 @@ def save_resent_paginator_timesheet(request):
 
 
 def timesheets_weekly_report(request):
-    company_id = request.session['company_id']
-
     template = loader.get_template('project_management/timesheet_weekly_report_pane.html')
     context = {}
 
@@ -5194,24 +5247,24 @@ def timesheets_weekly_report(request):
 def filter_users_timesheets_by_week(request):
     uid = request.user.id
     company_id = request.session['company_id']
+    department_id = request.session['department_id']
     start_date1 = request.GET.get('start_date')
     end_date1 = request.GET.get('end_date')
     
-    startdate = datetime.datetime.strptime(start_date1, '%d-%m-%Y')
-    enddate = datetime.datetime.strptime(end_date1, '%d-%m-%Y')
+    startdate = datetime.datetime.strptime(start_date1, '%d-%m-%Y') 
+    enddate = datetime.datetime.strptime(end_date1, '%d-%m-%Y') + datetime.timedelta(days=1)
     # delta = timedelta(days=1)
 
     min_dt = datetime.datetime.combine(startdate, datetime.time.min)
     max_dt = datetime.datetime.combine(enddate, datetime.time.max)
     day_delta = timedelta(days=1) 
     
-
-    company_members_exist = User.objects.filter(company_id=company_id).exists()
-    if company_members_exist == True:
-        company_members = User.objects.filter(company_id=company_id)
+    dept_members_exist = User.objects.filter(company_id=company_id, department_id=department_id).exists()
+    if dept_members_exist == True:
+        dept_members = User.objects.filter(company_id=company_id, department_id=department_id)
         all_member_tms = []
         days_list = {}
-        for mem in company_members:
+        for mem in dept_members:
             new_dict = {}
             new_dict['memberid'] = mem.id
             new_dict['member'] = mem.first_name + " " + mem.last_name
@@ -5223,9 +5276,13 @@ def filter_users_timesheets_by_week(request):
                 duration = Timesheet.objects.filter(log_day=(startdate + i*day_delta), project_team_member_id=mem.id, company_id=company_id)
                 sum_duration = 0
                 for ii in duration:
-                    sum_duration = ii.durationsec()
+                    sum_duration = sum_duration + ii.durationsec()
                 new_dict['day'+str(i)] = compute_duration(sum_duration)
             all_member_tms.append(new_dict)
+            print(all_member_tms)
+    else:
+        all_member_tms = ''
+        days_list = ''
 
     template = loader.get_template('project_management/list_users_timesheet_by_week.html')
     context = {
@@ -5234,6 +5291,156 @@ def filter_users_timesheets_by_week(request):
     }
 
     return HttpResponse(template.render(context, request))
+
+
+def timesheets_project_report(request):
+    template = loader.get_template('project_management/timesheet_project_report_pane.html')
+    context = {}
+    
+    return HttpResponse(template.render(context, request))
+
+
+def filter_project_timesheets_by_week(request):
+    uid = request.user.id
+    company_id = request.session['company_id']
+    department_id = request.session['department_id']
+    start_date1 = request.GET.get('start_date')
+    end_date1 = request.GET.get('end_date')
+    
+    startdate = datetime.datetime.strptime(start_date1, '%d-%m-%Y') 
+    enddate = datetime.datetime.strptime(end_date1, '%d-%m-%Y') + datetime.timedelta(days=1)
+    # delta = timedelta(days=1)
+
+    min_dt = datetime.datetime.combine(startdate, datetime.time.min)
+    max_dt = datetime.datetime.combine(enddate, datetime.time.max)
+    day_delta = timedelta(days=1) 
+    
+    dept_projects_exist = Project.objects.filter(company=company_id, company__department=department_id).exists()
+    if dept_projects_exist == True:
+        dept_proj = Project.objects.filter(company=company_id, company__department=department_id)
+        all_member_tms = []
+        days_list = {}
+        for pro in dept_proj:
+            new_dict = {}
+            new_dict['projectid'] = pro.id
+            new_dict['project_name'] = pro.name
+            proj_team_exist = ProjectTeam.objects.filter(project_id=pro.id).exists()
+            if proj_team_exist == True:
+                proj_team_id = ProjectTeam.objects.get(project_id=pro.id)
+                proj_team_member_exist = ProjectTeamMember.objects.filter(project_team=proj_team_id).exists()
+                proj_team_members = ProjectTeamMember.objects.filter(project_team=proj_team_id)
+                list_mem_tms = []
+                for each_memb in proj_team_members:
+                    counter = 0
+                    new_dict2 = {}
+                    for i in range((enddate - startdate).days):
+                        # TABLE HEADER
+                        days_list['name'] = "Project"
+                        days_list['user'] = "Name"
+                        days_list['day'+str(i)] = startdate + i*day_delta
+                        days_list['no'] = "#"
+                        # TABLE HEADER
+
+                        duration = Timesheet.objects.filter(log_day=(startdate + i*day_delta), project_team_member_id=each_memb.member.id, company_id=company_id)
+                        
+                        sum_duration = 0 
+                        for ii in duration:
+                            sum_duration = sum_duration + ii.durationsec()
+                        new_dict2['day'+str(i)] = sum_duration
+                    new_dict2['mem'+str(counter)] = each_memb.member.first_name + ' ' + each_memb.member.last_name
+                    counter = counter + 1
+                    list_mem_tms.append(new_dict2)
+            new_dict['mem_timesheets'] = list_mem_tms
+            all_member_tms.append(new_dict)
+            print(all_member_tms)
+
+        final_list = []
+        proj_set = set()
+        for rr in all_member_tms:
+            for yy in rr['mem_timesheets']:
+                dict_mems = {}
+                if(rr['projectid'] not in proj_set):
+                    proj_set.add(rr['projectid'])
+                    dict_mems['pro'] = rr['project_name']
+                else:
+                    dict_mems['pro'] = ''
+                dict_mems['mem'] = yy['mem0']
+                dict_mems['day0'] = compute_duration(yy['day0']) 
+                dict_mems['day1'] = compute_duration(yy['day1'])
+                dict_mems['day2'] = compute_duration(yy['day2'])
+                dict_mems['day3'] = compute_duration(yy['day3'])
+                dict_mems['day4'] = compute_duration(yy['day4'])
+                dict_mems['day5'] = compute_duration(yy['day5'])
+                dict_mems['day6'] = compute_duration(yy['day6'])
+                
+                dict_mems['mem_total'] = compute_duration(yy['day0'] + yy['day1'] + yy['day2'] + yy['day3'] + yy['day4'] + yy['day5'] + yy['day6'])
+                final_list.append(dict_mems)
+    else:
+        all_member_tms = ''
+        days_list = ''
+
+    template = loader.get_template('project_management/list_project_timesheet_by_week.html')
+    context = {
+        'timesheet_list': final_list,
+        'days_list': days_list
+    }
+
+    return HttpResponse(template.render(context, request))
+
+
+def select_daily_timesheets_by_user(request):
+    id_user_dept = request.GET.get('id_user_dept')
+
+    uid = int(id_user_dept)
+    company_id = request.session['company_id']
+    department_id = request.session['department_id']
+
+    rejected_count = Timesheet.objects.filter(Q(status='REJECTED'), company_id=company_id, project_team_member_id=uid).count()
+
+    timesheets_exist = Timesheet.objects.filter(status='INITIAL', project_team_member_id=uid, company_id=company_id).exists()
+
+    if timesheets_exist == True:
+        timesheet_list1 = Timesheet.objects.filter(status='INITIAL', project_team_member_id=uid, company_id=company_id)
+        new_list = []
+
+        for i in timesheet_list1:
+	        new_list.append(i.log_day)            
+
+        new_list2 = []
+        new_list = set(new_list)
+        new_list = sorted(new_list, reverse = True)
+        for tm in new_list:
+            new_dict = {}
+            new_dict['tim'] = tm
+            daily_tm = Timesheet.objects.filter(log_day=tm, status='INITIAL', project_team_member_id=uid, company_id=company_id)
+            new_dict['dictt'] = daily_tm
+            new_list2.append(new_dict)
+    else: 
+        new_list2 = ''
+
+    dept_users = User.objects.filter(department_id=int(department_id))
+    template = loader.get_template('project_management/filtered_daily_timesheets_users.html')
+    context = {
+        'timesheet_list': new_list2,
+        'rejected_count': rejected_count,
+        'dept_users': dept_users
+    }
+
+    return HttpResponse(template.render(context, request))
+
+
+def select_table_timesheets_by_user(request):
+    uid = request.GET.get('id_user_dept')
+    company_id = request.session['company_id']
+
+    template = loader.get_template('project_management/filter_table_timesheets_by_user.html')
+    context = {
+        'user_id' : uid,
+        'user_name' : User.objects.get(id=int(uid))
+    }
+    
+    return HttpResponse(template.render(context, request))
+
 
 def compute_duration(sec):
     return '{}'.format(str(timedelta(seconds=sec)))

@@ -24,7 +24,7 @@
             <label for="" class="col-form-label  requiredField">User<span class="asteriskField">*</span>
             </label>                    
             <div class="">
-                <input type="text" maxlength="255" class="textinput textInput form-control" required="" value="{{request.session.first_name }} {{ request.session.last_name }}" disabled>
+                <input type="text" maxlength="255" class="textinput textInput form-control" required="" value="{{user_name}}" disabled>
             </div>
         </div>
     </div>
@@ -239,6 +239,7 @@
         var id_task = $('#id_task').val();
         var timesheet_id = $('#timesheet_id').val();
         var id_timesheet_notes = $('#id_timesheet_notes').val();
+        var uid = {{user_id}}
 
         var id_workedtime = $('#id_workedtime').val();
         var worked_time_ranges = id_workedtime.split(" - ");
@@ -269,7 +270,8 @@
                 start_time: start_time,
                 end_time: end_time,
                 timesheet_id: timesheet_id,
-                notes: id_timesheet_notes
+                notes: id_timesheet_notes,
+                uid: uid
             };
             url_data = "{% url 'saveUpdateTimesheet'%}";
             $.ajax({

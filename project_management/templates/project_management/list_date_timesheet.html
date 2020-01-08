@@ -102,6 +102,7 @@
     var listTimesheet = [];
 
     function functionsubmitForApproval04(){
+        var id_user_dept = parseInt($('.id_user_dept_tb').val());
         if (checktimesheetset.size !== 0) {
 
             $.confirm({
@@ -128,7 +129,8 @@
                                 type: 'GET',
                                 data: {
                                     listTimesheet: JSON.stringify(listTimesheet),
-                                    dateSelected: date_selected
+                                    dateSelected: date_selected,
+                                    id_user_dept: id_user_dept
                                 },
                                 url: urldata,
                                 success: function (resp) {
@@ -171,6 +173,7 @@
     }
 
     function functionEditTimesheet(timesheet_id, log_day, start_time, end_time, task, task_id, notes) {
+        var id_user_dept = parseInt($('.id_user_dept_tb').val());
         urldata = "{% url 'updateTimesheetPaginator' %}";
         $.ajax({
             type: "GET",
@@ -182,7 +185,8 @@
                 end_time: end_time,
                 task: task,
                 task_id: task_id,
-                notes: notes
+                notes: notes,
+                id_user_dept: id_user_dept
             },
             url: urldata,
             success: function (resp) {
@@ -209,6 +213,7 @@
 
     function functionDeleteTimesheet(timesheet_id, day, s_time, e_time, task){
         var date_selected = $('#date_selected_val').val();
+        var id_user_dept = parseInt($('.id_user_dept_tb').val());
         urldata = "{% url 'deleteTimesheetPaginator'%}";
         $.confirm({
             title: '<h3 class="font-weight-bold">Delete Timesheet!</h3>',
@@ -232,7 +237,8 @@
                             cache: false,
                             data: {
                                 timesheet_id: timesheet_id,
-                                dateSelected: date_selected
+                                dateSelected: date_selected,
+                                id_user_dept: id_user_dept,
                             },
                             url: urldata,
                             success: function (resp) {
@@ -290,6 +296,7 @@
     }
 
     function paginatorResubmitTimesheets(timesheet_id, log_day, start_time, end_time, task, task_id, notes) {
+        var id_user_dept = parseInt($('.id_user_dept_tb').val());
         urldata = "{% url 'paginatorResubmitTimesheet' %}";
         $.ajax({
             type: "GET",
@@ -301,7 +308,8 @@
                 end_time: end_time,
                 task: task,
                 task_id: task_id,
-                notes: notes
+                notes: notes,
+                id_user_dept: id_user_dept
             },
             url: urldata,
             success: function (resp) {

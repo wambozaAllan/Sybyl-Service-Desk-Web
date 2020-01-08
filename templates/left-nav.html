@@ -4,7 +4,7 @@
     <div class="scroll-sidebar">
         <!-- Sidebar navigation-->
         <nav class="sidebar-nav">
-            <ul id="sidebarnav">
+            <ul id="sidebarnav" style="max-height: 590px; overflow-y: scroll; scrollbar-width: thin;">
                 <li class="nav-devider"></li>
                 <li class="nav-label">Home - <span class="text-info">{{ request.session.company }} : {{ request.session.department }}</span></li>
                 <li>
@@ -226,7 +226,13 @@
 
                             <li onclick="">
                                 <a href="{% url 'timesheetWeeklyReport' %}" aria-expanded="false"><i class="fa fa-line-chart"></i>
-                                    <span class="hide-menu">Review </span>
+                                    <span class="hide-menu">Weekly Review </span>
+                                </a>
+                            </li>
+
+                            <li onclick="">
+                                <a href="{% url 'timesheetProjectReport' %}" aria-expanded="false"><i class="fa fa-list-alt"></i>
+                                    <span class="hide-menu">Project Timesheets </span>
                                 </a>
                             </li>
 

@@ -1,21 +1,30 @@
+{% load static %}
 {% load humanize %}
+<script type="text/javascript" src="{% static 'template-static-files/javascript/moment.js' %}"></script>
+<script type="text/javascript" src="{% static 'template-static-files/javascript/daterangepicker.js' %}"></script>
 
     <!-- Start Page Content -->
     <div class="card" style="margin-top: -2%;">
         <div class="card-body container-fluid2">
 
             <ul class="nav nav-tabs" role="tablist">
-                <li class="nav-item"> <a class="nav-link active" data-toggle="tab" href="#timesheet_home" role="tab"><span class="hidden-sm-up"><i class="ti-home"></i></span> <span class="hidden-xs-down">Daily Time Logs</span></a></li>
-                <li class="nav-item" onclick="loadURL('{% url 'timesheetPendingApproval'%}', '', 'timesheet-pendings', 'GET');"> <a class="nav-link" data-toggle="tab" href="#pending_approval" role="tab"><span class="hidden-sm-up"><i class="fa fa-share"></i></span> <span class="hidden-xs-down">Pending Approval</span></a> </li>
-                <li class="nav-item" onclick="loadURL('{% url 'userApprovedTimesheets'%}', '', 'approved-tm-pane1', 'GET');"> <a class="nav-link" data-toggle="tab" href="#appoved_tm" role="tab"><span class="hidden-sm-up"><i class="ti-email"></i></span> <span class="hidden-xs-down">Approved Timesheets</span></a> </li>
-                <div class="btn-group" style="margin-left: 44%;">
+                <li class="nav-item"> <a class="nav-link active tab-tm-1" data-toggle="tab" href="#timesheet_home" role="tab"><span class="hidden-sm-up"><i class="ti-home"></i></span> <span class="hidden-xs-down">Daily Time Logs</span></a></li>
+                <li class="nav-item" onclick="functionPeddingApprovalsHome()"> <a class="nav-link tab-tm-2" data-toggle="tab" href="#pending_approval" role="tab"><span class="hidden-sm-up"><i class="fa fa-share"></i></span> <span class="hidden-xs-down">Pending Approval</span></a> </li>
+                <li class="nav-item" onclick="functionApprovedTimesheetsHome()"> <a class="nav-link tab-tm-3" data-toggle="tab" href="#appoved_tm" role="tab"><span class="hidden-sm-up"><i class="ti-email"></i></span> <span class="hidden-xs-down">Approved Timesheets</span></a> </li>
+                <div class="btn-group" style="margin-left: 71%;">
+                    <select name="project" class="select form-control id_user_dept2" id="id_user_dept">
+                        <option selected="" value="{{user_id}}">{{user_name}}</option>
+                        {% for usr in dept_users %}
+                            <option value="{{usr.id}}">{{usr.first_name}} {{usr.last_name}}</option>
+                        {% endfor %}
+                    </select>&nbsp;&nbsp;
                     <button type="button" title="Vertical Timesheet List" class="btn btn-info" id="view-vertical"><i class="fa fa-list" aria-hidden="true"></i></button>
                     <button type="button" onclick="loadURL('{% url 'tableTimesheetView'%}', '', 'container-fluid2', 'GET');" title="Table Timesheet List" class="btn btn-default" id="table-horizontal"><i class="fa fa-table" aria-hidden="true"></i></button>
                 </div>
             </ul>
 
             <!-- Tab panes -->
-            <div class="tab-content tabcontent-border" style="padding-left: 1%;padding-right: 1%;">
+            <div class="tab-content tabcontent-border tab-content-1" style="padding-left: 1%;padding-right: 1%;">
                 <div class="tab-pane active" id="timesheet_home" role="tabpanel">
                     <div class="row p-10">
                         <div class="col-md-12 container">
@@ -53,7 +62,7 @@
                 <div class="tab-pane p-20" id="appoved_tm" role="tabpanel">
                         <ul class="nav nav-tabs customtab" role="tablist">
                             <li class="nav-item"> <a class="nav-link active" data-toggle="tab" href="#accepted_tm" role="tab"><span class="hidden-sm-up"><i class="ti-home"></i></span> <span class="hidden-xs-down">Accepted</span></a> </li>
-                            <li class="nav-item"> <a class="nav-link" onclick="loadURL('{% url 'userRejectedTimesheets'%}', '', 'rejected-timesheet', 'GET');" data-toggle="tab" href="#rejected_tm" role="tab"><span class="hidden-sm-up"><i class="ti-dedent"></i></span> <span class="hidden-xs-down">Rejected <span id="relected-tm-count" class="label label-rounded label-danger">{{rejected_count}}</span></span></a> </li>
+                            <li class="nav-item"> <a class="nav-link" onclick="functionUserRejectedTimesheets()" data-toggle="tab" href="#rejected_tm" role="tab"><span class="hidden-sm-up"><i class="ti-dedent"></i></span> <span class="hidden-xs-down">Rejected <span id="relected-tm-count" class="label label-rounded label-danger">{{rejected_count}}</span></span></a> </li>
                         </ul>
                         <div class="tab-content">
                             <div class="tab-pane active" id="accepted_tm" role="tabpanel">
@@ -122,6 +131,7 @@
     });
     
     function functionFilterApprovedTimesheets33() {
+        var id_user_dept = parseInt($('.id_user_dept2').val());
         var date_range = $('#approvedTMsDateFilter').val();
         var aud_dates = date_range.split(" - ");
         var start_date_1 = aud_dates[0];
@@ -140,6 +150,7 @@
                 data: {
                     start_date: start_date_1,
                     end_date: end_date_1,
+                    id_user_dept: id_user_dept,
                 },
                 url: urldata2,
                 success: function (rep) {
@@ -149,4 +160,26 @@
             });
         }
     }
+
+    $('.id_user_dept2').change(function () {
+        var id_user_dept = parseInt($('.id_user_dept2').val());
+        if (id_user_dept > 0) {
+            urldata = "{% url 'selectDailyTimesheetsByUser'%}";
+
+            $.ajax({
+                type: 'GET',
+                url: urldata,
+                data: {
+                    id_user_dept: id_user_dept
+                },
+                success: function (data) {
+                    $('.tab-tm-3').removeClass('active');
+                    $('.tab-tm-2').removeClass('active');
+                    $('.tab-tm-1').addClass('active');
+                    $('.tab-content-1').html('');
+                    $('.tab-content-1').html(data);
+                }
+            }); 
+        }
+    });
 </script>

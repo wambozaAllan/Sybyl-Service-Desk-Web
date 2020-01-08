@@ -3253,7 +3253,7 @@ table.dataTable thead .sorting::after {
 }
 
 .btn-group label {
-  color: #ffffff !important;
+  /* color: #ffffff !important; */
   margin-bottom: 0;
 }
 
