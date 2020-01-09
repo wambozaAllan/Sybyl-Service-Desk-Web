@@ -148,101 +148,102 @@
                 {% endif %}
                 </li>
 
-                {% if user.is_superuser %}
-                    <li>
-                        <a class="has-arrow  " href="#" aria-expanded="false"><i class="fa fa-bar-chart"></i><span
-                                class="hide-menu">User Groups</span></a>
-                        <ul aria-expanded="false" class="collapse">
-                            <li><a href="{% url 'listUserGroups' %}">User Groups</a></li>
-                            <li><a href="{% url 'manageGlobalGroups' %}">Group Management</a></li>
-                        </ul>
-                    </li>
+                {% if user.is_staff%}
+                    {% if user.is_superuser %}
+                        <li>
+                            <a class="has-arrow  " href="#" aria-expanded="false"><i class="fa fa-bar-chart"></i><span
+                                    class="hide-menu">User Groups</span></a>
+                            <ul aria-expanded="false" class="collapse">
+                                <li><a href="{% url 'listUserGroups' %}">User Groups</a></li>
+                                <li><a href="{% url 'manageGlobalGroups' %}">Group Management</a></li>
+                            </ul>
+                        </li>
 
-                    <li><a href="{% url 'listModules' %}"><i class="fa fa-key"></i> Access Rights</a></li>
+                        <li><a href="{% url 'listModules' %}"><i class="fa fa-key"></i> Access Rights</a></li>
 
-                    <li class="nav-label">Company Management</li>
-                    <li>
-                        <a class="has-arrow  " href="#" aria-expanded="false"><i class="fa fa-suitcase"></i><span
-                                class="hide-menu">Companies</span></a>
-                        <ul aria-expanded="false" class="collapse">
-                            <li><a href="{% url 'listCompanies' %}"><i class="fa fa-tasks"></i> List of Companies</a></li>
-                            <li><a href="{% url 'listDomains' %}"><i class="fa fa-tasks"></i> Company Domains</a></li>
-                        </ul>
-                    </li>
+                        <li class="nav-label">Company Management</li>
+                        <li>
+                            <a class="has-arrow  " href="#" aria-expanded="false"><i class="fa fa-suitcase"></i><span
+                                    class="hide-menu">Companies</span></a>
+                            <ul aria-expanded="false" class="collapse">
+                                <li><a href="{% url 'listCompanies' %}"><i class="fa fa-tasks"></i> List of Companies</a></li>
+                                <li><a href="{% url 'listDomains' %}"><i class="fa fa-tasks"></i> Company Domains</a></li>
+                            </ul>
+                        </li>
 
-                    <li>
-                        <a class="has-arrow" href="#" aria-expanded="false"><i class="fa fa-bar-chart"></i><span
-                                class="hide-menu">Company
-              Branches</span></a>
-                        <ul aria-expanded="false" class="collapse">
-                            <li><a href="{% url 'listBranches' %}">List of Branches</a></li>
-                            <li><a href="{% url 'addBranch' %}">Add Company Branch</a></li>
-                        </ul>
-                    </li>
+                        <li>
+                            <a class="has-arrow" href="#" aria-expanded="false"><i class="fa fa-bar-chart"></i><span
+                                    class="hide-menu">Company
+                Branches</span></a>
+                            <ul aria-expanded="false" class="collapse">
+                                <li><a href="{% url 'listBranches' %}">List of Branches</a></li>
+                                <li><a href="{% url 'addBranch' %}">Add Company Branch</a></li>
+                            </ul>
+                        </li>
 
-                    <li>
-                        <a class="has-arrow" href="#" aria-expanded="false"><i class="fa fa-bar-chart"></i><span
-                                class="hide-menu">Branch
-              Contacts</span></a>
-                        <ul aria-expanded="false" class="collapse">
-                            <li><a href="{% url 'listBranchContacts' %}">List of Branch Contacts</a></li>
-                            <li><a href="{% url 'addBranchContacts' %}">Add Branch Contacts</a></li>
-                            <li><a href="{% url 'listBranchEmails' %}">List of Branch Emails</a></li>
-                            <li><a href="{% url 'addBranchEmails' %}">Add Branch Emails</a></li>
-                        </ul>
-                    </li>
+                        <li>
+                            <a class="has-arrow" href="#" aria-expanded="false"><i class="fa fa-bar-chart"></i><span
+                                    class="hide-menu">Branch
+                Contacts</span></a>
+                            <ul aria-expanded="false" class="collapse">
+                                <li><a href="{% url 'listBranchContacts' %}">List of Branch Contacts</a></li>
+                                <li><a href="{% url 'addBranchContacts' %}">Add Branch Contacts</a></li>
+                                <li><a href="{% url 'listBranchEmails' %}">List of Branch Emails</a></li>
+                                <li><a href="{% url 'addBranchEmails' %}">Add Branch Emails</a></li>
+                            </ul>
+                        </li>
 
-                    <li>
-                        <a class="has-arrow" href="#" aria-expanded="false"><i class="fa fa-bar-chart"></i>
-                        <span class="hide-menu">Departments Master</span></a>
-                        <ul aria-expanded="false" class="collapse">
-                            <li><a href="{% url 'listDepartments' %}">List of Departments</a></li>
-                            <li><a href="{% url 'addDepartment' %}">Add Department</a></li>
-                        </ul>
-                    </li>
+                        <li>
+                            <a class="has-arrow" href="#" aria-expanded="false"><i class="fa fa-bar-chart"></i>
+                            <span class="hide-menu">Departments Master</span></a>
+                            <ul aria-expanded="false" class="collapse">
+                                <li><a href="{% url 'listDepartments' %}">List of Departments</a></li>
+                                <li><a href="{% url 'addDepartment' %}">Add Department</a></li>
+                            </ul>
+                        </li>
 
-                    <li class="">
-                        <a class="has-arrow" href="#" aria-expanded="false">
-                            <i class="fa fa-cogs"></i>
-                            <span class="hide-menu">SETTINGS</span>
-                        </a>
-                        <ul aria-expanded="false" class="collapse">
-                            <li><a href="{% url 'listCategories' %}"><i class="fa fa-list-alt"></i> Company Categories</a></li>
-                            <li><a href="{% url 'listAllPriorities' %}"><i class="fa fa-list"></i> Priorities</a></li>
-                            <li><a href="{% url 'listAllStatuses' %}"><i class="fa fa-list"></i> Statuses</a></li>
-                            <li><a href="{% url 'listAllRoles' %}"><i class="fa fa-list"></i> Member Roles</a></li>
-                            <li><a href="{% url 'listCodeFormat' %}"><i class="fa fa-list"></i> Project Code Format</a></li>
-                        </ul>
-                    </li>
-                    <li class="">
-                        <a class="has-arrow" href="#" aria-expanded="false"><i class="fa fa-envelope-square"></i>
-                            <span class="hide-menu">CHAT</span></a>
-                        <ul aria-expanded="false" class="collapse">
-                            <li onclick="loadURL('{% url 'directMessages' %}', '', 'page-wrapper', 'GET');">
-                                <a href="#" aria-expanded="false"><i class="fa fa-envelope"></i>
-                                    <span class="hide-menu">Direct SMS </span>
-                                </a>
-                            </li>
-                        </ul>
-                    </li>
+                        <li class="">
+                            <a class="has-arrow" href="#" aria-expanded="false">
+                                <i class="fa fa-cogs"></i>
+                                <span class="hide-menu">SETTINGS</span>
+                            </a>
+                            <ul aria-expanded="false" class="collapse">
+                                <li><a href="{% url 'listCategories' %}"><i class="fa fa-list-alt"></i> Company Categories</a></li>
+                                <li><a href="{% url 'listAllPriorities' %}"><i class="fa fa-list"></i> Priorities</a></li>
+                                <li><a href="{% url 'listAllStatuses' %}"><i class="fa fa-list"></i> Statuses</a></li>
+                                <li><a href="{% url 'listAllRoles' %}"><i class="fa fa-list"></i> Member Roles</a></li>
+                                <li><a href="{% url 'listCodeFormat' %}"><i class="fa fa-list"></i> Project Code Format</a></li>
+                            </ul>
+                        </li>
+                        <li class="">
+                            <a class="has-arrow" href="#" aria-expanded="false"><i class="fa fa-envelope-square"></i>
+                                <span class="hide-menu">CHAT</span></a>
+                            <ul aria-expanded="false" class="collapse">
+                                <li onclick="loadURL('{% url 'directMessages' %}', '', 'page-wrapper', 'GET');">
+                                    <a href="#" aria-expanded="false"><i class="fa fa-envelope"></i>
+                                        <span class="hide-menu">Direct SMS </span>
+                                    </a>
+                                </li>
+                            </ul>
+                        </li>
+                        
+
+                        <!-- <li class="">
+                            <a class="has-arrow" href="#" aria-expanded="false"><i class="fa fa-clock-o"></i>
+                                <span class="hide-menu">Planning/Schedules</span></a>
+                            <ul aria-expanded="false" class="collapse">
+                                <li onclick="">
+                                    <a href="{% url 'schedulePlan' %}" aria-expanded="false"><i class="fa fa-calendar-o"></i>
+                                        <span class="hide-menu">Schedule Plan </span>
+                                    </a>
+                                </li>
+                            </ul>
+                        </li> -->
+                    {% endif %}
 
                     <li><a href="{% url 'listauditlogs' %}"><i class="fa fa-info"></i> Audit Logs</a></li>
-
                     
-
-                    <!-- <li class="">
-                        <a class="has-arrow" href="#" aria-expanded="false"><i class="fa fa-clock-o"></i>
-                            <span class="hide-menu">Planning/Schedules</span></a>
-                        <ul aria-expanded="false" class="collapse">
-                            <li onclick="">
-                                <a href="{% url 'schedulePlan' %}" aria-expanded="false"><i class="fa fa-calendar-o"></i>
-                                    <span class="hide-menu">Schedule Plan </span>
-                                </a>
-                            </li>
-                        </ul>
-                    </li> -->
-                {% endif %}
-
+                {% endif%}
             </ul>
         </nav>
         <!-- End Sidebar navigation -->
