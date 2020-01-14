@@ -10,7 +10,9 @@
                         <h5 class="mb-0 ">
                             <a  id="heading{{ forloop.counter }}" class="collapsed text-primary font-weight-bold" data-toggle="collapse" href="#collapse{{ forloop.counter |apnumber|title }}" aria-expanded="false" aria-controls="collapse{{ forloop.counter |apnumber|title }}">
                                 {{ sheet.tim | date:"D, d M, Y"}}
+                                <medium class="font-weight-bold text-secondary">: {{sheet.duration}}</medium> 
                             </a>
+                            
                         </h5>
                     </div>
                     <div id="collapse{{ forloop.counter |apnumber|title }}" class="collapse" role="tabpanel" aria-labelledby="heading{{ forloop.counter |apnumber|title }}" data-parent="#accordion">

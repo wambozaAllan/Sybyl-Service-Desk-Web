@@ -28,12 +28,13 @@
 .calMonth {
   border-bottom: 1px dashed #666;
   padding-bottom: 5px;
-  margin-bottom: 5px;
+  /* margin-bottom: 5px; */
 }
 
 .calMonth .calElement {
   font-size: 14px;
   border: 1px solid #d2c6c6;
+  width: 1% !important;
 }
 
 .calDay {
@@ -46,13 +47,13 @@
 
 .calDay .calElement.prev {
   background: transparent url(../../../media/images/prev.png) no-repeat 0 18px;
-  width: 10px;
+  width: 33px !important;
   height: 35px;
 }
 
 .calDay .calElement.next {
   background: transparent url(../../../media/images/next.png) no-repeat 0 18px;
-  width: 10px;
+  width: 34px !important;
   height: 35px;
 }
 

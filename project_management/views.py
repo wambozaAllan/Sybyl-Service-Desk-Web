@@ -4432,6 +4432,10 @@ def daily_timesheets_pane(request):
             new_dict['tim'] = tm
             daily_tm = Timesheet.objects.filter(log_day=tm, status='INITIAL', project_team_member_id=uid, company_id=company_id)
             new_dict['dictt'] = daily_tm
+            sum_duration = 0 
+            for ii in daily_tm:
+	            sum_duration = sum_duration + ii.durationsec()
+            new_dict['duration'] = compute_duration(sum_duration)
             new_list2.append(new_dict)
     else: 
         new_list2 = ''
@@ -4539,6 +4543,12 @@ def save_new_timesheet(request):
             new_dict['tim'] = tm
             daily_tm = Timesheet.objects.filter(log_day=tm, status='INITIAL', project_team_member_id=dept_uid, company_id=company_id)
             new_dict['dictt'] = daily_tm
+
+            sum_duration = 0 
+            for ii in daily_tm:
+                sum_duration = sum_duration + ii.durationsec()
+            new_dict['duration'] = compute_duration(sum_duration)
+
             new_list2.append(new_dict)
     else: 
         new_list2 = False
@@ -4762,6 +4772,12 @@ def save_update_timesheet(request):
             new_dict['tim'] = tm
             daily_tm = Timesheet.objects.filter(log_day=tm, status='INITIAL', project_team_member_id=dept_uid, company_id=company_id)
             new_dict['dictt'] = daily_tm
+
+            sum_duration = 0 
+            for ii in daily_tm:
+                sum_duration = sum_duration + ii.durationsec()
+            new_dict['duration'] = compute_duration(sum_duration)
+
             new_list2.append(new_dict)
     
     template = loader.get_template('project_management/list_timesheet.html')
@@ -4795,6 +4811,12 @@ def delete_timesheet(request):
             new_dict['tim'] = tm
             daily_tm = Timesheet.objects.filter(log_day=tm, status='INITIAL', project_team_member_id=dept_uid, company_id=company_id)
             new_dict['dictt'] = daily_tm
+
+            sum_duration = 0 
+            for ii in daily_tm:
+                sum_duration = sum_duration + ii.durationsec()
+            new_dict['duration'] = compute_duration(sum_duration)
+
             new_list2.append(new_dict)
     else: 
         new_list2 = ''
@@ -4835,6 +4857,12 @@ def send_timesheet_for_approval(request):
             new_dict['tim'] = tm
             daily_tm = Timesheet.objects.filter(log_day=tm, status='INITIAL', project_team_member_id=id_user_dept, company_id=company_id)
             new_dict['dictt'] = daily_tm
+
+            sum_duration = 0 
+            for ii in daily_tm:
+                sum_duration = sum_duration + ii.durationsec()
+            new_dict['duration'] = compute_duration(sum_duration)
+
             new_list2.append(new_dict)
     else: 
         new_list2 = False
@@ -5225,11 +5253,17 @@ def save_paginator_timesheet(request):
         intial_state = True
     else:
         intial_state = False
+    
+    sum_duration = 0 
+    for ii in timesheet_list1:
+        sum_duration = sum_duration + ii.durationsec()
+    tm_day_duration = compute_duration(sum_duration)
 
     template = loader.get_template('project_management/list_date_timesheet.html')
     context = {
         'timesheet_list': timesheet_list1,
-        'initial_status': intial_state
+        'initial_status': intial_state,
+        'tm_day_duration': tm_day_duration
     }
 
     return HttpResponse(template.render(context, request))
@@ -5269,10 +5303,16 @@ def filter_timesheets_by_date(request):
     else:
         intial_state = False
 
+    sum_duration = 0 
+    for ii in timesheet_list1:
+        sum_duration = sum_duration + ii.durationsec()
+    tm_day_duration = compute_duration(sum_duration)
+
     template = loader.get_template('project_management/list_date_timesheet.html')
     context = {
         'timesheet_list': timesheet_list1,
-        'initial_status': intial_state
+        'initial_status': intial_state,
+        'tm_day_duration': tm_day_duration
     }
 
     return HttpResponse(template.render(context, request))
@@ -5318,6 +5358,10 @@ def list_timesheet_view(request):
             new_dict['tim'] = tm
             daily_tm = Timesheet.objects.filter(log_day=tm, status='INITIAL', project_team_member_id=uid, company_id=company_id)
             new_dict['dictt'] = daily_tm
+            sum_duration = 0 
+            for ii in daily_tm:
+	            sum_duration = sum_duration + ii.durationsec()
+            new_dict['duration'] = compute_duration(sum_duration)
             new_list2.append(new_dict)
     else: 
         new_list2 = ''
@@ -5355,11 +5399,17 @@ def send_timesheet_for_approval_paginator(request):
         intial_state = True
     else:
         intial_state = False
+    
+    sum_duration = 0 
+    for ii in timesheet_list1:
+        sum_duration = sum_duration + ii.durationsec()
+    tm_day_duration = compute_duration(sum_duration)
 
     template = loader.get_template('project_management/list_date_timesheet.html')
     context = {
         'timesheet_list': timesheet_list1,
-        'initial_status': intial_state
+        'initial_status': intial_state,
+        'tm_day_duration': tm_day_duration
     }
 
     return HttpResponse(template.render(context, request))
@@ -5381,10 +5431,16 @@ def delete_timesheet_in_paginator(request):
     else:
         intial_state = False
 
+    sum_duration = 0 
+    for ii in timesheet_list1:
+        sum_duration = sum_duration + ii.durationsec()
+    tm_day_duration = compute_duration(sum_duration)
+
     template = loader.get_template('project_management/list_date_timesheet.html')
     context = {
         'timesheet_list': timesheet_list1,
-        'initial_status': intial_state
+        'initial_status': intial_state,
+        'tm_day_duration': tm_day_duration
     }
     return HttpResponse(template.render(context, request))
 
@@ -5416,10 +5472,16 @@ def save_update_paginator_timesheet(request):
     else:
         intial_state = False
 
+    sum_duration = 0 
+    for ii in timesheet_list1:
+        sum_duration = sum_duration + ii.durationsec()
+    tm_day_duration = compute_duration(sum_duration)
+
     template = loader.get_template('project_management/list_date_timesheet.html')
     context = {
         'timesheet_list': timesheet_list1,
-        'initial_status': intial_state
+        'initial_status': intial_state,
+        'tm_day_duration': tm_day_duration
     }
 
     return HttpResponse(template.render(context, request))
@@ -5456,11 +5518,17 @@ def save_resent_paginator_timesheet(request):
         intial_state = True
     else:
         intial_state = False
+    
+    sum_duration = 0 
+    for ii in timesheet_list1:
+        sum_duration = sum_duration + ii.durationsec()
+    tm_day_duration = compute_duration(sum_duration)
 
     template = loader.get_template('project_management/list_date_timesheet.html')
     context = {
         'timesheet_list': timesheet_list1,
-        'initial_status': intial_state
+        'initial_status': intial_state,
+        'tm_day_duration': tm_day_duration
     }
 
     return HttpResponse(template.render(context, request))
@@ -5508,7 +5576,6 @@ def filter_users_timesheets_by_week(request):
                     sum_duration = sum_duration + ii.durationsec()
                 new_dict['day'+str(i)] = compute_duration(sum_duration)
             all_member_tms.append(new_dict)
-            print(all_member_tms)
     else:
         all_member_tms = ''
         days_list = ''
@@ -5581,7 +5648,6 @@ def filter_project_timesheets_by_week(request):
                     list_mem_tms.append(new_dict2)
             new_dict['mem_timesheets'] = list_mem_tms
             all_member_tms.append(new_dict)
-            print(all_member_tms)
 
         final_list = []
         proj_set = set()
@@ -5643,6 +5709,10 @@ def select_daily_timesheets_by_user(request):
             new_dict['tim'] = tm
             daily_tm = Timesheet.objects.filter(log_day=tm, status='INITIAL', project_team_member_id=uid, company_id=company_id)
             new_dict['dictt'] = daily_tm
+            sum_duration = 0 
+            for ii in daily_tm:
+	            sum_duration = sum_duration + ii.durationsec()
+            new_dict['duration'] = compute_duration(sum_duration)
             new_list2.append(new_dict)
     else: 
         new_list2 = ''

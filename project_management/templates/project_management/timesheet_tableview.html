@@ -5,14 +5,13 @@
     src="{% static 'template-static-files/javascript/lib/calendar-2/moment.latest.min.js' %}"></script>
 <script src="{% static 'template-static-files/javascript/jquery.calendarPicker.js' %}"></script>
 <script src="{% static 'template-static-files/javascript/jquery.mousewheel.js' %}"></script>
-
 <div class="card" style="margin-top: -2%;">
     <div class="card-body">
         <div class="row">
-            <div class="col-3"><h5><span class="text-info font-weight-bold" id="selected_day_timesheet">{% now "jS D, F, Y" %}</span></h5></div>
-            <div class="col-4">
+            <div class="col-5"><h5><span class="text-info font-weight-bold" id="selected_day_timesheet">{% now "jS D, F, Y" %} </span> : <medium class="font-weight-bold daily_timesheet_duration1"></medium></h5></div>
+            <div class="col-3">
                 
-                <select name="project" class="select form-control id_user_dept_tb" id="id_user_dept_tb" style="margin-top: -3%;">
+                <select name="id_user_dept_tb" class="select form-control id_user_dept_tb" id="id_user_dept_tb">
                     <option selected="" value="{{user_id}}">{{user_name}}</option>
                     {% if user.is_superuser%}
                         {% for usr in dept_users %}
@@ -22,7 +21,7 @@
                 </select>
                 
             </div>
-            <div style="margin-left: 11%;">
+            <div style="margin-left: 4%;">
                 <button onclick="calendarPicker2.changeDate(new Date())" type="button" style="width: 70px" class="btn btn-outline-secondary col-3">Today</button>&nbsp;
                 <button id="btn_add_timesheet02" class="btn btn-info" onclick="functionAddNewTimesheet2()">
                     <i class="fa fa-fw fa-lg fa-plus"></i>Log Time
@@ -40,7 +39,7 @@
             <div id="calendar_filter">
 
             </div><hr>
-            <div id="timesheet-manage-pane" style="margin-top: -13px; max-height: 60%; overflow-y: scroll;">
+            <div id="timesheet-manage-pane" style="margin-top: -18px; max-height: 60%; overflow-y: scroll;">
 
             </div>
         </div>
@@ -101,8 +100,8 @@
     var calendarPicker2 = $("#calendar_filter").calendarPicker({
         monthNames: ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"],
         dayNames: ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"],
-        years: 1,
-        months: 4,
+        years: 0,
+        months: 2,
         days: 5,
         showDayArrows: true,
         callback: function (cal) {
@@ -162,6 +161,7 @@
                         $('#timesheet-manage-pane').html('');
                         $('#timesheet-manage-pane').html('<i class="fa fa-spinner fa-spin fa-5x text-center" style="margin-left: 50%;"></i>');
                         $('#timesheet-manage-pane').html(resp);
+                        
                     }
                 });
             }

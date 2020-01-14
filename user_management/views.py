@@ -7,7 +7,7 @@ from django.urls import reverse, reverse_lazy
 from django.contrib.auth.models import Group, Permission
 from django.contrib.contenttypes.models import ContentType
 
-from .models import User, UserTeam, UserTeamMember, GroupExtend, Company, Branch, Department
+from .models import User, UserTeam, UserTeamMember, GroupExtend, Company, Branch, Department, UserPhoneContact
 from django.http import JsonResponse
 from django.template import loader
 from .forms import UserForm, GroupExtendForm
@@ -146,11 +146,29 @@ def validate_user_name(request):
     return JsonResponse(data)
 
 
-class ProfileView(ListView):
-    template_name = 'user_management/user_profile.html'
+class ProfileView(UpdateView):
+    model = User
+    fields = ['first_name', 'last_name', 'gender', 'company', 'department', 'groups',
+              'branch', 'username', 'email', 'city', 'nationality', 'postal_code', 'address', 'secondary_email']
+    
+    template = loader.get_template('user_management/user_profile.html')
 
-    def get_queryset(self):
-        pass
+    template_name = 'user_management/user_profile.html'
+    success_url = reverse_lazy('listUsers')
+    context_object_name = 'user_update'
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+
+        user_dl = UserPhoneContact.objects.filter(user_id=self.get_object().pk).first()
+        if user_dl is not None:
+            context['contact'] = user_dl.phone_contact
+            context['userphonecontact_id'] = user_dl.id
+        else:
+            context['contact'] = ''
+            context['userphonecontact_id'] = ''
+
+        return context
 
 
 # Detailed view of a specific user
@@ -822,3 +840,56 @@ def check_internet_connection(request):
         'test': status
     }
     return JsonResponse(data)
+
+
+def save_profile_user_update(request):
+    template = loader.get_template('user_management/user_updated_profile.html')
+
+    first_name = request.GET.get('first_name')
+    last_name = request.GET.get('last_name')
+    gender = request.GET.get('gender')
+    uid = request.GET.get('user_id')
+    secondary_email = request.GET.get('id_secondary_email')
+    address = request.GET.get('id_address')
+    city = request.GET.get('city')
+    nationality = request.GET.get('nationality')
+    postal_code = request.GET.get('postal_code')
+    contact_value = request.GET.get('contact')
+    id_userphonecontact = request.GET.get('id_userphonecontact')
+    dept = request.GET.get('dept')
+    username = request.GET.get('username')
+
+    company = request.GET.get('company')
+    branch = request.GET.get('branch')
+    email = request.GET.get('email')
+
+    User.objects.filter(pk=int(uid)).update(first_name=first_name.title(), last_name=last_name.title(), gender=gender,
+        address=address, city=city, postal_code=postal_code, secondary_email=secondary_email, nationality=nationality)
+
+    if id_userphonecontact is not '':
+        UserPhoneContact.objects.filter(pk=int(id_userphonecontact)).update(phone_contact=contact_value)
+    else:
+        obj33 = UserPhoneContact(phone_contact=contact_value, user_id=uid)
+        obj33.save()
+        id_userphonecontact = obj33.id
+
+    context = {
+        'first_name': first_name,
+        'last_name': last_name,
+        'gender': gender,
+        'uid': uid,
+        'secondary_email': secondary_email,
+        'address': address,
+        'city': city,
+        'nationality': nationality,
+        'postal_code': postal_code,
+        'contact': contact_value,
+        'userphonecontact_id': id_userphonecontact,
+        'company': company,
+        'branch': branch,
+        'dept': dept,
+        'email': email,
+        'username': username,
+    }
+
+    return HttpResponse(template.render(context, request))
