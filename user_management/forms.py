@@ -17,7 +17,7 @@ class UserForm(forms.ModelForm):
         model = User
         fields = ('first_name', 'last_name', 'gender', 'company'
                   , 'branch', 'department', 'groups'
-                  , 'username', 'password', 'email', 'is_superuser', 'is_staff', 'is_active',)
+                  , 'username', 'password', 'email', 'is_superuser', 'is_staff', 'is_active', 'city', 'nationality', 'postal_code', 'address', 'secondary_email')
         widgets = {'password': forms.PasswordInput()}
 
 

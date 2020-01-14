@@ -50,7 +50,7 @@ urlpatterns = [
     path('detailsTeam/<int:pk>/', views.DetailsTeam.as_view(), name='detailsTeam'),
     path('updateTeam/<int:pk>/', views.UpdateTeam.as_view(), name='updateTeam'),
 
-    path('profile/', views.ProfileView.as_view(), name='my_profile'),
+    path('profile/<int:pk>/', views.ProfileView.as_view(), name='my_profile'),
 
     # ACCESS RIGHTS
     path('listModules/', views.ListSystemModules.as_view(), name='listModules'),
@@ -59,4 +59,5 @@ urlpatterns = [
 
     path('testConnection/', views.check_internet_connection, name='testConnection'),
     path('resendEmail/', views.update_resend_user_email, name='resendEmail'),
+    path('saveUserProfileUpdate/', views.save_profile_user_update, name='saveUserProfileUpdate'),
 ]

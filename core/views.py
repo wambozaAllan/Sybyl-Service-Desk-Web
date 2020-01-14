@@ -73,6 +73,7 @@ class Login(LoginView):
                 login(request, user)
 
                 # Other sessions
+                request.session['pk'] = user.pk
                 request.session['username'] = username
                 request.session['first_name'] = user.first_name
                 request.session['last_name'] = user.last_name

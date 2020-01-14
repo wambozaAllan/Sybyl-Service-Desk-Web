@@ -1,0 +1,510 @@
+{% load static %}
+<div class="row">
+    <div class="col-md-8">
+        <div class="card">
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-6 pr-1">
+                        <div class="form-group">
+                            <label>First Name</label>
+                            <input id="id_first_name2" type="text" class="form-control" value="{{first_name}}">
+                        </div>
+                    </div>
+                    <div class="col-md-6 pr-1">
+                        <div class="form-group">
+                            <label>Last Name</label>
+                            <input id="id_last_name2" type="text" class="form-control" value="{{last_name}}">
+                        </div>
+                    </div>
+                </div>
+
+                <input id="user_id2" type="hidden" class="form-control" value="{{uid}}">
+                <div class="row">
+                    <div class="col-md-6 pr-1">
+                        <div class="form-group">
+                            <label>Company</label>
+                            <input id="id_company2" type="text" class="form-control" value="{{company}}" disabled>
+                        </div>
+                    </div>
+                    <div class="col-md-6 pr-1">
+                        <div class="form-group">
+                            <label>Username</label>
+                            <input id="id_username2" type="text" class="form-control" value="{{username}}" disabled>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col-md-4 pr-1">
+                        <div class="form-group">
+                            <label>Branch</label>
+                            <input id="id_branch2" type="text" class="form-control" value="{{branch}}" disabled>
+                        </div>
+                    </div>
+                    <div class="col-md-4 pr-1">
+                        <div class="form-group">
+                            <label>Department</label>
+                            <input id="id_dept2" type="text" class="form-control" value="{{dept}}" disabled>
+                        </div>
+                    </div>
+
+                    <div class="col-md-4 pr-1">
+                        <div class="form-group">
+                            <label>Gender</label>
+                            <select class="form-control" id="id_gender2" name="gender">
+                                {% if gender is None %}
+                                <option selected disabled selected="">- Select Gender -</option>
+                                {% else %}
+                                <option value="{{gender}}" selected="">{{gender}}</option>
+                                {% endif %}
+                                <option value="Male">Male</option>
+                                <option value="Female">Female</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col-md-6 pr-1">
+                        <div class="form-group">
+                            <label>Email</label>
+                            <input id="id_email2" type="text" class="form-control" value="{{email}}" disabled>
+                        </div>
+                    </div>
+
+                    <div class="col-md-6 pr-1">
+                        <div class="form-group">
+                            <label>Secondary Email</label>
+                            {% if secondary_email is None %}
+                            <input id="id_secondary_email2" type="text" class="form-control" value="">
+                            {% else %}
+                            <input id="id_secondary_email2" type="text" class="form-control"
+                                value="{{secondary_email}}">
+                            {% endif %}
+                        </div>
+                        <medium id="email_addr_error2" class="text-muted hidden">
+                            <font color="red">
+                                Invalid Email Adress!
+                            </font>
+                        </medium>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col-md-4 pr-1">
+                        <div class="form-group">
+                            <div class="form-group">
+                                <label>Address</label>
+                                {% if address is None %}
+                                <input id="id_address2" type="text" class="form-control" value="">
+                                {% else %}
+                                <input id="id_address2" type="text" class="form-control" value="{{address}}">
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-4 pr-1">
+                        <div class="form-group">
+                            <label>City</label>
+                            {% if city is None %}
+                            <input id="id_city2" type="text" class="form-control" value="">
+                            {% else %}
+                            <input id="id_city2" type="text" class="form-control" value="{{city}}">
+                            {% endif %}
+                        </div>
+                    </div>
+
+                    <div class="col-md-4 pr-1">
+                        <div class="form-group">
+                            <label>Nationality</label>
+
+                            <select class="form-control" id="id_nationality2" name="country">
+                                {% if nationality is None %}
+                                <option selected disabled>- Select Nationality -</option>
+                                {% else %}
+                                <option selected value="{{ nationality }}">{{ nationality }}</option>
+                                {% endif %}
+                                <option class="textbolder" value="Ugandan">Ugandan</option>
+                                <option class="textbolder" value="Afghan">Afghan</option>
+                                <option class="textbolder" value="Albanian">Albanian</option>
+                                <option class="textbolder" value="Algerian">Algerian</option>
+                                <option class="textbolder" value="American">American</option>
+                                <option class="textbolder" value="Andorran">Andorran</option>
+                                <option class="textbolder" value="Angolan">Angolan</option>
+                                <option class="textbolder" value="Antiguans">Antiguans</option>
+                                <option class="textbolder" value="Argentinean">Argentinean</option>
+                                <option class="textbolder" value="Armenian">Armenian</option>
+                                <option class="textbolder" value="Australian">Australian</option>
+                                <option class="textbolder" value="Austrian">Austrian</option>
+                                <option class="textbolder" value="Azerbaijani">Azerbaijani</option>
+                                <option class="textbolder" value="Bahamian">Bahamian</option>
+                                <option class="textbolder" value="Bahraini">Bahraini</option>
+                                <option class="textbolder" value="Bangladeshi">Bangladeshi</option>
+                                <option class="textbolder" value="Barbadian">Barbadian</option>
+                                <option class="textbolder" value="Barbudans">Barbudans</option>
+                                <option class="textbolder" value="Batswana">Batswana</option>
+                                <option class="textbolder" value="Belarusian">Belarusian</option>
+                                <option class="textbolder" value="Belgian">Belgian</option>
+                                <option class="textbolder" value="Belizean">Belizean</option>
+                                <option class="textbolder" value="Beninese">Beninese</option>
+                                <option class="textbolder" value="Bhutanese">Bhutanese</option>
+                                <option class="textbolder" value="Bolivian">Bolivian</option>
+                                <option class="textbolder" value="Bosnian">Bosnian</option>
+                                <option class="textbolder" value="Brazilian">Brazilian</option>
+                                <option class="textbolder" value="British">British</option>
+                                <option class="textbolder" value="Bruneian">Bruneian</option>
+                                <option class="textbolder" value="Bulgarian">Bulgarian</option>
+                                <option class="textbolder" value="Burkinabe">Burkinabe</option>
+                                <option class="textbolder" value="Burmese">Burmese</option>
+                                <option class="textbolder" value="Burundian">Burundian</option>
+                                <option class="textbolder" value="Cambodian">Cambodian</option>
+                                <option class="textbolder" value="Cameroonian">Cameroonian</option>
+                                <option class="textbolder" value="Canadian">Canadian</option>
+                                <option class="textbolder" value="Cape verdean">Cape Verdean</option>
+                                <option class="textbolder" value="Central african">Central African</option>
+                                <option class="textbolder" value="Chadian">Chadian</option>
+                                <option class="textbolder" value="Chilean">Chilean</option>
+                                <option class="textbolder" value="Chinese">Chinese</option>
+                                <option class="textbolder" value="Colombian">Colombian</option>
+                                <option class="textbolder" value="Comoran">Comoran</option>
+                                <option class="textbolder" value="Congolese">Congolese</option>
+                                <option class="textbolder" value="Costa rican">Costa Rican</option>
+                                <option class="textbolder" value="Croatian">Croatian</option>
+                                <option class="textbolder" value="Cuban">Cuban</option>
+                                <option class="textbolder" value="Cypriot">Cypriot</option>
+                                <option class="textbolder" value="Czech">Czech</option>
+                                <option class="textbolder" value="Danish">Danish</option>
+                                <option class="textbolder" value="Djibouti">Djibouti</option>
+                                <option class="textbolder" value="Dominican">Dominican</option>
+                                <option class="textbolder" value="Dutch">Dutch</option>
+                                <option class="textbolder" value="East timorese">East Timorese</option>
+                                <option class="textbolder" value="Ecuadorean">Ecuadorean</option>
+                                <option class="textbolder" value="Egyptian">Egyptian</option>
+                                <option class="textbolder" value="Emirian">Emirian</option>
+                                <option class="textbolder" value="Equatorial guinean">Equatorial Guinean</option>
+                                <option class="textbolder" value="Eritrean">Eritrean</option>
+                                <option class="textbolder" value="Estonian">Estonian</option>
+                                <option class="textbolder" value="Ethiopian">Ethiopian</option>
+                                <option class="textbolder" value="fijian">Fijian</option>
+                                <option class="textbolder" value="filipino">Filipino</option>
+                                <option class="textbolder" value="finnish">Finnish</option>
+                                <option class="textbolder" value="french">French</option>
+                                <option class="textbolder" value="gabonese">Gabonese</option>
+                                <option class="textbolder" value="gambian">Gambian</option>
+                                <option class="textbolder" value="georgian">Georgian</option>
+                                <option class="textbolder" value="german">German</option>
+                                <option class="textbolder" value="ghanaian">Ghanaian</option>
+                                <option class="textbolder" value="greek">Greek</option>
+                                <option class="textbolder" value="grenadian">Grenadian</option>
+                                <option class="textbolder" value="guatemalan">Guatemalan</option>
+                                <option class="textbolder" value="guinea-bissauan">Guinea-Bissauan</option>
+                                <option class="textbolder" value="guinean">Guinean</option>
+                                <option class="textbolder" value="guyanese">Guyanese</option>
+                                <option class="textbolder" value="haitian">Haitian</option>
+                                <option class="textbolder" value="herzegovinian">Herzegovinian</option>
+                                <option class="textbolder" value="honduran">Honduran</option>
+                                <option class="textbolder" value="hungarian">Hungarian</option>
+                                <option class="textbolder" value="icelander">Icelander</option>
+                                <option class="textbolder" value="indian">Indian</option>
+                                <option class="textbolder" value="indonesian">Indonesian</option>
+                                <option class="textbolder" value="iranian">Iranian</option>
+                                <option class="textbolder" value="iraqi">Iraqi</option>
+                                <option class="textbolder" value="irish">Irish</option>
+                                <option class="textbolder" value="israeli">Israeli</option>
+                                <option class="textbolder" value="italian">Italian</option>
+                                <option class="textbolder" value="ivorian">Ivorian</option>
+                                <option class="textbolder" value="jamaican">Jamaican</option>
+                                <option class="textbolder" value="japanese">Japanese</option>
+                                <option class="textbolder" value="jordanian">Jordanian</option>
+                                <option class="textbolder" value="kazakhstani">Kazakhstani</option>
+                                <option class="textbolder" value="kenyan">Kenyan</option>
+                                <option class="textbolder" value="kittian and nevisian">Kittian and Nevisian</option>
+                                <option class="textbolder" value="kuwaiti">Kuwaiti</option>
+                                <option class="textbolder" value="kyrgyz">Kyrgyz</option>
+                                <option class="textbolder" value="laotian">Laotian</option>
+                                <option class="textbolder" value="latvian">Latvian</option>
+                                <option class="textbolder" value="lebanese">Lebanese</option>
+                                <option class="textbolder" value="liberian">Liberian</option>
+                                <option class="textbolder" value="libyan">Libyan</option>
+                                <option class="textbolder" value="liechtensteiner">Liechtensteiner</option>
+                                <option class="textbolder" value="lithuanian">Lithuanian</option>
+                                <option class="textbolder" value="luxembourger">Luxembourger</option>
+                                <option class="textbolder" value="macedonian">Macedonian</option>
+                                <option class="textbolder" value="malagasy">Malagasy</option>
+                                <option class="textbolder" value="malawian">Malawian</option>
+                                <option class="textbolder" value="malaysian">Malaysian</option>
+                                <option class="textbolder" value="maldivan">Maldivan</option>
+                                <option class="textbolder" value="malian">Malian</option>
+                                <option class="textbolder" value="maltese">Maltese</option>
+                                <option class="textbolder" value="marshallese">Marshallese</option>
+                                <option class="textbolder" value="mauritanian">Mauritanian</option>
+                                <option class="textbolder" value="mauritian">Mauritian</option>
+                                <option class="textbolder" value="mexican">Mexican</option>
+                                <option class="textbolder" value="micronesian">Micronesian</option>
+                                <option class="textbolder" value="moldovan">Moldovan</option>
+                                <option class="textbolder" value="monacan">Monacan</option>
+                                <option class="textbolder" value="mongolian">Mongolian</option>
+                                <option class="textbolder" value="moroccan">Moroccan</option>
+                                <option class="textbolder" value="mosotho">Mosotho</option>
+                                <option class="textbolder" value="motswana">Motswana</option>
+                                <option class="textbolder" value="mozambican">Mozambican</option>
+                                <option class="textbolder" value="namibian">Namibian</option>
+                                <option class="textbolder" value="nauruan">Nauruan</option>
+                                <option class="textbolder" value="nepalese">Nepalese</option>
+                                <option class="textbolder" value="new zealander">New Zealander</option>
+                                <option class="textbolder" value="ni-vanuatu">Ni-Vanuatu</option>
+                                <option class="textbolder" value="nicaraguan">Nicaraguan</option>
+                                <option class="textbolder" value="nigerien">Nigerien</option>
+                                <option class="textbolder" value="north korean">North Korean</option>
+                                <option class="textbolder" value="northern irish">Northern Irish</option>
+                                <option class="textbolder" value="norwegian">Norwegian</option>
+                                <option class="textbolder" value="omani">Omani</option>
+                                <option class="textbolder" value="pakistani">Pakistani</option>
+                                <option class="textbolder" value="palauan">Palauan</option>
+                                <option class="textbolder" value="panamanian">Panamanian</option>
+                                <option class="textbolder" value="papua new guinean">Papua New Guinean</option>
+                                <option class="textbolder" value="paraguayan">Paraguayan</option>
+                                <option class="textbolder" value="peruvian">Peruvian</option>
+                                <option class="textbolder" value="polish">Polish</option>
+                                <option class="textbolder" value="portuguese">Portuguese</option>
+                                <option class="textbolder" value="qatari">Qatari</option>
+                                <option class="textbolder" value="romanian">Romanian</option>
+                                <option class="textbolder" value="russian">Russian</option>
+                                <option class="textbolder" value="rwandan">Rwandan</option>
+                                <option class="textbolder" value="saint lucian">Saint Lucian</option>
+                                <option class="textbolder" value="salvadoran">Salvadoran</option>
+                                <option class="textbolder" value="samoan">Samoan</option>
+                                <option class="textbolder" value="san marinese">San Marinese</option>
+                                <option class="textbolder" value="sao tomean">Sao Tomean</option>
+                                <option class="textbolder" value="saudi">Saudi</option>
+                                <option class="textbolder" value="scottish">Scottish</option>
+                                <option class="textbolder" value="senegalese">Senegalese</option>
+                                <option class="textbolder" value="serbian">Serbian</option>
+                                <option class="textbolder" value="seychellois">Seychellois</option>
+                                <option class="textbolder" value="sierra leonean">Sierra Leonean</option>
+                                <option class="textbolder" value="singaporean">Singaporean</option>
+                                <option class="textbolder" value="slovakian">Slovakian</option>
+                                <option class="textbolder" value="slovenian">Slovenian</option>
+                                <option class="textbolder" value="solomon islander">Solomon Islander</option>
+                                <option class="textbolder" value="somali">Somali</option>
+                                <option class="textbolder" value="south african">South African</option>
+                                <option class="textbolder" value="south korean">South Korean</option>
+                                <option class="textbolder" value="spanish">Spanish</option>
+                                <option class="textbolder" value="sri lankan">Sri Lankan</option>
+                                <option class="textbolder" value="sudanese">Sudanese</option>
+                                <option class="textbolder" value="surinamer">Surinamer</option>
+                                <option class="textbolder" value="swazi">Swazi</option>
+                                <option class="textbolder" value="swedish">Swedish</option>
+                                <option class="textbolder" value="swiss">Swiss</option>
+                                <option class="textbolder" value="syrian">Syrian</option>
+                                <option class="textbolder" value="taiwanese">Taiwanese</option>
+                                <option class="textbolder" value="tajik">Tajik</option>
+                                <option class="textbolder" value="tanzanian">Tanzanian</option>
+                                <option class="textbolder" value="thai">Thai</option>
+                                <option class="textbolder" value="togolese">Togolese</option>
+                                <option class="textbolder" value="tongan">Tongan</option>
+                                <option class="textbolder" value="trinidadian or tobagonian">Trinidadian or Tobagonian
+                                </option>
+                                <option class="textbolder" value="tunisian">Tunisian</option>
+                                <option class="textbolder" value="turkish">Turkish</option>
+                                <option class="textbolder" value="tuvaluan">Tuvaluan</option>
+                                <option class="textbolder" value="ukrainian">Ukrainian</option>
+                                <option class="textbolder" value="uruguayan">Uruguayan</option>
+                                <option class="textbolder" value="uzbekistani">Uzbekistani</option>
+                                <option class="textbolder" value="venezuelan">Venezuelan</option>
+                                <option class="textbolder" value="vietnamese">Vietnamese</option>
+                                <option class="textbolder" value="welsh">Welsh</option>
+                                <option class="textbolder" value="yemenite">Yemenite</option>
+                                <option class="textbolder" value="zambian">Zambian</option>
+                                <option class="textbolder" value="zimbabwean">Zimbabwean</option>
+
+                            </select>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col-md-6 pr-1">
+                        <div class="form-group">
+                            <label>Postal Code</label>
+                            {% if postal_code is None %}
+                            <input id="id_postal_code2" type="text" class="form-control" value="">
+                            {% else %}
+                            <input id="id_postal_code2" type="text" class="form-control" value="{{postal_code}}">
+                            {% endif %}
+                        </div>
+                    </div>
+
+                    <div class="col-md-6 pr-1">
+                        <div class="form-group">
+                            <label>Contact</label>
+                            <input id="contact_id2" type="text" class="form-control" value="{{contact}}">
+                            <input id="id_userphonecontact2" type="hidden" class="form-control"
+                                value="{{userphonecontact_id}}">
+                        </div>
+                    </div>
+
+                    <button style="margin-left: auto;" onclick="functionUpdateUserProfile2()" id="" type="submit"
+                        class="btn btn-info btn-fill">Update Profile</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-4">
+        <div class="card card-user">
+            <div class="card-image">
+                <img style="-webkit-background-size: cover; background-size: cover; height: 200px;"
+                    src="{% static 'template-static-files/images/c1.jpg' %}" alt="image" width="100%">
+            </div>
+            <div class="card-body">
+                <div class="author text-center" style="position: relative; top: -50px; margin-bottom: -50px;">
+                    <a href="#">
+                        <img class="rounded-circle" style="width: 100px; height: 100px; max-width: 100px; max-height: 100px;
+                        border-radius: 50%; border: 5px solid rgba(255, 255, 255, 0.5);"
+                            src="{% static 'template-static-files/images/users/avatar-9.jpg' %}" alt="...">
+                        <p class="">{{first_name}}</p>
+                    </a>
+
+                    <p class="description">{{last_name}}</p>
+                </div>
+                <p class="description text-center" style="padding:10%">
+                    " Mercy
+                    <br> Simple comment
+                    <br> Keep going.....
+                </p>
+            </div>
+            <hr>
+            <div class="button-container mr-auto ml-auto">
+                <button href="#" class="btn btn-simple btn-link btn-icon">
+                    <i class="fa fa-facebook-square"></i>
+                </button>
+                <button href="#" class="btn btn-simple btn-link btn-icon">
+                    <i class="fa fa-twitter"></i>
+                </button>
+                <button href="#" class="btn btn-simple btn-link btn-icon">
+                    <i class="fa fa-google-plus-square"></i>
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    $('#contact_id2').usPhoneFormat({
+        format: '(xxx) xxx-xxxx'
+    });
+
+    $('#id_secondary_email2').on('input', function () {
+        $('#id_secondary_email2').css({ "border": '1px solid #ced4da' });
+        $('#email_addr_error2').hide();
+    });
+
+    function functionUpdateUserProfile2() {
+        var first_name = $('#id_first_name2').val();
+        var last_name = $('#id_last_name2').val();
+        var user_id = $('#user_id2').val();
+        var gender = $('#id_gender2').val();
+        var id_secondary_email = $('#id_secondary_email2').val();
+        var address = $('#id_address2').val();
+        var city = $('#id_city2').val();
+        var nationality = $('#id_nationality2').val();
+        var postal_code = $('#id_postal_code2').val();
+        var contact = $('#contact_id2').val();
+        var id_userphonecontact = $('#id_userphonecontact2').val();
+
+        var company = $('#id_company2').val();
+        var branch = $('#id_branch2').val();
+        var dept = $('#id_dept2').val();
+        var username = $('#id_username2').val();
+        var email = $('#id_email2').val();
+
+        if (first_name < 1 || last_name < 1) {
+            if (first_name < 1) {
+                $('#id_first_name2').css({ "border": '2px solid #00635a' });
+            }
+
+            if (last_name < 1) {
+                $('#id_last_name2').css({ "border": '2px solid #00635a' });
+            }
+
+        } else {
+            if (id_secondary_email < 1) {
+                data3 = {
+                    first_name: first_name,
+                    last_name: last_name,
+                    gender: gender,
+                    user_id: user_id,
+                    id_secondary_email: id_secondary_email,
+                    id_address: address,
+                    city: city,
+                    nationality: nationality,
+                    postal_code: postal_code,
+                    contact: contact,
+                    id_userphonecontact: id_userphonecontact,
+                    company: company,
+                    branch: branch,
+                    dept: dept,
+                    username: username,
+                    email: email,
+                };
+
+                urldata = "{% url 'saveUserProfileUpdate'%}";
+                $.ajax({
+                    type: "GET",
+                    cache: false,
+                    data: data3,
+                    url: urldata,
+                    success: function (resp) {
+                        $('.container-fluid').html('');
+                        $('.container-fluid').html(resp);
+                    }
+                });
+            } else {
+                if (validateEmail(id_secondary_email)) {
+                    data3 = {
+                        first_name: first_name,
+                        last_name: last_name,
+                        gender: gender,
+                        user_id: user_id,
+                        id_secondary_email: id_secondary_email,
+                        id_address: address,
+                        city: city,
+                        nationality: nationality,
+                        postal_code: postal_code,
+                        contact: contact,
+                        id_userphonecontact: id_userphonecontact,
+                        company: company,
+                        branch: branch,
+                        dept: dept,
+                        username: username,
+                        email: email,
+                    };
+
+                    urldata = "{% url 'saveUserProfileUpdate'%}";
+                    $.ajax({
+                        type: "GET",
+                        cache: false,
+                        data: data3,
+                        url: urldata,
+                        success: function (resp) {
+                            $('.container-fluid').html('');
+                            $('.container-fluid').html(resp);
+                        }
+                    });
+                } else {
+                    $('#email_addr_error2').show();
+                    $('#id_secondary_email2').css({ "border": '2px solid #00635a' });
+                }
+            }
+        }
+    }
+
+    $('#id_first_name2').on('input', function () {
+        $('#id_first_name').css({ "border": '1px solid #ced4da' });
+    });
+
+    $('#id_last_name2').on('input', function () {
+        $('#id_last_name').css({ "border": '1px solid #ced4da' });
+    });
+</script>

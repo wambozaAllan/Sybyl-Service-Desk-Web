@@ -76,8 +76,7 @@
                                     </label>
                                     <div class="">
                                         <select name="department" class="select form-control" id="id_department">
-                                            <option value="{{ user_update.department_id }}">{{ user_update.department }}
-                                            </option>
+                                            <option value="{{ user_update.department_id }}">{{ user_update.department }}</option>
                                             {% for d in dept %}
                                                 <option value="{{ d.id }}">{{ d.name }}</option>
                                             {% endfor %}
