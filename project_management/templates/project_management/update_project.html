@@ -91,11 +91,6 @@
 
                                         <div class="col-md-6 col-sm-12">
                                             {{ form.final_cost|as_crispy_field }}
-                                            <medium id="final_cost" class="text-muted hidden">
-                                                <font color="red">
-                                                    Minimum Cost is 500,000
-                                                </font>
-                                            </medium>
                                         </div>
 
                                         <div class="col-md-6 col-sm-12">
@@ -142,6 +137,19 @@
             </div>
         </div>
     </div>
+
+<style>
+    /* remove increment and decrement arrow from number */
+    input[type="number"] {
+    -webkit-appearance: textfield;
+        -moz-appearance: textfield;
+            appearance: textfield;
+    }
+    input[type=number]::-webkit-inner-spin-button, 
+    input[type=number]::-webkit-outer-spin-button { 
+    -webkit-appearance: none;
+    }
+</style>
 
 <script>
     $(document).ready(function(){
@@ -289,7 +297,9 @@
         });
 
         // final cost
-        $('#id_final_cost').attr('placeholder', '500,000');
+        $('#id_final_cost').attr('placeholder', '0');
+
+        $("#id_final_cost").attr('autocomplete', 'off');
 
         $("#id_final_cost").keypress(function(event) {
             if(event.which != 0){
@@ -297,20 +307,6 @@
             }
 
         });
-
-        $("#id_final_cost").on('input', function(){
-            var cost = $(this).val();
-            if (cost < 500000){
-                $("#final_cost").show();
-                document.getElementById('id_final_cost').style.borderColor = "red";
-                document.getElementById('btnUpdateProject').disabled = true;
-            }
-            else if(cost >= 500000){
-                $("#final_cost").hide();
-                document.getElementById('id_final_cost').style.borderColor = "";
-                document.getElementById('btnUpdateProject').disabled = false;
-            }
-        })
 
         // status attribute 
         $('#id_project_status').removeAttr('multiple', "");
@@ -334,33 +330,6 @@
         $("#id_name").attr('autocomplete', 'off');
 
         $("#id_project_code").attr('autocomplete', 'off');
-
-        $("#id_name").css("text-transform", "uppercase");
-
-        $('#id_name').on('input', function () {
-            var project_name = $(this).val().toUpperCase();
-
-            $.ajax({
-                url: "{% url 'validateProjectName' %}",
-                data: {
-                    'projectname': project_name
-                },
-                dataType: 'json',
-                success: function (data) {
-                    if (data.is_taken) {
-                        $("#validate_project_name").show();
-                        document.getElementById('id_name').style.borderColor = "red";
-                        document.getElementById("btnUpdateProject").disabled = true;
-                    } else {
-                        $("#validate_project_name").hide();
-                        document.getElementById('id_name').style.borderColor = "#e7e7e7";
-                        document.getElementById("btnUpdateProject").disabled = false;
-                    }
-                }
-            });
-        });      
-
-        $('#id_project_code').attr( 'readOnly' , 'true' );
 
     })
 </script>

@@ -22,7 +22,7 @@ import operator
 from .forms import MilestoneForm
 
 
-from django.contrib.auth.decorators import user_passes_test, permission_required
+from django.contrib.auth.decorators import user_passes_test, permission_required, login_required
 
 from .models import Project, Milestone, Task, ProjectDocument, Incident, Priority, Status, ProjectTeam, ProjectTeamMember, Role, ProjectForumMessages, ProjectForum, ProjectForumMessageReplies, ServiceLevelAgreement, IncidentComment, EscalationLevel, IncidentComment, Timesheet, ResubmittedTimesheet, ProjectCode
 from user_management.models import User
@@ -1130,6 +1130,7 @@ class TaskCreateView(LoginRequiredMixin, CreateView):
         return super().form_valid(form)
 
 
+@login_required
 def create_tasks_by_project(request):
     """return tasks by project"""
     current_user = request.user.id
@@ -1163,6 +1164,7 @@ def create_tasks_by_project(request):
     return render(request, 'project_management/task_form.html', context=context)
 
 
+@login_required
 def populate_task_view(request):
     """
     populate project_task view
@@ -1204,6 +1206,7 @@ def populate_task_view(request):
     return HttpResponse(template.render(context, request))
 
 
+@login_required
 def validateTaskName(request):
     """
     check if name already exists
@@ -1219,6 +1222,7 @@ def validateTaskName(request):
     return JsonResponse(data)
 
 
+@login_required
 def save_project_tasks(request):
     """
     save project tasks
@@ -1363,7 +1367,7 @@ def save_milestone_tasks(request):
     return JsonResponse(response_data)
 
 
-class UpdateProjectTask(UpdateView):
+class UpdateProjectTask(UpdateView, LoginRequiredMixin):
     model = Task
     fields = ['name', 'status', 'description', 'start_date', 'end_date', 'actual_start_date', 'actual_end_date']
     template_name = 'project_management/update_project_task.html'
@@ -1548,6 +1552,7 @@ class UpdateTerminatedTask(UpdateView):
         return context
 
 
+@login_required
 def save_update_task(request, pk):
     """update project task"""
     name = request.GET.get('name')
@@ -2331,6 +2336,8 @@ class TaskListView(ListView, LoginRequiredMixin):
 #     project_tasks = Task.objects.filter(project_id=project_id)
 #     return render(request, 'project_management/task_list.html', {'tasks': project_tasks})
 
+
+@login_required
 def task_list_by_users(request):
     user = request.user
     members = ProjectTeamMember.objects.filter(member=user)

@@ -338,7 +338,7 @@
 
     
 
-    // on load function for addition of milestone
+    // show relevant status
     $(function(){
         var statusText = $("#id_status option:selected").text().toLowerCase();
         if(statusText == 'open' ||statusText == 'onhold'){
@@ -350,45 +350,6 @@
             $("#div_id_actual_startdate").css("display", "block");
             $("#div_id_actual_enddate").css("display", "block");
         }
-
-        var start_date = $("#id_start_date").val();
-        var endDate = $("#id_end_date").val();
-        var actualStartDate = $("#id_actual_start_date").val();
-        var actualEndDate = $("#id_actual_end_date").val();
-
-        var newStart = changeDateFormat(start_date);
-        var newEnd = changeDateFormat(endDate);
-        var newActualStart = changeDateFormat(actualStartDate);
-        var newActualEnd = changeDateFormat(actualEndDate);
-
-        if (start_date.length == 0){
-            document.getElementById('id_start_date').value = "";
-        }
-        else if(start_date.length > 0){
-            document.getElementById('id_start_date').value = newStart;
-        }
-
-        if (endDate.length == 0){
-            document.getElementById('id_end_date').value = "";
-        }
-        else if(endDate.length > 0){
-            document.getElementById('id_end_date').value = newEnd;
-        }
-
-        if (actualStartDate.length == 0){
-            document.getElementById('id_actual_start_date').value = "";
-        }
-        else if(actualStartDate.length > 0){
-            document.getElementById('id_actual_start_date').value = newActualStart;
-        }
-        
-        if(actualEndDate.length == 0){
-            document.getElementById('id_actual_end_date').value = "";
-        }
-        else if(actualEndDate.length >  0){
-            document.getElementById('id_actual_end_date').value = newActualEnd;
-        }
-        
         
     });
       

@@ -19,7 +19,7 @@
             <div class="col-md-7 align-self-center">
                 <ol class="breadcrumb">
                     <li class="breadcrumb-item"><a href="{% url 'home' %}">Home</a></li>
-                    <li class="breadcrumb-item active">List of Milestones</li>
+                    <li class="breadcrumb-item active">Milestones</li>
                 </ol>
             </div>
         </div>
@@ -50,10 +50,10 @@
                                     <thead>
                                         <tr>
                                             <th>Name</th>
-                                            <th>Start Date</th>
                                             <th>Project</th>
+                                            <th>Start Date</th>
+                                            <th>End Date</th>
                                             <th>Status</th>
-                                            <th>Progress</th>
                                         </tr>
                                     </thead>
 
@@ -61,10 +61,10 @@
                                         {% for milestone in milestones %}
                                         <tr>
                                             <td><a href="{% url 'milestone_details' milestone.id %}">{{ milestone.name }}</a></td>
-                                            <td>{{ milestone.startdate }}</td>
                                             <td>{{ milestone.project }}</td>
+                                            <td>{{ milestone.startdate }}</td>
+                                            <td>{{ milestone.enddate }}</td>
                                             <td>{{ milestone.status }}</td>
-                                            <td>{{ milestone.completion }}% </td>
                                         </tr>
                                         {% empty %}
                                         <tr>
