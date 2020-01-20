@@ -233,6 +233,10 @@ urlpatterns = [
     path('selectDailyTimesheetsByUser', views.select_daily_timesheets_by_user, name='selectDailyTimesheetsByUser'),
     path('selectTableTimesheetsByUser', views.select_table_timesheets_by_user, name='selectTableTimesheetsByUser'),
 
+    path('timesheetMonthlyReport', views.timesheet_monthly_report, name='timesheetMonthlyReport'),
+    path('filterMonthlyTimesheets', views.filter_monthly_timesheets, name='filterMonthlyTimesheets'),
+    path('filterMonthlyTimesheetsByDate', views.filter_monthly_timesheets_by_date, name='filterMonthlyTimesheetsByDate'),
+
     # Schedules plans 
     path('schedulePlan', views.timesheets_schedule_pane, name='schedulePlan'),
     
@@ -250,4 +254,5 @@ urlpatterns = [
     path('populateUpload/', views.populate_upload_document, name='populateUpload'),
     path('addMilestone/', views.load_add_milestone, name='addMilestone'),
     path('selectMembersByProject', views.fetch_members_by_project, name='selectMembersByProject'),
+
 ]
