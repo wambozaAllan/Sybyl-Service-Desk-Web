@@ -16,5 +16,5 @@ daphne==2.3.0
 pywin32==224
 channels-redis==2.4.0
 
-pip install django-background-tasks
-pip install django-simple-history
+django-background-tasks
+django-simple-history

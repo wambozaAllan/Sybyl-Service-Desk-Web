@@ -28,7 +28,7 @@
         <div class="container-fluid">
             <div class="p-5">
                 <div class="card">
-                    <div class="card-body">
+                    <div class="card-body weekly_project_data_pane1">
 
                         <div class="">
                             <div class="row ">
@@ -49,10 +49,18 @@
                                         </div>
                                     </div>
                                 </div>
+
+                                <div class="col-7 ">
+                                    <button style="margin-top: 8%;" id="generateTimesheetProjectPDF"
+                                        class="btn btn-info pull right">
+                                        <i class="fa fa-file-pdf-o"></i> PDF
+                                    </button>
+                                </div>
+
                             </div>
                         </div>
 
-                        <div id="weekly_project_data">
+                        <div id="weekly_project_data" class="">
                             <i class="fa fa-spinner fa-spin fa-5x" style="align-content: center;margin-left: 50%;"></i>
                         </div>
                     </div>
@@ -198,8 +206,23 @@
             });
             return false;
         });
-
     });
+
+    $('#generateTimesheetProjectPDF').on('click', function () {
+        html2canvas($('.weekly_project_data_pane1')[0], {
+            onrendered: function (canvas) {
+                var data = canvas.toDataURL();
+                var docDefinition = {
+                    content: [{
+                        image: data,
+                        width: 500
+                    }]
+                };
+                pdfMake.createPdf(docDefinition).download("ProjectReport.pdf");
+            }
+        });
+    });
+
 
 </script>
 {% endblock %}

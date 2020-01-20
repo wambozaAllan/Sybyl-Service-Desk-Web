@@ -28,10 +28,10 @@
         <div class="container-fluid">
             <div class="p-5">
                 <div class="card">
-                    <div class="card-body">
+                    <div class="card-body weekly_data_pane1">
 
                         <div class="">
-                            <div class="row ">
+                            <div class="row">
                                 <div class="col-5">
                                     <div id="" class="form-group">
                                         <label class="col-form-label requiredField">Select Week</label>
@@ -48,6 +48,13 @@
                                             </span>
                                         </div>
                                     </div>
+                                </div>
+
+                                <div id="col-7">
+                                    <button style="margin-top: 55%; margin-left: 762%;" id="generateTimesheeWeeklyPDF"
+                                        class="btn btn-info ">
+                                        <i class="fa fa-file-pdf-o"></i> PDF
+                                    </button>
                                 </div>
 
                             </div>
@@ -200,6 +207,21 @@
             return false;
         });
 
+    });
+
+    $('#generateTimesheeWeeklyPDF').on('click', function () {
+        html2canvas($('.weekly_data_pane1')[0], {
+            onrendered: function (canvas) {
+                var data = canvas.toDataURL();
+                var docDefinition = {
+                    content: [{
+                        image: data,
+                        width: 500
+                    }]
+                };
+                pdfMake.createPdf(docDefinition).download("TMWeekReport.pdf");
+            }
+        });
     });
 
 </script>
