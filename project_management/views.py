@@ -2340,26 +2340,28 @@ class TaskListView(ListView, LoginRequiredMixin):
 
 @login_required
 def task_list_by_users(request):
+    """return tasks assigned to user"""
     user = request.user
     members = ProjectTeamMember.objects.filter(member=user)
+    
+    task_list = []
     team_list = []
     for value in members:  
         team_members = ProjectTeamMember.project_team.through.objects.filter(projectteammember=value.id)
 
         for obj in team_members:
-            team_name = obj.projectteam
+            team_name = obj.projectteammember
             team_list.append(team_name)
     
-    project_list = []
-    task_list = []
     for team in team_list:
-        project_id = team.project_id
-        
-        project = Project.objects.get(id=project_id)
+        assigned_to = Task.assigned_to.through.objects.filter(projectteammember_id=team.id).values()
 
-        tasks = Task.objects.filter(project_id=project.id)
-        for value in tasks:
-            task_list.append(value)
+        for value in assigned_to:
+            task_id = value["task_id"]
+            tasks = Task.objects.filter(id=task_id)
+
+            for task in tasks:   
+                task_list.append(task)
 
     template = loader.get_template('project_management/task_list.html')
     context = {
@@ -3147,7 +3149,7 @@ def addProject(request):
             estimate = float(estimated_cost)
             user_id = User.objects.get(id=created_by)
 
-            project = Project(name=name.title(), description=description, project_code=final_result_code, estimated_cost=estimate,
+            project = Project(name=name, description=description, project_code=final_result_code, estimated_cost=estimate,
             logo=logo, estimated_start_date=estimated_start_date, estimated_end_date=estimated_end_date,
             project_status=status, created_by=user_id)
 
@@ -5846,43 +5848,36 @@ def upload_document(request):
 
 def staff_utilization(request):
     """generate staff utilization report"""
-    # timesheets = Timesheet.objects.filter(submitted_by=request.user.id)
+    timesheets = Timesheet.objects.filter(added_by=request.user.id)
     
-    # end_time = []
-    # start_time = []
-    # for object in timesheets:
+    end_time = []
+    start_time = []
+    for object in timesheets:
 
-    #     difference = object.durationsec()
+        difference = object.durationsec()
 
-    #     total_hours = difference / 3600
-    #     end_time.append(total_hours)
+        total_hours = difference / 3600
+        end_time.append(total_hours)
 
-    # print(f"{end_time} is the end")
+    print(f"{end_time} is the end")
 
-    # sum_list = sum(end_time)
+    sum_list = sum(end_time)
 
-    # print(f"The difference is {sum_list}")
+    print(f"The difference is {sum_list}")
 
-    # return render(request, 'project_management/staff_report.html', {
-    #     'total': str(sum_list),
-    #     'timesheets': timesheets,
-    #     'user': request.user
-    #     })
-    
-
-
-    return render(request, 'project_management/staff_report.html', context=None)
+    return render(request, 'project_management/staff_report.html', {
+        'total': str(sum_list),
+        'timesheets': timesheets,
+        'user': request.user
+        })
     
 
-def render_calendar(request):
+# staff utilization report
+def staff_utilization_report(request):
     """ returns timesheet values for single individual """
-    company_id = request.session['company_id']
 
     start_time = request.GET.get('start', None)
     end_time = request.GET.get('end', None)
-
-    print(f"{start_time} is the start")
-    print(f"{end_time} is the end time")
 
     convert_start = datetime.datetime.strptime(start_time, "%d-%m-%Y").strftime("%Y-%m-%d")
     convert_end = datetime.datetime.strptime(end_time, "%d-%m-%Y").strftime("%Y-%m-%d")
@@ -5895,58 +5890,63 @@ def render_calendar(request):
     
     # getting the days in between start date and end date
     delta = end - start
-    
-    timesheet = Timesheet.objects.filter(company_id=company_id)
-    list_timesheet_user = []
-    all_users = User.objects.filter(company_id=company_id)
-    days_list = []
 
-    for time in timesheet:
-        logged_day = time.log_day.strftime("%Y-%m-%d")
+    all_members = [] 
+    
+    users = User.objects.all()
+    day_list = []
+
+    for j in range(delta.days + 1):
+        day = start + timedelta(days=j)
+        new_day = day.strftime("%Y-%m-%d")
+
+        strip_date = datetime.datetime.strptime(new_day, "%Y-%m-%d")
+        split_date = date(strip_date.year, strip_date.month, strip_date.day);
+        date_index = split_date.weekday()
+        cal = calendar.day_name[date_index]
+        
+        if cal == 'Saturday' or cal == 'Sunday':
+            pass
+        else:
+            day_list.append(new_day)
+
+    expected_hours = len(day_list)
+    counter = 0  
+
+    for user in users:
+        sum_timesheet = 0
+        counter += 1 
         timesheet_dict = {}
-        users = User.objects.filter(id= time.added_by.id)
+        timesheet_dict['id'] = counter
+        timesheet_dict["name"] = user.first_name + " " + user.last_name
 
-        for user in users:
-            timesheet_dict["user"] = user.last_name
-            timesheet_dict["user_id"] = user.id
-
-            for i in range(delta.days + 1):
-                day = start + timedelta(days=i)
-                new_day = day.strftime("%Y-%m-%d")           
-
-                if new_day == logged_day:
-                    duration_in_seconds = time.durationsec()
-                    duration_in_hours = duration_in_seconds/3600
-                    timesheet_dict["user_hours"] = duration_in_hours
-                    list_timesheet_user.append(timesheet_dict)
-                
-
-    #  getting the user total time 
-    print(list_timesheet_user)
-    # sum_list = sum(list_timesheet_user)
-    # final_list = round(sum_list, 2)
-
-    user_list = []
-    for user in all_users:
-        hours = 0
-        user_dict = {}
-        for obj in list_timesheet_user:
-            print(f"{obj} is the one")
-            if user.id == obj['user_id']:
-                hours += obj['user_hours']
-                
-            user_dict['user_id'] = user.id
-            user_dict['first_name'] = user.first_name
-            user_dict['last_name'] = user.last_name
-            user_dict['hours'] = hours
+        
+        for i in range(delta.days+1):
+            day = start + timedelta(days=i)
+            new_day = day.strftime("%Y-%m-%d") 
+            strip_date = datetime.datetime.strptime(new_day, "%Y-%m-%d")
+            split_date = date(strip_date.year, strip_date.month, strip_date.day);
+            date_index = split_date.weekday()
+            cal = calendar.day_name[date_index]
             
-        user_list.append(user_dict)
-
+            if cal == 'Saturday' or cal == 'Sunday':
+                pass
+            else:
+                timesheet = Timesheet.objects.filter(log_day=new_day, added_by=user.id)
+                for time in timesheet:
+                    sum_timesheet = sum_timesheet + time.durationsec()
+                    
+        timesheet_dict['duration'] = sum_timesheet /3600 
+        timesheet_dict['expected_hours']  = expected_hours * 8.5
+        availability = timesheet_dict['duration']/timesheet_dict['expected_hours']
+        percent = '%'
+        timesheet_dict['timesheet/available'] = str(round(availability, 2)) + percent
+        all_members.append(timesheet_dict)
     
-    print(user_list) 
-    list_users = json.dumps(user_list)
-    print(f"{list_users} is the list of users")
-    return JsonResponse(list_users)
+    # converting user_list to json acceptable data
+    list_users = json.dumps(all_members)
+
+    return JsonResponse(list_users, safe=False)
 
 
 def daily_logged_hours(request):
@@ -5988,6 +5988,112 @@ def fetch_members_by_project(request):
     return JsonResponse(data)
 
 
+# exporting as staff utilization report as excel
+def export_staff_utilization(request):
+    """exporting staff utilization"""
+    response = HttpResponse(content_type='application/ms-excel')
+    response['Content-Disposition'] = 'attachment; filename=Staff_utilization_report.xls'
+    wb = xlwt.Workbook(encoding='utf-8')
+    ws = wb.add_sheet("Staff Utilization Report")
+
+    start_time = request.GET.get('start', None)
+    end_time = request.GET.get('end', None)
+
+    convert_start = datetime.datetime.strptime(start_time, "%d-%m-%Y").strftime("%Y-%m-%d")
+    convert_end = datetime.datetime.strptime(end_time, "%d-%m-%Y").strftime("%Y-%m-%d")
+
+    new_start = datetime.datetime.strptime(convert_start, "%Y-%m-%d")
+    new_end = datetime.datetime.strptime(convert_end, "%Y-%m-%d")
+
+    start = date(new_start.year, new_start.month, new_start.day)
+    end = date(new_end.year, new_end.month, new_end.day)
+    
+    # getting the days in between start date and end date
+    delta = end - start
+
+    all_members = [] 
+    
+    users = User.objects.all()
+    day_list = []
+
+    for j in range(delta.days + 1):
+        day = start + timedelta(days=j)
+        new_day = day.strftime("%Y-%m-%d")
+
+        strip_date = datetime.datetime.strptime(new_day, "%Y-%m-%d")
+        split_date = date(strip_date.year, strip_date.month, strip_date.day);
+        date_index = split_date.weekday()
+        cal = calendar.day_name[date_index]
+        
+        if cal == 'Saturday' or cal == 'Sunday':
+            pass
+        else:
+            day_list.append(new_day)
+
+    expected_hours = len(day_list)
+    counter = 0
+    for user in users:
+        sum_timesheet = 0
+        counter += 1
+        timesheet_dict = {}
+        timesheet_dict['id'] = counter
+        timesheet_dict["name"] = user.first_name + " " + user.last_name
+
+        
+        for i in range(delta.days+1):
+            day = start + timedelta(days=i)
+            new_day = day.strftime("%Y-%m-%d") 
+            strip_date = datetime.datetime.strptime(new_day, "%Y-%m-%d")
+            split_date = date(strip_date.year, strip_date.month, strip_date.day);
+            date_index = split_date.weekday()
+            cal = calendar.day_name[date_index]
+            
+            if cal == 'Saturday' or cal == 'Sunday':
+                pass
+            else:
+                timesheet = Timesheet.objects.filter(log_day=new_day, added_by=user.id)
+                for time in timesheet:
+                    sum_timesheet = sum_timesheet + time.durationsec()
+                    
+        timesheet_dict['timesheet_hours'] = sum_timesheet /3600 
+        timesheet_dict['available_hours']  = expected_hours * 8.5
+        availability = timesheet_dict['timesheet_hours']/timesheet_dict['available_hours']
+        timesheet_dict['timesheet/available'] = round(availability, 2)
+        all_members.append(timesheet_dict)
+
+    row_num = 1
+
+    columns = [(u"Name", 5000), (u"Timesheet Hrs", 5000), (u"Available Hrs", 5000),
+               (u"Timesheet/Available % ", 5000)
+               ]
+
+    font_style = xlwt.XFStyle()
+    font_style.font.bold = True
+
+    for col_num in range(len(columns)):
+        ws.write(row_num, col_num, columns[col_num][0], font_style)
+        # set column width
+        ws.col(col_num).width = columns[col_num][1]
+
+    font_style = xlwt.XFStyle()
+    font_style.alignment.wrap = 1
+    
+    for obj in all_members:
+        row_num += 1
+
+        row = [
+            obj['id'],
+            obj['name'],
+            obj['timesheet_hours'],
+            obj['available_hours'],
+            obj['timesheet/available']
+        ]
+
+        for col_num in range(len(row)):
+            ws.write(row_num, col_num, str(row[col_num]), font_style)
+            
+    wb.save(response)
+    return response
 def timesheet_monthly_report(request):
 
     template = loader.get_template('project_management/timesheet_monthly_report_pane.html')

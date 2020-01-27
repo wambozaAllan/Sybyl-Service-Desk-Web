@@ -68,21 +68,54 @@
                         </medium>
                     </div>
                 </div>
+
+                <div class="desc">
+                    {{form.description|as_crispy_field}}
+                </div>
+
                 <div class="row">
-                    <div class="col-md-6">
-                        {{form.description|as_crispy_field}}
+                    <div class="col-md-12">
+                        <div id="div_id_description" class="form-group">
+                            <label for="id_description" class="col-form-label ">
+                                Description
+                            </label>
+                            <div class="">
+                                <textarea rows="4" cols="100" name="description" value="{{description}}" maxlength="255" class="textinput textInput form-control" id="id_description_val" autocomplete="off"></textarea>
+                            </div>
+                        </div>
                     </div>
-                    <div class="col-md-6">
-                        <button style="margin-top: 8%;" type="submit" id="btnUpdateTask" class="form-control btn btn-success pull-right">
+
+                </div>
+                <br>
+
+                <div class="row">
+                    <div class="col-md-12">
+                        <button type="submit" id="btnUpdateTask" class="form-control btn btn-success pull-right">
                             <i class="fa fa-fw fa-lg fa-save"></i>Update Task
                         </button>
                     </div>
-                    
                 </div>
             </div>
             <script>
 
+                $(document).ready(function (){
+                    $("#div_id_actual_start_date").css("display", "none");
+                    $("#div_id_actual_end_date").css("display", "none");
+                    $(".desc").css("display", "none");
+
+                    var desc = $("#id_description").val();
+                    document.getElementById('id_description_val').value = desc;
+                    
+                });
+
                 var task_id = {{task_id}};
+
+                var start = $('#id_start_date');
+
+                var end = $('#id_end_date');
+
+                start.addClass('date-start');
+                end.addClass('date-end');
 
                 $('#id_status').selectpicker({
                     size: 4,
@@ -146,8 +179,8 @@
                                 document.getElementById("btnUpdateTask").disabled = false;
                             }
                             else {
-                                $("#div_id_actual_start_date").css("display", "block");
-                                $("#div_id_actual_end_date").css("display", "block");
+                                $("#div_id_actual_start_date").css("display", "none");
+                                $("#div_id_actual_end_date").css("display", "none");
                             }
                         }
                     });
@@ -155,6 +188,7 @@
                 
                 // start date
                 $('#id_start_date').on('change', function(){
+                    $('.date-start').css({ "border": '' });
                     var startDate= document.getElementById('id_start_date').value;
                     var endDate= document.getElementById('id_end_date').value;
 
@@ -187,6 +221,7 @@
 
                 // end date
                 $('#id_end_date').on('change', function(){
+                    $('.date-end').css({ "border": '' });
                     var startDate= document.getElementById('id_start_date').value;
                     var endDate= document.getElementById('id_end_date').value;
 
@@ -333,7 +368,7 @@
                                             btnClass: 'btn-blue',
                                             action: function () {
                                             // reloading window after success
-                                                location.reload(true);     
+                                                location.reload(); 
                                             }
                                         }
                                     }
@@ -355,32 +390,43 @@
                     var end_date = $('#id_end_date').val();
                     var actual_start_date = $('#id_actual_start_date').val();
                     var actual_end_date = $('#id_actual_end_date').val();
-                    var description = $('#id_description').val();
+                    var description = $('#id_description_val').val();
                     var project_id = $('#id_project').val();
                     var milestone_id = $('#id_milestone').val();
 
                     if(statusText == "open" || statusText == "onhold"){
                         document.getElementById("btnUpdateTask").disabled = false;
 
-                        updateTask(name, project_id, milestone_id, status, start_date, end_date, actual_start_date, actual_end_date, description);
+                        if(start_date.length < 1){
+                            if ($('#id_start_date').val().length <= 1){
+                                $('#id_start_date').css({ "border": '2px solid #00635a' });
+                                event.preventDefault();
+                            }
+                        }
 
+                        if(start_date.length > 1){
+                            updateTask(name, project_id, milestone_id, status, start_date, end_date, actual_start_date, actual_end_date, description);
+                        }
                     }
 
                     if(statusText == 'completed' || statusText == 'terminated'){
 
-                        if(actual_start_date.length < 1 || actual_end_date.length < 1){
-                            if (actual_start_date.length < 1 ){
-                                $('#id_actual_start_date').css({ "border": '2px solid #00635a' });
+                        if (start_date.length < 1 || end_date.length < 1){
+                            if ($('#id_start_date').val().length <= 1){
+                                $('#id_start_date').css({ "border": '2px solid #00635a' });
                                 event.preventDefault();
                             }
-
-                            if (actual_end_date.length < 1){
-                                $('#id_actual_end_date').css({ "border": '2px solid #00635a' });
-                                event.preventDefault();
-                            } 
+                            if ($('#id_end_date').val().length <= 1){ 
+                                $('#id_end_date').css({ "border": '2px solid #00635a' });
+                                event.preventDefault(); 
+                            }
                         }
 
-                        if(actual_start_date.length > 1 && actual_end_date.length > 1) {
+                        if(start_date.length > 1 && end_date.length > 1) {
+                            actual_start_date = $("#id_start_date").val();
+                            actual_end_date = $("#id_end_date").val();
+                            document.getElementById('id_actual_start_date').value = actual_start_date;
+                            document.getElementById('id_actual_end_date').value = actual_end_date;
                             updateTask(name, project_id, milestone_id, status, start_date, end_date, actual_start_date, actual_end_date, description);
                         } 
     

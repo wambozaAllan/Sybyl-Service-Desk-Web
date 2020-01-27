@@ -242,8 +242,9 @@ urlpatterns = [
     
     # REPORTS
     path('staffUtilization/', views.staff_utilization, name="staffUtilization"),
-    path('reCalendar/', views.render_calendar, name="reCalendar"),
+    path('staffUtilizationReport/', views.staff_utilization_report, name="staffUtilizationReport"),
     path('dailyLoggedHours/', views.daily_logged_hours, name="dailyLoggedHours"),
+    path('exportReport/', views.export_staff_utilization, name="exportReport"),
 
     # Project code
     path('listCodeFormat/', views.ListCodeFormat.as_view(), name='listCodeFormat'),

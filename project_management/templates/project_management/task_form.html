@@ -70,7 +70,7 @@
                             Assigned To<span class="asteriskField">*</span>
                         </label>
                         <div class="">
-                            <select name="assigned_to" class="select form-control assigned" id="id_assigned_to">
+                            <select name="assigned_to" class="select form-control assigned" id="id_assigned_to" multiple="multiple">
                                 <option selected="" value="" disabled>--Select Member-</option>
                             </select>
                         </div>
@@ -86,7 +86,7 @@
                         <label for="id_startdate" class="col-form-label">Start Date
                         </label>                    
                         <div class="">
-                            <input type="" id='id_startdate' class="form-control" value=""  />
+                            <input type="" id='id_startdate' class="form-control datestart" value=""  />
                             <medium id="start_date" class="text-muted hidden">
                                 <font color="red">
                                     End date has to be greater or equal to start date
@@ -100,7 +100,7 @@
                         <label for="id_enddate" class="col-form-label">End Date
                         </label> 
                         <div class="">
-                            <input type="" id='id_enddate' class="form-control" value=""  />
+                            <input type="" id='id_enddate' class="form-control dateend" value=""  />
                             <medium id="end_date" class="text-muted hidden">
                                 <font color="red">
                                     End date has to be greater or equal to start date
@@ -173,6 +173,11 @@
         $(".actual").css("display", "none"); 
     });
 
+    $('#id_assigned_to').attr('data-live-search', "true"); 
+    $('#id_assigned_to').selectpicker({
+        size: 3
+    });
+
     $('#id_project').change(function () {
         $('#id_milestone').val(null).trigger('change');
         $('#id_milestone').html('');
@@ -204,6 +209,7 @@
                     $('#id_assigned_to').html('');
                     for (i in member) {
                         $('#id_assigned_to').append('<option value="' + member[i].pk + '">' + member[i].fields.first_name + " " + member[i].fields.last_name + '</option>');
+                        $("#id_assigned_to").selectpicker('refresh');
                     }
                 }
             }
@@ -225,6 +231,8 @@
         autoclose: true,
         clearBtn: true
     }
+
+    $("#id_name").attr('autocomplete', 'off');
 
     $('#id_startdate').datepicker(options);
     $('#id_enddate').datepicker(options);
@@ -256,6 +264,8 @@
 
     // start date
     $("#id_startdate").on('change', function(){
+        $('.datestart').css({ "border": '' });
+
         var start = $("#id_startdate").val();
         var end = $("#id_enddate").val();
         var start_date = toDate(start);
@@ -293,6 +303,8 @@
 
     // end date
     $("#id_enddate").on('change', function(){
+        $('.dateend').css({ "border": '' });
+
         var start = $("#id_startdate").val();
         var end = $("#id_enddate").val();
         var start_date = toDate(start);
@@ -453,10 +465,12 @@
                 var statusName = data.status_name;
                 if (statusName === "Open" || statusName === "Onhold"){
                     $(".actual").css("display", "none");
+                    $('.datestart').css({ "border": '' });
+                    $('.dateend').css({ "border": '' });
                     document.getElementById("btnSaveMilestone").disabled = false;
                 }
                 else{
-                    $(".actual").css("display", "inline");
+                    $(".actual").css("display", "none");
                 }
             }
         })
@@ -503,7 +517,7 @@
                                 btnClass: 'btn-blue',
                                 action: function () {
                                     // reloading window after success
-                                    location.reload(true); 
+                                    location.reload(); 
                                 }
                             }
                         }
@@ -570,7 +584,10 @@
                 document.getElementById("btnSaveTask").disabled = false;
 
                 if(start_date.length < 1){
-                    start_date = 'null';
+                    if ($('#id_startdate').val().length <= 1){
+                        $('#id_startdate').css({ "border": '2px solid #00635a' });
+                        event.preventDefault();
+                    }
                 }
                 if(end_date.length < 1){
                     end_date = 'null';
@@ -581,36 +598,38 @@
                 if(actual_end.length < 1){
                     actual_end = 'null';
                 }
-                saveTask(project_id, name, milestone_id, status_id, start_date, end_date, actual_start, actual_end, description, assigned_to);
+
+                if(start_date.length > 1){
+                    saveTask(project_id, name, milestone_id, status_id, start_date, end_date, actual_start, actual_end, description, assigned_to);
+                }
+                
 
             }
 
             if(statusText == "completed" || statusText == "terminated"){
-                if(start_date.length < 1){
-                    start_date = 'null';
-                }
-                if(end_date.length < 1){
-                    end_date = 'null';
-                }
 
-                if (actual_start.length < 1 || actual_end.length < 1){
-                    if ($('#id_actual_startdate').val().length <= 1){
-                        $('#id_actual_startdate').css({ "border": '2px solid #00635a' });
+                if (start_date.length < 1 || end_date.length < 1){
+                    if ($('#id_startdate').val().length <= 1){
+                        $('#id_startdate').css({ "border": '2px solid #00635a' });
                         event.preventDefault();
                     }
-                    if ($('#id_actual_enddate').val().length <= 1){ 
-                        $('#id_actual_enddate').css({ "border": '2px solid #00635a' });
+                    if ($('#id_enddate').val().length <= 1){ 
+                        $('#id_enddate').css({ "border": '2px solid #00635a' });
                         event.preventDefault(); 
                     }
                 }
-                if(actual_start.length > 1 && actual_end.length > 1) {
+
+                if(start_date.length > 1 && end_date.length > 1) {
+                    actual_start = $("#id_startdate").val();
+                    actual_end = $("#id_enddate").val();
+                    document.getElementById('id_actual_startdate').value = actual_start;
+                    document.getElementById('id_actual_enddate').value = actual_end;
+
                     saveTask(project_id, name, milestone_id, status_id, start_date, end_date, actual_start, actual_end, description, assigned_to);
                 }         
             }
-
  
         }
     });
 
-    
 </script>
