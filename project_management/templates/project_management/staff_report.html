@@ -32,38 +32,29 @@
                                     <h4 class="card-title">Staff Utilization</h4>
                                     <h6 id="date-range"></h6>
                                     <div class="row">
-                                        <!-- <div class="col-md-12">
-                                            <button id="" class="btn btn-info pull-right" onclick="functAddNewProject();">
-                                                <i class="fa fa-fw fa-lg fa-plus"></i>Filter 
+                                        <div class="col-md-12">
+                                            <button id="" class="btn btn-info pull-right" onclick="printReport();">
+                                                <i class="fa fa-fw fa-lg fa-print" aria-hidden="true"></i>Print
                                             </button>
-                                        </div> -->
+                                        </div>
                                     </div>
 
                                     <div class="table-responsive m-t-40">
                                         <div class="dataTables_wrapper">
-                                                <table id="table_report" class="display nowrap table table-hover"
-                                                cellspacing="0" width="100%">
-                                             <thead>
-                                             <tr>
-                                                 <th>Name</th>
-                                                 <th>Available Hrs</th>
-                                                 <th>Scheduled Hrs</th>
-                                                 <th>Scheduled/Available%</th>
-                                                 <th>Timesheet Hrs</th>
-                                                 <th>Timesheet/Available%</th>
-                                                 <th>Billable Hrs</th>
-                                                 <th>Billable Available %</th>
-                                                 <th>Invoiced Hrs</th>
-                                                 <th>Invoiced Billable %</th>
-                                             </tr>
-                                             </thead>
-                                             <tbody>
-                                                 <tr>
-                                                     <td></td>
-                                                     <td id="total_hours"></td>
-                                                 </tr>
-                                                 
-                                             </tbody>
+                                            <table id="table_report" class="display nowrap table table-hover"
+                                            cellspacing="0" width="100%">
+                                                <thead>
+                                                <tr>
+                                                    <th>No.</th>
+                                                    <th>Name</th>
+                                                    <th>Timesheet Hrs</th>
+                                                    <th>Available Hrs</th>
+                                                    <th>Timesheet/Available%</th>
+                                                </tr>
+                                                </thead>
+                                                <tbody>
+                                                    
+                                                </tbody>
                                          </table>
                                         </div>
                                         
@@ -137,6 +128,11 @@
         </div>
     </div>
 
+    <style>
+        th, td{
+            text-align: center;
+        }
+    </style>
 
     <script>
         // on load page
@@ -145,9 +141,10 @@
             var options =  {
                 format: "dd-mm-yyyy",
                 autoclose: true,
-                clearBtn: true
+                clearBtn: true,
+                daysOfWeekDisabled: [0,6]
             }
-    
+
             $('#id_start').datepicker(options);
             $('#id_end').datepicker(options);
     
@@ -182,15 +179,12 @@
             var sDate = new Date(reverseDate(startDate));
             var eDate = new Date(reverseDate(endDate));
 
-            console.log(sDate);
-            console.log(eDate);
-
             if(startDate != '' && endDate != '' && sDate > eDate){
                 document.getElementById("btn_preview").disabled = true;
                 document.getElementById('id_start').style.borderColor = "red";
                 $('#start_date').show();
             }
-            else if(startDate != '' && endDate != '' && sDate <= eDate){
+            if(startDate != '' && endDate != '' && sDate <= eDate){
                 document.getElementById("btn_preview").disabled = false;
                 document.getElementById('id_start').style.borderColor = "";
                 $('#start_date').hide();
@@ -210,9 +204,6 @@
             var sDate = new Date(reverseDate(startDate));
             var eDate = new Date(reverseDate(endDate));
 
-            console.log(sDate);
-            console.log(eDate);
-
             $(".clear").on('click', function(){
                 document.getElementById("btn_preview").disabled = false;
                 document.getElementById('id_end').style.borderColor = "";
@@ -224,7 +215,7 @@
                 document.getElementById('id_end').style.borderColor = "red";
                 $('#end_date').show();
             }
-            else if(startDate != '' && endDate != '' && sDate <= eDate){
+            if(startDate != '' && endDate != '' && sDate <= eDate){
                 document.getElementById("btn_preview").disabled = false;
                 document.getElementById('id_end').style.borderColor = "";
                 $('#end_date').hide();
@@ -233,7 +224,6 @@
             }
             
         }
-
 
         function setDateReport(){
             var start = $("#id_start").val();
@@ -293,15 +283,12 @@
             var start = $('#id_start').val();
             var end = $("#id_end").val();
 
-            console.log("start is "+start);
-            console.log("End is "+end);
-
             if (start === "" || end === ""){
                 return false;
             }
 
             else{
-                urlData = "{% url 'reCalendar' %}";
+                urlData = "{% url 'staffUtilizationReport' %}";
                 $.ajax({
                     type: "GET",
                     cache: false,
@@ -313,8 +300,33 @@
                     url: urlData,
                     success: function(response_data){ 
                         console.log(response_data);
+                        var members = JSON.parse(response_data);
+
+                        var col = [];
+                        for (var i = 0; i < members.length; i++) {
+                            for (var key in members[i]) {
+                                if (col.indexOf(key) === -1) {
+                                    col.push(key);
+                                }
+                            }
+                        }
+
+                        var tableReport = document.getElementById("table_report");
+                        var tr = tableReport.insertRow(-1);   
+
+                        for (var i = 0; i < members.length; i++) {
+
+                            tr = tableReport.insertRow(-1);
+
+                            for (var j = 0; j < col.length; j++) {
+                                var tabCell = tr.insertCell(-1);
+                                tabCell.innerHTML = members[i][col[j]];
+                            }    
+                            
+                        }
+
+                        document.getElementById("btn_preview").disabled = true;
                         
-                        // document.getElementById('total_hours').innerHTML = response_data.total;
                     }
                 });
             }
@@ -347,10 +359,13 @@
         }
 
         // control action of select date range
-        $('#id_date_range').on('click', function(){
+        $('#id_date_range').on('change', function(){
             var selected = $(this).children(":selected").text();
+            $('#table_report tr').not($('#table_report tr:first')).remove();
 
+            document.getElementById("btn_preview").disabled = false;
             if(selected === 'This week'){
+                console.log("hello people")
                 var d = new Date();
                 var day = d.getDay();
                 var fir = new Date(d.getFullYear(), d.getMonth(), d.getDate() + (day == 0?-6:1)-day );
@@ -403,11 +418,71 @@
             }
             
             else{
-                console.log("hello")
+                document.getElementById('id_end').style.borderColor = "";
+                document.getElementById('id_end').value = "";
+                $('#end_date').hide();
+                document.getElementById('id_start').style.borderColor = "";
+                document.getElementById('id_start').value = "";
+                $('#start_date').hide();
             }
 
         });            
         
+
+        function printReport(){
+            setDateReport();
+            var start = $('#id_start').val();
+            var end = $("#id_end").val();
+
+            if (start === "" || end === ""){
+                return false;
+            }
+
+            else{
+                urlData = "{% url 'exportReport' %}";
+                $.ajax({
+                    type: "GET",
+                    cache: false,
+                    dataType: 'json',
+                    data: {
+                        start: start,
+                        end: end,
+                    },
+                    url: urlData,
+                    success: function(response_data){ 
+                        console.log("this is lit")
+
+                        var members = JSON.parse(response_data);
+
+                        var col = [];
+                        for (var i = 0; i < members.length; i++) {
+                            for (var key in members[i]) {
+                                if (col.indexOf(key) === -1) {
+                                    col.push(key);
+                                }
+                            }
+                        }
+
+                        var tableReport = document.getElementById("table_report");
+                        var tr = tableReport.insertRow(-1);   
+
+                        for (var i = 0; i < members.length; i++) {
+
+                            tr = tableReport.insertRow(-1);
+
+                            for (var j = 0; j < col.length; j++) {
+                                var tabCell = tr.insertCell(-1);
+                                tabCell.innerHTML = members[i][col[j]];
+                            }    
+                            
+                        }
+
+                        document.getElementById("btn_preview").disabled = true;
+                        
+                    }
+                });
+            }
+        }
     </script>
 {% endblock %}
 

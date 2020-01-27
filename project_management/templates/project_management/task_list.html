@@ -52,9 +52,11 @@
                                             <th>Name</th>
                                             <th>Project</th>
                                             <th>Milestone</th>
+                                            <th>Created time</th>
                                             <th>Start-Date</th>
                                             <th>End-Date</th>
                                             <th>Status</th>
+                                            
                                         </tr>
                                     </thead>
 
@@ -64,6 +66,7 @@
                                             <td><a href="{% url 'task_details' task.id %}">{{ task.name }}</a></td>
                                             <td>{{ task.project }}</td>
                                             <td>{{ task.milestone }}</td>
+                                            <td>{{ task.created_time |date:"M d, Y" }}</td>
                                             <td>{{ task.start_date }}</td>
                                             <td>{{ task.end_date }}</td>
                                             <td>{{ task.status }}</td>

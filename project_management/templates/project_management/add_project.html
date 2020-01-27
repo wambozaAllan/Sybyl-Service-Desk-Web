@@ -165,7 +165,7 @@
     $("#id_name").attr('autocomplete', 'off');
 
     $('#id_name').on('input', function () {
-        var project_name = $(this).val().toUpperCase();
+        var project_name = $(this).val();
 
         $.ajax({
             url: "{% url 'validateProjectName' %}",
