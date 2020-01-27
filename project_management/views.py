@@ -35,6 +35,7 @@ import json
 import time
 from django.db.models import Sum
 
+
 # Custom Views
 class ProjectCreateView(PermissionRequiredMixin, CreateView):
     permission_required = 'project_management.add_project'
@@ -5980,7 +5981,6 @@ def fetch_members_by_project(request):
     else:
         members = ""
 
-
     data = {
         'mil': serializers.serialize("json", list_project_milestones),
         'members': serializers.serialize("json", members)
@@ -5988,6 +5988,7 @@ def fetch_members_by_project(request):
     return JsonResponse(data)
 
 
+<<<<<<< HEAD
 # exporting as staff utilization report as excel
 def export_staff_utilization(request):
     """exporting staff utilization"""
@@ -6094,3 +6095,109 @@ def export_staff_utilization(request):
             
     wb.save(response)
     return response
+=======
+def timesheet_monthly_report(request):
+
+    template = loader.get_template('project_management/timesheet_monthly_report_pane.html')
+    context = {}
+
+    return HttpResponse(template.render(context, request))
+
+
+def filter_monthly_timesheets(request):
+    company_id = request.session['company_id']
+    department_id = request.session['department_id']
+
+    cur_month = datetime.datetime.now().strftime("%m").lstrip('0')
+    cur_year = datetime.datetime.now().strftime("%Y").lstrip('0')
+    today_date = datetime.datetime.today().date()
+
+    first_day_of_month1 = today_date.replace(day=1)
+    last_day_of_month1 = last_day_of_month(int(cur_year), int(cur_month))
+
+    startdate = datetime.datetime.strptime(str(first_day_of_month1), '%Y-%m-%d') 
+    enddate = datetime.datetime.strptime(str(last_day_of_month1), '%Y-%m-%d') + datetime.timedelta(days=1)
+
+    min_dt = datetime.datetime.combine(startdate, datetime.time.min)
+    max_dt = datetime.datetime.combine(enddate, datetime.time.max)
+    day_delta = timedelta(days=1) 
+
+
+    dept_members_exist = User.objects.filter(company_id=company_id, department_id=department_id).exists()
+    if dept_members_exist == True:
+        dept_members = User.objects.filter(company_id=company_id, department_id=department_id)
+        all_member_tms = []
+        for mem in dept_members:
+            sum_duration = 0
+            new_dict = {}
+            new_dict['label'] = mem.first_name + " " + (mem.last_name)[0]
+            for i in range((enddate - startdate).days):
+                duration = Timesheet.objects.filter(log_day=(startdate + i*day_delta), project_team_member_id=mem.id, company_id=company_id)
+                for ii in duration:
+                    sum_duration = sum_duration + ii.durationsec()
+            # new_dict['duration'] = compute_duration(sum_duration)
+            new_dict['value'] = sum_duration / 3600 
+            all_member_tms.append(new_dict)
+    else:
+        all_member_tms = ''
+    data = {
+        'members': all_member_tms
+    }
+    return JsonResponse(data)
+
+
+def filter_monthly_timesheets_by_date(request):
+    company_id = request.session['company_id']
+    department_id = request.session['department_id']
+
+    new_current_month = request.GET.get('new_month')
+    new_current_year = request.GET.get('new_year')
+    first_day_of_month1 = request.GET.get('selected_date')
+
+    cur_month = datetime.datetime.strptime(new_current_month, "%m").strftime("%m").lstrip('0')
+    cur_year = datetime.datetime.strptime(new_current_year, "%Y").strftime("%Y").lstrip('0')
+
+    last_day_of_month1 = last_day_of_month(int(cur_year), int(cur_month))
+
+    startdate = datetime.datetime.strptime(str(first_day_of_month1), '%Y-%m-%d') 
+    enddate = datetime.datetime.strptime(str(last_day_of_month1), '%Y-%m-%d') + datetime.timedelta(days=1)
+
+    min_dt = datetime.datetime.combine(startdate, datetime.time.min)
+    max_dt = datetime.datetime.combine(enddate, datetime.time.max)
+    day_delta = timedelta(days=1) 
+
+
+    dept_members_exist = User.objects.filter(company_id=company_id, department_id=department_id).exists()
+    if dept_members_exist == True:
+        dept_members = User.objects.filter(company_id=company_id, department_id=department_id)
+        all_member_tms = []
+        for mem in dept_members:
+            sum_duration = 0
+            new_dict = {}
+            new_dict['label'] = mem.first_name + " " + (mem.last_name)[0]
+            for i in range((enddate - startdate).days):
+                duration = Timesheet.objects.filter(log_day=(startdate + i*day_delta), project_team_member_id=mem.id, company_id=company_id)
+                for ii in duration:
+                    sum_duration = sum_duration + ii.durationsec()
+            new_dict['value'] = sum_duration / 3600 
+            all_member_tms.append(new_dict)
+    else:
+        all_member_tms = ''
+    data = {
+        'members': all_member_tms
+    }
+    return JsonResponse(data)
+
+
+def last_day_of_month(year, month):
+    """ Work out the last day of the month """
+    last_days = [31, 30, 29, 28, 27]
+    for i in last_days:
+        try:
+            end = datetime.datetime(year, month, i)
+        except ValueError:
+            continue
+        else:
+            return end.date()
+    return None
+>>>>>>> 6b95ba6c9a29329264281fe4b8c5ed35c7f9fd58
