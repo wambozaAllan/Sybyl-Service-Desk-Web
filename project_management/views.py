@@ -5988,7 +5988,6 @@ def fetch_members_by_project(request):
     return JsonResponse(data)
 
 
-<<<<<<< HEAD
 # exporting as staff utilization report as excel
 def export_staff_utilization(request):
     """exporting staff utilization"""
@@ -6095,7 +6094,6 @@ def export_staff_utilization(request):
             
     wb.save(response)
     return response
-=======
 def timesheet_monthly_report(request):
 
     template = loader.get_template('project_management/timesheet_monthly_report_pane.html')
@@ -6200,4 +6198,3 @@ def last_day_of_month(year, month):
         else:
             return end.date()
     return None
->>>>>>> 6b95ba6c9a29329264281fe4b8c5ed35c7f9fd58
