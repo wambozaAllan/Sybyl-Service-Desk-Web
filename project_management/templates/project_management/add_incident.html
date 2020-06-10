@@ -3,6 +3,8 @@
 	{% csrf_token %}
 	{{form.media}}
 	<div class="row">
+
+		<div class="col-6">{{ form.title|as_crispy_field }}</div>
 		<div class="col-6">
 			{{ form.project|as_crispy_field }}
 			<medium id="project_has_team" class="text-muted hidden">
@@ -11,13 +13,13 @@
 				</font>
 			</medium>
 		</div>
-		<div class="col-6">{{ form.title|as_crispy_field }}</div>
+		
 		
 	</div>
 	<br>
 	<div class="row">
 		<div class="col-6">{{ form.task|as_crispy_field}}</div>
-		<div class="col-6">{{ form.assignee|as_crispy_field }}</div>
+		<div class="col-6">{{ form.assigned_to|as_crispy_field }}</div>
 	</div>
 	<br>
 	<div class="row">

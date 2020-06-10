@@ -89,11 +89,11 @@
                                     <span class="hide-menu">Project Timesheets </span>
                                 </a>
                             </li>
-                            <!-- <li onclick="">
+                            <li onclick="">
                                 <a href="{% url 'staffUtilization' %}" aria-expanded="false"><i class="fa fa-list-alt"></i>
                                     <span class="hide-menu">Staff Utilization </span>
                                 </a>
-                            </li> -->
+                            </li>
 
                             <li onclick="">
                                 <a href="{% url 'timesheetMonthlyReport' %}" aria-expanded="false"><i class="fa fa-bar-chart"></i>
@@ -118,6 +118,9 @@
                             class="hide-menu">Tasks</span></a>
                     <ul aria-expanded="false" class="collapse">
                         <li><a href="{% url 'task_list' %}">Task List</a></li>
+                    </ul>
+                    <ul aria-expanded="false" class="collapse">
+                        <li><a href="{% url 'taskReport' %}">Task Report</a></li>
                     </ul>
                 </li>
 
@@ -250,9 +253,9 @@
                                 </li>
                             </ul>
                         </li> -->
-                    {% endif %}
 
-                    <li><a href="{% url 'listauditlogs' %}"><i class="fa fa-info"></i> Audit Logs</a></li>
+                        <li><a href="{% url 'listauditlogs' %}"><i class="fa fa-info"></i> Audit Logs</a></li>
+                    {% endif %}                  
                     
                 {% endif%}
             </ul>

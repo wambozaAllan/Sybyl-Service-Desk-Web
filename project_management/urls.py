@@ -50,9 +50,7 @@ urlpatterns = [
   
     path('populateTaskView', views.populate_task_view, name='populateTaskView'),    
     path('createTask', views.create_tasks_by_project, name="createTask"),
-
-    # path('tasks/', views.TaskListView.as_view(), name='listTasks'),
-    path('tasks/', views.task_list_by_users, name='task_list'),
+    path('tasks_list/', views.task_list_by_users, name='task_list'),
     path('task/<int:pk>/', views.TaskDetailView.as_view(), name='task_details'),
     # re_path(r'^tasks-project/(?P<project_id>\d+)/$', views.task_list_by_project, name='project_task_list'),
     re_path(r'^tasks-milestone/(?P<milestone_id>\d+)/$', views.task_list_by_milestone, name='milestone_task_list'),
@@ -87,6 +85,7 @@ urlpatterns = [
     path('checkTeamMembers/', views.check_team_members, name="checkTeamMembers"),
     path('checkAssignedTaskMembers/', views.check_assigned_task_members, name="checkAssignedTaskMembers"),
     path('saveMembersAssignedTask/', views.save_members_assigned_task, name="saveMembersAssignedTask"),
+    path('tasks/', views.tasks_container, name="tasksContainer"),
 
     path('addIncident/', views.AddIncident.as_view(), name='addIncident'),
     path('addProjectIncident/', views.AddProjectIncident.as_view(), name='addProjectIncident'),
@@ -245,6 +244,10 @@ urlpatterns = [
     path('staffUtilizationReport/', views.staff_utilization_report, name="staffUtilizationReport"),
     path('dailyLoggedHours/', views.daily_logged_hours, name="dailyLoggedHours"),
     path('exportReport/', views.export_staff_utilization, name="exportReport"),
+    path('exportPdf/', views.export_pdf_utilization, name="exportPdf"),
+    path('taskReport/', views.task_report_page, name="taskReport"),
+    path('exportTaskReport/', views.export_task_report, name="exportTaskReport"),
+
 
     # Project code
     path('listCodeFormat/', views.ListCodeFormat.as_view(), name='listCodeFormat'),

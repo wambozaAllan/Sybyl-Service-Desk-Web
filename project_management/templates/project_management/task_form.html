@@ -33,7 +33,7 @@
             </div>
 
             <div class="row">
-                <div class="col-4">
+                <div class="col-md-6">
                     <div id="div_id_name" class="form-group">
                         <label for="id_name" class="col-form-label requiredField">
                             Name<span class="asteriskField">*</span>
@@ -49,7 +49,7 @@
                     </div>
                 </div>
                 
-                <div class="col-4">
+                <div class="col-md-6">
                     <div id="div_id_status">
                         <label for="id_status" class="col-form-label requiredField">Status<span class="asteriskField">*</span>
                         </label>                    
@@ -64,19 +64,20 @@
                     </div>
                 </div>
 
-                <div class="col-4">
+                <div class="col-4" style="display:none;">
+                    <input name="name" class="textinput textInput form-control" required="" id="id_actual_member" value="{{user.id}}">
+                </div>
+
+                <div class="col-4" style="display:none;">
                     <div id="div_id_assigned_to">
                         <label for="id_assigned_to" class="col-form-label requiredField">
                             Assigned To<span class="asteriskField">*</span>
                         </label>
                         <div class="">
-                            <select name="assigned_to" class="select form-control assigned" id="id_assigned_to" multiple="multiple">
-                                <option selected="" value="" disabled>--Select Member-</option>
+                            <select name="assigned_to" class="select form-control assigned" id="id_assigned_to">
                             </select>
-                        </div>
-                        
-                    </div>
-                    
+                        </div> 
+                    </div> 
                 </div>
             </div>
 
@@ -173,16 +174,19 @@
         $(".actual").css("display", "none"); 
     });
 
-    $('#id_assigned_to').attr('data-live-search', "true"); 
-    $('#id_assigned_to').selectpicker({
-        size: 3
-    });
+    // $('#id_assigned_to').attr('data-live-search', "true"); 
+    // $('#id_assigned_to').selectpicker({
+    //     size: 3
+    // });
 
     $('#id_project').change(function () {
         $('#id_milestone').val(null).trigger('change');
         $('#id_milestone').html('');
 
         var project_id = parseInt($('#id_project').val());
+        var actual_member = parseInt($('#id_actual_member').val());
+
+        console.log(actual_member + " is the actual member")
         urldata = "{% url 'selectMembersByProject'%}";
 
         $.ajax({
@@ -193,6 +197,7 @@
             },
             success: function (data) {
                 var res = JSON.parse(data.mil);
+                
                 if (res !== '' && res.length > 0) {
                     $('#id_milestone').html('');
                     for (i in res) {
@@ -204,20 +209,41 @@
 
                 }
 
+                function validValue(value) {
+                    if(value == actual_member){
+                        return value;
+                    }    
+                }
+
                 var member= JSON.parse(data.members);
+                console.log(member);
+               
+
                 if (member !== '' && member.length > 0) {
                     $('#id_assigned_to').html('');
                     for (i in member) {
-                        $('#id_assigned_to').append('<option value="' + member[i].pk + '">' + member[i].fields.first_name + " " + member[i].fields.last_name + '</option>');
-                        $("#id_assigned_to").selectpicker('refresh');
+
+                        if(member[i].pk == actual_member){
+                            console.log("here are the members ");
+                            console.log(member[i].pk);
+                            $('#id_assigned_to').append('<option value="' + member[i].pk + '">' + member[i].fields.first_name + " " + member[i].fields.last_name + '</option>');
+                            $("#id_assigned_to").selectpicker('refresh');
+                        }
+                        // $('#id_assigned_to').append('<option value="' + member[i].pk + '">' + member[i].fields.first_name + " " + member[i].fields.last_name + '</option>');
+                        // $("#id_assigned_to").selectpicker('refresh');
                     }
                 }
             }
         });
     });
 
-    $("#id_assgined_to").change(function(){
-        $('.assigned').css({ "border": '' }); 
+    $(".assigned").on('change', function(){
+        if ( $('option:selected', this).val() == 0 ){
+            $('.assigned').css({ "border": '2px solid #00635a' });     
+        }
+        else if ($(this).val() > 0) {
+            $('.assigned').css({ "border": '' }); 
+        }
     }); 
 
     // function to convert date to standard /default javascript date input
@@ -503,6 +529,15 @@
             success: function(response_data){ 
                 $('.close-dialog').click();
                 if(response_data.state === true){
+                    $.ajax({
+                        type:"GET",
+                        cache: false,
+                        data:{},
+                        url: "{% url 'task_list' %}",
+                        success: function(resp){
+                            $('.addPane').html(resp);                                                  
+                        }
+                    });
                     $.confirm({
                         title: response_data.success,
                         content: 'Task name: ' +response_data.name,
@@ -516,8 +551,7 @@
                                 text: 'OK',
                                 btnClass: 'btn-blue',
                                 action: function () {
-                                    // reloading window after success
-                                    location.reload(); 
+                                    
                                 }
                             }
                         }
@@ -544,13 +578,13 @@
         var description = $('#id_description').val();
         var assigned = $('#id_assigned_to').val();
 
+
         var selectednumbers = [];
         $('#id_assigned_to :selected').each(function(i, selected) {
             selectednumbers[i] = $(selected).val();
         });
         var assigned_to = JSON.stringify(selectednumbers);
-        console.log(assigned_to + " assigned to ");
-
+     
         var statusText = $("#id_status option:selected").text().toLowerCase();
 
         if (name.length < 1 || project_id <= 0 || status_id <= 0 || milestone_id <= 0 || assigned <= 0 ) {

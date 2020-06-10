@@ -36,6 +36,18 @@ class Status(models.Model):
         return self.name
 
 
+class Stage(models.Model):
+    name = models.CharField(max_length=100)
+    description = models.CharField(max_length=255, null=True, blank=True)
+    creator = models.ForeignKey(User, on_delete=models.SET_NULL, null=True)  
+    created_time = models.DateTimeField(auto_now_add=True)
+    modified_time = models.DateTimeField(auto_now=True)
+
+    def __str__(self):
+        return self.name
+
+
+
 # ROLE
 class Role(models.Model):
     name = models.CharField(max_length=250)
@@ -291,6 +303,40 @@ class Task(models.Model):
     class Meta():
         db_table = 'task'
 
+    def aging(self):
+        current = date.today()
+        status_name = self.status.name.lower()
+        delta = ""
+
+        print("this is my status")
+        if status_name == "open": 
+            if self.end_date is not None:
+                if self.end_date > current :
+                    delta = current - self.start_date
+                    
+                elif current > self.end_date:
+                    delta = current - self.end_date
+            else:
+                delta = current - self.start_date
+ 
+        elif status_name == "onhold":
+            if self.end_date is not None:
+                if self.end_date > current:
+                    delta = current - self.start_date
+                    
+                elif current > self.end_date:
+                    delta = current - self.end_date
+            else:
+                delta = current - self.start_date
+
+        elif status_name == "completed":
+            delta = "Completed"
+
+        elif status_name == "terminated":
+            delta = "Terminated"
+
+        return delta
+
 
 # TaskAttachment
 class TaskAttachment(models.Model):
@@ -306,19 +352,17 @@ class TaskAttachment(models.Model):
 
 # Incident
 class Incident(models.Model):
-    title = models.CharField(max_length=100)
+    name = models.CharField(max_length=100)
     description = models.CharField(max_length=255, null=True, blank=True)
     priority = models.ForeignKey(Priority, on_delete=models.SET_NULL, null=True, blank=True)
-    task = models.ForeignKey(Task, on_delete=models.SET_NULL, null=True, blank=True)
-    status = models.ForeignKey(Status, null=True, blank=True, on_delete=models.SET_NULL)
+    status = models.ManyToManyField(Status, blank=True, null=True)
+    stage = models.ManyToManyField(Stage, blank=True, null=True)
     project = models.ForeignKey(Project, on_delete=models.SET_NULL, blank=True, null=True)
-    assignee = models.ManyToManyField(ProjectTeamMember)
+    assigner = models.ManyToManyField(ProjectTeamMember, blank=True, null=True, related_name="assigner")
+    assigned_to = models.ManyToManyField(ProjectTeamMember, blank=True, null=True, related_name="assigned_to")
     creator = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, related_name='incident_creator')
     image = models.ImageField(upload_to='images/incidents/', null=True, blank=True)
-    document = models.FileField(upload_to='documents/incidents/', null=True, blank=True)
-    resolution_time = models.DateTimeField(null=True, blank=True)
-    reopen_time = models.DateTimeField(null=True, blank=True)
-    close_time = models.DateTimeField(null=True, blank=True)
+    document = models.FileField(upload_to='documents/incidents/', null=True, blank=True)    
     created_time = models.DateTimeField(auto_now_add=True)
     modified_time = models.DateTimeField(auto_now=True)
     history = HistoricalRecords()
