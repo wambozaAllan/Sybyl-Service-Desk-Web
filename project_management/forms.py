@@ -160,7 +160,7 @@ class ProjectTeamMemberForm(forms.ModelForm):
 
     class Meta:
         model = ProjectTeamMember
-        fields = ('member', 'responsibility', 'project_team', )
+        fields = ('member', 'project_team', )
 
 
 class IncidentForm(forms.ModelForm):

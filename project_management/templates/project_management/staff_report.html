@@ -374,8 +374,9 @@
                     },
                     url: urlData,
                     success: function(data){ 
-                        console.log(data.members);
+                        // console.log(data.members);
                         var members = JSON.parse(data.members);
+                        
                         console.log(members)
                         var col = [];
                         for (var i = 0; i < members.length; i++) {

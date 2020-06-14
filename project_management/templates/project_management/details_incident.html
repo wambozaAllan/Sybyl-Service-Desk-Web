@@ -35,7 +35,7 @@
 									<div class="col-sm-12">
 										<p class="text-muted m-b-15 f-s-12">Title</p>
 										<input type="text" class="form-control input-flat"
-											value="{{ incident.title }}" disabled>
+											value="{{ incident.name }}" disabled>
 									</div>
 								</div>
 								
@@ -50,11 +50,6 @@
 										<p class="text-muted m-b-15 f-s-12">Priority</p>
 										<input type="text" class="form-control input-flat"
 											value="{{ incident.priority }}" disabled>
-									</div>
-									<div class="col-sm">
-										<p class="text-muted m-b-15 f-s-12">Task</p>
-										<input type="text" class="form-control input-flat"
-											value="{{ incident.task }}" disabled>
 									</div>
 								</div>
 								<br>
@@ -72,7 +67,7 @@
 									<div class="col-sm">
 										<p class="text-muted m-b-15 f-s-12">Assigned To</p>
 										<select class="form-control" id="id_assignee">
-											{% for assigned in incident.assignee.all%}
+											{% for assigned in incident.assigned_to.all%}
 											<option>{{assigned}}</option>
 											{% endfor %}
 										</select>
@@ -103,8 +98,8 @@
 		</div>
 		<script>
 			
-			$('#id_assignee').attr('data-live-search', 'true');
-			$('#id_assignee').selectpicker({
+			$('#id_assigned_to').attr('data-live-search', 'true');
+			$('#id_assigned_to').selectpicker({
 				size: 3,
 			});
 		</script>

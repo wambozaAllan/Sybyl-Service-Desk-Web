@@ -24,7 +24,7 @@ from .forms import MilestoneForm
 
 from django.contrib.auth.decorators import user_passes_test, permission_required, login_required
 
-from .models import Project, Milestone, Task, ProjectDocument, Incident, Priority, Status, ProjectTeam, ProjectTeamMember, Role, ProjectForumMessages, ProjectForum, ProjectForumMessageReplies, ServiceLevelAgreement, IncidentComment, EscalationLevel, IncidentComment, Timesheet, ResubmittedTimesheet, ProjectCode
+from .models import Project, Milestone, Task, ProjectDocument, Incident, Priority, Status, ProjectTeam, ProjectTeamMember, ProjectForumMessages, ProjectForum, ProjectForumMessageReplies, ServiceLevelAgreement, IncidentComment, EscalationLevel, IncidentComment, Timesheet, ResubmittedTimesheet, ProjectCode
 from user_management.models import User
 from company_management.models import Company, CompanyCategory, CompanyDomain, Department
 from .forms import CreateProjectForm, MilestoneForm, TaskForm, DocumentForm, ProjectUpdateForm, MilestoneUpdateForm, ProjectForm, IncidentForm, ProjectTeamForm
@@ -267,7 +267,7 @@ class MilestoneListView(ListView, LoginRequiredMixin):
        
             return milestone
 
-
+@login_required
 def project_milestones_by_user(request):
     user = request.user
     members = ProjectTeamMember.objects.filter(member=user)
@@ -296,11 +296,6 @@ def project_milestones_by_user(request):
     }
 
     return HttpResponse(template.render(context, request))
-
-
-def milestone_list_by_project(request, project_id):
-    project_milestones = Milestone.objects.filter(project_id=project_id)
-    return render(request, 'project_management/milestone_list.html', {'milestones': project_milestones})
 
 
 def load_add_milestone(request):
@@ -1091,18 +1086,6 @@ def delete_project_milestone(request):
     return JsonResponse(response_data)
 
 
-def load_milestones(request):
-    projects = Project.objects.all
-    return render(request, 'project_management/milestone_list.extended.html', {'projects': projects})
-
-
-def load_task_milestoneI_list(request):
-    project_id = request.GET.get('project')
-    milestones = Milestone.objects.filter(project_id=project_id).order_by('name')
-    return render(request, 'project_management/new_task_milestone_dropdown_list_options.html',
-                  {'milestones': milestones})
-
-
 class MilestoneDetailView(DetailView):
     model = Milestone
     context_object_name = 'milestone'
@@ -1123,6 +1106,15 @@ class MilestoneUpdateView(UpdateView):
     template_name = 'project_management/milestone_update_form.html'
     form_class = MilestoneUpdateForm
     success_url = reverse_lazy('milestone_list')
+
+
+@login_required
+def milestone_container(request):
+    """milestone container"""
+    template = loader.get_template('project_management/milestone_container.html')
+    context = {}
+
+    return HttpResponse(template.render(context, request))
 
 
 # TASKS
@@ -2450,7 +2442,7 @@ def tasks_container(request):
 # INCIDENTS
 class AddProjectIncident(LoginRequiredMixin, CreateView):
     model = Incident
-    fields = ['project', 'title', 'description', 'status', 'priority', 'assignee', 'document', 'image', 'task', 'close_time']
+    fields = ['project', 'name', 'description', 'status', 'priority', 'assigned_to', 'document', 'image',]
     template_name = 'project_management/add_project_incident.html'
     success_url = reverse_lazy('listProjects')
 
@@ -2465,9 +2457,6 @@ class AddProjectIncident(LoginRequiredMixin, CreateView):
         project_name = self.request.GET['project_name']
         context['project_id'] = project_id
         context['project_name'] = project_name
-
-        tasks = Task.objects.filter(project_id=project_id)
-        context['tasks'] = tasks
 
         team = ProjectTeam.objects.get(project_id=project_id)
         project_team = team.id
@@ -2485,22 +2474,9 @@ class AddProjectIncident(LoginRequiredMixin, CreateView):
         return context
 
 
-def validate_incident_name(request):
-    title = request.GET.get('title', None)
-    project_id = int(request.GET.get('project_id'))
-
-    project = Project.objects.get(id=project_id)
-
-    data = {
-        'is_taken': Incident.objects.filter(title=title, project_id=project.id).exists()
-    }
-
-    return JsonResponse(data)
-
-
 class AddIncident(LoginRequiredMixin, CreateView):
     model = Incident
-    fields = ['project', 'title', 'description', 'status', 'priority', 'assignee', 'document', 'image', 'task']
+    fields = ['project', 'name', 'description', 'status', 'priority', 'assigned_to', 'document', 'image',]
     template_name = 'project_management/add_incident.html'
     success_url = reverse_lazy('listIncidents')
 
@@ -2541,7 +2517,7 @@ def list_project_incidents(request):
                 completed_status = Status.objects.get(name="Completed")                
                 completed_count = Incident.objects.filter(project_id=project.id, status=completed_status).count()
 
-                open_incidents = Incident.objects.filter(Q(creator=request.user)|Q(assignee__in=team_member), project_id=project.id, status=open_status).annotate(assigned=Count('assignee', distinct=True))
+                open_incidents = Incident.objects.filter(Q(creator=request.user)|Q(assigned_to__in=team_member), project_id=project.id, status=open_status).annotate(assigned=Count('assigned_to', distinct=True))
                 state = True
                 context = {
                     'project_id': project.id,
@@ -2586,17 +2562,6 @@ def list_project_incidents(request):
         return HttpResponse(template.render(context, request))
 
 
-class ListIncidents(ListView):
-    template_name = 'project_management/list_incidents.html'
-    context_object_name = 'all_incidents'
-
-    def get_queryset(self):
-        team_members = ProjectTeamMember.objects.filter(member=self.request.user)
-        # return Incident.objects.filter(Q(assignee__in=team_members)|Q(creator=self.request.user)).annotate(assigned=Count('assignee'))
-        return Incident.objects.annotate(assigned=Count('assignee', distinct=True)).filter(Q(assignee__in=team_members)|Q(creator=self.request.user))
-        # return Incident.objects.annotate(assigned=Count('assignee')).filter(creator=self.request.user)
-
-
 class DetailsIncident(DetailView):
     model = Incident
     context_object_name = 'incident'
@@ -2611,14 +2576,14 @@ class DetailsProjectIncident(DetailView):
 
 class UpdateIncident(UpdateView):
     model = Incident
-    fields = ['project', 'title', 'description', 'document', 'image', 'status', 'priority', 'assignee', 'resolution_time', 'reopen_time', 'close_time']
+    fields = ['project', 'name', 'description', 'document', 'image', 'status', 'priority', 'assigned_to',]
     template_name = 'project_management/update_incident.html'
     success_url = reverse_lazy('listIncidents')
 
 
 class UpdateProjectIncident(UpdateView):
     model = Incident
-    fields = ['title', 'description', 'document', 'image', 'status', 'priority', 'assignee', 'task', 'resolution_time', 'reopen_time', 'close_time']
+    fields = ['name', 'description', 'document', 'image', 'status', 'priority', 'assigned_to',]
     template_name = 'project_management/update_project_incident.html'
     success_url = reverse_lazy('listIncidents')
 
@@ -2666,7 +2631,7 @@ def completed_project_incidents(request):
             if Incident.objects.filter(project_id=project.id).exists():
                 team_member = ProjectTeamMember.objects.filter(member=request.user, project_team=team_id)
                 completed_status = Status.objects.get(name="Completed")                
-                completed_incidents = Incident.objects.filter(Q(creator=request.user)|Q(assignee__in=team_member), project_id=project.id, status=completed_status).annotate(assigned=Count('assignee', distinct=True))
+                completed_incidents = Incident.objects.filter(Q(creator=request.user)|Q(assigned_to__in=team_member), project_id=project.id, status=completed_status).annotate(assigned=Count('assigned_to', distinct=True))
                 state = True
                 context = {
                     'project_id': project.id,
@@ -2727,7 +2692,7 @@ def onhold_project_incidents(request):
                 team_member = ProjectTeamMember.objects.filter(member=request.user, project_team=team_id)
                 onhold_status = Status.objects.get(name="Onhold")
                 
-                onhold_incidents = Incident.objects.filter(Q(creator=request.user)|Q(assignee__in=team_member), project_id=project.id, status=onhold_status).annotate(assigned=Count('assignee', distinct=True))
+                onhold_incidents = Incident.objects.filter(Q(creator=request.user)|Q(assigned_to__in=team_member), project_id=project.id, status=onhold_status).annotate(assigned=Count('assigned_to', distinct=True))
                 state = True
                 context = {
                     'project_id': project.id,
@@ -2787,7 +2752,7 @@ def terminated_project_incidents(request):
             if Incident.objects.filter(project_id=project.id).exists():
                 team_member = ProjectTeamMember.objects.filter(member=request.user, project_team=team_id)
                 terminated_status = Status.objects.get(name="Terminated") 
-                terminated_incidents = Incident.objects.filter(Q(creator=request.user)|Q(assignee__in=team_member), project_id=project.id, status=terminated_status).annotate(assigned=Count('assignee', distinct=True))
+                terminated_incidents = Incident.objects.filter(Q(creator=request.user)|Q(assigned_to__in=team_member), project_id=project.id, status=terminated_status).annotate(assigned=Count('assigned_to', distinct=True))
                 state = True
                 context = {
                     'project_id': project.id,
@@ -2833,7 +2798,7 @@ def view_assigned_members(request):
     project_id = request.GET.get('project_id')
     team_id = request.GET.get('team_id')
 
-    team_members = Incident.assignee.through.objects.filter(id=incident_id)
+    team_members = Incident.assigned_to.through.objects.filter(id=incident_id)
 
     team = []
     users = []
@@ -2852,6 +2817,64 @@ def view_assigned_members(request):
     }
 
     return render(request, 'project_management/assigned_incident_members.html', context)
+
+
+
+@login_required
+def incident_container(request):
+    """return incidents assigned to user"""
+    
+    template = loader.get_template('project_management/list_incidents_container.html')
+    context = {}
+
+    return HttpResponse(template.render(context, request))
+
+
+def create_incident(request):
+    """create incident"""
+
+    projects = Project.objects.all()
+    template = loader.get_template('project_management/incident_form.html')
+    context = {
+        "projects":projects
+    }
+
+    return HttpResponse(template.render(context, request))
+
+
+def save_incident(request):
+    """save incident """
+    project_id = int(request.GET.get('project_id'))
+    name = request.GET.get('name')
+    description = request.GET.get('description')
+    created_by = request.user.id
+
+    response_data = {}
+
+    project = Project.objects.get(id=project_id)
+
+    if description == "":
+        description = None
+    
+    incident = Incident(name=name, description=description,  project_id=project.id, creator_id=created_by)
+    incident.save()
+    
+    response_data['success'] = "Issue Has Been Submitted"
+    response_data['name'] = incident.name
+    response_data['state'] = True
+
+    return JsonResponse(response_data)
+
+
+def list_incidents_by_project(request):
+    incidents = Incident.objects.all()
+    template = loader.get_template('project_management/list_incidents.html')
+    context = {
+        "incidents":incidents
+    }
+
+    return HttpResponse(template.render(context, request))
+
 
 
 # Add Incident Comments
@@ -3068,51 +3091,6 @@ def ValidateStatusName(request):
     return JsonResponse(data)
 
 
-# ROLES
-class AddRole(CreateView):
-    model = Role
-    fields = ['name', 'description']
-    template_name = 'project_management/add_role.html'
-    success_url = reverse_lazy('listAllRoles')
-
-
-class ListAllRoles(ListView):
-    template_name = 'project_management/list_all_roles.html'
-    context_object_name = 'list_roles'
-
-    def get_queryset(self):
-        return Role.objects.all()
-
-
-class UpdateRole(UpdateView):
-    model = Role
-    fields = ['name', 'description']
-    template_name = 'project_management/update_role.html'
-    success_url = reverse_lazy('listAllRoles')
-
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        roleid = int(self.request.GET['roleid'])
-        context['roleid'] = roleid
-        return context
-
-
-class DeleteRole(DeleteView):
-    model = Role
-    success_url = reverse_lazy('listAllRoles')
-
-    def get(self, request, *args, **kwargs):
-        return self.post(request, *args, **kwargs)
-
-
-def ValidateRoleName(request):
-    role_name = request.GET.get('rolename', None)
-    data = {
-        'is_taken': Role.objects.filter(name=role_name).exists()
-    }
-    return JsonResponse(data)
-
-
 # PROJECT LIST    
 def addProject(request):
     if request.method == 'POST':
@@ -3278,10 +3256,10 @@ class DetailProject(DetailView):
         terminated_milestones = Milestone.objects.filter(project_id=project_id, status_id=terminated_status.id).count()
 
         # incidents
-        open_incidents = Incident.objects.filter(project_id=project_id, status_id=open_status.id).count()
-        onhold_incidents = Incident.objects.filter(project_id=project_id, status_id=onhold_status.id).count()
-        completed_incidents = Incident.objects.filter(project_id=project_id, status_id=complete_status.id).count()
-        terminated_incidents = Incident.objects.filter(project_id=project_id, status_id=terminated_status.id).count()
+        open_incidents = Incident.objects.filter(project_id=project_id, status=open_status.id).count()
+        onhold_incidents = Incident.objects.filter(project_id=project_id, status=onhold_status.id).count()
+        completed_incidents = Incident.objects.filter(project_id=project_id, status=complete_status.id).count()
+        terminated_incidents = Incident.objects.filter(project_id=project_id, status=terminated_status.id).count()
 
         # overall total count context
         context['incident_count'] = incident_count
@@ -3498,14 +3476,12 @@ def admin_add_project_team_member(request):
 def save_team_member(request):
     team_id = request.GET.get('project_team')
     member = request.GET.get('member')
-    role_id = request.GET.get('responsibility')
     project_id = request.GET.get('project_id')
 
     user = User.objects.get(id=member)
-    role = Role.objects.get(id=role_id)
     team = ProjectTeam.objects.get(id=team_id)
 
-    team_member = ProjectTeamMember(member=user, responsibility=role)
+    team_member = ProjectTeamMember(member=user)
     team_member.save()
     team_member.project_team.add(team)
 
@@ -3524,49 +3500,6 @@ class ListProjectTeamMembers(ListView):
 
     def get_queryset(self): 
         return ProjectTeam.objects.annotate(num_members=Count('projectteammember'))
-
-
-class UpdateProjectTeamMember(UpdateView):
-    model = ProjectTeamMember
-    fields = ['responsibility']
-    template_name = 'project_management/update_project_team_member.html'
-    success_url = reverse_lazy('tabListTeam')
-
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        member_id = self.request.GET.get('memberid')
-        context['member_id'] = member_id
-
-        project_id = int(self.request.GET.get('project_id'))
-        project = Project.objects.get(id=project_id)
-        context['project_id'] = project.id
-         
-        return context
-
-
-class AdminUpdateProjectTeamMember(UpdateView):
-    """update project team member by admin"""
-
-    model = ProjectTeamMember
-    fields = ['responsibility']
-    template_name = 'project_management/admin_update_project_member.html'
-
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        member_id = self.request.GET.get('memberid')
-        context['member_id'] = member_id
-
-        project_id = int(self.request.GET.get('project_id'))
-        project = Project.objects.get(id=project_id)
-        context['project_id'] = project.id
-
-        team_name = self.request.GET.get('team_name')
-        team_id = int(self.request.GET.get('team_id'))
-        team = ProjectTeam.objects.get(id=team_id)
-        context['team_id'] = team.id
-        context['team_name'] = team.name
-        
-        return context
 
 
 def detail_team_member(request):
@@ -3609,7 +3542,6 @@ def validateProjectTeamAssigned(request):
 
     old = []
     new_users = set()
-    roles = Role.objects.all()
 
     if len(member_list) != 0:
         for member in member_list:
@@ -3622,7 +3554,6 @@ def validateProjectTeamAssigned(request):
         new_users = set(all_users).difference(set(old))
         data = {
             'users': serializers.serialize("json", new_users),
-            'roles': serializers.serialize("json", roles)
         }
 
         return JsonResponse(data)
@@ -3631,27 +3562,9 @@ def validateProjectTeamAssigned(request):
         new_users = User.objects.all().filter()
         data = {
             'users': serializers.serialize("json", new_users),
-            'roles': serializers.serialize("json", roles)
         }
 
         return JsonResponse(data)
-
-
-def save_update_team_member(request, pk):
-    """update team member"""
-
-    team_member = ProjectTeamMember.objects.get(id=int(pk))
-    member_id = int(request.GET.get('member_id'))
-    project_id = int(request.GET.get('project_id'))
-    responsibility_id = int(request.GET.get('responsibility_id'))
-
-    ProjectTeamMember.objects.filter(pk=int(pk)).update(responsibility_id=responsibility_id)
-
-    response_data = {
-        "success": True
-    }
-
-    return JsonResponse(response_data)
 
 
 def remove_project_team_member(request):
@@ -4262,7 +4175,7 @@ def filter_audit_logs(request):
         audit_logs.append(proj_hist)
 
     for j in obj_incidents:
-        incid_hist = {'name': j.title, 'history_type': j.history_type, 'created_by': j.history_user, 'history_date': j.history_date, 'state': 'Incident', 'project' : j.project}
+        incid_hist = {'name': j.name, 'history_type': j.history_type, 'created_by': j.history_user, 'history_date': j.history_date, 'state': 'Incident', 'project' : j.project}
         audit_logs.append(incid_hist)
 
     for t in obj_milestones:
@@ -5968,12 +5881,6 @@ def staff_utilization_report(request):
     return JsonResponse(data)
 
 
-def daily_logged_hours(request):
-    """daily logged hours"""
-
-    return render(request, 'project_management/daily_logged_hours.html', context=None)
-
-
 def fetch_members_by_project(request):
     """return project team_members in project"""
     project_id = int(request.GET.get('project_id'))
@@ -6576,6 +6483,151 @@ def export_task_report(request):
         wb.save(response)
         print(f"{response} is the response")
         return response
+
+
+def preview_task_report(request):
+    """exporting task_report"""
+    if request.method == 'POST':
+        start_time = request.POST.get('startdate')
+        end_time = request.POST.get("enddate")
+        status_two = request.POST.get("status")
+        selected_member = request.POST.get("users")
+
+        original_user = ""
+
+        company_id = request.session['company_id']
+        department_id = request.session['department_id']
+        status = ""
+
+        company = Company.objects.get(id=company_id)
+
+        convert_start = datetime.datetime.strptime(start_time, "%d-%m-%Y").strftime("%Y-%m-%d")
+        convert_end = datetime.datetime.strptime(end_time, "%d-%m-%Y").strftime("%Y-%m-%d")
+
+        response = HttpResponse(content_type='application/ms-excel')
+        response['Content-Disposition'] = 'attachment; filename=Task_Report_Status.xls'
+        wb = xlwt.Workbook(encoding='utf-8')
+        ws = wb.add_sheet("Task Completion Report")
+
+        new_start = datetime.datetime.strptime(convert_start, "%Y-%m-%d")
+        new_end = datetime.datetime.strptime(convert_end, "%Y-%m-%d")
+
+        start = date(new_start.year, new_start.month, new_start.day)
+        end = date(new_end.year, new_end.month, new_end.day)
+        
+        # getting the days in between start date and end date
+        delta = end - start
+
+        all_tasks = [] 
+
+        for j in range(delta.days + 1):
+            day = start + timedelta(days=j)
+            new_day = day.strftime("%Y-%m-%d")
+
+            if status_two != "all":
+                status = Status.objects.get(id=int(status_two))
+                tasks_exists = Task.objects.filter(start_date=new_day, status=status).exists()
+                if tasks_exists:
+                    tasks = Task.objects.filter(start_date=new_day, status=status)
+                    
+                    for task in tasks:   
+                        all_tasks.append(task)
+                
+            else:
+                tasks_exists = Task.objects.filter(start_date=new_day).exists()
+                if tasks_exists:
+                    tasks = Task.objects.filter(start_date=new_day)
+                    
+                    for task in tasks:   
+                        all_tasks.append(task)
+        
+        new_list = []
+        count = 0
+        date_obj = ""
+
+        assigned = []
+
+        department = Department.objects.get(id=department_id, company=company)
+
+        for task in all_tasks:
+
+            assigned_id = task.assigned_to.all()
+            
+            for sign in assigned_id:
+
+                my_new_tasks = {}
+                my_new_tasks['name'] = task.name
+                my_new_tasks["project"] = task.project.name
+                my_new_tasks['milestone'] = task.milestone.name
+                my_new_tasks["status"] = task.status.name
+                my_new_tasks["description"] = task.description
+                my_new_tasks["start_date"] = task.start_date
+                my_new_tasks["end_date"] = task.end_date
+                my_new_tasks["created_time"] = task.created_time
+
+                my_new_tasks["task_age"] = task.aging()
+
+                team = ProjectTeam.objects.get(project_id= task.project.id)
+                
+                project_member = ProjectTeamMember.objects.get(id=sign.id, project_team=team)
+                user_id = project_member.member_id
+
+                user = User.objects.get(id=user_id)
+
+                my_new_tasks["assigned_to"] = user.first_name +" "+ user.last_name
+
+                my_new_tasks["department"] = user.department.name
+
+                my_new_tasks["user_id"] = user.id
+                
+                new_list.append(my_new_tasks)
+        
+        print_list = []
+        
+        for val in new_list:
+            # selecting for all members
+            if selected_member == "all":
+                if val["department"] == department.name:
+                    print_list.append(val)
+            
+            #selecting for a specific member 
+            else:
+                original_user = int(selected_member)
+
+                if val["department"] == department.name and original_user == val["user_id"]:
+                    print_list.append(val)
+                
+        for obj in print_list:
+            if obj["start_date"] == None:
+                obj.update(start_date="Not set")
+            else:
+                start_year = obj['start_date'].year
+                start_month = obj['start_date'].month
+                start_day = obj['start_date'].day
+
+                new_start_month = append_zero(start_month)
+                new_start_day = append_zero(start_day)
+                new_start = str(start_year)+"-"+str(new_start_month)+"-"+str(new_start_day)
+
+                obj.update(start_date=new_start)
+
+            if obj["end_date"] == None:
+                obj.update(end_date="Not set")
+            else:
+                end_year = obj['end_date'].year
+                end_month = obj['end_date'].month
+                end_day = obj['end_date'].day
+
+                new_end_month = append_zero(end_month)
+                new_end_day = append_zero(end_day)
+                new_end = str(end_year)+"-"+str(new_end_month)+"-"+str(new_end_day)
+                
+                # updating dictionary value
+                obj.update(end_date=new_end)
+        
+        return render(request, 'project_management/task_report.html',{
+            "tasks": print_list
+        })
 
 
 def append_zero(number):

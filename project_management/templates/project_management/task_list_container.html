@@ -35,7 +35,7 @@
                     </li>
                 </ul>
                 <div class="tab-content tabcontent-border tab-content-1" style="padding-left: 1%;padding-right: 1%;">
-                    <div class="tab-pane active" id="timesheet_home" role="tabpanel">
+                    <div class="tab-pane active" id="tasks_container_home" role="tabpanel">
                         <div class="row p-10">
                             <div class="col-md-12 container">
                                 
@@ -44,7 +44,7 @@
                                 </button>
                             </div>
                         </div>
-                        <div class="addPane">
+                        <div class="taskContainerPane">
                             {% include "project_management/task_list.html" %}
                         </div>
                     </div>
@@ -102,8 +102,7 @@
             },
             url: urldata,
             success: function (resp) {
-                console.log("helloo hello")
-                $('.addPane').html(resp);
+                $('.taskContainerPane').html(resp);
             }
         });
     }

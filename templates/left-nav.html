@@ -109,7 +109,7 @@
                     <a class="has-arrow" href="#" aria-expanded="false"><i class="fa fa-suitcase"></i><span
                             class="hide-menu">Milestones</span></a>
                     <ul aria-expanded="false" class="collapse">
-                        <li><a href="{% url 'milestone_list' %}">Project Milestones</a></li>
+                        <li><a href="{% url 'milestonesContainer' %}">Project Milestones</a></li>
                     </ul>
                 </li>
 
@@ -117,25 +117,25 @@
                     <a class="has-arrow  " href="#" aria-expanded="false"><i class="fa fa-suitcase"></i><span
                             class="hide-menu">Tasks</span></a>
                     <ul aria-expanded="false" class="collapse">
-                        <li><a href="{% url 'task_list' %}">Task List</a></li>
+                        <li><a href="{% url 'tasksContainer' %}">Task List</a></li>
                     </ul>
                     <ul aria-expanded="false" class="collapse">
                         <li><a href="{% url 'taskReport' %}">Task Report</a></li>
                     </ul>
                 </li>
 
-                <!-- {% if perms.project_management.add_incident or perms.project_management.view_incident or perms.project_management.delete_incident or perms.project_management.change_incident %}
+                {% if perms.project_management.add_incident or perms.project_management.view_incident or perms.project_management.delete_incident or perms.project_management.change_incident %}
                     <li>
                     <a class="has-arrow  " href="#" aria-expanded="false"><i class="fa fa-suitcase"></i><span
                             class="hide-menu">Incidents</span></a>
                 {% endif %}
                 <ul aria-expanded="false" class="collapse">
                     {% if perms.project_management.view_incident %}
-                        <li><a href="{% url 'listIncidents' %}">List of Incidents</a></li>
+                        <li><a href="{% url 'incidentContainer' %}">Incident List</a></li>
                     {% endif %}
                 </ul>
                 </li>
-
+<!-- 
                 {% if user.is_superuser %}
                     <li>
                         <a class="has-arrow  " href="#" aria-expanded="false"><i class="fa fa-bar-chart"></i><span
@@ -225,7 +225,6 @@
                                 <li><a href="{% url 'listCategories' %}"><i class="fa fa-list-alt"></i> Company Categories</a></li>
                                 <li><a href="{% url 'listAllPriorities' %}"><i class="fa fa-list"></i> Priorities</a></li>
                                 <li><a href="{% url 'listAllStatuses' %}"><i class="fa fa-list"></i> Statuses</a></li>
-                                <li><a href="{% url 'listAllRoles' %}"><i class="fa fa-list"></i> Member Roles</a></li>
                                 <li><a href="{% url 'listCodeFormat' %}"><i class="fa fa-list"></i> Project Code Format</a></li>
                             </ul>
                         </li>

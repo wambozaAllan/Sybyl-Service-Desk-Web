@@ -7,8 +7,8 @@
         <form class="form-horizontal" method='GET' id="teamForm">
             {% csrf_token %}
 
-            <div class="row col-12">
-                <div class="col-12">
+            <div class="row col-md-12">
+                <div class="col-md-12 col-sm-12">
                     <label class="col-form-label  requiredField">Project Team<span
                         class="asteriskField">*</span></label>
                     <div class="" >
@@ -17,7 +17,7 @@
                     </div> 
                 </div>
                 <br>
-                <div class="col-12">
+                <div class="col-md-12 col-sm-12">
                     <label class="col-form-label  requiredField">Member<span
                         class="asteriskField">*</span></label>
                     <div class="">
@@ -25,27 +25,22 @@
                     </div> 
                 </div>
                 <br>
-                <div class="col-12">
-                    <label class="col-form-label  requiredField">Responsibility<span
-                        class="asteriskField">*</span></label>
-                    <div class="">
-                        <select id='id_responsibility' class="select form-control" name="responsibility" required></select>
-                    </div> 
-                </div>
+                
                 <br>
-                <div class="col-12" style="display: none;">
+                <div class="col-md-12" style="display: none;">
                         <input id="id_project" type="hidden" value="{{ project_id }}"/>
                         <input id="team_id" type="hidden" value="{{ team_id }}"/>
                         <input id="project_name" type="hidden" value="{{ project_name }}"/>
                         <input id="team_name" type="hidden" value="{{ team_name }}"/>
                 </div>
             </div>
-            
-            <!-- <div class="col-md-6"> -->
-                <button id="id_btnAddProjectMember" class="btn btn-success pull-right" >
+            <br>
+
+            <div class="col-md-6 col-sm-6">
+                <button id="id_btnAddProjectMember" class="col-md-12 col-sm-12 btn btn-success">
                     <i class="fa fa-fw fa-lg fa-save"></i>Add Member
                 </button>
-            <!-- </div> -->
+            </div>
             
 
         </form>
@@ -60,12 +55,6 @@
     $('#id_member').html("");  
     $('#id_member').attr('data-live-search', "true"); 
     $('#id_member').selectpicker({
-        size: 3
-    });
-
-    // responsibility
-    $('#id_responsibility').attr('data-live-search', "true"); 
-    $('#id_responsibility').selectpicker({
         size: 3
     });
 
@@ -94,18 +83,6 @@
                     $('#id_member').append('<option value="' + actual["pk"] + '">' + actual["fields"]["first_name"] + " " + actual["fields"]["last_name"] + '</option>');
                     $("#id_member").selectpicker('refresh');
                 }
-
-                let newRoles = JSON.parse(data.roles);
-                
-                let assign = '';
-                $("#id_responsibility").html("");
-                $("#id_responsibility").prepend('<option value=""> -----Select Responsibility----- </option>');
-                for(i=0; i<newRoles.length; i++){
-                    assign = newRoles[i];
-                    
-                    $('#id_responsibility').append('<option value="' + assign["pk"] + '">' + assign["fields"]["name"] + '</option>');
-                    $("#id_responsibility").selectpicker('refresh');
-                }
                     
             }
         });
@@ -122,7 +99,6 @@
         let project_id = $('#id_project').val();
         let team_id = $('#id_project_team_id').val();
         let member = $('#id_member').val();
-        let responsibility = $('#id_responsibility').val();
 
         if (member != ""){
             $.ajax({
@@ -131,7 +107,6 @@
                     project_id: project_id,
                     project_team: team_id,
                     member: member, 
-                    responsibility: responsibility
                 },
                 cache:false,
                 dataType: 'json',

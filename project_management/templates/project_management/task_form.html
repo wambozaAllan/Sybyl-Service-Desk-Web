@@ -174,11 +174,6 @@
         $(".actual").css("display", "none"); 
     });
 
-    // $('#id_assigned_to').attr('data-live-search', "true"); 
-    // $('#id_assigned_to').selectpicker({
-    //     size: 3
-    // });
-
     $('#id_project').change(function () {
         $('#id_milestone').val(null).trigger('change');
         $('#id_milestone').html('');
@@ -186,7 +181,6 @@
         var project_id = parseInt($('#id_project').val());
         var actual_member = parseInt($('#id_actual_member').val());
 
-        console.log(actual_member + " is the actual member")
         urldata = "{% url 'selectMembersByProject'%}";
 
         $.ajax({
@@ -209,28 +203,17 @@
 
                 }
 
-                function validValue(value) {
-                    if(value == actual_member){
-                        return value;
-                    }    
-                }
-
                 var member= JSON.parse(data.members);
-                console.log(member);
-               
 
                 if (member !== '' && member.length > 0) {
                     $('#id_assigned_to').html('');
                     for (i in member) {
 
                         if(member[i].pk == actual_member){
-                            console.log("here are the members ");
-                            console.log(member[i].pk);
                             $('#id_assigned_to').append('<option value="' + member[i].pk + '">' + member[i].fields.first_name + " " + member[i].fields.last_name + '</option>');
                             $("#id_assigned_to").selectpicker('refresh');
                         }
-                        // $('#id_assigned_to').append('<option value="' + member[i].pk + '">' + member[i].fields.first_name + " " + member[i].fields.last_name + '</option>');
-                        // $("#id_assigned_to").selectpicker('refresh');
+                        
                     }
                 }
             }
@@ -535,7 +518,7 @@
                         data:{},
                         url: "{% url 'task_list' %}",
                         success: function(resp){
-                            $('.addPane').html(resp);                                                  
+                            $('.taskContainerPane').html(resp);                                                  
                         }
                     });
                     $.confirm({

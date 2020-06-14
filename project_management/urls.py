@@ -18,14 +18,6 @@ urlpatterns = [
 
     path('milestones/', views.project_milestones_by_user, name='milestone_list'),
     path('milestone/detail/<int:pk>/', views.MilestoneDetailView.as_view(), name='milestone_details'),
-    re_path(r'^project-milestones/(?P<project_id>\d+)/$', views.milestone_list_by_project,
-            name='project_milestone_list'),
-    # path('project-milestones/(?P<project_id>\w+)', views.milestone_list_by_project, name='project_milestone_list'),
-    # path('milestones/', views.load_milestones, name='milestone_list'),
-    path('ajax/load_task_milestoneI_list/', views.load_task_milestoneI_list, name='load_task_milestoneI_list'),
-    path('milestones/new/', views.MilestoneCreateView.as_view(), name='new_milestone'),
-    path('milestone/update/<int:pk>/', views.MilestoneUpdateView.as_view(), name='update_milestone'),
-    path('ajax/load-task-milestones/', views.load_task_milestones, name='load-task-milestones'),
     path('listProjectMilestones/', views.list_project_milestones, name='listProjectMilestones'),
     path('populateMilestone/', views.populate_milestone_view, name='populateMilestone'),
     path('populateMilestoneStatus/', views.populate_milestone_status, name='populateMilestoneStatus'),
@@ -45,6 +37,7 @@ urlpatterns = [
     path('completedMilestones/', views.completed_project_milestones, name='completedMilestones'),
     path('saveupdateProjectMilestone/<int:pk>', views.save_update_milestone, name='saveupdateProjectMilestone'),
     path('milestoneCount/', views.milestone_count, name='milestoneCount'),
+    path('milestonesContainer/', views.milestone_container, name='milestonesContainer'),
     
 
   
@@ -89,7 +82,7 @@ urlpatterns = [
 
     path('addIncident/', views.AddIncident.as_view(), name='addIncident'),
     path('addProjectIncident/', views.AddProjectIncident.as_view(), name='addProjectIncident'),
-    path('listIncidents/', views.ListIncidents.as_view(), name='listIncidents'),
+    path('incident_list/', views.list_incidents_by_project, name='listIncidents'),
     path('listProjectIncidents', views.list_project_incidents, name='listProjectIncidents'),
     path('detailsIncident/<int:pk>/', views.DetailsIncident.as_view(), name='detailsIncident'),
     path('detailsProjectIncident/<int:pk>/', views.DetailsProjectIncident.as_view(), name='detailsProjectIncident'),
@@ -100,7 +93,9 @@ urlpatterns = [
     path('onholdIncidents/', views.onhold_project_incidents, name="onholdIncidents"),
     path('terminatedIncidents/', views.terminated_project_incidents, name="terminatedIncidents"),
     path('completedIncidents/', views.completed_project_incidents, name="completedIncidents"),
-    path('validateIncidentName/', views.validate_incident_name, name="validateIncidentName"),
+    path('listIncidents/', views.incident_container, name="incidentContainer"),
+    path('createIncident/', views.create_incident, name="createIncident"),
+    path('saveIncident/', views.save_incident, name="saveIncident"),
     
     path('listAllPriorities/', views.ListAllPriorities.as_view(), name='listAllPriorities'),
     path('addPriority/', views.AddPriority.as_view(), name='addPriority'),
@@ -133,20 +128,11 @@ urlpatterns = [
     path('addProjectTeamMember/', views.add_project_team_member, name='addProjectTeamMember'),
     path('adminAddProjectTeamMember/', views.admin_add_project_team_member, name='adminAddProjectTeamMember'),
     path('listProjectTeamMembers/', views.ListProjectTeamMembers.as_view(), name='listProjectTeamMembers'),
-    path('updateProjectTeamMember/<int:pk>', views.UpdateProjectTeamMember.as_view(), name='updateProjectTeamMember'),
-    path('adminUpdateProjectTeamMember/<int:pk>', views.AdminUpdateProjectTeamMember.as_view(), name='adminUpdateProjectTeamMember'),
     path('detailProjectTeamMembers/', views.detail_team_member, name='detailProjectTeamMembers'),
     path('adminDetailProjectTeamMembers/', views.admin_detail_team_member, name='adminDetailProjectTeamMembers'),
     path('deleteProjectTeamMember/', views.remove_project_team_member, name='deleteProjectTeamMember'),
     path('validateProjectTeamAssigned/', views.validateProjectTeamAssigned, name='validateProjectTeamAssigned'),
     path('saveTeamMember/', views.save_team_member, name='saveTeamMember'),
-    path('saveupdateTeamMember/<int:pk>', views.save_update_team_member, name='saveupdateTeamMember'),
-
-    path('listAllRoles/', views.ListAllRoles.as_view(), name='listAllRoles'),
-    path('addRole/', views.AddRole.as_view(), name='addRole'),
-    path('updateRole/<int:pk>/', views.UpdateRole.as_view(), name='updateRole'),
-    path('deleteRole/<int:pk>/', views.DeleteRole.as_view(), name="deleteRole"),
-    path('validateRoleName/', views.ValidateRoleName, name='validateRoleName'),
 
     path('getTeamMembers/', views.get_team_members, name='getTeamMembers'),
     path('setColorCode/', views.set_priority_color_code, name='setColorCode'),
@@ -242,11 +228,11 @@ urlpatterns = [
     # REPORTS
     path('staffUtilization/', views.staff_utilization, name="staffUtilization"),
     path('staffUtilizationReport/', views.staff_utilization_report, name="staffUtilizationReport"),
-    path('dailyLoggedHours/', views.daily_logged_hours, name="dailyLoggedHours"),
     path('exportReport/', views.export_staff_utilization, name="exportReport"),
     path('exportPdf/', views.export_pdf_utilization, name="exportPdf"),
     path('taskReport/', views.task_report_page, name="taskReport"),
     path('exportTaskReport/', views.export_task_report, name="exportTaskReport"),
+    path('previewTaskReport/', views.preview_task_report, name="previewTaskReport"),
 
 
     # Project code

@@ -17,7 +17,7 @@
                     <div class="col-md-7 align-self-center">
                         <ol class="breadcrumb">
                             <li class="breadcrumb-item"><a href="javascript:void(0)">Home</a></li>
-                            <li class="breadcrumb-item active">Project List</li>
+                            <li class="breadcrumb-item active">Task Report</li>
                         </ol>
                     </div>
                 </div>
@@ -32,7 +32,10 @@
                                     <h4 class="card-title">Task Report</h4>
                                     <h6 id="date-range"></h6>
                                     <div class="row">
+                                        <form class="col-md-12" style="display:flex; flex-direction: row;" method="POST" action="{% url 'previewTaskReport' %}" enctype="multipart/form-data" id="preview">
+                                            {% csrf_token %}
                                         <div class="col-md-2">
+                                            
                                             <label class="col-form-label  requiredField">Member<span
                                                 class="asteriskField">*</span></label>
                                             <div class="">
@@ -56,7 +59,7 @@
                                                 <span class="asteriskField">*</span>
                                             </label>
                                             <div class="">
-                                                <input type="" id='id_start' class="form-control" value="" name="date" onchange="checkStart()" />
+                                                <input type="" id='id_start' class="form-control" value="" name="startdate" onchange="checkStart()" />
                                             </div>
                                             
                                             <medium id="start_date" class="text-muted hidden">
@@ -70,7 +73,7 @@
                                                 <span class="asteriskField">*</span>
                                             </label>
                                             <div class="">
-                                                <input type="" id='id_end' class="form-control" onchange="checkEnd()" />
+                                                <input type="" id='id_end' class="form-control" onchange="checkEnd()" name="enddate"/>
                                             </div>
                                             
                                             <medium id="end_date" class="text-muted hidden">
@@ -95,10 +98,11 @@
                                         </div>
 
                                         <div class="col-md-1" style="margin-top: 33px;">
-                                            <button id="btn_preview" title="Preview Data" class="btn btn-info btnPreview" onclick="btnReport()">
+                                            <button id="btn_preview" title="Preview Data" class="btn btn-info btnPreview" onclick="previewReport()" style="display: none;">
                                                 <i class="fa fa-eye"></i>Preview
                                             </button>
                                         </div>
+                                    </form>
 
                                         <div class="col-md-2" style="margin-top: 33px;">
                                             <form method="POST" action="{% url 'exportTaskReport' %}" enctype="multipart/form-data" id="toPrint">
@@ -145,28 +149,17 @@
     
                                     </div>
                                     
+                                    <div class="tab-content tabcontent-border tab-content-1" style="padding-left: 1%;padding-right: 1%;">
+                                        <div class="tab-pane active" id="reports_container_home" role="tabpanel">
+                                            
+                                            <div class="reportContainerPane" style="display:none;">
+                                                {% include "project_management/task_report_section.html" %}
+                                            </div>
+                                        </div>
+                                    </div>
                                     
 
-                                    <div class="table-responsive m-t-40">
-                                        <div class="dataTables_wrapper">
-                                            <table id="table-report" class="display nowrap table table-hover"
-                                            cellspacing="0" width="100%">
-                                                <thead>
-                                                <tr>
-                                                    <th>No.</th>
-                                                    <th>Task Name</th>
-                                                    <th>Project</th>
-                                                    <th>Assigned To</th>
-                                                    <th>Status</th>
-                                                </tr>
-                                                </thead>
-                                                <tbody>
-                                                    
-                                                </tbody>
-                                         </table>
-                                        </div>
-                                        
-                                    </div>
+                                    
                                 </div>
                             </div>
                             
@@ -306,7 +299,6 @@
             var end = $("#id_end").val();
             var status_id = $("#id_status option:selected").val();
             var user_state = $("#id_user_dept option:selected").val();
-            console.log("this is the user state "+ user_state)
 
             if(start < 1 || end < 1 || status_id <= 0 || user_state === ""){
                 if (start === "" || start < 1){
@@ -598,6 +590,34 @@
                 document.getElementById('id_start_pdf').value = start;
                 document.getElementById('id_end_pdf').value = end;
                  
+            }
+        }
+
+        function previewReport(){
+            setDateReport();
+            var start = $('#id_start').val();
+            var end = $("#id_end").val();
+            var status_id = $("#id_status option:selected").val();
+            var user_state = $("#id_user_dept option:selected").val();
+
+            if (start === "" || end === "" || status_id == "" || user_state === "" ){
+                event.preventDefault();
+                return false;
+            }
+
+            else{
+                var start = $('#id_start').val();
+                var end = $("#id_end").val();
+                var status_id = $("#id_status option:selected").val();
+                var user_state = $("#id_user_dept option:selected").val();
+                
+                document.getElementById('id_start_date').value = start;
+                document.getElementById('id_end_date').value = end;
+                document.getElementById('id_status_two').value = status_id;
+                document.getElementById('id_user_dupe').value = user_state;
+
+                $(".reportContainerPane").css("display", "block");
+                
             }
         }
     </script>

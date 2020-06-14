@@ -10,14 +10,14 @@
                     <th>Start-Date</th>
                     <th>End-Date</th>
                     <th>Status</th>
-                    <td>Action</td>
+                    <th>Action</th>
                 </tr>
             </thead>
 
             <tbody>
                 {% for task in tasks %}
                 <tr>
-                    <td>{{ task.name }}</td>
+                    <td><a href="#" onclick="detailsTask('{{ task.id }}', '{{ task.name }}',  '{{ task.project.id }}')">{{ task.name }}</a></td>
                     <td>{{ task.project }}</td>
                     <td>{{ task.milestone }}</td>
                     <td>{{ task.start_date }}</td>
@@ -130,6 +130,40 @@
                     action: function () {
                     }
                 }
+            }
+        });
+    }
+
+    function detailsTask(task_id, task_name) {
+
+        url = "{% url 'detailsProjectTask' 999%}".replace(999, task_id);
+        $.ajax({
+            url: url,
+            type: "GET",
+            cache: false,
+            data: {
+                task_id: task_id,
+                task_name: task_name,
+            },
+            success: function (resp) {
+                $.confirm({
+                    title: '<h3>Detail Task: <strong>' + task_name +'</strong></h3>',
+                    content: '' + resp,
+                    type: 'blue',
+                    theme: 'material',
+                    typeAnimated: true,
+                    boxWidth: '70%',
+                    useBootstrap: false,
+                    closeIcon: true,
+                    buttons: {
+                        close: {
+                            text: 'Close',
+                            btnClass: 'btn-gray',
+                            action: function () {
+                            }
+                        }
+                    }
+                });
             }
         });
     }

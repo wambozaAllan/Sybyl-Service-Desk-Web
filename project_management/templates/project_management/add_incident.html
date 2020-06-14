@@ -4,7 +4,7 @@
 	{{form.media}}
 	<div class="row">
 
-		<div class="col-6">{{ form.title|as_crispy_field }}</div>
+		<div class="col-6">{{ form.name|as_crispy_field }}</div>
 		<div class="col-6">
 			{{ form.project|as_crispy_field }}
 			<medium id="project_has_team" class="text-muted hidden">
@@ -18,7 +18,6 @@
 	</div>
 	<br>
 	<div class="row">
-		<div class="col-6">{{ form.task|as_crispy_field}}</div>
 		<div class="col-6">{{ form.assigned_to|as_crispy_field }}</div>
 	</div>
 	<br>
@@ -65,16 +64,16 @@
 
 
 <script>
-	$("#id_assignee").html("");
+	$("#id_assigned_to").html("");
 
-	$('#id_assignee').attr('multiple', "");
-	$('#id_assignee').attr('data-live-search', 'true');
-	$('#id_assignee').selectpicker({
+	$('#id_assigned_to').attr('multiple', "");
+	$('#id_assigned_to').attr('data-live-search', 'true');
+	$('#id_assigned_to').selectpicker({
 		size: 3,
 	});
 
 
-	$('#id_title').attr('autocomplete', 'off');
+	$('#id_name').attr('autocomplete', 'off');
 
 	// project
 	$('#id_project').removeAttr('multiple', "");
@@ -97,24 +96,17 @@
 		size: 3,
 	});
 
-	// TASK
-	$('#id_task').removeAttr('multiple', "");
-	$('#id_task').attr('data-live-search', 'true');
-	$('#id_task').selectpicker({
-		size: 3,
-	});
-
 	$('#id_document').addClass('dropzone');
 	$('#id_image').addClass('dropzone');
 
 	// hide project elements
-	$('#id_assignee').hide();
+	$('#id_assigned_to').hide();
 	$('#id_creator').hide();
 
 	// selecting project
 	$('#id_project').on('change', function(){
 		var project_name = $(this).val();
-		$("#id_assignee").html("");
+		$("#id_assigned_to").html("");
 		$("#id_creator").html("");
 
 		$.ajax({
@@ -127,17 +119,17 @@
 				var teamList = data.team_members;
 				
 				if (teamList.length > 0 && teamList.length !== ''){
-					$("#id_assignee").html("");
+					$("#id_assigned_to").html("");
 
 					for(i in teamList){
 						$("#project_has_team").hide();
-						$('#id_assignee').append('<option value="' + teamList[i].id + '">' + teamList[i].first_name + " " + teamList[i].last_name + '</option>');
-						$('#id_assignee').selectpicker('refresh');
+						$('#id_assigned_to').append('<option value="' + teamList[i].id + '">' + teamList[i].first_name + " " + teamList[i].last_name + '</option>');
+						$('#id_assigned_to').selectpicker('refresh');
 					}
 				}
 				else{
 					$("#project_has_team").show();
-					$('#id_assignee').selectpicker('refresh');
+					$('#id_assigned_to').selectpicker('refresh');
 				}
 				
 			}
