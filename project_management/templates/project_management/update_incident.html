@@ -42,13 +42,13 @@
                                                 </font>
                                             </medium>
                                         </div>
-										<div class="col-md-6 col-sm-12">{{ form.title|as_crispy_field }}</div>
+										<div class="col-md-6 col-sm-12">{{ form.name|as_crispy_field }}</div>
                                     </div>
                                     <br>
 									<div class="row">
                                         
                                         <div class="col-md-4 col-sm-12">{{ form.status|as_crispy_field }}</div>
-                                        <div class="col-md-4 col-sm-12">{{ form.assignee|as_crispy_field }}</div>
+                                        <div class="col-md-4 col-sm-12">{{ form.assigned_to|as_crispy_field }}</div>
                                     </div>
                                     <br>
 									<div class="row">
@@ -59,11 +59,7 @@
                                         </div>
 										<div class="col-md-4 col-sm-12">{{ form.description|as_crispy_field }}</div>
                                     </div>
-                                    <div class="row">
-                                        <div class="col-md-4 col-sm-6">{{ form.resolution_time|as_crispy_field }}</div>
-                                        <div class="col-md-4 col-sm-6">{{ form.reopen_time|as_crispy_field }}</div>
-                                        <div class="col-md-4 col-sm-6">{{ form.close_time|as_crispy_field }}</div>
-                                    </div>
+                                    
                                     <br>
                                     <div class="row">
                                         
@@ -90,9 +86,9 @@
     $(document).ready(function(){
        
         // assignee 
-        $('#id_assignee').attr("multiple", "multiple");
-        $("#id_assignee").attr('data-live-search', 'true');
-        $('#id_assignee').selectpicker({
+        $('#id_assigned_to').attr("multiple", "multiple");
+        $("#id_assigned_to").attr('data-live-search', 'true');
+        $('#id_assigned_to').selectpicker({
         	size: 3,
         });
     
@@ -103,7 +99,7 @@
         	size: 3,
         });
     
-        $('#id_title').attr('autocomplete', 'off');
+        $('#id_name').attr('autocomplete', 'off');
     
         // project
         $('#id_project').removeAttr('multiple', "");
@@ -127,42 +123,9 @@
             size: 3,
         });
 
-        $('#id_resolution_time').datepicker({
-            format: "mm/dd/yyyy",
-            autoclose: true,
-            clearBtn: true
-        });
-
-        $('#id_reopen_time').datepicker({
-            format: "mm/dd/yyyy",
-            autoclose: true,
-            clearBtn: true
-        });
-
-        $('#id_close_time').datepicker({
-            format: "mm/dd/yyyy",
-            autoclose: true,
-            clearBtn: true
-        });
-
-        $("#id_resolution_time").attr("placeholder", "mm/dd/yyyy");
-        $("#id_reopen_time").attr("placeholder", "mm/dd/yyyy");
-        $("#id_close_time").attr("placeholder", "mm/dd/yyyy");
-
-        $('#id_resolution_time').on('focus', function(){
-            var date = $(this).blur();
-        });
-
-        $('#id_reopen_time').on('focus', function(){
-            var date = $(this).blur();
-        });
-
-        $('#id_close_time').on('focus', function(){
-            var date = $(this).blur();
-        });
     
         // selecting project
-        $('#id_assignee').on('focus', function(){
+        $('#id_assigned_to').on('focus', function(){
             var project_name = document.getElementById('id_project').value;
             
             $("#id_assignee").html("");
@@ -177,18 +140,18 @@
                     var teamList = data.team_members;
                     
                     if (teamList.length > 0 && teamList.length !== ''){
-                        $("#id_assignee").html("");
+                        $("#id_assigned_to").html("");
     
                         for(i in teamList){	
                             $("#project_has_team").hide();
-                            $('#id_assignee').append('<option value="' + teamList[i].id + '">' + teamList[i].first_name + " " + teamList[i].last_name + '</option>');
-                            $('#id_assignee').selectpicker('refresh');
+                            $('#id_assigned_to').append('<option value="' + teamList[i].id + '">' + teamList[i].first_name + " " + teamList[i].last_name + '</option>');
+                            $('#id_assigned_to').selectpicker('refresh');
                         }
                     }
                     else{
                         
-                        $("#id_assignee").html("");
-                        $('#id_assignee').selectpicker('refresh');
+                        $("#id_assigned_to").html("");
+                        $('#id_assigned_to').selectpicker('refresh');
                         $("#project_has_team").show();
                     }
                     

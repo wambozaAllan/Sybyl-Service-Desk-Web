@@ -1,108 +1,69 @@
-{% extends 'base.html' %}
+<div class="card-body tasks-users">
+                    
+    <div class="table-responsive">
+        <table class="table table-hover" id="table_tasks_container">
+            <thead>
+                <tr>
+                    <th>Name</th>
+                    <th>Project</th>
+                    <th>Milestone</th>
+                    <th>Start-Date</th>
+                    <th>End-Date</th>
+                    <th>Status</th>
+                    <th>Action</th>
+                </tr>
+            </thead>
 
-{% load static %}
-
-{% block content %}
-<!-- Main wrapper  -->
-<div id="main-wrapper">
-    <!-- header header  -->
-    {% include 'header.html' %}
-    <!-- End header header -->
-    {% include 'left-nav.html' %}
-    <!-- Page wrapper  -->
-    <div class="page-wrapper">
-        <!-- Bread crumb -->
-        <div class="row page-titles">
-            <div class="col-md-5 align-self-center">
-                <h3 class="text-primary">Tasks</h3>
-            </div>
-            <div class="col-md-7 align-self-center">
-                <ol class="breadcrumb">
-                    <li class="breadcrumb-item"><a href="{% url 'home' %}">Home</a></li>
-                    <li class="breadcrumb-item active">Tasks</li>
-                </ol>
-            </div>
-        </div>
-        <!-- End Bread crumb -->
-        <!-- Container fluid  -->
-        <div class="container-fluid">
-            <!-- Start Page Content -->
-            <div class="row">
-                <div class="col-lg-12">
-                    <div class="card">
-                        <div class="card-title">
-                                <div class="row">
-                                    <div class="col-10">
-                                        <h4 class="card-title">Tasks</h4>
-                                    </div>
+            <tbody>
+                {% for task in tasks %}
+                <tr>
+                    <td><a href="#" onclick="detailsTask('{{ task.id }}', '{{ task.name }}',  '{{ task.project.id }}')">{{ task.name }}</a></td>
+                    <td>{{ task.project }}</td>
+                    <td>{{ task.milestone }}</td>
+                    <td>{{ task.start_date }}</td>
+                    <td>{{ task.end_date }}</td>
+                    <td>{{ task.status }}</td>
+                    <td>
+                        <button class="btn btn-outline-success btn-sm"
+                            onclick="editTask('{{ task.id }}', '{{ task.name }}', '{{ task.project.id}}', '{{task.milestone.id}}', '{{task.project.name}}')">
+                            <i title="Manage Task" class="fa fa-edit"></i>
+                        </button>
     
-                                    <div class="col-2">
-                                        <button id="" class="btn btn-info pull-right" onclick="functAddTask();">
-                                            <i class="fa fa-fw fa-lg fa-plus"></i>Add Tasks
-                                        </button>
-                                    </div>
-                                </div>
-                                <br />
-                            </div>
-                        <div class="card-body tasks-users">
-                            <div class="table-responsive">
-                                <table class="table table-hover" id="table_priorities">
-                                    <thead>
-                                        <tr>
-                                            <th>Name</th>
-                                            <th>Project</th>
-                                            <th>Milestone</th>
-                                            <th>Created time</th>
-                                            <th>Start-Date</th>
-                                            <th>End-Date</th>
-                                            <th>Status</th>
-                                            
-                                        </tr>
-                                    </thead>
-
-                                    <tbody>
-                                        {% for task in tasks %}
-                                        <tr>
-                                            <td><a href="{% url 'task_details' task.id %}">{{ task.name }}</a></td>
-                                            <td>{{ task.project }}</td>
-                                            <td>{{ task.milestone }}</td>
-                                            <td>{{ task.created_time |date:"M d, Y" }}</td>
-                                            <td>{{ task.start_date }}</td>
-                                            <td>{{ task.end_date }}</td>
-                                            <td>{{ task.status }}</td>
-                                        </tr>
-                                        {% endfor %}
-                                    </tbody>
-                                </table>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            {% include 'footer.html' %}
-            <!-- End PAge Content -->
-        </div>
-        <!-- End Container fluid  -->
+                        <button onclick="deleteTask('{{ task.id }}', '{{ task.name }}', '{{ task.project.id}}', '{{task.project.name}}', '{{task.milestone.name}}')"
+                                class="btn btn-outline-danger btn-sm" type="button">
+                            <i title="Delete Task" class="fa fa-remove"></i>
+                        </button>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
     </div>
-    <!-- End Page wrapper  -->
 </div>
+
 <script>
-    function functAddTask(){
-        urldata = "{% url 'createTask' %}";
-        
+    $('#table_tasks_container').DataTable();
+    function editTask(task_id, task_name, project_id, milestone_id, project_name){
+
+        urldata = "{% url 'updateProjectTask' 999%}".replace(999, task_id);
+            
         $.ajax({
             type: 'GET',
             cache: false,
-            data: {},
+            data: {
+                project_id: project_id,
+                task_id: task_id, 
+                milestone_id: milestone_id
+            },
             url: urldata,
             success: function (resp) {
                 $.confirm({
-                    title: '<h3>Add Task</h3>',
+                    title: '<h3>Update Project Task</h3>',
                     content: '' + resp,
                     type: 'blue',
                     theme: 'material',
                     typeAnimated: true,
-                    boxWidth: '60%',
+                    boxWidth: '50%',
                     useBootstrap: false,
                     closeIcon: true,
                     buttons: {
@@ -116,8 +77,94 @@
                 });
             }
         });
+    }
 
-        
+
+    function deleteTask(task_id, task_name, project_id, project_name, milestone) {
+        urldata = "{% url 'deleteTask'%}";
+
+        $.confirm({
+            title: '<h4>Delete Task: <strong class="text-danger">' + task_name + '</h4>',
+            content: '<h5> Milestone: <span class="text-info"> '+ milestone + '</span></h5>'+
+                     '<h5>Project: <span class="text-info">'+ project_name +'</span></h5>',
+            type: 'red',
+            typeAnimated: true,
+            boxWidth: '40%',
+            useBootstrap: false,
+            theme: 'modern',
+            icon: 'fa fa-exclamation-circle',
+            buttons: {
+                formSubmit: {
+                    text: 'Remove',
+                    btnClass: 'btn-red',
+                    action: function () {
+                        $.ajax({
+                            type: "GET",
+                            cache: false,
+                            data: {
+                                task_name: task_name,
+                                task_id: task_id
+                            },
+                            dataType: 'json',
+                            url: urldata,
+                            success: function (response_data){
+                                $('.close-dialog').click();
+                                if (response_data.success === true){
+                                    $.ajax({
+                                        type:"GET",
+                                        cache: false,
+                                        data:{},
+                                        url: "{% url 'task_list' %}",
+                                        success: function(resp){
+                                            $('.addPane').html(resp);                                                  
+                                        }
+                                    }); 
+                                }
+                            }
+                        });
+                    }
+                },
+                close: {
+                    text: 'Cancel',
+                    btnClass: 'btn-gray',
+                    action: function () {
+                    }
+                }
+            }
+        });
+    }
+
+    function detailsTask(task_id, task_name) {
+
+        url = "{% url 'detailsProjectTask' 999%}".replace(999, task_id);
+        $.ajax({
+            url: url,
+            type: "GET",
+            cache: false,
+            data: {
+                task_id: task_id,
+                task_name: task_name,
+            },
+            success: function (resp) {
+                $.confirm({
+                    title: '<h3>Detail Task: <strong>' + task_name +'</strong></h3>',
+                    content: '' + resp,
+                    type: 'blue',
+                    theme: 'material',
+                    typeAnimated: true,
+                    boxWidth: '70%',
+                    useBootstrap: false,
+                    closeIcon: true,
+                    buttons: {
+                        close: {
+                            text: 'Close',
+                            btnClass: 'btn-gray',
+                            action: function () {
+                            }
+                        }
+                    }
+                });
+            }
+        });
     }
 </script>
-{% endblock %}

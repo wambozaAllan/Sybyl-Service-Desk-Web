@@ -27,7 +27,6 @@
             <tr>
                 <th>#</th>
                 <th>Member Name</th>
-                <th>Role</th>
                 <th class="text-center">Action</th>
             </tr>
             </thead>
@@ -40,15 +39,8 @@
                 <td>
                     {{ member.member }}
                 </td>
-                <td>
-                    <span class="badge badge-pill badge-success">{{ member.responsibility }}</span>
-                </td>
+                
                 <td class="text-center">
-                    <button class="btn btn-outline-success btn-sm"
-                            onclick="editProjectMember('{{ member.id }}', '{{ member }}', '{{ project_id }}')">
-                        <i title="Edit Team Member" class="fa fa-edit"></i>
-                    </button>
-
                     <button onclick="deleteProjectTeamMember('{{ member.id }}', '{{ member.member }}', '{{ team_id }}', '{{ team_name }}', '{{ project_id }}')"
                             class="btn btn-outline-danger btn-sm" type="button">
                         <i title="Delete Team Member" class="fa fa-remove"></i>
@@ -285,40 +277,6 @@
         });
     }
 
-    function editProjectMember(memberid, memberName, project_id) {
-
-        urldata = "{% url 'updateProjectTeamMember' 999%}".replace(999, memberid);
-        $.ajax({
-            type: "GET",
-            cache: false,
-            data: {
-                memberid: memberid,
-                project_id: project_id
-            },
-            url: urldata,
-            success: function (resp) {
-                $.confirm({
-                    title: '<h3>Member: <strong class="text-info">' + memberName + ' </strong></h3>',
-                    content: '' + resp,
-                    type: 'blue',
-                    theme: 'material',
-                    typeAnimated: true,
-                    boxWidth: '50%',
-                    height: '40%',
-                    useBootstrap: false,
-                    closeIcon: true,
-                    buttons: {
-                        close: {
-                            text: 'Close',
-                            btnClass: 'btn-gray close-dialog',
-                            action: function () {
-                            }
-                        }
-                    }
-                });
-            }
-        });
-    }
 
 </script>
 

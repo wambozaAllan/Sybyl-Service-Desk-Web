@@ -36,7 +36,6 @@
                             <tr>
                                 <th>#</th>
                                 <th>Member Name</th>
-                                <th>Role</th>
                                 <th class="text-center">Action</th>
                             </tr>
                             </thead>
@@ -49,15 +48,8 @@
                                 <td>
                                     {{member.member}}
                                 </td>
-                                <td>
-                                    <span class="badge badge-pill badge-success">{{ member.responsibility }}</span>
-                                </td>
-                                <td class="text-center">
-                                    <button class="btn btn-outline-success btn-sm"
-                                            onclick="editProjectTeamMember('{{ member.id }}', '{{ member }}', '{{ team.project.id }}', '{{team.id}}', '{{team.name}}')">
-                                        <i title="Edit Team Member" class="fa fa-edit"></i>
-                                    </button>
 
+                                <td class="text-center">
                                     <button onclick="deleteProjectTeamMember({{ member.id }}, '{{ member.member }}', '{{ team.id }}', '{{ team.name }}')"
                                             class="btn btn-outline-danger btn-sm" type="button">
                                         <i title="Delete Team Member" class="fa fa-remove"></i>
