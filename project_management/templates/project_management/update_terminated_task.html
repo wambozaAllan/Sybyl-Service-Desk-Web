@@ -1,6 +1,6 @@
 {% load crispy_forms_tags %}
 <div>
-    <input type="text" value="{{project_id}}" style="display: none;" id='id_project'/>
+    <input type="text" value="{{project_id}}" style="display: none;" id='id_project_t'/>
     <input type="text" value="{{project_name}}" style="display: none;" id='id_project_name'/>
     <input type="text" value="{{milestone_id}}" style="display: none;" id='id_milestone'/>
     <input type="text" value="{{milestone_name}}" style="display: none;" id='id_milestone_name'/>
@@ -16,11 +16,11 @@
                 <div class="row">
                     <div class="col-6" style="display: none;"> 
                         <div id="div_id_project" class="form-group">
-                            <label for="id_project" class="col-form-label ">
+                            <label for="id_project_t" class="col-form-label ">
                                 Project
                             </label>
                             <div class="">
-                                    <input name="project" class="textinput textInput form-control" required="" id="id_project" value="{{project_id}}" type="hidden">
+                                    <input name="project" class="textinput textInput form-control" required="" id="id_project_t" value="{{project_id}}" type="hidden">
                                     <input type="text" name="" class="textinput textInput form-control" required="" value="{{project_name}}" placeholder="" disabled="">
                             </div>
                         </div>
@@ -422,7 +422,7 @@
                 var actual_start_date = $('#id_actual_start_date').val();
                 var actual_end_date = $('#id_actual_end_date').val();
                 var description = $('#id_description').val();
-                var project_id =$('#id_project').val();
+                var project_id =$('#id_project_t').val();
                 var milestone_id = $('#id_milestone').val();
                 var task_id = $("#id_task").val();
 
@@ -550,7 +550,7 @@
             var actual_start_date = $('#id_actual_start_date').val();
             var actual_end_date = $('#id_actual_end_date').val();
             var description = $('#id_description').val();
-            var project_id =$('#id_project').val();
+            var project_id =$('#id_project_t').val();
             var milestone_id = $('#id_milestone').val();
             var task_id = $("#id_task").val();
 
