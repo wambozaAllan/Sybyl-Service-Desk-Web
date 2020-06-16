@@ -36,6 +36,14 @@ class Status(models.Model):
         return self.name
 
 
+class Stage(models.Model):
+    name = models.CharField(max_length=100)
+    description = models.CharField(max_length=255, null=True, blank=True)
+    creator = models.ForeignKey(User, on_delete=models.SET_NULL, null=True)  
+    created_time = models.DateTimeField(auto_now_add=True)
+    modified_time = models.DateTimeField(auto_now=True)
+
+
 # ROLE
 class Role(models.Model):
     name = models.CharField(max_length=250)
@@ -306,19 +314,16 @@ class TaskAttachment(models.Model):
 
 # Incident
 class Incident(models.Model):
-    title = models.CharField(max_length=100)
+    name = models.CharField(max_length=100)
     description = models.CharField(max_length=255, null=True, blank=True)
     priority = models.ForeignKey(Priority, on_delete=models.SET_NULL, null=True, blank=True)
-    task = models.ForeignKey(Task, on_delete=models.SET_NULL, null=True, blank=True)
-    status = models.ForeignKey(Status, null=True, blank=True, on_delete=models.SET_NULL)
+    status = models.ManyToManyField(Status, blank=True, null=True)
     project = models.ForeignKey(Project, on_delete=models.SET_NULL, blank=True, null=True)
-    assignee = models.ManyToManyField(ProjectTeamMember)
+    assigner = models.ManyToManyField(ProjectTeamMember, blank=True, null=True, related_name="assigner")
+    assigned_to = models.ManyToManyField(ProjectTeamMember, blank=True, null=True, related_name="assigned_to")
     creator = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, related_name='incident_creator')
     image = models.ImageField(upload_to='images/incidents/', null=True, blank=True)
-    document = models.FileField(upload_to='documents/incidents/', null=True, blank=True)
-    resolution_time = models.DateTimeField(null=True, blank=True)
-    reopen_time = models.DateTimeField(null=True, blank=True)
-    close_time = models.DateTimeField(null=True, blank=True)
+    document = models.FileField(upload_to='documents/incidents/', null=True, blank=True)    
     created_time = models.DateTimeField(auto_now_add=True)
     modified_time = models.DateTimeField(auto_now=True)
     history = HistoricalRecords()

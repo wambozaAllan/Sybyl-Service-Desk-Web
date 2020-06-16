@@ -14,10 +14,10 @@
     <div class="row col-12">
         <div class="col-6">
             <div id="div_id_log_day" class="form-group">
-                <label for="id_log_day" class="col-form-label  requiredField">Log Date<span class="asteriskField">*</span>
+                <label for="id_log_day5" class="col-form-label  requiredField">Log Date<span class="asteriskField">*</span>
                 </label>                    
                 <div class=""> 
-                    <input type="text" name="id_log_day" class="dateinput form-control" id="id_log_day" value="{{log_date}}" disabled>
+                    <input type="text" name="id_log_day5" class="dateinput form-control" id="id_log_day5" value="{{log_date}}" disabled>
                 </div>
             </div>
         </div>
@@ -35,10 +35,10 @@
     <div class="row col-12">
         <div class="col-6">
             <div id="div_id_project" class="form-group">
-                <label for="id_project" class="col-form-label  requiredField">Project<span class="asteriskField">*</span>
+                <label for="id_project5" class="col-form-label  requiredField">Project<span class="asteriskField">*</span>
                 </label>                    
                 <div class="">
-                    <select name="project" class="select form-control" id="id_project">
+                    <select name="project" class="select form-control" id="id_project5">
                         <option selected="" value="" disabled>--Select Project--</option>
                         {% for pro in project_list %}
                             <option value="{{pro.id}}">{{pro.name}}</option>
@@ -49,10 +49,10 @@
         </div>
         <div class="col-6">
             <div id="div_id_milestone" class="form-group">
-                <label for="id_milestone" class="col-form-label  requiredField">Milestone<span class="asteriskField">*</span>
+                <label for="id_milestone5" class="col-form-label  requiredField">Milestone<span class="asteriskField">*</span>
                 </label>                    
                 <div class="">
-                    <select name="milestone" class="select form-control" id="id_milestone">
+                    <select name="milestone" class="select form-control" id="id_milestone5">
                         <option selected="" value="" disabled>--Select Milestone--</option>
                     </select>
                 </div>
@@ -63,10 +63,10 @@
     <div class="row col-12">
         <div class="col-6">
             <div id="div_id_task" class="form-group">
-                <label for="id_task" class="col-form-label requiredField">Task<span class="asteriskField">*</span>
+                <label for="id_task5" class="col-form-label requiredField">Task<span class="asteriskField">*</span>
                 </label>                    
                 <div class="">
-                    <select name="task" class="select form-control" id="id_task">
+                    <select name="task" class="select form-control" id="id_task5">
                         <option selected="" value="" disabled>--Select Task--</option>
                     </select>
                 </div>
@@ -74,10 +74,10 @@
         </div>
         <div class="col-6">
             <div id="div_id_workedtime" class="form-group">
-                <label for="id_workedtime" class="col-form-label  requiredField">Worked Time<span class="asteriskField">*  | Duration: <big class="text-info font-weight-bold hide" id="time_duration"></big></span>
+                <label for="id_workedtime5" class="col-form-label  requiredField">Worked Time<span class="asteriskField">*  | Duration: <big class="text-info font-weight-bold hide" id="time_duration5"></big></span>
                 </label>                    
                 <div class="">
-                    <input onkeypress="return false;" style="box-shadow: none; font-family: 'Poppins', sans-serif; display: block; height: calc(2.25rem + 2px); padding: .375rem .75rem; padding-left: 0.75rem; font-size: 1rem; line-height: 1.5; color: #495057; background-color: #fff; background-clip: padding-box; border: 1px solid #ced4da; border-top-color: rgb(206, 212, 218); border-right-color: rgb(206, 212, 218); border-bottom-color: rgb(206, 212, 218); border-left-color: rgb(206, 212, 218); border-radius: .25rem; transition: border-color .15s ease-in-out,box-shadow .15s ease-in-out; flex: 1 1 auto; width: 100%; margin-bottom: 0; margin-top: 2%" class="daterange" name="datefilter" id="id_workedtime" type="text" />
+                    <input onkeypress="return false;" style="box-shadow: none; font-family: 'Poppins', sans-serif; display: block; height: calc(2.25rem + 2px); padding: .375rem .75rem; padding-left: 0.75rem; font-size: 1rem; line-height: 1.5; color: #495057; background-color: #fff; background-clip: padding-box; border: 1px solid #ced4da; border-top-color: rgb(206, 212, 218); border-right-color: rgb(206, 212, 218); border-bottom-color: rgb(206, 212, 218); border-left-color: rgb(206, 212, 218); border-radius: .25rem; transition: border-color .15s ease-in-out,box-shadow .15s ease-in-out; flex: 1 1 auto; width: 100%; margin-bottom: 0; margin-top: 2%" class="daterange" name="datefilter" id="id_workedtime5" type="text" />
                 </div>
             </div>
         </div>
@@ -102,9 +102,9 @@
     </div>
     
     <script>
-        $("#time_duration" ).hide();
+        $("#time_duration5" ).hide();
         document.getElementById("btnSaveTimesheet").disabled=false;
-        $('#id_log_day').datepicker({
+        $('#id_log_day5').datepicker({
             format: "dd-mm-yyyy",
             autoclose: true,
             clearBtn: true,
@@ -125,12 +125,12 @@
         });
         durationCalculating5();
     
-        $('#id_project').change(function () {
-            $('#id_milestone').val(null).trigger('change');
-            $('#id_milestone').html('');
-            $('#id_task').html('');
+        $('#id_project5').change(function () {
+            $('#id_milestone5').val(null).trigger('change');
+            $('#id_milestone5').html('');
+            $('#id_task5').html('');
 
-            var project_id = parseInt($('#id_project').val());
+            var project_id = parseInt($('#id_project5').val());
             urldata = "{% url 'selectMilestonesByProject'%}";
 
             $.ajax({
@@ -142,13 +142,13 @@
                 success: function (data) {
                     var res = JSON.parse(data.mil);
                     if (res !== '' && res.length > 0) {
-                        $('#id_milestone').html('');
+                        $('#id_milestone5').html('');
                         for (i in res) {
-                            $('#id_milestone').append('<option value="' + res[i].pk + '">' + res[i].fields.name + '</option>');
+                            $('#id_milestone5').append('<option value="' + res[i].pk + '">' + res[i].fields.name + '</option>');
                         }
 
-                        $('#id_task').val(null).trigger('change');
-                        var id_milestone1 = parseInt($('#id_milestone').val());
+                        $('#id_task5').val(null).trigger('change');
+                        var id_milestone1 = parseInt($('#id_milestone5').val());
                         urldata = "{% url 'selectTasksByMilestone'%}";
 
                         $.ajax({
@@ -160,26 +160,26 @@
                             success: function (data) {
                                 var res = JSON.parse(data.task);
                                 if (res !== '' && res.length > 0) {
-                                    $('#id_task').html('');
+                                    $('#id_task5').html('');
                                     for (i in res) {
-                                        $('#id_task').append('<option value="' + res[i].pk + '">' + res[i].fields.name + '</option>');
+                                        $('#id_task5').append('<option value="' + res[i].pk + '">' + res[i].fields.name + '</option>');
                                     }
                                 }
                             }
                         });
-                        $('#id_milestone').css({ "border": '1px solid #ced4da' });
-                        $('#id_task').css({"border": '1px solid #ced4da'});
+                        $('#id_milestone5').css({ "border": '1px solid #ced4da' });
+                        $('#id_task5').css({"border": '1px solid #ced4da'});
 
                     }
                 }
             });
         });
 
-        $('#id_milestone').change(function () {
-            $('#id_task').val(null).trigger('change');
-            $('#id_task').html('');
+        $('#id_milestone5').change(function () {
+            $('#id_task5').val(null).trigger('change');
+            $('#id_task5').html('');
 
-            var id_milestone = parseInt($('#id_milestone').val());
+            var id_milestone = parseInt($('#id_milestone5').val());
             if (id_milestone > 0) {
                 urldata = "{% url 'selectTasksByMilestone'%}";
 
@@ -192,61 +192,61 @@
                     success: function (data) {
                         var res = JSON.parse(data.task);
                         if (res !== '' && res.length > 0) {
-                            $('#id_task').html('');
+                            $('#id_task5').html('');
                             for (i in res) {
-                                $('#id_task').append('<option value="' + res[i].pk + '">' + res[i].fields.name + '</option>');
+                                $('#id_task5').append('<option value="' + res[i].pk + '">' + res[i].fields.name + '</option>');
                             }
                         }
-                        $('#id_task').css({"border": '1px solid #ced4da'});
+                        $('#id_task5').css({"border": '1px solid #ced4da'});
                     }
                 }); 
             }
         });
 
-        $('#id_log_day').on('change', function () {
-            $('#id_log_day').css({ "border": '1px solid #ced4da' });
+        $('#id_log_day5').on('change', function () {
+            $('#id_log_day5').css({ "border": '1px solid #ced4da' });
         });
 
-        $('#id_project').on('input', function () {
-            $('#id_project').css({ "border": '1px solid #ced4da' });
+        $('#id_project5').on('input', function () {
+            $('#id_project5').css({ "border": '1px solid #ced4da' });
         });
 
-        $('#id_milestone').on('input', function () {
-            $('#id_milestone').css({ "border": '1px solid #ced4da' });
+        $('#id_milestone5').on('input', function () {
+            $('#id_milestone5').css({ "border": '1px solid #ced4da' });
         });
 
-        $('#id_task').change(function () {
-            $('#id_task').css({"border": '1px solid #ced4da'});
+        $('#id_task5').change(function () {
+            $('#id_task5').css({"border": '1px solid #ced4da'});
         });
 
         $('#btnSaveTimesheet').click(function () { 
-            var id_log_day = $('#id_log_day').val();
-            var id_project = $('#id_project').val();
-            var id_milestone = $('#id_milestone').val();
-            var id_task = $('#id_task').val();
+            var id_log_day = $('#id_log_day5').val();
+            var id_project = $('#id_project5').val();
+            var id_milestone = $('#id_milestone5').val();
+            var id_task = $('#id_task5').val();
             var id_timesheet_notes = $('#id_timesheet_notes').val();
             var uid = {{user_id}};
 
-            var id_workedtime = $('#id_workedtime').val();
+            var id_workedtime = $('#id_workedtime5').val();
             var worked_time_ranges = id_workedtime.split(" - ");
             var start_time = worked_time_ranges[0];
             var end_time = worked_time_ranges[1];
 
             if (id_log_day < 1 || id_project < 1 || id_milestone < 1  || id_task < 1) {
                 if (id_log_day < 1) {
-                    $('#id_log_day').css({ "border": '2px solid #00635a' });
+                    $('#id_log_day5').css({ "border": '2px solid #00635a' });
                 }
 
                 if (id_project < 1) {
-                    $('#id_project').css({ "border": '2px solid #00635a' });
+                    $('#id_project5').css({ "border": '2px solid #00635a' });
                 }
 
                 if (id_milestone < 1) {
-                    $('#id_milestone').css({ "border": '2px solid #00635a' });
+                    $('#id_milestone5').css({ "border": '2px solid #00635a' });
                 }
 
                 if (id_task < 1) {
-                    $('#id_task').css({ "border": '2px solid #00635a' });
+                    $('#id_task5').css({ "border": '2px solid #00635a' });
                 }
 
             } else {
@@ -278,7 +278,7 @@
         });
 
         function durationCalculating5(){
-            var id_workedtime = $('#id_workedtime').val();
+            var id_workedtime = $('#id_workedtime5').val();
             var worked_time_ranges = id_workedtime.split(" - ");
             
             var time1 = worked_time_ranges[0];
@@ -301,8 +301,8 @@
 
             var hourDiff = hh + ":" + mm;
 
-            $("#time_duration" ).show();
-            $("#time_duration").text(hourDiff);
+            $("#time_duration5" ).show();
+            $("#time_duration5").text(hourDiff);
         }
 
     </script>

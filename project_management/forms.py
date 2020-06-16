@@ -167,7 +167,7 @@ class IncidentForm(forms.ModelForm):
 
     class Meta:
         model = Incident
-        fields = ('title', 'description', 'priority', 'task', 'status', 'project', 'assignee',
+        fields = ('name', 'description', 'priority','status', 'project', 'assigned_to',
                   'image', 'document')
 
 class ServiceLevelAgreementForm(forms.ModelForm):

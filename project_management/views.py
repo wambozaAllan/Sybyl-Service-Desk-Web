@@ -5198,7 +5198,25 @@ def add_new_timesheet_from_datepaginator(request):
     log_date = request.GET.get('log_date')
     id_user_dept = int(request.GET.get('id_user_dept'))
 
-    project_list = Project.objects.filter(company=int(company_id))
+    members = ProjectTeamMember.objects.filter(member=id_user_dept)
+    team_list = []
+    for value in members:  
+        team_members = ProjectTeamMember.project_team.through.objects.filter(projectteammember=value.id)
+
+        for obj in team_members:
+            team_name = obj.projectteam
+            team_list.append(team_name)
+    
+    project_list = []
+    for team in team_list:
+        project_id = team.project_id
+        
+        project = Project.objects.get(id=project_id)
+        project_dict = {}
+        project_dict['id'] = project.id
+        project_dict['name'] = project.name
+
+        project_list.append(project_dict)
     
     template = loader.get_template('project_management/add_new_calender_timesheet.html')
     context = {
