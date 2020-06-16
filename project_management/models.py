@@ -43,14 +43,6 @@ class Stage(models.Model):
     created_time = models.DateTimeField(auto_now_add=True)
     modified_time = models.DateTimeField(auto_now=True)
 
-
-# ROLE
-class Role(models.Model):
-    name = models.CharField(max_length=250)
-    description = models.CharField(max_length=255, blank=True)
-    created_time = models.DateTimeField(auto_now_add=True)
-    modified_time = models.DateTimeField(auto_now=True)
-
     def __str__(self):
         return self.name
 
@@ -188,7 +180,6 @@ class ProjectTeam(models.Model):
 class ProjectTeamMember(models.Model):
     member = models.ForeignKey(User, on_delete=models.CASCADE, default='')
     project_team = models.ManyToManyField(ProjectTeam)
-    responsibility = models.ForeignKey(Role, null=True, blank=True, on_delete=models.SET_NULL )
     created_time = models.DateTimeField(auto_now_add=True)
     modified_time = models.DateTimeField(auto_now=True)
 
@@ -284,7 +275,7 @@ class Task(models.Model):
     milestone = models.ForeignKey(Milestone, on_delete=models.SET_NULL, null=True, blank=True)
     status = models.ForeignKey(Status, on_delete=models.SET_NULL, null=True, blank=True)
     creator = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, blank=True, related_name='task_creator')
-    assigned_to = models.ManyToManyField(ProjectTeamMember, null=True, blank=True)
+    assigned_to = models.ManyToManyField(ProjectTeamMember)
     start_date = models.DateField(null=True, blank=True)
     end_date = models.DateField(null=True, blank=True)
     actual_start_date = models.DateField(null=True, blank=True)
@@ -298,6 +289,40 @@ class Task(models.Model):
 
     class Meta():
         db_table = 'task'
+
+    def aging(self):
+        current = date.today()
+        status_name = self.status.name.lower()
+        delta = ""
+
+        print("this is my status")
+        if status_name == "open": 
+            if self.end_date is not None:
+                if self.end_date > current :
+                    delta = current - self.start_date
+                    
+                elif current > self.end_date:
+                    delta = current - self.end_date
+            else:
+                delta = current - self.start_date
+ 
+        elif status_name == "onhold":
+            if self.end_date is not None:
+                if self.end_date > current:
+                    delta = current - self.start_date
+                    
+                elif current > self.end_date:
+                    delta = current - self.end_date
+            else:
+                delta = current - self.start_date
+
+        elif status_name == "completed":
+            delta = "Completed"
+
+        elif status_name == "terminated":
+            delta = "Terminated"
+
+        return delta
 
 
 # TaskAttachment
@@ -317,10 +342,10 @@ class Incident(models.Model):
     name = models.CharField(max_length=100)
     description = models.CharField(max_length=255, null=True, blank=True)
     priority = models.ForeignKey(Priority, on_delete=models.SET_NULL, null=True, blank=True)
-    status = models.ManyToManyField(Status, blank=True, null=True)
+    status = models.ManyToManyField(Status)
     project = models.ForeignKey(Project, on_delete=models.SET_NULL, blank=True, null=True)
-    assigner = models.ManyToManyField(ProjectTeamMember, blank=True, null=True, related_name="assigner")
-    assigned_to = models.ManyToManyField(ProjectTeamMember, blank=True, null=True, related_name="assigned_to")
+    assigner = models.ManyToManyField(ProjectTeamMember, related_name="assigner")
+    assigned_to = models.ManyToManyField(ProjectTeamMember, related_name="assigned_to")
     creator = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, related_name='incident_creator')
     image = models.ImageField(upload_to='images/incidents/', null=True, blank=True)
     document = models.FileField(upload_to='documents/incidents/', null=True, blank=True)    
@@ -330,7 +355,7 @@ class Incident(models.Model):
     escalation_status = models.BooleanField(default=False)
     
     def __str__(self):
-        return self.title
+        return self.name
 
     class Meta():
         db_table = 'incident'
@@ -350,7 +375,7 @@ class IncidentAttachment(models.Model):
 # IncidentComment
 class IncidentComment(models.Model):
     incident = models.ForeignKey(Incident, on_delete=models.DO_NOTHING)
-    comment = models.TextField()
+    comment = models.TextField(null=True)
     created_time = models.DateTimeField(auto_now_add=True)
     modified_time = models.DateTimeField(auto_now=True)
     attachment = models.FileField(upload_to="attachments/incidents", null=True, blank=True)
@@ -548,18 +573,6 @@ class ResubmittedTimesheet(models.Model):
 #     status = models.CharField(max_length=255, default='INITIAL')
 #     last_updated_date = models.DateTimeField(auto_now_add=True, blank=True, null=True)
 #     last_updated_by = models.ForeignKey(User, on_delete=models.CASCADE, related_name='last_updated_by', blank=True, null=True)
-
-
-class DailyLoggedHours(models.Model):
-    """class to view exact hours to be logged daily"""
-    logged_hours = models.TimeField()
-    created_time = models.DateTimeField(auto_now_add=True)
-    modified_time = models.DateTimeField(auto_now=True, blank=True, null=True)
-    created_by = models.ForeignKey(User, on_delete=models.CASCADE, null=True, blank=True)
-    updated_by = models.ForeignKey(User, on_delete=models.CASCADE, blank=True, null=True, related_name="updated_by")
-
-    class Meta():
-        db_table = 'daily_logged_hours'
 
 
 class ProjectCode(models.Model):

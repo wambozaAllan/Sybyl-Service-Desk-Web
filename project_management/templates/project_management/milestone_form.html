@@ -438,6 +438,15 @@
             success: function(response_data){ 
                 $('.close-dialog').click();
                 if(response_data.state === true){
+                    $.ajax({
+                        type:"GET",
+                        cache: false,
+                        data:{},
+                        url: "{% url 'milestone_list' %}",
+                        success: function(resp){
+                            $('.milestonesContainerPane').html(resp);
+                        }
+                    });
                     $.confirm({
                         title: response_data.success,
                         content: 'Milestone name: ' +response_data.name,
@@ -451,8 +460,7 @@
                                 text: 'OK',
                                 btnClass: 'btn-blue',
                                 action: function () {
-                                    // reloading window after success
-                                    location.reload(); 
+
                                 }
                             }
                         }

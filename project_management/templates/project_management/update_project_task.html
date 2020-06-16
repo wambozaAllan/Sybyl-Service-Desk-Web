@@ -353,26 +353,15 @@
                         url: url_data,
                         success: function (resp) {
                             $('.close-dialog').click();
-
-                            $.confirm({
-                                title: "Success",
-                                content: "Successfully updated",
-                                type: 'blue',
-                                typeAnimated: true,
-                                boxWidth: '35%',
-                                useBootstrap: false,
-                                closeIcon: true,
-                                    buttons: {
-                                        formSubmit: {
-                                            text: 'OK',
-                                            btnClass: 'btn-blue',
-                                            action: function () {
-                                            // reloading window after success
-                                                location.reload(); 
-                                            }
-                                        }
-                                    }
-                            });
+                            $.ajax({
+                                type:"GET",
+                                cache: false,
+                                data:{},
+                                url: "{% url 'task_list' %}",
+                                success: function(resp){
+                                    $('.taskContainerPane').html(resp);                                                  
+                                }
+                            }); 
                         }
                     });
                 }
