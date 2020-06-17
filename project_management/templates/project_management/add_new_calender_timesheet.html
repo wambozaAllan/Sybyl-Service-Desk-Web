@@ -250,6 +250,7 @@
                 }
 
             } else {
+                document.getElementById("btnSaveTimesheet").disabled=true;
                 data3 = {
                     id_log_day: id_log_day,
                     id_task: id_task,
@@ -271,7 +272,6 @@
                         $('#timesheet-manage-pane').html('<i class="fa fa-spinner fa-spin fa-5x text-center" style="margin-left: 50%;"></i>');
                         $('#timesheet-manage-pane').html(resp);
                         
-                        document.getElementById("btnSaveTimesheet").disabled=true;
                     }
                 });
             }

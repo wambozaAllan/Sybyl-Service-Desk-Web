@@ -264,6 +264,7 @@
             }
 
         } else {
+            document.getElementById("btnUpdateTimesheet22").disabled=true;
             var date_selected = $('#date_selected_val').val();
             data3 = {
                 id_log_day: id_log_day,
@@ -284,7 +285,6 @@
                 success: function (resp) {
                     $('.close-dialog').click();
                     $('#timesheet-manage-pane').html(resp);
-                    document.getElementById("btnUpdateTimesheet22").disabled=true;
                 }
             });
         }
