@@ -264,6 +264,7 @@
             }
 
         } else {
+            document.getElementById("btnUpdateTimesheet").disabled=true;
             data3 = {
                 id_log_day: id_log_day,
                 id_task: id_task,
@@ -284,7 +285,6 @@
                     $('.timesheet-pane').html(resp);
                     $( "#heading1" ).removeClass( "collapsed");
                     $( "#collapseOne" ).addClass( "show" );
-                    document.getElementById("btnUpdateTimesheet").disabled=true;
                 }
             });
         }

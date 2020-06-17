@@ -249,6 +249,7 @@
                 }
 
             } else {
+                document.getElementById("btnSaveTimesheet02").disabled=true;
                 data3 = {
                     id_log_day: id_log_day,
                     id_task: id_task,
@@ -266,7 +267,6 @@
                         $('.close-dialog').click();
                         $('.container-fluid').html(resp);
                         
-                        document.getElementById("btnSaveTimesheet02").disabled=true;
                     }
                 });
             }
