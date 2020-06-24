@@ -7129,3 +7129,44 @@ def check_task(request):
         }
 
         return JsonResponse(response_data)
+
+
+def manager_view_customer_requests(request):
+    template = loader.get_template('project_management/customer_assign_pane.html')
+
+    unassigned_req_list = CustomerRequest.objects.filter(client_request_status='SUBMITTED', status_current_flag="OPEN")
+    completed_req_list = CustomerRequest.objects.filter(status_current_flag='COMPLETED')
+    cancelled_req_list = CustomerRequest.objects.filter(status_current_flag='CANCELLED')
+    onhold_req_list = CustomerRequest.objects.filter(status_current_flag='ONHOLD')
+    pending_req_list = CustomerRequest.objects.filter(status_current_flag='PENDING')
+
+    context = {
+        'unassigned_req_list': unassigned_req_list,
+        'pending_req_list': pending_req_list,
+        'cancelled_req_list': cancelled_req_list,
+        'onhold_req_list': onhold_req_list,
+        'completed_req_list': completed_req_list
+    }
+    
+    return HttpResponse(template.render(context, request))
+
+
+def assign_customer_request(request):
+    req_id = request.GET.get('req_id')
+    req_name = request.GET.get('req_name')
+
+    print(f"{req_id} is the request")
+
+    department_id = request.session['department_id']
+
+    users = User.objects.filter(department_id=department_id)
+
+    template = loader.get_template('project_management/assign_customer_requests.html')
+
+    context = {
+        "req_id": req_id,
+        "req_name": req_name,
+        "users": users
+    }
+    
+    return HttpResponse(template.render(context, request))
