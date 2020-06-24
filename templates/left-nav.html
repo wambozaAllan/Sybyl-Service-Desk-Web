@@ -7,9 +7,11 @@
             <ul id="sidebarnav" style="max-height: 590px; overflow-y: scroll; scrollbar-width: thin;">
                 <li class="nav-devider"></li>
                 <li class="nav-label">Home - <span class="text-info">{{ request.session.company }} : {{ request.session.department }}</span></li>
+                {%if user.user_type is None or user.user_type == "normaluser"%}
                 <li>
                     <a href="{% url 'home' %}"><i class="fa fa-tachometer"></i><span class="hide-menu">Dashboard</span></a>
                 </li>
+                {% endif %}
 
                 {% for section in sections %}
                     <li class="nav-label">{{ section.name }}</li>
@@ -73,61 +75,70 @@
                             </a>
                         </li>
                         <li onclick="">
-                            <a href="" aria-expanded="false"><i class="fa fa-repeat"></i>
+                            <a href="" aria-expanded="false"><i class="fa fa-file"></i>
+                                <span class="hide-menu">Reports </span>
+                            </a>
+                        </li>
+                        {%if user.user_type is None or user.user_type == "normaluser"%}
+                        <li onclick="">
+                            <a href="{% url 'manageCustomerViewRequests' %}" aria-expanded="false"><i class="fa fa-repeat"></i>
                                 <span class="hide-menu">Assign </span>
                             </a>
                         </li>
-                    </ul>
-                </li>
-
-                <li class="">
-                    <a class="has-arrow" href="#" aria-expanded="false"><i class="fa fa-clock-o"></i>
-                        <span class="hide-menu">TIMESHEETS</span></a>
-                    <ul aria-expanded="false" class="collapse">
-                        <li onclick="">
-                            <a href="{% url 'myTimesheets' %}" aria-expanded="false"><i class="fa fa-calendar-plus-o"></i>
-                                <span class="hide-menu">Daily Timesheets </span>
-                            </a>
-                        </li>
-                        {% if user.is_superuser%}
-                            <li onclick="">
-                                <a href="{% url 'approveTimesheets' %}" aria-expanded="false"><i class="fa fa-calendar-check-o"></i>
-                                    <span class="hide-menu">Approvals </span>
-                                </a>
-                            </li>
-                            <!-- <li onclick="">
-                                <a href="{% url 'analyseAllTimesheets' %}" aria-expanded="false"><i class="fa fa-calendar"></i>
-                                    <span class="hide-menu">Calender </span>
-                                </a>
-                            </li> -->
-
-                            <li onclick="">
-                                <a href="{% url 'timesheetWeeklyReport' %}" aria-expanded="false"><i class="fa fa-line-chart"></i>
-                                    <span class="hide-menu">Weekly Review </span>
-                                </a>
-                            </li>
-
-                            <li onclick="">
-                                <a href="{% url 'timesheetProjectReport' %}" aria-expanded="false"><i class="fa fa-list-alt"></i>
-                                    <span class="hide-menu">Project Timesheets </span>
-                                </a>
-                            </li>
-                            <li onclick="">
-                                <a href="{% url 'staffUtilization' %}" aria-expanded="false"><i class="fa fa-list-alt"></i>
-                                    <span class="hide-menu">Staff Utilization </span>
-                                </a>
-                            </li>
-
-                            <li onclick="">
-                                <a href="{% url 'timesheetMonthlyReport' %}" aria-expanded="false"><i class="fa fa-bar-chart"></i>
-                                    <span class="hide-menu">Monthly Report </span>
-                                </a>
-                            </li>
                         {% endif %}
                     </ul>
                 </li>
-                {% endif %}
+                {%if user.user_type is None or user.user_type == "normaluser"%}
+                    <li class="">
+                        <a class="has-arrow" href="#" aria-expanded="false"><i class="fa fa-clock-o"></i>
+                            <span class="hide-menu">TIMESHEETS</span></a>
+                        <ul aria-expanded="false" class="collapse">
+                            <li onclick="">
+                                <a href="{% url 'myTimesheets' %}" aria-expanded="false"><i class="fa fa-calendar-plus-o"></i>
+                                    <span class="hide-menu">Daily Timesheets </span>
+                                </a>
+                            </li>
+                            {% if user.is_superuser%}
+                                <li onclick="">
+                                    <a href="{% url 'approveTimesheets' %}" aria-expanded="false"><i class="fa fa-calendar-check-o"></i>
+                                        <span class="hide-menu">Approvals </span>
+                                    </a>
+                                </li>
+                                <!-- <li onclick="">
+                                    <a href="{% url 'analyseAllTimesheets' %}" aria-expanded="false"><i class="fa fa-calendar"></i>
+                                        <span class="hide-menu">Calender </span>
+                                    </a>
+                                </li> -->
 
+                                <li onclick="">
+                                    <a href="{% url 'timesheetWeeklyReport' %}" aria-expanded="false"><i class="fa fa-line-chart"></i>
+                                        <span class="hide-menu">Weekly Review </span>
+                                    </a>
+                                </li>
+
+                                <li onclick="">
+                                    <a href="{% url 'timesheetProjectReport' %}" aria-expanded="false"><i class="fa fa-list-alt"></i>
+                                        <span class="hide-menu">Project Timesheets </span>
+                                    </a>
+                                </li>
+                                <li onclick="">
+                                    <a href="{% url 'staffUtilization' %}" aria-expanded="false"><i class="fa fa-list-alt"></i>
+                                        <span class="hide-menu">Staff Utilization </span>
+                                    </a>
+                                </li>
+
+                                <li onclick="">
+                                    <a href="{% url 'timesheetMonthlyReport' %}" aria-expanded="false"><i class="fa fa-bar-chart"></i>
+                                        <span class="hide-menu">Monthly Report </span>
+                                    </a>
+                                </li>
+                            {% endif %}
+                        </ul>
+                    </li>
+                    {% endif %}
+                {% endif %}
+                
+                {% if user.usertype is None or user.usertype == "normaluser"%}
                 <li>
                     <a class="has-arrow" href="#" aria-expanded="false"><i class="fa fa-suitcase"></i><span
                             class="hide-menu">Milestones</span></a>
@@ -146,6 +157,7 @@
                         <li><a href="{% url 'taskReport' %}">Task Report</a></li>
                     </ul>
                 </li>
+                {% endif %}
 
                 {% if perms.project_management.add_incident or perms.project_management.view_incident or perms.project_management.delete_incident or perms.project_management.change_incident %}
                     <li>
