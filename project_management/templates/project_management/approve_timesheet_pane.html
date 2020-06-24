@@ -76,13 +76,15 @@
                                             
                                                     {% for tm in timesheet_list %}
                                                         <tr>
+                                                            
+                                                            {% if tm.timesheet_type == "request_type" %}
                                                             <td>{{ forloop.counter }}</td>
                                                             <td>
                                                                 <span class="badge badge-success">
                                                                     <strong>{{ tm.project_team_member }}</strong>
                                                                 </span>
                                                             </td>
-                                                            <td><a href="#" onclick="functionViewTaskDetails({{ tm.task_id }})" title="View Task Details!" class="text-info font-weight-bold">{{ tm.task | truncatechars:17 }}</a></td>
+                                                            <td><a href="#" onclick="functionViewRequestDetails({{ tm.task_id }}, '{{tm.name}}', {{tm.sla_id}}, '{{tm.sla_name}}')" title="View Request Details!" class="text-info font-weight-bold">{{ tm.name | truncatechars:17 }}</a></td>
                                                             <td>{{ tm.log_day | date:"d-m-y"}}</td>
                                                             <td class="text-info">{{tm.duration}}</td>
                                                             <td>{{tm.date_submitted | date:"d-m-y"}}</td>
@@ -93,27 +95,68 @@
                                                             {% else %}
                                                                 <td class="text-center">
                                                                     <span class="label label-rounded label-success">
-                                                                        <a href="#" style="color: #fff" onclick="functionViewResubmissions({{tm.id}})">{{tm.get_resubmission_count}} </a>
+                                                                        <a href="#" style="color: #fff" onclick="functionViewResubmissions({{tm.tm_id}})">{{tm.get_resubmission_count}} </a>
                                                                     </span>
                                                                 </td>   
                                                             {% endif %}
-                                                            <td>
+                                                                <td>
                                                                 <form class="form">
                                                                     <span class="row">
-                                                                        <input type="checkbox" id="approvecheckbutton{{tm.id}}" onclick="manageTMApprovals({{tm.id}})" class="text-info timesheet-checkbox2" title="Select to approve timesheet." name="rowSelectCheckBox" value=""/>
+                                                                        <input type="checkbox" id="approvecheckbutton{{tm.tm_id}}" onclick="manageTMApprovals({{tm.tm_id}})" class="text-info timesheet-checkbox2" title="Select to approve timesheet." name="rowSelectCheckBox" value=""/>
                                                                 
-                                                                        <span class=" approve-radio-pane" id="approve-radio-pane{{tm.id}}" style="display: none">
-                                                                            <input type="radio" name="approve{{tm.id}}" value="ACCEPTED" checked /><small>Accept</small>
-                                                                            <input type="radio" name="approve{{tm.id}}" value="REJECTED" /><small>Reject</small>
+                                                                        <span class=" approve-radio-pane" id="approve-radio-pane{{tm.tm_id}}" style="display: none">
+                                                                            <input type="radio" name="approve{{tm.tm_id}}" value="ACCEPTED" checked /><small>Accept</small>
+                                                                            <input type="radio" name="approve{{tm.tm_id}}" value="REJECTED" /><small>Reject</small>
                                                                         </span>&nbsp;
 
-                                                                        <button onclick="functionViewTimesheetDesc('{{ tm.task }}', '{{ tm.notes }}', '{{  tm.start_time  | date:'H:i A' }} - {{ tm.end_time  | date:'H:i A' }}', '{{tm.created_time | date:"D, d M, Y"}}')" class="btn btn-outline-success btn-sm" type="button">
+                                                                        <button onclick="functionViewTimesheetDescRequest('{{ tm.name }}', '{{ tm.notes }}', '{{  tm.start_time  | date:'H:i A' }} - {{ tm.end_time  | date:'H:i A' }}', '{{tm.created_time | date:"D, d M, Y"}}')" class="btn btn-outline-success btn-sm" type="button">
                                                                             <i title="View Timesheet Description" class="fa fa-dedent"></i>
                                                                         </button>
-                                                                        <textarea id="approver_comment{{ tm.id }}" class="form-control input-sm col-10 approver-comment" rows="1" placeholder="Add Approver Comment (optional)"></textarea>
+                                                                        <textarea id="approver_comment{{ tm.tm_id }}" class="form-control input-sm col-10 approver-comment" rows="1" placeholder="Add Approver Comment (optional)"></textarea>
                                                                     </span>
                                                                 </form>
                                                             </td>
+                                                            {% else %}
+                                                            <td>{{ forloop.counter }}</td>
+                                                            <td>
+                                                                <span class="badge badge-success">
+                                                                    <strong>{{ tm.project_team_member }}</strong>
+                                                                </span>
+                                                            </td>
+                                                            <td><a href="#" onclick="functionViewTaskDetails({{ tm.task_id }})" title="View Task Details!" class="text-info font-weight-bold">{{ tm.name | truncatechars:17 }}</a></td>
+                                                            <td>{{ tm.log_day | date:"d-m-y"}}</td>
+                                                            <td class="text-info">{{tm.duration}}</td>
+                                                            <td>{{tm.date_submitted | date:"d-m-y"}}</td>
+                                                            {% if tm.get_resubmission_count == 0 %}
+                                                                <td class="text-center">
+                                                                    None
+                                                                </td>
+                                                            {% else %}
+                                                                <td class="text-center">
+                                                                    <span class="label label-rounded label-success">
+                                                                        <a href="#" style="color: #fff" onclick="functionViewResubmissions({{tm.tm_id}})">{{tm.get_resubmission_count}} </a>
+                                                                    </span>
+                                                                </td>   
+                                                            {% endif %}
+                                                                <td>
+                                                                <form class="form">
+                                                                    <span class="row">
+                                                                        <input type="checkbox" id="approvecheckbutton{{tm.tm_id}}" onclick="manageTMApprovals({{tm.tm_id}})" class="text-info timesheet-checkbox2" title="Select to approve timesheet." name="rowSelectCheckBox" value=""/>
+                                                                
+                                                                        <span class=" approve-radio-pane" id="approve-radio-pane{{tm.tm_id}}" style="display: none">
+                                                                            <input type="radio" name="approve{{tm.tm_id}}" value="ACCEPTED" checked /><small>Accept</small>
+                                                                            <input type="radio" name="approve{{tm.tm_id}}" value="REJECTED" /><small>Reject</small>
+                                                                        </span>&nbsp;
+
+                                                                        <button onclick="functionViewTimesheetDesc('{{ tm.name }}', '{{ tm.notes }}', '{{  tm.start_time  | date:'H:i A' }} - {{ tm.end_time  | date:'H:i A' }}', '{{tm.created_time | date:"D, d M, Y"}}')" class="btn btn-outline-success btn-sm" type="button">
+                                                                            <i title="View Timesheet Description" class="fa fa-dedent"></i>
+                                                                        </button>
+                                                                        <textarea id="approver_comment{{ tm.tm_id }}" class="form-control input-sm col-10 approver-comment" rows="1" placeholder="Add Approver Comment (optional)"></textarea>
+                                                                    </span>
+                                                                </form>
+                                                            </td>
+                                                            {% endif %}
+                                                        
                                                         </tr>
                                                     {% endfor %}
                                                     </tbody>
