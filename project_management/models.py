@@ -4,7 +4,7 @@ from django.db import models
 from django.conf import settings
 from django.utils import timezone
 
-from company_management.models import Company
+from company_management.models import Company, ServiceLevelAgreement
 from user_management.models import User, UserTeamMember
 
 from ckeditor.fields import RichTextField
@@ -476,34 +476,6 @@ class ProjectForumMessageReplyAttachments(models.Model):
         db_table = 'project_forum_message_reply_attachments'
 
 
-# Project SLA(Service Level Agreement)
-class ServiceLevelAgreement(models.Model):
-    name = models.CharField(max_length=255)
-    project = models.ForeignKey(Project, on_delete=models.CASCADE)
-    description = models.CharField(max_length=255, null=True, blank=True) 
-    response_time = models.IntegerField()
-    resolution_time = models.IntegerField()
-    created_time = models.DateTimeField(auto_now_add=True)
-    modified_time = models.DateTimeField(auto_now=True)
-    TIME_CHOICES = (('1', 'Days'), ('2', 'Weeks'), ('3', 'Months'))
-    resolution_duration = models.CharField(max_length=255, choices=TIME_CHOICES, default='Days')
-    response_duration = models.CharField(max_length=255, choices=TIME_CHOICES, default='Days')
-
-
-# Escalation Levels
-class EscalationLevel(models.Model):
-    name = models.CharField(max_length=255)
-    project = models.ForeignKey(Project, on_delete=models.CASCADE)
-    description = RichTextField(blank=True, null=True)
-    escalated_to = models.ManyToManyField(User)
-    escalated_by = models.ForeignKey(User, on_delete=models.CASCADE, related_name='escalated_by')
-    date_escalated = models.DateTimeField(auto_now_add=True)
-    modified_time = models.DateTimeField(auto_now=True)
-    escalation_on = models.IntegerField(default=1)
-    TIME_CHOICES = (('1', 'Days'), ('2', 'Weeks'), ('3', 'Months'))
-    escalation_on_duration = models.CharField(max_length=255, choices=TIME_CHOICES, default='Days')
-
-
 class Timesheet(models.Model):
     log_day = models.DateField()
     start_time = models.TimeField()
@@ -513,8 +485,7 @@ class Timesheet(models.Model):
     approved = models.BooleanField(default=False)
     approved_by = models.ForeignKey(User, on_delete=models.CASCADE, related_name='approved_by', blank=True, null=True)
     date_approved = models.DateTimeField(blank=True, null=True)
-    created_time = models.DateTimeField(auto_now_add=True)
-    task = models.ForeignKey(Task, on_delete=models.CASCADE)
+    created_time = models.DateTimeField(auto_now_add=True)    
     project_team_member = models.ForeignKey(User, on_delete=models.CASCADE, related_name='project_team_member', null=True)
     company = models.ForeignKey(Company, on_delete=models.CASCADE)
     is_submitted = models.BooleanField(default=False)
@@ -525,6 +496,7 @@ class Timesheet(models.Model):
     last_updated_by = models.ForeignKey(User, on_delete=models.CASCADE, related_name='last_updated_by', blank=True, null=True)
     is_resubmitted = models.BooleanField(default=False)
     approver_notes = RichTextField(blank=True, null=True)
+    timesheet_category = models.CharField(max_length=100, default='TIMESHEET')
 
     def duration(self):
         start = self.start_time
@@ -583,3 +555,42 @@ class ProjectCode(models.Model):
 
     class Meta():
         db_table = 'project_code'
+
+
+class CustomerRequest(models.Model):
+    name = models.CharField(max_length=100)
+    description = models.CharField(max_length=255, null=True, blank=True)
+    ticket_code = models.CharField(max_length=255)
+    priority = models.ForeignKey(Priority, on_delete=models.CASCADE)
+    sla = models.ForeignKey(ServiceLevelAgreement, on_delete=models.CASCADE)
+    status = models.ManyToManyField(Status, through='Trackstatus')
+    assigned_by = models.ForeignKey(ProjectTeamMember, related_name="assigned_by", on_delete=models.CASCADE, blank=True, null=True)
+    assigned_member = models.ManyToManyField(ProjectTeamMember, related_name="assigned_member")
+    creator = models.ForeignKey(User, on_delete=models.CASCADE, related_name='creator')
+    created_time = models.DateTimeField(auto_now_add=True)
+    modified_time = models.DateTimeField(auto_now=True)
+    fowarded_by = models.ForeignKey(User, on_delete=models.CASCADE, related_name='fowarded_by', blank=True, null=True)
+    date_submitted = models.DateTimeField(blank=True, null=True)
+    client_request_status = models.CharField(max_length=100, default='NOTSUBMITTED')
+    status_current_flag = models.CharField(max_length=100, default='OPEN')
+    history = HistoricalRecords()
+    
+    def __str__(self):
+        return self.name
+
+
+class Trackstatus(models.Model):
+    customerrequest = models.ForeignKey(CustomerRequest, on_delete=models.CASCADE)
+    request_status = models.ForeignKey(Status, on_delete=models.CASCADE)
+    datetime_added = models.DateTimeField(auto_now_add=True)
+    added_by = models.ForeignKey(User, on_delete=models.CASCADE)
+
+
+class TaskTimesheetExtend(models.Model):
+    timesheet = models.OneToOneField(Timesheet, on_delete=models.CASCADE)
+    task = models.ForeignKey(Task, on_delete=models.CASCADE)
+
+
+class RequestTimesheetExtend(models.Model):
+    timesheet = models.OneToOneField(Timesheet, on_delete=models.CASCADE)
+    customer_request = models.ForeignKey(CustomerRequest, on_delete=models.CASCADE)

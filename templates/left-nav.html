@@ -57,6 +57,29 @@
                 </li>
 
                 {% if user.is_staff%}
+                <li><a href="{% url 'listSlaContracts' %}"><i class="fa fa-suitcase"></i>
+                    <span class="hide-menu">
+                        SLA Contracts
+                    </span></a>
+                </li>
+
+                <li class="">
+                    <a class="has-arrow" href="#" aria-expanded="false"><i class="fa fa-tasks"></i>
+                        <span class="hide-menu">CUSTOMER REQUESTS</span></a>
+                    <ul aria-expanded="false" class="collapse">
+                        <li onclick="">
+                            <a href="{% url 'customerRequests' %}" aria-expanded="false"><i class="fa fa-list-alt"></i>
+                                <span class="hide-menu">Requests </span>
+                            </a>
+                        </li>
+                        <li onclick="">
+                            <a href="" aria-expanded="false"><i class="fa fa-repeat"></i>
+                                <span class="hide-menu">Assign </span>
+                            </a>
+                        </li>
+                    </ul>
+                </li>
+
                 <li class="">
                     <a class="has-arrow" href="#" aria-expanded="false"><i class="fa fa-clock-o"></i>
                         <span class="hide-menu">TIMESHEETS</span></a>

@@ -14,7 +14,7 @@ from django.core.mail import EmailMultiAlternatives
 from .forms import CompanyForm, DepartmentForm, BranchForm, BranchContactForm, BranchEmailForm
 
 from .models import Company, Department, Branch, CompanyDomain, CompanyCategory, BranchPhoneContact, \
-    BranchEmailAddresses
+    BranchEmailAddresses, ServiceLevelAgreement
 
 from user_management.models import User
 from project_management.models import Project, Status, ProjectCode
@@ -461,6 +461,52 @@ def save_company_update(request):
     return HttpResponse(template.render(context, request))
 
 
+def customer_sla_list(request):
+    company_id = request.session['company_id']
+
+    template = loader.get_template('company_management/list_customer_sla_pane.html')
+    sla_obj = ServiceLevelAgreement.objects.filter(company_id=int(company_id))
+
+    context = {
+        'sla_obj': sla_obj
+    }
+    
+    return HttpResponse(template.render(context, request))
+
+
+class AddSla(CreateView):
+    model = ServiceLevelAgreement
+    fields = ['name', 'customer','description', 'company']
+
+    template_name = 'company_management/add_sla.html'
+    success_url = reverse_lazy('listSlaContracts')
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        # SHOULD FILTER BY SESSION COMPANY CUTOMERS AFTER THEY ADD THE PARENT COLUMN
+        context['customer_list'] = Company.objects.all()
+        return context
+
+
+def save_sla(request):
+    sla_name = request.GET.get('sla_name')
+    id_description = request.GET.get('id_description')
+    id_customer = request.GET.get('id_customer')
+    company_id = request.session['company_id']
+
+    obj = ServiceLevelAgreement(name=sla_name, customer_id=int(id_customer), description=id_description, company_id=company_id)
+    obj.save()
+
+    template = loader.get_template('company_management/list_slas.html')
+    sla_obj = ServiceLevelAgreement.objects.filter(company_id=int(company_id))
+
+    context = {
+        'sla_obj': sla_obj
+    }
+
+    return HttpResponse(template.render(context, request))
+
+    
 # CUSTOMERS
 class AddCustomer(CreateView):
     model = Company
@@ -526,6 +572,40 @@ def save_customer(request):
     return HttpResponse(template.render(context, request))
 
 
+class UpdateSLA(UpdateView):
+    model = ServiceLevelAgreement
+    fields = ['name', 'customer','description', 'company']
+    template_name = 'company_management/update_sla.html'
+    success_url = reverse_lazy('listSlaContracts')
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        sla_id = self.kwargs['pk']
+        int_customer_id = self.get_object().customer_id
+        context['sla_id'] = sla_id
+        context['customer'] = int_customer_id
+        return context
+
+
+def save_sla_update(request):
+    sla_name = request.GET.get('sla_name')
+    id_description = request.GET.get('id_description')
+    id_customer = request.GET.get('id_customer')
+    sla_id = request.GET.get('sla_id')
+    company_id = request.session['company_id']
+
+    ServiceLevelAgreement.objects.filter(pk=int(sla_id)).update(name=sla_name, description=id_description, customer_id=id_customer)
+    
+    template = loader.get_template('company_management/list_slas.html')
+    sla_obj = ServiceLevelAgreement.objects.filter(company_id=int(company_id))
+
+    context = {
+        'sla_obj': sla_obj
+    }
+
+    return HttpResponse(template.render(context, request))
+
+    
 def customer_list_pane(request):
     template = loader.get_template('company_management/customer_list_container.html')
     context = {

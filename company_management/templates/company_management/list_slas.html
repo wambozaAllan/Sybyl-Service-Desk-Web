@@ -1,0 +1,38 @@
+<table id="table-approvals" class="display nowrap table table-hover" cellspacing="0" width="100%">
+    <thead>
+        <tr>
+            <th>#</th>
+            <th>SLA</th>
+            <th>Customer</th>
+            <th>Description</th>
+            <th>Added By</th>
+            <th>Date Added</th>
+            <th class="text-center">Action</th>
+        </tr>
+    </thead>
+    <tbody>
+
+        {% for sla in sla_obj %}
+        <tr>
+            <td>{{ forloop.counter }}</td>
+            <td>{{ sla.name}}</td>
+            <td>{{ sla.customer}} </td>
+            <td>{{ sla.description}}</td>
+            <td>{{sla.created_time}}</td>
+            <td>{{sla.modified_time}}</td>
+            <td class="text-center">
+                <button onclick="" id="" class="btn btn-outline-success btn-sm" type="button">
+                    <i title="Manage Company" class="fa fa-dedent"></i>
+                </button>
+                <button onclick="functionEditSla({{ sla.id }}, '{{ sla.name }}')" id=""
+                    class="btn btn-outline-success btn-sm" type="button">
+                    <i title="Edit Company" class="fa fa-edit"></i>
+                </button>
+                <button onclick="" id="" class="btn btn-outline-danger btn-sm" type="button">
+                    <i title="Edit Company" class="fa fa-remove"></i>
+                </button>
+            </td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>

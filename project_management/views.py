@@ -24,9 +24,9 @@ from .forms import MilestoneForm
 
 from django.contrib.auth.decorators import user_passes_test, permission_required, login_required
 
-from .models import Project, Milestone, Task, ProjectDocument, Incident, Priority, Status, ProjectTeam, ProjectTeamMember, ProjectForumMessages, ProjectForum, ProjectForumMessageReplies, ServiceLevelAgreement, IncidentComment, EscalationLevel, IncidentComment, Timesheet, ResubmittedTimesheet, ProjectCode
+from .models import Project, Milestone, Task, ProjectDocument, Incident, Priority, Status, ProjectTeam, ProjectTeamMember, ProjectForumMessages, ProjectForum, ProjectForumMessageReplies, IncidentComment, IncidentComment, Timesheet, ResubmittedTimesheet, ProjectCode, CustomerRequest, Trackstatus, TaskTimesheetExtend, RequestTimesheetExtend
 from user_management.models import User
-from company_management.models import Company, CompanyCategory, CompanyDomain, Department
+from company_management.models import Company, CompanyCategory, CompanyDomain, Department, ServiceLevelAgreement
 from .forms import CreateProjectForm, MilestoneForm, TaskForm, DocumentForm, ProjectUpdateForm, MilestoneUpdateForm, ProjectForm, IncidentForm, ProjectTeamForm
 from django.contrib.auth.mixins import PermissionRequiredMixin
 from django.http import JsonResponse
@@ -3722,323 +3722,6 @@ def delete_forum_reply(request):
     return HttpResponse(template.render(context, request))
 
 
-def project_sla_list(request):
-    projectid = request.GET.get('projectid')
-    projectname = request.GET.get('projectname')
-
-    template = loader.get_template('project_management/project_sla_list.html')
-    if ServiceLevelAgreement.objects.filter(project_id=projectid).exists():
-        sla_obj = ServiceLevelAgreement.objects.filter(project_id=int(projectid)).first()
-        status = True
-    else:
-        status = False
-
-    if status:
-        context = {
-            'status': status,
-            'sla_obj': sla_obj
-        }
-    else:
-        context = {
-            'status': status,
-            'projectid':projectid,
-            'projectname':projectname
-        }
-
-    return HttpResponse(template.render(context, request))
-
-
-class AddSla(CreateView):
-    model = ServiceLevelAgreement
-    fields = ['name', 'project','description', 'response_time', 'resolution_time', 'resolution_duration', 'response_duration']
-
-    template_name = 'project_management/add_sla.html'
-    success_url = reverse_lazy('projectsla')
-
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        pro_id = self.request.GET.get('pro_id')
-        pro_name = self.request.GET.get('pro_name')
-        context['pro_id'] = pro_id
-        context['pro_name'] = pro_name
-        return context
-
-
-def save_sla(request):
-    sla_name = request.GET.get('sla_name')
-    id_description = request.GET.get('id_description')
-    id_response_time = request.GET.get('id_response_time')
-    id_resolution_time = request.GET.get('id_resolution_time')
-    settingtoggleresp = request.GET.get('settingtoggleresp')
-    settingtoggleresoln = request.GET.get('settingtoggleresoln')
-    id_project = request.GET.get('id_project')
-
-    obj = ServiceLevelAgreement(name=sla_name, project_id=int(id_project), description=id_description, response_time=int(id_response_time),
-               resolution_time=int(id_resolution_time), response_duration=settingtoggleresp, resolution_duration=settingtoggleresoln)
-    obj.save()
-
-    slas = ServiceLevelAgreement.objects.filter(project_id=int(id_project)).first()
-    status = True
-    template = loader.get_template('project_management/project_sla_list.html')
-    context = {
-        'status': status,
-        'sla_obj': slas
-    }
-
-    return HttpResponse(template.render(context, request))
-
-
-class UpdateSLA(UpdateView):
-    model = ServiceLevelAgreement
-    fields = ['name', 'project','description', 'response_time', 'resolution_time', 'resolution_duration', 'response_duration']
-    template_name = 'project_management/update_sla.html'
-    success_url = reverse_lazy('projectsla')
-
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        sla_id = self.kwargs['pk']
-        response_time = self.get_object().response_time
-        resolution_time = self.get_object().resolution_time
-        resolution_duration = self.get_object().resolution_duration
-        response_duration = self.get_object().response_duration
-        int_proj_id = self.get_object().project_id
-        context['sla_id'] = sla_id
-        context['response_time'] = response_time
-        context['resolution_time'] = resolution_time
-        context['resolution_duration'] = resolution_duration
-        context['response_duration'] = response_duration
-        context['intial_project'] = int_proj_id
-        return context
-
-
-def save_sla_update(request):
-    sla_name = request.GET.get('sla_name')
-    id_description = request.GET.get('id_description')
-    id_response_time = request.GET.get('id_response_time')
-    id_resolution_time = request.GET.get('id_resolution_time')
-    settingtoggleresp = request.GET.get('settingtoggleresp')
-    settingtoggleresoln = request.GET.get('settingtoggleresoln')
-    id_project = request.GET.get('id_project')
-    sla_id = request.GET.get('sla_id')
-    intial_project_id = request.GET.get('intial_project_id')
-
-    ServiceLevelAgreement.objects.filter(pk=int(sla_id)).update(name=sla_name, description=id_description, response_time=id_response_time,
-        resolution_time=id_resolution_time, resolution_duration=settingtoggleresoln, response_duration=settingtoggleresp,  project_id=int(id_project))
-    
-    slas = ServiceLevelAgreement.objects.filter(project_id=int(id_project)).first()
-    
-    if int(id_project) == int(intial_project_id):
-        status = True
-    else:
-        status = False
-        
-    template = loader.get_template('project_management/project_sla_list.html')
-    context = {
-        'status': status,
-        'sla_obj': slas
-    } 
-
-    return HttpResponse(template.render(context, request))
-
-class ProjectEscalationList(ListView):
-    template_name = 'project_management/project_escalation_list.html'
-    context_object_name = 'esc_levels'
-
-    def get_queryset(self):
-        id_project = int(self.request.GET['projectid'])
-        return EscalationLevel.objects.filter(project_id=int(id_project)).annotate(num_esc=Count('escalated_to'))
-
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        pro_id = self.request.GET.get('projectid')
-        pro_name = self.request.GET.get('projectname')
-        context['projectid'] = pro_id
-        context['projectname'] = pro_name
-        return context
-
-
-class AddEscalation(CreateView):
-    model = EscalationLevel
-    fields = ['name', 'project','description', 'escalated_by', 'escalated_to', 'escalation_on', 'escalation_on_duration']
-
-    template_name = 'project_management/add_escalation_level.html'
-    success_url = reverse_lazy('tabProjectEscalation')
-
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        pro_id = self.request.GET.get('pro_id')
-        pro_name = self.request.GET.get('pro_name')
-        context['projectid'] = pro_id
-        context['projectname'] = pro_name
-        return context
-
-
-def save_escation_level(request):
-    esc_name = request.GET.get('esc_name')
-    id_description = request.GET.get('id_description')
-    id_escalate_on = request.GET.get('id_escalate_on')
-    escsettingtogglebtn = request.GET.get('escsettingtogglebtn')
-    id_project = int(request.GET.get('id_project'))
-    id_escalated_to = request.GET.get('id_escalated_to')
-    project_name = request.GET.get('pro_name')
-    uid = request.user.id
-
-    obj = EscalationLevel(name=esc_name, project_id=id_project, description=id_description, escalated_by_id=uid, escalation_on=id_escalate_on, escalation_on_duration=escsettingtogglebtn)
-    obj.save()
-
-    for i in json.loads(id_escalated_to): 
-        if obj.id is not None:
-            escalation = EscalationLevel.objects.get(id=obj.id)
-            user_escalated_to = User.objects.get(id=int(i))
-            escalation.escalated_to.add(user_escalated_to)
-
-    esc_levels = EscalationLevel.objects.filter(project_id=int(id_project)).annotate(num_esc=Count('escalated_to'))
-    template = loader.get_template('project_management/project_escalation_list.html')
-    context = {
-        'esc_levels': esc_levels,
-        'projectid': id_project,
-        'projectname': project_name,
-    }
-
-    return HttpResponse(template.render(context, request))
-
-
-class UpdateEscalationLevel(UpdateView):
-    model = EscalationLevel
-    fields = ['name', 'project','description', 'escalated_by', 'escalated_to', 'escalation_on', 'escalation_on_duration']
-    template_name = 'project_management/update_escalation.html'
-    success_url = reverse_lazy('tabProjectEscalation')
-
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        esc_id = self.kwargs['pk']
-        escalation_on = self.get_object().escalation_on
-        escalation_on_duration = self.get_object().escalation_on_duration
-        desc = self.get_object().description
-        context['esc_id'] = esc_id
-        context['escalation_on'] = escalation_on
-        context['escalation_on_duration'] = escalation_on_duration
-        context['desc'] = desc
-        return context
-
-
-def update_escation_level_update(request):
-    esc_name = request.GET.get('esc_name')
-    id_description = request.GET.get('id_description')
-    id_escalate_on = request.GET.get('id_escalate_on')
-    escsettingtogglebtn = request.GET.get('escsettingtogglebtn')
-    id_project = int(request.GET.get('id_project'))
-    esc_id = int(request.GET.get('esc_id'))
-    pro_name = request.GET.get('pro_name')
-
-    uid = request.user.id
-    
-    EscalationLevel.objects.filter(pk=int(esc_id)).update(name=esc_name, project_id=id_project, description=id_description, escalation_on=id_escalate_on, escalation_on_duration=escsettingtogglebtn)
-
-    esc_levels = EscalationLevel.objects.filter(project_id=id_project).annotate(num_esc=Count('escalated_to'))
-    template = loader.get_template('project_management/project_escalation_list.html')
-    context = {
-        'esc_levels': esc_levels,
-        'projectid': id_project,
-        'projectname': pro_name,
-    }
-
-    return HttpResponse(template.render(context, request))
-
-
-def manage_escalated_users(request):
-    esc_id = request.GET.get('esc_id')
-    esc_name = request.GET.get('esc_name')
-    pro_name = request.GET.get('pro_name')
-    pro_id = request.GET.get('pro_id')
-
-    esc_users = User.objects.filter(escalationlevel=int(esc_id))
-    
-    template = loader.get_template('project_management/list_escalated_users.html')
-    context = {
-        'esc_users': esc_users,
-        'esc_id': esc_id,
-        'esc_name': esc_name,
-        'pro_name': pro_name,
-        'pro_id': pro_id,
-    }
-
-    return HttpResponse(template.render(context, request))
-
-
-def de_escalate_user(request):
-    uid = request.GET.get('uid')
-    esc_id = request.GET.get('esc_id')
-    esc_name = request.GET.get('esc_name')
-    pro_id = request.GET.get('pro_id')
-    pro_name = request.GET.get('pro_name')
-
-    esc_id2 = EscalationLevel.objects.get(id=int(esc_id))
-    uid2 = User.objects.get(id=int(uid))
-    esc_id2.escalated_to.remove(uid2)
-
-    esc_users = User.objects.filter(escalationlevel=int(esc_id))
-    
-    template = loader.get_template('project_management/list_escalated_users.html')
-    context = {
-        'esc_users': esc_users,
-        'esc_id': esc_id,
-        'esc_name': esc_name,
-        'pro_name': pro_name,
-        'pro_id': pro_id,
-    }
-
-    return HttpResponse(template.render(context, request))
-
-def escalate_user(request):
-    uid = request.GET.get('uid')
-    esc_id = request.GET.get('esc_id')
-    esc_name = request.GET.get('esc_name')
-    pro_id = request.GET.get('pro_id')
-    pro_name = request.GET.get('pro_name')
-    company_id = request.session['company_id']
-
-    all_company_users = User.objects.filter(company_id=int(company_id))
-    escalated_users = User.objects.filter(escalationlevel=int(esc_id))
-    distinct_users = set(all_company_users).difference(set(escalated_users))
-
-    template = loader.get_template('project_management/escalate_new_user.html')
-    context = {
-        'esc_users': distinct_users,
-        'esc_id': esc_id,
-        'esc_name': esc_name,
-        'pro_name': pro_name,
-        'pro_id': pro_id,
-    }
-
-    return HttpResponse(template.render(context, request))
-
-
-def save_escalated_user(request):
-    uid = request.GET.get('uid')
-    esc_id = request.GET.get('esc_id')
-    esc_name = request.GET.get('esc_name')
-    pro_id = request.GET.get('pro_id')
-    pro_name = request.GET.get('pro_name')
-
-    esc_id2 = EscalationLevel.objects.get(id=int(esc_id))
-    uid2 = User.objects.get(id=int(uid))
-    esc_id2.escalated_to.add(uid2)
-
-    esc_users = User.objects.filter(escalationlevel=int(esc_id))
-    
-    template = loader.get_template('project_management/list_escalated_users.html')
-    context = {
-        'esc_users': esc_users,
-        'esc_id': esc_id,
-        'esc_name': esc_name,
-        'pro_name': pro_name,
-        'pro_id': pro_id,
-    }
-
-    return HttpResponse(template.render(context, request))
-
-
 def view_audit_logs(request):
     company_id = request.session['company_id']
     audit_logs = []
@@ -4296,71 +3979,6 @@ def all_companies_filter_auditlogs(request):
     return HttpResponse(template.render(context, request))
 
 
-def manage_sla_esclations(request):
-    # project_id = request.GET.get('project_id')
-    # print(project_id)
-
-    # date_now = datetime.datetime.now(timezone.utc)
-    # print('------------------------')
-    # print(date_now)
-
-
-    # if Incident.objects.all():
-    #     for i in Incident.objects.all():
-    #         print(i.close_time)
-    #         state = i.status
-    #         print(state)
-    #         if state is not None:
-    #             if i.status is not 'Completed':
-    #                 print(i.resolution_time)
-    #                 if i.close_time >= date_now:
-    #                     print("------------Don't  Escalate. Ignore------------------")
-    #                 else:
-    #                     print('fetch escalation levels, calculate time when to escalte to who, send emails, ')
-    #                     print("create a function for running escalations, with arg projectid, it counts  seconds and triggers an escalation")
-    #                     print("------------- Escalate -------------------")
-
-    # make_escalation(int(project_id))
-    # template = loader.get_template('project_management/escalate_new_user.html')
-    # context = {}
-
-    # return HttpResponse(template.render(context, request))
-    pass
-
-
-def make_escalation(project_id):
-    #Define the constants
-    # SECONDS_PER_MINUTE  = 60
-    # SECONDS_PER_HOUR    = 3600
-    # SECONDS_PER_DAY     = 86400
-
-    # for i in EscalationLevel.objects.filter(project=int(project_id)):
-    #     print('-----------escalations-------------')
-    #     print('--'+i.escalation_on_duration+'--')
-        
-    #     if i.escalation_on_duration == "Second(s)":
-    #         print("Second(s)")
-
-    #     if i.escalation_on_duration == "Minute(s)":
-    #         print("Minute(s)")
-
-    #     if i.escalation_on_duration == "Hour(s)":
-    #         print("Hour(s)")
-
-    #     if i.escalation_on_duration == "Day(s)":
-    #         print("Day(s)")
-    #         d_seconds = SECONDS_PER_DAY
-    #         print(d_seconds)
-
-    #     if i.escalation_on_duration == "Week(s)":
-    #         print("Week(s)")
-
-    #     if i.escalation_on_duration == "Month(s)":
-    #         print("Month(s)")
-        
-    pass
-
-
 def daily_timesheets_pane(request):
     uid = request.user.id
     company_id = request.session['company_id']
@@ -4380,14 +3998,50 @@ def daily_timesheets_pane(request):
         new_list2 = []
         new_list = set(new_list)
         new_list = sorted(new_list, reverse = True)
-        for tm in new_list:
+        for tm in new_list: 
+            task_request_list_final = []           
             new_dict = {}
             new_dict['tim'] = tm
-            daily_tm = Timesheet.objects.filter(log_day=tm, status='INITIAL', project_team_member_id=uid, company_id=company_id)
-            new_dict['dictt'] = daily_tm
+            daily_tm_tasks = TaskTimesheetExtend.objects.filter(timesheet__log_day=tm, timesheet__status='INITIAL', timesheet__project_team_member_id=uid, timesheet__company_id=company_id)
+            daily_tm_requests = RequestTimesheetExtend.objects.filter(timesheet__log_day=tm, timesheet__status='INITIAL', timesheet__project_team_member_id=uid, timesheet__company_id=company_id)
+            
+            for tsk in daily_tm_tasks:
+                dict_tasks = {}
+                dict_tasks['tm_id'] = tsk.timesheet.id
+                dict_tasks['name'] = tsk.task
+                dict_tasks['task_id'] = tsk.task_id
+                dict_tasks['duration'] = tsk.timesheet.duration
+                dict_tasks['log_day'] = tsk.timesheet.log_day
+                dict_tasks['start_time'] = tsk.timesheet.start_time
+                dict_tasks['end_time'] = tsk.timesheet.end_time
+                dict_tasks['notes'] = tsk.timesheet.notes
+                dict_tasks['created_time'] = tsk.timesheet.created_time
+                dict_tasks['timesheet_type'] = 'task_type'
+                dict_tasks['sla_name'] = ''
+                dict_tasks['sla_id'] = ''
+                task_request_list_final.append(dict_tasks)
+
+            for req in daily_tm_requests:
+                dict_requests = {}
+                dict_requests['tm_id'] = req.timesheet.id
+                dict_requests['name'] = req.customer_request
+                dict_requests['task_id'] = req.customer_request_id
+                dict_requests['duration'] = req.timesheet.duration
+                dict_requests['log_day'] = req.timesheet.log_day
+                dict_requests['start_time'] = req.timesheet.start_time
+                dict_requests['end_time'] = req.timesheet.end_time
+                dict_requests['notes'] = req.timesheet.notes
+                dict_requests['timesheet_type'] = 'request_type'
+                dict_requests['created_time'] = req.timesheet.created_time
+                dict_requests['sla_name'] = req.customer_request.sla.name
+                dict_requests['sla_id'] = req.customer_request.sla.id
+                task_request_list_final.append(dict_requests)
+
+            new_dict['dictt'] = task_request_list_final
+            
             sum_duration = 0 
-            for ii in daily_tm:
-	            sum_duration = sum_duration + ii.durationsec()
+            for ii in daily_tm_tasks:
+	            sum_duration = sum_duration + ii.timesheet.durationsec()
             new_dict['duration'] = compute_duration(sum_duration)
             new_list2.append(new_dict)
     else: 
@@ -4435,7 +4089,10 @@ def add_new_timesheet(request):
     context = {
         'project_list': project_list,
         'user_id' : id_user_dept,
-        'user_name' : User.objects.get(id=int(id_user_dept))
+        'user_name' : User.objects.get(id=int(id_user_dept)),
+
+        # PEDDING PLEADE ADD COMPANY ID (PARENT) FILTER
+        'client_list' : Company.objects.filter(category__category_value='CLIENT')
     }
 
     return HttpResponse(template.render(context, request))
@@ -4462,21 +4119,46 @@ def fetch_tasks_by_milestone(request):
 
 
 def save_new_timesheet(request):
-    uid = request.GET.get('uid')
+    structureRadioValue = request.GET.get('structureRadioValue')
+    uid = request.user.id
     company_id = request.session['company_id']
     id_log_day = request.GET.get('id_log_day')
-    id_task = request.GET.get('id_task')
-    start_time = request.GET.get('start_time')
-    end_time = request.GET.get('end_time')
-    id_timesheet_notes = request.GET.get('notes')
     dept_uid = int(request.GET.get('uid'))
-
     log_day = datetime.datetime.strptime(id_log_day, '%d-%m-%Y')
-    start_time1 = datetime.datetime.strptime(start_time, '%I:%M %p')
-    end_time1 =   datetime.datetime.strptime(end_time, '%I:%M %p')
-    
-    obj = Timesheet(log_day=log_day, start_time=start_time1, end_time=end_time1, added_by_id=uid, task_id=int(id_task), project_team_member_id=dept_uid, company_id=int(company_id), last_updated_date=datetime.date.today(), last_updated_by_id=uid, notes=id_timesheet_notes)
-    obj.save()
+
+    if structureRadioValue == 'project':
+        id_task = request.GET.get('id_task')
+        start_time = request.GET.get('start_time')
+        end_time = request.GET.get('end_time')
+        id_timesheet_notes = request.GET.get('notes')
+
+        
+        start_time1 = datetime.datetime.strptime(start_time, '%I:%M %p')
+        end_time1 =   datetime.datetime.strptime(end_time, '%I:%M %p')
+        
+        obj = Timesheet(log_day=log_day, start_time=start_time1, end_time=end_time1, added_by_id=uid, project_team_member_id=dept_uid, company_id=int(company_id), last_updated_date=datetime.date.today(), last_updated_by_id=uid, notes=id_timesheet_notes)
+        obj.save()
+        
+        new_timesheet_id = obj.id
+        if new_timesheet_id != "":
+            TaskTimesheetExtend.objects.create(timesheet_id=new_timesheet_id, task_id=int(id_task))
+
+    else:
+        id_assigned_requests = request.GET.get('id_assigned_requests')
+
+        start_time02 = request.GET.get('start_time2')
+        end_time02 = request.GET.get('end_time2')
+        id_timesheet_notes02 = request.GET.get('notes2')
+        
+        start_time003 = datetime.datetime.strptime(start_time02, '%I:%M %p')
+        end_time003 =   datetime.datetime.strptime(end_time02, '%I:%M %p')
+
+        obj2 = Timesheet(log_day=log_day, start_time=start_time003, end_time=end_time003, added_by_id=uid, project_team_member_id=dept_uid, company_id=int(company_id), last_updated_date=datetime.date.today(), last_updated_by_id=uid, notes=id_timesheet_notes02)
+        obj2.save()
+
+        new_timesheet_id2 = obj2.id
+        if new_timesheet_id2 != "":
+            RequestTimesheetExtend.objects.create(timesheet_id=new_timesheet_id2, customer_request_id=int(id_assigned_requests))
 
     timesheets_exist = Timesheet.objects.filter(status='INITIAL', project_team_member_id=dept_uid, company_id=company_id).exists()
     uid = request.user.id
@@ -4491,17 +4173,51 @@ def save_new_timesheet(request):
         new_list2 = []
         new_list = set(new_list)
         new_list = sorted(new_list, reverse = True)
-        for tm in new_list:
+        for tm in new_list: 
+            task_request_list_final = []           
             new_dict = {}
             new_dict['tim'] = tm
-            daily_tm = Timesheet.objects.filter(log_day=tm, status='INITIAL', project_team_member_id=dept_uid, company_id=company_id)
-            new_dict['dictt'] = daily_tm
+            daily_tm_tasks = TaskTimesheetExtend.objects.filter(timesheet__log_day=tm, timesheet__status='INITIAL', timesheet__project_team_member_id=dept_uid, timesheet__company_id=company_id)
+            daily_tm_requests = RequestTimesheetExtend.objects.filter(timesheet__log_day=tm, timesheet__status='INITIAL', timesheet__project_team_member_id=dept_uid, timesheet__company_id=company_id)
+            
+            for tsk in daily_tm_tasks:
+                dict_tasks = {}
+                dict_tasks['tm_id'] = tsk.timesheet.id
+                dict_tasks['name'] = tsk.task
+                dict_tasks['task_id'] = tsk.task_id
+                dict_tasks['duration'] = tsk.timesheet.duration
+                dict_tasks['log_day'] = tsk.timesheet.log_day
+                dict_tasks['start_time'] = tsk.timesheet.start_time
+                dict_tasks['end_time'] = tsk.timesheet.end_time
+                dict_tasks['notes'] = tsk.timesheet.notes
+                dict_tasks['created_time'] = tsk.timesheet.created_time
+                dict_tasks['timesheet_type'] = 'task_type'
+                dict_tasks['sla_name'] = ''
+                dict_tasks['sla_id'] = ''
+                task_request_list_final.append(dict_tasks)
 
+            for req in daily_tm_requests:
+                dict_requests = {}
+                dict_requests['tm_id'] = req.timesheet.id
+                dict_requests['name'] = req.customer_request
+                dict_requests['task_id'] = req.customer_request_id
+                dict_requests['duration'] = req.timesheet.duration
+                dict_requests['log_day'] = req.timesheet.log_day
+                dict_requests['start_time'] = req.timesheet.start_time
+                dict_requests['end_time'] = req.timesheet.end_time
+                dict_requests['notes'] = req.timesheet.notes
+                dict_requests['created_time'] = req.timesheet.created_time
+                dict_requests['timesheet_type'] = 'request_type'
+                dict_requests['sla_name'] = req.customer_request.sla.name
+                dict_requests['sla_id'] = req.customer_request.sla.id
+                task_request_list_final.append(dict_requests)
+
+            new_dict['dictt'] = task_request_list_final
+            
             sum_duration = 0 
-            for ii in daily_tm:
-                sum_duration = sum_duration + ii.durationsec()
+            for ii in daily_tm_tasks:
+	            sum_duration = sum_duration + ii.timesheet.durationsec()
             new_dict['duration'] = compute_duration(sum_duration)
-
             new_list2.append(new_dict)
     else: 
         new_list2 = False
@@ -4515,6 +4231,7 @@ def save_new_timesheet(request):
 
 
 def update_timesheet(request):
+    state = request.GET.get('state')
     company_id = request.session['company_id']
     log_day = request.GET.get('log_day')
     start_time = request.GET.get('start_time')
@@ -4525,35 +4242,72 @@ def update_timesheet(request):
     notes = request.GET.get('notes')
     id_user_dept = request.GET.get('id_user_dept')
 
-    obj_task = Task.objects.get(id=int(task_id))
-    project_name = obj_task.project
-    project_id = obj_task.project_id
-    milestone_id = obj_task.milestone_id
-    milestone_name = obj_task.milestone    
+    if state == "task":
+        obj_task = Task.objects.get(id=task_id)
+        project_name = obj_task.project
+        project_id = obj_task.project_id
+        milestone_id = obj_task.milestone_id
+        milestone_name = obj_task.milestone    
 
-    project_list = Project.objects.filter(~Q(id = int(project_id)))
-    list_project_milestones = Milestone.objects.filter(Q(project_id=int(project_id)), ~Q(id = int(milestone_id)))
-    list_milestone_tasks = Task.objects.filter(Q(milestone_id=int(milestone_id)), ~Q(id = task_id))
+        project_list = Project.objects.filter(~Q(id = int(project_id)))
+        list_project_milestones = Milestone.objects.filter(Q(project_id=int(project_id)), ~Q(id = int(milestone_id)))
+        list_milestone_tasks = Task.objects.filter(Q(milestone_id=int(milestone_id)), ~Q(id = task_id))
 
-    template = loader.get_template('project_management/update_timesheet.html')
-    context = {
-        'log_day': log_day,
-        'start_time': start_time,
-        'end_time': end_time,
-        'task': task,
-        'timesheet_id': timesheet_id,
-        'project_list': project_list,
-        'list_milestone_tasks': list_milestone_tasks,
-        'list_project_milestones': list_project_milestones,
-        'milestone_id': milestone_id,
-        'milestone_name': milestone_name,
-        'project_name': project_name,
-        'project_id': project_id,
-        'task_id': task_id,
-        'notes': notes,
-        'user_id' : id_user_dept,
-        'user_name' : User.objects.get(id=int(id_user_dept))
-    }
+        template = loader.get_template('project_management/update_timesheet.html')
+        context = {
+            'log_day': log_day,
+            'start_time': start_time,
+            'end_time': end_time,
+            'task': task,
+            'timesheet_id': timesheet_id,
+            'project_list': project_list,
+            'list_milestone_tasks': list_milestone_tasks,
+            'list_project_milestones': list_project_milestones,
+            'milestone_id': milestone_id,
+            'milestone_name': milestone_name,
+            'project_name': project_name,
+            'project_id': project_id,
+            'task_id': task_id,
+            'notes': notes,
+            'user_id' : id_user_dept,
+            'user_name' : User.objects.get(id=int(id_user_dept))
+        }
+    else:
+        sla_name = request.GET.get('sla_name')
+        sla_id = int(request.GET.get('sla_id'))
+
+        customer = ServiceLevelAgreement.objects.get(id=sla_id)
+        curr_customer_id = customer.customer_id
+        curr_customer_name = customer.customer.name
+
+        # PEDDING PLEADE ADD COMPANY ID (PARENT) FILTER
+        client_list = Company.objects.filter(category__category_value='CLIENT')
+        sla_list = ServiceLevelAgreement.objects.filter(customer_id=curr_customer_id)
+
+        project_team_member_id1 = ProjectTeamMember.objects.get(member=id_user_dept)
+        project_team_member_id2 = project_team_member_id1.id
+        list_sla_requests = CustomerRequest.objects.filter(sla_id=int(sla_id), assigned_member=project_team_member_id2)
+        
+        template = loader.get_template('project_management/update_timesheet_request.html')
+        context = {
+            'log_day': log_day,
+            'start_time': start_time,
+            'end_time': end_time,
+            'req': task,
+            'timesheet_id': timesheet_id,
+            'req_id': task_id,
+            'notes': notes,
+            'user_id' : id_user_dept,
+            'user_name' : User.objects.get(id=int(id_user_dept)),
+            'client_list': client_list,
+            'sla_id': sla_id,
+            'sla_name': sla_name,
+            'curr_customer_id': curr_customer_id,
+            'curr_customer_name': curr_customer_name,
+            'sla_list': sla_list,
+            'request_list': list_sla_requests
+        }
+    
 
     return HttpResponse(template.render(context, request))
 
@@ -4691,23 +4445,40 @@ def paginator_resubmit_timesheet(request):
 
 
 def save_update_timesheet(request):
+    structural_vale = request.GET.get('structural_vale')
     company_id = request.session['company_id']
-
     log_day = request.GET.get('id_log_day')
     dept_uid = int(request.GET.get('uid'))
-    start_time = request.GET.get('start_time')
-    end_time = request.GET.get('end_time')
-    task = int(request.GET.get('id_task'))
-    timesheet_id = int(request.GET.get('timesheet_id'))
-    notes = request.GET.get('notes')
     uid = request.user.id
-
     log_day = datetime.datetime.strptime(log_day, '%d-%m-%Y')
-    start_time1 = datetime.datetime.strptime(start_time, '%I:%M %p')
-    end_time1 =   datetime.datetime.strptime(end_time, '%I:%M %p')
-    
-    Timesheet.objects.filter(pk=int(timesheet_id)).update(log_day=log_day, start_time=start_time1, end_time=end_time1, task_id=task, last_updated_date=datetime.date.today(), last_updated_by_id=uid, notes=notes)
 
+    if structural_vale == 'project':
+        start_time = request.GET.get('start_time')
+        end_time = request.GET.get('end_time')
+        task = int(request.GET.get('id_task'))
+        timesheet_id = int(request.GET.get('timesheet_id'))
+        notes = request.GET.get('notes')
+        
+        start_time1 = datetime.datetime.strptime(start_time, '%I:%M %p')
+        end_time1 =   datetime.datetime.strptime(end_time, '%I:%M %p')
+        
+        Timesheet.objects.filter(pk=int(timesheet_id)).update(log_day=log_day, start_time=start_time1, end_time=end_time1, last_updated_date=datetime.date.today(), last_updated_by_id=uid, notes=notes)
+        TaskTimesheetExtend.objects.filter(pk=timesheet_id).update(task_id=task)
+    else:
+        id_assigned_requests = request.GET.get('id_assigned_requests')
+
+        start_time02 = request.GET.get('start_time2')
+        end_time02 = request.GET.get('end_time2')
+        id_timesheet_notes02 = request.GET.get('notes2')
+        timesheet_id02 = int(request.GET.get('timesheet_id2'))
+        notes02 = request.GET.get('notes2')
+        
+        start_time003 = datetime.datetime.strptime(start_time02, '%I:%M %p')
+        end_time003 =   datetime.datetime.strptime(end_time02, '%I:%M %p')
+        
+        Timesheet.objects.filter(pk=int(timesheet_id02)).update(log_day=log_day, start_time=start_time003, end_time=end_time003, last_updated_date=datetime.date.today(), last_updated_by_id=uid, notes=notes02)
+        RequestTimesheetExtend.objects.filter(pk=timesheet_id02).update(customer_request_id=id_assigned_requests) 
+    
     timesheets_exist = Timesheet.objects.filter(status='INITIAL', project_team_member_id=dept_uid, company_id=company_id).exists()
     if timesheets_exist == True:
         timesheet_list1 = Timesheet.objects.filter(status='INITIAL', project_team_member_id=dept_uid, company_id=company_id)
@@ -4719,18 +4490,51 @@ def save_update_timesheet(request):
         new_list2 = []
         new_list = set(new_list)
         new_list = sorted(new_list, reverse = True)
-
-        for tm in new_list:
+        for tm in new_list: 
+            task_request_list_final = []           
             new_dict = {}
             new_dict['tim'] = tm
-            daily_tm = Timesheet.objects.filter(log_day=tm, status='INITIAL', project_team_member_id=dept_uid, company_id=company_id)
-            new_dict['dictt'] = daily_tm
+            daily_tm_tasks = TaskTimesheetExtend.objects.filter(timesheet__log_day=tm, timesheet__status='INITIAL', timesheet__project_team_member_id=dept_uid, timesheet__company_id=company_id)
+            daily_tm_requests = RequestTimesheetExtend.objects.filter(timesheet__log_day=tm, timesheet__status='INITIAL', timesheet__project_team_member_id=dept_uid, timesheet__company_id=company_id)
+            
+            for tsk in daily_tm_tasks:
+                dict_tasks = {}
+                dict_tasks['tm_id'] = tsk.timesheet.id
+                dict_tasks['name'] = tsk.task
+                dict_tasks['task_id'] = tsk.task_id
+                dict_tasks['duration'] = tsk.timesheet.duration
+                dict_tasks['log_day'] = tsk.timesheet.log_day
+                dict_tasks['start_time'] = tsk.timesheet.start_time
+                dict_tasks['end_time'] = tsk.timesheet.end_time
+                dict_tasks['notes'] = tsk.timesheet.notes
+                dict_tasks['created_time'] = tsk.timesheet.created_time
+                dict_tasks['timesheet_type'] = 'task_type'
+                dict_tasks['sla_name'] = ''
+                dict_tasks['sla_id'] = ''
+                task_request_list_final.append(dict_tasks)
 
+            for req in daily_tm_requests:
+                dict_requests = {}
+                dict_requests['tm_id'] = req.timesheet.id
+                dict_requests['name'] = req.customer_request
+                dict_requests['task_id'] = req.customer_request_id
+                dict_requests['duration'] = req.timesheet.duration
+                dict_requests['log_day'] = req.timesheet.log_day
+                dict_requests['start_time'] = req.timesheet.start_time
+                dict_requests['end_time'] = req.timesheet.end_time
+                dict_requests['notes'] = req.timesheet.notes
+                dict_requests['created_time'] = req.timesheet.created_time
+                dict_requests['timesheet_type'] = 'request_type'
+                dict_requests['sla_name'] = req.customer_request.sla.name
+                dict_requests['sla_id'] = req.customer_request.sla.id
+                task_request_list_final.append(dict_requests)
+
+            new_dict['dictt'] = task_request_list_final
+            
             sum_duration = 0 
-            for ii in daily_tm:
-                sum_duration = sum_duration + ii.durationsec()
+            for ii in daily_tm_tasks:
+	            sum_duration = sum_duration + ii.timesheet.durationsec()
             new_dict['duration'] = compute_duration(sum_duration)
-
             new_list2.append(new_dict)
     
     template = loader.get_template('project_management/list_timesheet.html')
@@ -4744,8 +4548,19 @@ def save_update_timesheet(request):
 def delete_timesheet(request):
     company_id = request.session['company_id']
     dept_uid = int(request.GET.get('id_user_dept'))
-    timesheet_id = request.GET.get('timesheet_id')
-    Timesheet.objects.filter(id=int(timesheet_id)).delete()
+
+    structural_vale = request.GET.get('state')
+    if structural_vale == 'project':
+        timesheet_id = request.GET.get('timesheet_id')
+        task_id = request.GET.get('task_id')
+
+        TaskTimesheetExtend.objects.filter(pk=timesheet_id).delete()
+        Timesheet.objects.filter(id=int(timesheet_id)).delete()
+    else:
+        timesheet_id2 = request.GET.get('timesheet_id2')
+        req_id = request.GET.get('request_id')
+        RequestTimesheetExtend.objects.filter(pk=timesheet_id2).delete()
+        Timesheet.objects.filter(id=int(timesheet_id2)).delete()
 
     timesheets_exist = Timesheet.objects.filter(status='INITIAL', project_team_member_id=dept_uid, company_id=company_id).exists()
 
@@ -4759,17 +4574,51 @@ def delete_timesheet(request):
         new_list2 = []
         new_list = set(new_list)
         new_list = sorted(new_list, reverse = True)
-        for tm in new_list:
+        for tm in new_list: 
+            task_request_list_final = []           
             new_dict = {}
             new_dict['tim'] = tm
-            daily_tm = Timesheet.objects.filter(log_day=tm, status='INITIAL', project_team_member_id=dept_uid, company_id=company_id)
-            new_dict['dictt'] = daily_tm
+            daily_tm_tasks = TaskTimesheetExtend.objects.filter(timesheet__log_day=tm, timesheet__status='INITIAL', timesheet__project_team_member_id=dept_uid, timesheet__company_id=company_id)
+            daily_tm_requests = RequestTimesheetExtend.objects.filter(timesheet__log_day=tm, timesheet__status='INITIAL', timesheet__project_team_member_id=dept_uid, timesheet__company_id=company_id)
+            
+            for tsk in daily_tm_tasks:
+                dict_tasks = {}
+                dict_tasks['tm_id'] = tsk.timesheet.id
+                dict_tasks['name'] = tsk.task
+                dict_tasks['task_id'] = tsk.task_id
+                dict_tasks['duration'] = tsk.timesheet.duration
+                dict_tasks['log_day'] = tsk.timesheet.log_day
+                dict_tasks['start_time'] = tsk.timesheet.start_time
+                dict_tasks['end_time'] = tsk.timesheet.end_time
+                dict_tasks['notes'] = tsk.timesheet.notes
+                dict_tasks['created_time'] = tsk.timesheet.created_time
+                dict_tasks['timesheet_type'] = 'task_type'
+                dict_tasks['sla_name'] = ''
+                dict_tasks['sla_id'] = ''
+                task_request_list_final.append(dict_tasks)
 
+            for req in daily_tm_requests:
+                dict_requests = {}
+                dict_requests['tm_id'] = req.timesheet.id
+                dict_requests['name'] = req.customer_request
+                dict_requests['task_id'] = req.customer_request_id
+                dict_requests['duration'] = req.timesheet.duration
+                dict_requests['log_day'] = req.timesheet.log_day
+                dict_requests['start_time'] = req.timesheet.start_time
+                dict_requests['end_time'] = req.timesheet.end_time
+                dict_requests['notes'] = req.timesheet.notes
+                dict_requests['created_time'] = req.timesheet.created_time
+                dict_requests['timesheet_type'] = 'request_type'
+                dict_requests['sla_name'] = req.customer_request.sla.name
+                dict_requests['sla_id'] = req.customer_request.sla.id
+                task_request_list_final.append(dict_requests)
+
+            new_dict['dictt'] = task_request_list_final
+            
             sum_duration = 0 
-            for ii in daily_tm:
-                sum_duration = sum_duration + ii.durationsec()
+            for ii in daily_tm_tasks:
+	            sum_duration = sum_duration + ii.timesheet.durationsec()
             new_dict['duration'] = compute_duration(sum_duration)
-
             new_list2.append(new_dict)
     else: 
         new_list2 = ''
@@ -4805,17 +4654,51 @@ def send_timesheet_for_approval(request):
         new_list2 = []
         new_list = set(new_list)
         new_list = sorted(new_list, reverse = True)
-        for tm in new_list:
+        for tm in new_list: 
+            task_request_list_final = []           
             new_dict = {}
             new_dict['tim'] = tm
-            daily_tm = Timesheet.objects.filter(log_day=tm, status='INITIAL', project_team_member_id=id_user_dept, company_id=company_id)
-            new_dict['dictt'] = daily_tm
+            daily_tm_tasks = TaskTimesheetExtend.objects.filter(timesheet__log_day=tm, timesheet__status='INITIAL', timesheet__project_team_member_id=id_user_dept, timesheet__company_id=company_id)
+            daily_tm_requests = RequestTimesheetExtend.objects.filter(timesheet__log_day=tm, timesheet__status='INITIAL', timesheet__project_team_member_id=id_user_dept, timesheet__company_id=company_id)
+            
+            for tsk in daily_tm_tasks:
+                dict_tasks = {}
+                dict_tasks['tm_id'] = tsk.timesheet.id
+                dict_tasks['name'] = tsk.task
+                dict_tasks['task_id'] = tsk.task_id
+                dict_tasks['duration'] = tsk.timesheet.duration
+                dict_tasks['log_day'] = tsk.timesheet.log_day
+                dict_tasks['start_time'] = tsk.timesheet.start_time
+                dict_tasks['end_time'] = tsk.timesheet.end_time
+                dict_tasks['created_time'] = tsk.timesheet.created_time
+                dict_tasks['notes'] = tsk.timesheet.notes
+                dict_tasks['timesheet_type'] = 'task_type'
+                dict_tasks['sla_name'] = ''
+                dict_tasks['sla_id'] = ''
+                task_request_list_final.append(dict_tasks)
 
+            for req in daily_tm_requests:
+                dict_requests = {}
+                dict_requests['tm_id'] = req.timesheet.id
+                dict_requests['name'] = req.customer_request
+                dict_requests['task_id'] = req.customer_request_id
+                dict_requests['duration'] = req.timesheet.duration
+                dict_requests['log_day'] = req.timesheet.log_day
+                dict_requests['start_time'] = req.timesheet.start_time
+                dict_requests['end_time'] = req.timesheet.end_time
+                dict_requests['notes'] = req.timesheet.notes
+                dict_requests['created_time'] = req.timesheet.created_time
+                dict_requests['timesheet_type'] = 'request_type'
+                dict_requests['sla_name'] = req.customer_request.sla.name
+                dict_requests['sla_id'] = req.customer_request.sla.id
+                task_request_list_final.append(dict_requests)
+
+            new_dict['dictt'] = task_request_list_final
+            
             sum_duration = 0 
-            for ii in daily_tm:
-                sum_duration = sum_duration + ii.durationsec()
+            for ii in daily_tm_tasks:
+	            sum_duration = sum_duration + ii.timesheet.durationsec()
             new_dict['duration'] = compute_duration(sum_duration)
-
             new_list2.append(new_dict)
     else: 
         new_list2 = False
@@ -4833,9 +4716,50 @@ def timesheet_pending_approval(request):
 
     timesheet_list1 = Timesheet.objects.filter(status='SUBMITTED', company_id=company_id, project_team_member_id=id_user_dept)
 
+    task_request_list_final = []           
+    daily_tm_tasks = TaskTimesheetExtend.objects.filter(timesheet__status='SUBMITTED', timesheet__project_team_member_id=id_user_dept, timesheet__company_id=company_id)
+    daily_tm_requests = RequestTimesheetExtend.objects.filter(timesheet__status='SUBMITTED', timesheet__project_team_member_id=id_user_dept, timesheet__company_id=company_id)
+    
+    for tsk in daily_tm_tasks:
+        dict_tasks = {}
+        dict_tasks['tm_id'] = tsk.timesheet.id
+        dict_tasks['name'] = tsk.task
+        dict_tasks['task_id'] = tsk.task_id
+        dict_tasks['duration'] = tsk.timesheet.duration
+        dict_tasks['log_day'] = tsk.timesheet.log_day
+        dict_tasks['start_time'] = tsk.timesheet.start_time
+        dict_tasks['end_time'] = tsk.timesheet.end_time
+        dict_tasks['created_time'] = tsk.timesheet.created_time
+        dict_tasks['notes'] = tsk.timesheet.notes
+        dict_tasks['timesheet_type'] = 'task_type'
+        dict_tasks['sla_name'] = ''
+        dict_tasks['sla_id'] = ''
+        dict_tasks['get_resubmission_count'] = tsk.timesheet.get_resubmission_count
+        dict_tasks['date_submitted'] = tsk.timesheet.date_submitted
+        task_request_list_final.append(dict_tasks)
+
+    for req in daily_tm_requests:
+        dict_requests = {}
+        dict_requests['tm_id'] = req.timesheet.id
+        dict_requests['name'] = req.customer_request
+        dict_requests['task_id'] = req.customer_request_id
+        dict_requests['duration'] = req.timesheet.duration
+        dict_requests['log_day'] = req.timesheet.log_day
+        dict_requests['start_time'] = req.timesheet.start_time
+        dict_requests['end_time'] = req.timesheet.end_time
+        dict_requests['notes'] = req.timesheet.notes
+        dict_requests['created_time'] = req.timesheet.created_time
+        dict_requests['timesheet_type'] = 'request_type'
+        dict_requests['sla_name'] = req.customer_request.sla.name
+        dict_requests['sla_id'] = req.customer_request.sla.id
+        dict_requests['get_resubmission_count'] = req.timesheet.get_resubmission_count
+        dict_requests['date_submitted'] = req.timesheet.date_submitted
+        task_request_list_final.append(dict_requests)
+
+
     template = loader.get_template('project_management/list_timesheets_pending_approval.html')
     context = {
-        'timesheet_list': timesheet_list1,
+        'timesheet_list': task_request_list_final,
     }
 
     return HttpResponse(template.render(context, request))
@@ -5324,14 +5248,50 @@ def list_timesheet_view(request):
         new_list2 = []
         new_list = set(new_list)
         new_list = sorted(new_list, reverse = True)
-        for tm in new_list:
+        for tm in new_list: 
+            task_request_list_final = []           
             new_dict = {}
             new_dict['tim'] = tm
-            daily_tm = Timesheet.objects.filter(log_day=tm, status='INITIAL', project_team_member_id=uid, company_id=company_id)
-            new_dict['dictt'] = daily_tm
+            daily_tm_tasks = TaskTimesheetExtend.objects.filter(timesheet__log_day=tm, timesheet__status='INITIAL', timesheet__project_team_member_id=uid, timesheet__company_id=company_id)
+            daily_tm_requests = RequestTimesheetExtend.objects.filter(timesheet__log_day=tm, timesheet__status='INITIAL', timesheet__project_team_member_id=uid, timesheet__company_id=company_id)
+            
+            for tsk in daily_tm_tasks:
+                dict_tasks = {}
+                dict_tasks['tm_id'] = tsk.timesheet.id
+                dict_tasks['name'] = tsk.task
+                dict_tasks['task_id'] = tsk.task_id
+                dict_tasks['duration'] = tsk.timesheet.duration
+                dict_tasks['log_day'] = tsk.timesheet.log_day
+                dict_tasks['start_time'] = tsk.timesheet.start_time
+                dict_tasks['end_time'] = tsk.timesheet.end_time
+                dict_tasks['notes'] = tsk.timesheet.notes
+                dict_tasks['created_time'] = tsk.timesheet.created_time
+                dict_tasks['timesheet_type'] = 'task_type'
+                dict_tasks['sla_name'] = ''
+                dict_tasks['sla_id'] = ''
+                task_request_list_final.append(dict_tasks)
+
+            for req in daily_tm_requests:
+                dict_requests = {}
+                dict_requests['tm_id'] = req.timesheet.id
+                dict_requests['name'] = req.customer_request
+                dict_requests['task_id'] = req.customer_request_id
+                dict_requests['duration'] = req.timesheet.duration
+                dict_requests['log_day'] = req.timesheet.log_day
+                dict_requests['start_time'] = req.timesheet.start_time
+                dict_requests['end_time'] = req.timesheet.end_time
+                dict_requests['notes'] = req.timesheet.notes
+                dict_requests['created_time'] = req.timesheet.created_time
+                dict_requests['timesheet_type'] = 'request_type'
+                dict_requests['sla_name'] = req.customer_request.sla.name
+                dict_requests['sla_id'] = req.customer_request.sla.id
+                task_request_list_final.append(dict_requests)
+
+            new_dict['dictt'] = task_request_list_final
+            
             sum_duration = 0 
-            for ii in daily_tm:
-	            sum_duration = sum_duration + ii.durationsec()
+            for ii in daily_tm_tasks:
+	            sum_duration = sum_duration + ii.timesheet.durationsec()
             new_dict['duration'] = compute_duration(sum_duration)
             new_list2.append(new_dict)
     else: 
@@ -5675,14 +5635,50 @@ def select_daily_timesheets_by_user(request):
         new_list2 = []
         new_list = set(new_list)
         new_list = sorted(new_list, reverse = True)
-        for tm in new_list:
+        for tm in new_list: 
+            task_request_list_final = []           
             new_dict = {}
             new_dict['tim'] = tm
-            daily_tm = Timesheet.objects.filter(log_day=tm, status='INITIAL', project_team_member_id=uid, company_id=company_id)
-            new_dict['dictt'] = daily_tm
+            daily_tm_tasks = TaskTimesheetExtend.objects.filter(timesheet__log_day=tm, timesheet__status='INITIAL', timesheet__project_team_member_id=uid, timesheet__company_id=company_id)
+            daily_tm_requests = RequestTimesheetExtend.objects.filter(timesheet__log_day=tm, timesheet__status='INITIAL', timesheet__project_team_member_id=uid, timesheet__company_id=company_id)
+            
+            for tsk in daily_tm_tasks:
+                dict_tasks = {}
+                dict_tasks['tm_id'] = tsk.timesheet.id
+                dict_tasks['name'] = tsk.task
+                dict_tasks['task_id'] = tsk.task_id
+                dict_tasks['duration'] = tsk.timesheet.duration
+                dict_tasks['log_day'] = tsk.timesheet.log_day
+                dict_tasks['start_time'] = tsk.timesheet.start_time
+                dict_tasks['end_time'] = tsk.timesheet.end_time
+                dict_tasks['notes'] = tsk.timesheet.notes
+                dict_tasks['created_time'] = tsk.timesheet.created_time
+                dict_tasks['timesheet_type'] = 'task_type'
+                dict_tasks['sla_name'] = ''
+                dict_tasks['sla_id'] = ''
+                task_request_list_final.append(dict_tasks)
+
+            for req in daily_tm_requests:
+                dict_requests = {}
+                dict_requests['tm_id'] = req.timesheet.id
+                dict_requests['name'] = req.customer_request
+                dict_requests['task_id'] = req.customer_request_id
+                dict_requests['duration'] = req.timesheet.duration
+                dict_requests['log_day'] = req.timesheet.log_day
+                dict_requests['start_time'] = req.timesheet.start_time
+                dict_requests['end_time'] = req.timesheet.end_time
+                dict_requests['notes'] = req.timesheet.notes
+                dict_requests['created_time'] = req.timesheet.created_time
+                dict_requests['timesheet_type'] = 'request_type'
+                dict_requests['sla_name'] = req.customer_request.sla.name
+                dict_requests['sla_id'] = req.customer_request.sla.id
+                task_request_list_final.append(dict_requests)
+
+            new_dict['dictt'] = task_request_list_final
+            
             sum_duration = 0 
-            for ii in daily_tm:
-	            sum_duration = sum_duration + ii.durationsec()
+            for ii in daily_tm_tasks:
+	            sum_duration = sum_duration + ii.timesheet.durationsec()
             new_dict['duration'] = compute_duration(sum_duration)
             new_list2.append(new_dict)
     else: 
@@ -6657,6 +6653,25 @@ def append_zero(number):
         return number
 
 
+def customer_request_home(request):
+    template = loader.get_template('project_management/customer_request_pane.html')
+
+    unsubmited_req_list = CustomerRequest.objects.filter(client_request_status='NOTSUBMITTED', status_current_flag="OPEN")
+    submited_req_list = CustomerRequest.objects.filter(client_request_status='SUBMITTED', status_current_flag="OPEN")
+    completed_reg_list = CustomerRequest.objects.filter(status_current_flag='COMPLETED')
+    cancelled_reg_list = CustomerRequest.objects.filter(status_current_flag='CANCELLED')
+    onhold_reg_list = CustomerRequest.objects.filter(status_current_flag='ONHOLD')
+    context = {
+        'unsubmited_req_list': unsubmited_req_list,
+        'submited_req_list': submited_req_list,
+        'completed_reg_list': completed_reg_list,
+        'cancelled_reg_list': cancelled_reg_list,
+        'onhold_reg_list': onhold_reg_list
+    }
+    
+    return HttpResponse(template.render(context, request))
+
+        
 # CUSTOMER PROJECT VIEWS
 def list_customer_projects(request):
     """list users under customer company"""
@@ -6701,6 +6716,187 @@ def add_customer_projects(request):
     return HttpResponse(template.render(context, request))
 
 
+class AddCustomerRequest(CreateView):
+    model = CustomerRequest
+    fields = ['name', 'ticket_code','description', 'priority', 'sla', 'status']
+
+    template_name = 'project_management/add_customer_request.html'
+    success_url = reverse_lazy('customerRequests')
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        # SHOULD FILTER BY SESSION CUTOMERS so that we see slas for only that customer
+        context['customer_sla_list'] = ServiceLevelAgreement.objects.all()
+        context['status_list'] = Status.objects.all()
+        return context
+
+
+def save_customer_request(request):
+    request_name = request.GET.get('request_name')
+    id_description = request.GET.get('id_description')
+    id_ticket_code = request.GET.get('id_ticket_code')
+    id_customer_sla = int(request.GET.get('id_customer_sla'))
+    id_priority = int(request.GET.get('id_priority'))
+    id_status = int(request.GET.get('id_status'))
+    user_id = request.user.id
+
+    obj = CustomerRequest(name=request_name, ticket_code=id_ticket_code, description=id_description, priority_id=id_priority, sla_id=id_customer_sla, creator_id=user_id, created_time=datetime.date.today(), modified_time=datetime.date.today(), client_request_status='NOTSUBMITTED')
+    obj.save()
+
+    customer_req_id = obj.id
+    if customer_req_id != "":
+        Trackstatus.objects.create(customerrequest_id=customer_req_id, request_status_id=id_status, added_by_id=user_id)
+
+    template = loader.get_template('project_management/list_customer_requests.html')
+    
+    unsubmited_req_list = CustomerRequest.objects.filter(client_request_status='NOTSUBMITTED', status_current_flag="OPEN")
+    submited_req_list = CustomerRequest.objects.filter(client_request_status='SUBMITTED', status_current_flag="OPEN")
+    completed_reg_list = CustomerRequest.objects.filter(status_current_flag='COMPLETED')
+    cancelled_reg_list = CustomerRequest.objects.filter(status_current_flag='CANCELLED')
+    onhold_reg_list = CustomerRequest.objects.filter(status_current_flag='ONHOLD')
+    context = {
+        'unsubmited_req_list': unsubmited_req_list,
+        'submited_req_list': submited_req_list,
+        'completed_reg_list': completed_reg_list,
+        'cancelled_reg_list': cancelled_reg_list,
+        'onhold_reg_list': onhold_reg_list
+    }
+
+    return HttpResponse(template.render(context, request))
+
+
+class UpdateCustomerRequest(UpdateView):
+    model = CustomerRequest
+    fields = ['name', 'ticket_code','description', 'priority', 'sla', 'status']
+    template_name = 'project_management/update_customer_request.html'
+    success_url = reverse_lazy('customerRequests')
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        request_id = self.kwargs['pk']
+        context['request_id'] = request_id
+
+        sla_id = self.request.GET['sla_id']
+        sla_name = self.request.GET['sla_name']
+        context['sla_id'] = sla_id
+        context['sla_name'] = sla_name
+
+        current_status_count = Trackstatus.objects.filter(customerrequest_id=request_id).values('request_status').count()
+        current_status = Trackstatus.objects.filter(customerrequest_id=request_id).values('request_status')
+        current_status_count = current_status_count - 1
+        current_status_id = current_status[current_status_count]['request_status']
+
+        current_status_name = Status.objects.get(id=current_status_id)
+        context['current_status_id'] = current_status_id
+        context['current_status_name'] = current_status_name.name
+
+        # SHOULD FILTER BY SESSION CUTOMERS so that we see slas for only that customer
+        context['customer_sla_list'] = ServiceLevelAgreement.objects.filter(~Q(id = int(sla_id)))
+        context['status_list'] = Status.objects.filter(~Q(id = int(current_status_id)))
+        return context
+
+
+def save_customer_request_update(request):
+    request_id = request.GET.get('request_id')
+    request_name = request.GET.get('request_name')
+    id_description = request.GET.get('id_description')
+    id_ticket_code = request.GET.get('id_ticket_code')
+    id_customer_sla = int(request.GET.get('id_customer_sla'))
+    id_priority = int(request.GET.get('id_priority'))
+    id_status = int(request.GET.get('id_status'))
+    user_id = request.user.id
+    current_status_id = int(request.GET.get('current_status_id'))
+
+    CustomerRequest.objects.filter(pk=int(request_id)).update(name=request_name, ticket_code=id_ticket_code, description=id_description, priority_id=id_priority, sla_id=id_customer_sla, modified_time=datetime.date.today())
+    
+    # COMPARE PRE and New Status
+    if id_status != current_status_id:
+        Trackstatus.objects.create(customerrequest_id=int(request_id), request_status_id=id_status, added_by_id=user_id)
+
+    template = loader.get_template('project_management/list_customer_requests.html')
+    
+    unsubmited_req_list = CustomerRequest.objects.filter(client_request_status='NOTSUBMITTED', status_current_flag="OPEN")
+    submited_req_list = CustomerRequest.objects.filter(client_request_status='SUBMITTED', status_current_flag="OPEN")
+    completed_reg_list = CustomerRequest.objects.filter(status_current_flag='COMPLETED')
+    cancelled_reg_list = CustomerRequest.objects.filter(status_current_flag='CANCELLED')
+    onhold_reg_list = CustomerRequest.objects.filter(status_current_flag='ONHOLD')
+    context = {
+        'unsubmited_req_list': unsubmited_req_list,
+        'submited_req_list': submited_req_list,
+        'completed_reg_list': completed_reg_list,
+        'cancelled_reg_list': cancelled_reg_list,
+        'onhold_reg_list': onhold_reg_list
+    }
+
+    return HttpResponse(template.render(context, request))
+    
+
+class ViewCustomerRequest(DetailView):
+    model = CustomerRequest
+    context_object_name = 'request'
+    template_name = 'project_management/view_customer_request.html'
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        req_desc = self.get_object().description
+        if  req_desc.strip() is not "":
+            context['desc'] = 1
+        else: 
+            context['desc'] = 0
+        return context
+
+
+def delete_customer_request(request):
+    req_id = request.GET.get('req_id')
+    
+    Trackstatus.objects.filter(customerrequest_id=int(req_id)).delete()
+    CustomerRequest.objects.filter(id=int(req_id)).delete()
+
+    template = loader.get_template('project_management/list_customer_requests.html')
+    
+    unsubmited_req_list = CustomerRequest.objects.filter(client_request_status='NOTSUBMITTED', status_current_flag="OPEN")
+    submited_req_list = CustomerRequest.objects.filter(client_request_status='SUBMITTED', status_current_flag="OPEN")
+    completed_reg_list = CustomerRequest.objects.filter(status_current_flag='COMPLETED')
+    cancelled_reg_list = CustomerRequest.objects.filter(status_current_flag='CANCELLED')
+    onhold_reg_list = CustomerRequest.objects.filter(status_current_flag='ONHOLD')
+    context = {
+        'unsubmited_req_list': unsubmited_req_list,
+        'submited_req_list': submited_req_list,
+        'completed_reg_list': completed_reg_list,
+        'cancelled_reg_list': cancelled_reg_list,
+        'onhold_reg_list': onhold_reg_list
+    }
+
+    return HttpResponse(template.render(context, request))
+
+
+def foward_customer_requests(request):
+    request_list = request.GET.get('listCustomerRequest')
+    json_data = json.loads(request_list)
+    uid = request.user.id
+    
+    for request_id in json_data:
+        req_id = request_id['req']
+        CustomerRequest.objects.filter(pk=int(req_id)).update(client_request_status='SUBMITTED', date_submitted=datetime.date.today(), fowarded_by_id=uid)
+    
+    template = loader.get_template('project_management/list_customer_requests.html')
+    
+    unsubmited_req_list = CustomerRequest.objects.filter(client_request_status='NOTSUBMITTED', status_current_flag="OPEN")
+    submited_req_list = CustomerRequest.objects.filter(client_request_status='SUBMITTED', status_current_flag="OPEN")
+    completed_reg_list = CustomerRequest.objects.filter(status_current_flag='COMPLETED')
+    cancelled_reg_list = CustomerRequest.objects.filter(status_current_flag='CANCELLED')
+    onhold_reg_list = CustomerRequest.objects.filter(status_current_flag='ONHOLD')
+    context = {
+        'unsubmited_req_list': unsubmited_req_list,
+        'submited_req_list': submited_req_list,
+        'completed_reg_list': completed_reg_list,
+        'cancelled_reg_list': cancelled_reg_list,
+        'onhold_reg_list': onhold_reg_list
+    }
+
+    return HttpResponse(template.render(context, request))
+
+    
 def return_status(request):
     """
     populate status field with status
@@ -6872,6 +7068,30 @@ def list_customer_service_requests(request):
     return HttpResponse(template.render(context, request))
 
 
+def fetch_SLAs_by_customer(request):
+    id_customer = request.GET.get('id_customer')
+    
+    list_customer_slas = ServiceLevelAgreement.objects.filter(customer_id=int(id_customer))
+    data = {
+        'sla': serializers.serialize("json", list_customer_slas)
+    }
+    return JsonResponse(data)
+
+
+def fetch_requests_by_sla(request):
+    id_sla_contract = request.GET.get('id_sla_contract')
+    id_user = int(request.GET.get('id_user_dept01'))
+
+    project_team_member_id1 = ProjectTeamMember.objects.get(member=id_user)
+    project_team_member_id2 = project_team_member_id1.id
+  
+    list_sla_requests = CustomerRequest.objects.filter(sla_id=int(id_sla_contract), assigned_member=project_team_member_id2)
+    data = {
+        'req': serializers.serialize("json", list_sla_requests)
+    }
+    return JsonResponse(data)
+
+    
 def list_customer_sla(request):
     """view SLAs by customer"""
 

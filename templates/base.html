@@ -1511,6 +1511,42 @@
             });
         }
 
+        function functionViewRequestDetails(req_id, req_name, sla_id, sla_name) {
+            urldata = "{% url 'viewCustomerRequest' 999%}".replace(999, req_id);
+            $.ajax({
+                type: "GET",
+                cache: false,
+                data: {
+                    req_name: req_name, 
+                    sla_id: sla_id,
+                    sla_name: sla_name
+                },
+                url: urldata,
+                success: function (resp) {
+                    $.confirm({
+                        title: '<h3>'+req_name+'</h3>',
+                        content: '' + resp,
+                        typeAnimated: true,
+                        type: 'blue',
+                        boxWidth: '40%',
+                        useBootstrap: false,
+                        closeIcon: true,
+                        icon: 'fa fa-credit-card',
+                        closeIcon: true,
+                        closeIconClass: 'fa fa-close',
+                        buttons: {
+                            close: {
+                                text: 'Close',
+                                btnClass: 'btn-gray close-dialog',
+                                action: function () {
+                                }
+                            }
+                        }
+                    });
+                }
+            });
+        }
+
         function functionViewTimesheetDesc(task, notes, time, datecreated){
             if(notes < 1 || notes === '' || notes === null || notes === 'None'){
                 $.confirm({
@@ -1534,6 +1570,46 @@
                 $.confirm({
                     title: '<h3>Timesheet Description</h3>',
                     content: '<strong>Task: <font class="text-info">'+task+'</font></strong><br> <strong>Time: <font class="text-info">'+time+'</font></strong><br> <strong>Datecreated: <font class="text-info">'+datecreated+'</font></strong><br> <strong>Notes: <font class="text-info">'+notes+'</font></strong>',
+                    type: 'blue',
+                    typeAnimated: true,
+                    boxWidth: '30%',
+                    useBootstrap: false,
+                    closeIcon: true,
+                    buttons: {
+                        close: {
+                            text: 'Close',
+                            btnClass: 'btn-gray',
+                            action: function () {
+                            }
+                        }
+                    }
+                });
+            }
+        }
+
+        function functionViewTimesheetDescRequest(req, notes, time, datecreated){
+            if(notes < 1 || notes === '' || notes === null || notes === 'None'){
+                $.confirm({
+                    title: '<h3>Timesheet Description</h3>',
+                    content: '<strong>Request: <font class="text-info">'+req+'</font></strong><br> <strong>Time: <font class="text-info">'+time+'</font></strong><br> <strong>Datecreated: <font class="text-info">'+datecreated+'</font></strong><br> <span><strong>Notes: </strong> No Added Notes!</span>',
+                    type: 'blue',
+                    typeAnimated: true,
+                    boxWidth: '30%',
+                    useBootstrap: false,
+                    closeIcon: true,
+                    buttons: {
+                        close: {
+                            text: 'Close',
+                            btnClass: 'btn-gray',
+                            action: function () {
+                            }
+                        }
+                    }
+                });
+            }else{
+                $.confirm({
+                    title: '<h3>Timesheet Description</h3>',
+                    content: '<strong>Request: <font class="text-info">'+req+'</font></strong><br> <strong>Time: <font class="text-info">'+time+'</font></strong><br> <strong>Datecreated: <font class="text-info">'+datecreated+'</font></strong><br> <strong>Notes: <font class="text-info">'+notes+'</font></strong>',
                     type: 'blue',
                     typeAnimated: true,
                     boxWidth: '30%',

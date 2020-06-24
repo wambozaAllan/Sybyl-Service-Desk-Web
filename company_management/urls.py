@@ -49,6 +49,12 @@ urlpatterns = [
     path('categoryCompany/<int:pk>', views.CompanyCategoryList.as_view(), name="categoryCompany"),
     path('validateCategoryName', views.validateCategoryName, name='validateCategoryName'),
 
+    path('listSlaContracts/', views.customer_sla_list, name='listSlaContracts'),
+
+    path('addSLA/', views.AddSla.as_view(), name='addSla'),
+    path('saveSLA/', views.save_sla, name='saveSLA'),
+    path('updateSLA/<int:pk>/', views.UpdateSLA.as_view(), name='updateSLA'),
+    path('update2SLA/', views.save_sla_update, name='saveSLAupdate'),
     path('listCustomers/', views.list_customers, name='listCustomers'),
     path('addCustomer/', views.add_customer, name='addCustomer'),
     path('saveCustomer', views.save_customer, name='saveCustomer'),
