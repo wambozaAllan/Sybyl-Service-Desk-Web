@@ -48,7 +48,7 @@ def user_createview(request):
     company = request.session['company_id']
 
     obj = User(first_name=first_name.title(), last_name=last_name.title(), gender=gender, company_id=company,
-               branch_id=branch, department_id=department, username=username,
+               branch_id=branch, department_id=department, username=username, user_type="normaluser",
                password=password, created_by=created_by, email=email)
     obj.save()
 
@@ -892,4 +892,216 @@ def save_profile_user_update(request):
         'username': username,
     }
 
+    return HttpResponse(template.render(context, request))
+
+
+# CUSTOMERS
+def list_customer_users(request):
+    """list users under customer company"""
+    company_id = request.GET.get('company_id')
+    
+    template = loader.get_template('user_management/list_customer_users.html')
+
+    user = User.objects.filter(company_id=int(company_id))
+    company = Company.objects.get(id=int(company_id))
+    
+    context = {
+        "users": user,
+        "company_id": company_id,
+        "company_name": company.name
+    }
+
+    return HttpResponse(template.render(context, request))
+        
+
+def add_customer_user(request):
+    company_id = request.GET.get('company_id')
+    company_name = request.GET.get('company_name')
+    
+    template = loader.get_template('user_management/add_customer_user.html')
+    context = {
+        'company_id': company_id,
+        'company_name': company_name,
+    }
+
+    return HttpResponse(template.render(context, request))
+
+
+def save_customer_user(request):
+    company_id = request.GET.get('company_id')
+
+    template = loader.get_template('user_management/list_customer_users.html')
+
+    user = User.objects.filter(company_id=int(company_id))
+    company = Company.objects.get(id=int(company_id))
+    
+    context = {
+        "users": user,
+        "company_id": company_id,
+        "company_name": company.name
+    }
+
+    first_name = request.GET.get('first_name')
+    last_name = request.GET.get('last_name')
+    gender = request.GET.get('gender')
+    username = request.GET.get('username')
+    email = request.GET.get('email')
+    random_password = User.objects.make_random_password()
+    password = make_password(random_password)
+    created_by = request.user.id
+
+    obj = User(first_name=first_name.title(), last_name=last_name.title(), gender=gender, company_id=company_id,
+               username=username, user_type="clientuser",
+               password=password, created_by=created_by, email=email)
+    obj.save()
+
+    if obj.pk is not None:
+        context22 = {
+            'username': username,
+            'password': random_password,
+            'fullname': first_name + ' ' + last_name
+        }
+
+        msg = render_to_string(
+            'user_management/email_template.html', context22)
+
+        subject, from_email, to = 'SYBYL', 'from@example.com', email
+        text_content = 'SERVICE DESK.'
+        html_content = msg
+        msg = EmailMultiAlternatives(subject, text_content, from_email, [to])
+        msg.attach_alternative(html_content, "text/html")
+        msg.send()
+
+    return HttpResponse(template.render(context, request))
+
+
+class DetailsCustomerUser(DetailView):
+    model = User
+    context_object_name = 'user_details'
+    template_name = 'user_management/details_customer_user.html'
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        selected_group_data = User.objects.filter(id=self.get_object().pk).values('groups').first()
+        
+        if selected_group_data['groups'] is not None:
+            selected_group_data2 = Group.objects.get(id=selected_group_data['groups'])
+            if selected_group_data2 is not None:
+                context['selected_gname'] = selected_group_data2.name
+        return context
+
+
+def delete_customer_user(request):
+    user_id = request.GET.get('user_id')
+    company_id = request.GET.get('company_id')
+
+    User.objects.filter(id=int(user_id)).delete()
+    company = Company.objects.get(id=int(company_id))
+    user = User.objects.filter(company_id=int(company_id))
+
+    template = loader.get_template('user_management/list_customer_users.html')
+    context = {
+        "users": user,
+        "company_id": company_id,
+        "company_name": company.name
+    }
+
+    return HttpResponse(template.render(context, request))
+
+
+def update_resend_customer_email(request):
+    uid = request.GET.get('uid')
+    username = request.GET.get('username')
+    email = request.GET.get('email')
+    first_name = request.GET.get('fname')
+    last_name = request.GET.get('lname')
+    company_id = request.GET.get('company_id')
+    random_password = User.objects.make_random_password()
+    password = make_password(random_password)
+    
+
+    User.objects.filter(pk=int(uid)).update(username=username, email=email, password=password)
+
+    context22 = {
+        'username': username,
+        'password': random_password,
+        'fullname': first_name + ' ' + last_name
+    }
+
+    msg = render_to_string(
+        'user_management/email_template.html', context22)
+
+    subject, from_email, to = 'SYBYL', 'from@example.com', email
+    text_content = 'SERVICE DESK.'
+    html_content = msg
+    msg = EmailMultiAlternatives(subject, text_content, from_email, [to])
+    msg.attach_alternative(html_content, "text/html")
+    msg.send()
+
+    company = Company.objects.get(id=int(company_id))
+    users = User.objects.filter(company_id=int(company_id))
+    template = loader.get_template('user_management/list_customer_users.html')
+    context = {
+        'users': users,
+        "company_id": company_id,
+        "company_name": company.name
+    }
+
+    return HttpResponse(template.render(context, request))
+
+
+class UpdateCustomerUser(UpdateView):
+    model = User
+    fields = ['first_name', 'last_name', 'gender', 'company', 'department', 'groups',
+              'branch', 'username', 'password', 'email', 'is_superuser', 'is_staff', 'is_active']
+
+    template_name = 'user_management/update_customer_user.html'
+    success_url = reverse_lazy('listUsers')
+    context_object_name = 'user_update'
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        groups = Group.objects.all()
+        context['group_detail'] = groups
+
+        selected_group_data = User.objects.filter(id=self.get_object().pk).values('groups').first()
+        
+        if selected_group_data['groups'] is not None:
+            selected_group_data2 = Group.objects.get(id=selected_group_data['groups'])
+            if selected_group_data2 is not None:
+                context['selected_pk'] = selected_group_data2.pk
+                context['selected_gname'] = selected_group_data2.name
+        return context
+
+
+def save_system_customer_update(request):
+    first_name = request.GET.get('first_name')
+    last_name = request.GET.get('last_name')
+    gender = request.GET.get('gender')
+    uid = request.GET.get('user_id')
+    username = request.GET.get('username')
+    email = request.GET.get('email')
+    group = request.GET.get('group')
+    active = request.GET.get('status')
+    company = request.GET.get('company')
+    super_user_status = request.GET.get('is_superuser')
+
+    all_users = User.objects.filter(company=int(company))
+    company = Company.objects.get(id=int(company))
+
+    template = loader.get_template('user_management/list_customer_users.html')
+    context = {
+        'users': all_users,
+        'company_id': company.id,
+        'company_name': company.name
+    }
+
+    User.objects.filter(pk=int(uid)).update(first_name=first_name.title(), last_name=last_name.title(), gender=gender,
+                                            username=username, email=email,
+                                            is_active=int(active), company_id=company, is_superuser=int(super_user_status))
+    
+    if group is not "":
+        user_id1 = User.objects.get(id=int(uid))
+        groupid1 = Group.objects.get(id=int(group))
+        user_id1.groups.add(groupid1)
     return HttpResponse(template.render(context, request))

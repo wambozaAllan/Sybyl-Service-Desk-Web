@@ -81,54 +81,87 @@
 
 
     function deleteTask(task_id, task_name, project_id, project_name, milestone) {
-        urldata = "{% url 'deleteTask'%}";
-
-        $.confirm({
-            title: '<h4>Delete Task: <strong class="text-danger">' + task_name + '</h4>',
-            content: '<h5> Milestone: <span class="text-info"> '+ milestone + '</span></h5>'+
-                     '<h5>Project: <span class="text-info">'+ project_name +'</span></h5>',
-            type: 'red',
-            typeAnimated: true,
-            boxWidth: '40%',
-            useBootstrap: false,
-            theme: 'modern',
-            icon: 'fa fa-exclamation-circle',
-            buttons: {
-                formSubmit: {
-                    text: 'Remove',
-                    btnClass: 'btn-red',
-                    action: function () {
-                        $.ajax({
-                            type: "GET",
-                            cache: false,
-                            data: {
-                                task_name: task_name,
-                                task_id: task_id
-                            },
-                            dataType: 'json',
-                            url: urldata,
-                            success: function (response_data){
-                                $('.close-dialog').click();
-                                if (response_data.success === true){
-                                    $.ajax({
-                                        type:"GET",
-                                        cache: false,
-                                        data:{},
-                                        url: "{% url 'task_list' %}",
-                                        success: function(resp){
-                                            $('.addPane').html(resp);                                                  
-                                        }
-                                    }); 
+        $.ajax({
+            type: 'GET',
+            cache: false,
+            data: {
+                task_name: task_name,
+                task_id: task_id, 
+            },
+            url: "{% url 'checkTask' %}",
+            success: function (response_data) {
+                if(response_data.success === false ){
+                    $.confirm({
+                        title: '<h3>Alert.</h3>',
+                        content: 'Can not delete Task: <strong class="text-info">' + task_name + '</strong>, it has attached <strong>Timesheets</strong>.',
+                        type: 'blue',
+                        typeAnimated: true,
+                        boxWidth: '40%',
+                        useBootstrap: false,
+                        closeIcon: true,
+                        icon: 'fa fa-warning',
+                        buttons: {
+                            close: {
+                                text: 'Close',
+                                btnClass: 'btn-gray',
+                                action: function () {
                                 }
                             }
-                        });
-                    }
-                },
-                close: {
-                    text: 'Cancel',
-                    btnClass: 'btn-gray',
-                    action: function () {
-                    }
+                        }
+                    });
+                }
+                else{
+                    urldata = "{% url 'deleteTask'%}";
+
+                    $.confirm({
+                        title: '<h4>Delete Task: <strong class="text-danger">' + task_name + '</h4>',
+                        content: '<h5> Milestone: <span class="text-info"> '+ milestone + '</span></h5>'+
+                                '<h5>Project: <span class="text-info">'+ project_name +'</span></h5>',
+                        type: 'red',
+                        typeAnimated: true,
+                        boxWidth: '40%',
+                        useBootstrap: false,
+                        theme: 'modern',
+                        icon: 'fa fa-exclamation-circle',
+                        buttons: {
+                            formSubmit: {
+                                text: 'Remove',
+                                btnClass: 'btn-red',
+                                action: function () {
+                                    $.ajax({
+                                        type: "GET",
+                                        cache: false,
+                                        data: {
+                                            task_name: task_name,
+                                            task_id: task_id
+                                        },
+                                        dataType: 'json',
+                                        url: urldata,
+                                        success: function (response_data){
+                                            $('.close-dialog').click();
+                                            if (response_data.success === true){
+                                                $.ajax({
+                                                    type:"GET",
+                                                    cache: false,
+                                                    data:{},
+                                                    url: "{% url 'task_list' %}",
+                                                    success: function(resp){
+                                                        $('.taskContainerPane').html(resp);                                                  
+                                                    }
+                                                }); 
+                                            }
+                                        }
+                                    });
+                                }
+                            },
+                            close: {
+                                text: 'Cancel',
+                                btnClass: 'btn-gray',
+                                action: function () {
+                                }
+                            }
+                        }
+                    });
                 }
             }
         });

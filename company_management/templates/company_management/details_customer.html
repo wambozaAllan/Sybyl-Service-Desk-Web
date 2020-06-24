@@ -1,0 +1,361 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block content %}
+<!-- Main wrapper  -->
+<div id="main-wrapper">
+    {% include 'header.html' %}
+
+    {% include 'left-nav.html' %}
+    <!-- Page wrapper  -->
+    <div class="page-wrapper">
+        <!-- Bread crumb -->
+        <div class="row page-titles">
+            <div class="col-md-5 align-self-center">
+                <h3 class="text-primary">Customer: {{ company.name }}</h3>
+                <input type="text" value="{{ company.id }}" id="company" style="display: none;">
+            </div>
+            <div class="col-md-7 align-self-center">
+                <ol class="breadcrumb">
+                    <li class="breadcrumb-item"><a href="javascript:void(0)">Home</a></li>
+                    <li class="breadcrumb-item"><a href="{% url 'listCustomerPane' %}">Customers</a></li>
+                    <li class="breadcrumb-item active">Customer Details</li>
+                </ol>
+            </div>
+        </div>
+        <!-- End Bread crumb -->
+        <!-- Container fluid  -->
+        <div class="container-fluid">
+            <!-- Start Page Content -->
+                    <div class="card" style="margin-top: -2%;">
+                        <ul class="nav nav-tabs" role="tablist">
+                            <li class="nav-item">
+                                <a class="nav-link active" data-toggle="tab" href="#home" role="tab"><span class="hidden-sm-up"><i class="ti-home"></i></span>
+                                <span class="hidden-xs-down">Overview</span></a>
+                            </li>
+
+
+                            <li class="nav-item" onclick="listCustomerUsers({{company.id }})">
+                                <a class="nav-link" data-toggle="tab" href="#users" role="tab">
+                                <span class="hidden-sm-up"><i class="ti-user"></i></span> 
+                                <span class="hidden-xs-down">Users</span></a>
+                            </li>
+
+                            <li class="nav-item"  onclick="listCustomerProjects({{ company.id }})">
+                                <a class="nav-link" data-toggle="tab" href="#projects" >
+                                    <span class="hidden-sm-up"><i class="fas fa-users"></i></span>
+                                    <span class="hidden-xs-down">Projects</span></a>
+                            </li>
+                            
+                            <li class="nav-item"  onclick="listServiceRequests({{ company.id }})">
+                                <a class="nav-link" data-toggle="tab" href="#servicerequests" >
+                                    <span class="hidden-sm-up"><i class="fas fa-users"></i></span>
+                                    <span class="hidden-xs-down">Service Requests</span>
+                                </a>
+                            </li>
+
+                            <li class="nav-item"  onclick="listSLAS({{ company.id }})">
+                                <a class="nav-link" data-toggle="tab" href="#project_sla" >
+                                    <span class="hidden-sm-up"><i class="fas fa-users"></i></span>
+                                    <span class="hidden-xs-down">SLAs</span>
+                                </a>
+                            </li>
+                            
+                        </ul>
+                        <!-- Tab panes -->
+                        <div class="tab-content tabcontent-border">
+                            <div class="tab-pane active" id="home" role="tabpanel">
+                                <div class="">
+                                   <h4 style="margin-left: 1%;margin-top: 1%;"> <strong class="font-weight-bold">Customer Overview</strong> 
+                                    <a style="margin-left: 2px;" onclick="viewProjectDetails()" href="#"> <i class="fa fa-dedent color-primary" title="View Project Details"></i></a>&nbsp;&nbsp;
+                                </h4>
+                                    
+                                    <div class="row no-gutters widget-1 shadow-base">
+                                        <div class="col-sm-6 col-lg-4">
+                                            <div class="card">
+                                                <div class="card-header">
+                                                    <h6 class="card-title">Projects</h6>
+                                                    <a href=""><i class="icon ion-android-more-horizontal"></i></a>
+                                                </div>
+                                                <div class="card-body">
+                                                    <span id="spark1">
+                                                        <i style="display: inline-block; width: 89px; height: 35px; vertical-align: top;" width="89" height="30" class="fa fa-tasks f-s-60 color-primary"></i>
+                                                    </span>
+                                                    <span>{{ task_count }}</span>
+                                                </div>
+                                                <div class="card-footer">
+                                                    <div>
+                                                        <span class="tx-11">Open</span>
+                                                        <h6 class="tx-inverse text-right"><i class="fa fa-circle color-primary"></i> {{ open_tasks}}</h6>
+                                                    </div>
+                                                    <div>
+                                                        <span class="tx-11">Completed</span>
+                                                        <h6 class="tx-inverse text-right"><i class="fa fa-circle color-success"></i> {{completed_tasks}}</h6>
+                                                    </div>
+                                                    <div>
+                                                        <span class="tx-11">Onhold</span>
+                                                        <h6 class="tx-inverse text-right"><i class="fa fa-circle color-warning"></i> {{onhold_tasks}}</h6>
+                                                    </div>
+                                                    <div>
+                                                        <span class="tx-11">Terminated</span>
+                                                        <h6 class="tx-inverse text-right"><i class="fa fa-circle color-danger"></i> {{terminated_tasks}}</h6>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        <div class="col-sm-6 col-lg-4 mg-t-1 mg-sm-t-0">
+                                            <div class="card">
+                                                <div class="card-header">
+                                                    <h6 class="card-title">Service Requests</h6>
+                                                    <a href=""><i class="icon ion-android-more-horizontal"></i></a>
+                                                </div>
+                                                <div class="card-body">
+                                                    <span id="spark2">
+                                                        <i style="display: inline-block; width: 89px; height: 35px; vertical-align: top;" width="89" height="30" class="fa fa-th-list f-s-60 color-primary"></i>
+                                                    </span>
+                                                    <span class="tx-medium tx-inverse tx-32">{{ milestone_count }}</span>
+                                                </div>
+                                                <div class="card-footer">
+                                                    <div>
+                                                        <span class="tx-11">Open</span>
+                                                        <h6 class="tx-inverse text-right"><i class="fa fa-circle color-primary"></i> {{ open_milestones}}</h6>
+                                                    </div>
+                                                    <div>
+                                                        <span class="tx-11">Completed</span>
+                                                        <h6 class="tx-inverse text-right"><i class="fa fa-circle color-success"></i> {{ completed_milestones}}</h6>
+                                                    </div>
+                                                    <div>
+                                                        <span class="tx-11">Onhold</span>
+                                                        <h6 class="tx-inverse text-right"><i class="fa fa-circle color-warning"></i> {{ onhold_milestones}}</h6>
+                                                    </div>
+                                                    <div>
+                                                        <span class="tx-11">Terminated</span>
+                                                        <h6 class="tx-inverse text-right"><i class="fa fa-circle color-danger"></i> {{ terminated_milestones}}</h6>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        <div class="col-sm-6 col-lg-4 mg-t-1 mg-lg-t-0">
+                                            <div class="card">
+                                                <div class="card-header">
+                                                    <h6 class="card-title">SLAs</h6>
+                                                    <a href=""><i class="icon ion-android-more-horizontal"></i></a>
+                                                </div>
+                                                <div class="card-body">
+                                                    <span id="spark3">
+                                                        <i style="display: inline-block; width: 89px; height: 35px; vertical-align: top;" width="89" height="30" class="fa fa-list f-s-60 color-primary"></i>
+                                                    </span>
+                                                    <span>{{ incident_count }}</span>
+                                                </div>
+                                                <div class="card-footer">
+                                                    <div>
+                                                        <span class="tx-11">Open</span>
+                                                        <h6 class="tx-inverse text-right"><i class="fa fa-circle color-primary"></i> {{open_incidents}}</h6>
+                                                    </div>
+                                                    <div>
+                                                        <span class="tx-11">Completed</span>
+                                                        <h6 class="tx-inverse text-right"><i class="fa fa-circle color-success"></i> {{completed_incidents}}</h6>
+                                                    </div>
+                                                    <div>
+                                                        <span class="tx-11">Onhold</span>
+                                                        <h6 class="tx-inverse text-right"><i class="fa fa-circle color-warning"></i> {{onhold_incidents}}</h6>
+                                                    </div>
+                                                    <div>
+                                                        <span class="tx-11">Terminated</span>
+                                                        <h6 class="tx-inverse text-right"><i class="fa fa-circle color-danger"></i> {{terminated_incidents}}</h6>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                    </div>                                    
+                                </div>
+                            </div>
+
+                            <!-- USERS  -->
+                            <div class="tab-pane p-20" id="users" role="tabpanel">
+                                <!-- Tab panes -->
+                                <div class="tab-content">
+                                    <div class="tab-pane active" id="home1" role="tabpanel">
+                                        <div class="">
+                                            <div class="card-body users-card">
+                                                <div class="text-center">
+                                                    <i class="fa fa-spinner fa-spin fa-5x "></i>
+                                                </div>
+                                            </div>
+                                        </div> 
+                                    </div>
+                                </div>
+                                <!-- tab 3 -->
+                            </div>
+                            
+                            <!-- PROJECT TASKS -->
+                            <div class="tab-pane p-20" id="projects" role="tabpanel">
+                                    <!-- Tab panes -->
+                                <div class="tab-content">
+                                    <div class="tab-pane active" id="home2" role="tabpanel">
+                                        <div class="">
+                                            <div class="card-body project-card">
+                                                <div class="text-center">
+                                                    <i class="fa fa-spinner fa-spin fa-5x "></i>
+                                                </div>
+                                            </div>
+                                        </div>  
+                                    </div>
+                                </div>   
+                            </div>
+
+                            <!-- PROJECT TEAM -->
+                            <div class="tab-pane p-20" id="servicerequests" role="tabpanel">
+                                <div class="p-20">
+                                    <div class="card-body service-card">
+                                        <div class="text-center">
+                                            <i class="fa fa-spinner fa-spin fa-5x "></i>
+                                        </div>
+                                    </div>
+                                </div>    
+                            </div>
+
+                            <!-- PROJECT SERVICE LEVEL AGREEMENTS -->
+                            <div class="tab-pane p-20" id="project_sla" role="tabpanel">
+                                <div class="card-body proj-sla">
+                                    <div class="text-center">
+                                        <i class="fa fa-spinner fa-spin fa-5x "></i>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- PROJECT ESCALATION LEVELS -->
+                            <div class="tab-pane p-20" id="project_escalations" role="tabpanel">
+                                    <div class="p-20">
+                                        <div class="card-body proj-escalations">
+                                            <div class="text-center">
+                                                <i class="fa fa-spinner fa-spin fa-5x "></i>
+                                            </div>
+                                        </div>
+                                    </div>    
+                                </div>
+                        </div>
+                    <!-- End Page Content -->
+                <!-- End Container fluid  -->
+
+            </div>
+            <!-- End Page wrapper  -->
+        </div>
+    </div>
+</div>
+
+<script>
+    function listCustomerUsers(company_id){
+        urldata = "{% url 'listCustomerUsers' %}";
+        
+        $.ajax({
+            type: "GET",
+            cache: false,
+            data: {
+                company_id: company_id
+            },
+            url: urldata,
+            success: function (resp) {
+                $('.users-card').html(resp);
+            }
+        });
+    }
+
+    function listCustomerProjects(company_id){
+        urldata = "{% url 'listCustomerProjects' %}";
+        $.ajax({
+            type: "GET",
+            cache: false,
+            data: {
+                company_id: company_id
+            },
+            url: urldata,
+            success: function (resp) {
+                $('.project-card').html(resp);
+            }
+        });
+    }
+
+
+    function listServiceRequests(company_id){
+        urldata = "{% url 'listCustomerServiceRequests' %}";
+        $.ajax({
+            type: "GET",
+            cache: false,
+            data: {
+                company_id: company_id
+            },
+            url: urldata,
+            success: function (resp) {
+                $('.service-card').html(resp);
+            }
+        });
+    }
+
+    function listSLAS(company_id){
+        urldata = "{% url 'listCustomerSLAs' %}";
+        $.ajax({
+            type: "GET",
+            cache: false,
+            data: {
+                company_id: company_id
+            },
+            url: urldata,
+            success: function (resp) {
+                $('.proj-sla').html(resp);
+            }
+        });
+    }
+
+    function viewProjectDetails(){
+        $.confirm({
+            title: '<h3>View Project Details</h3>',
+            content: '' + 
+            '<div class="card">'+
+            '<div class="card-body">'+
+                '<div class="basic-form">'+
+                    '<div class="row col-12">'+
+                        '<div class="col-6">'+
+                            '<p class="text-muted m-b-15 f-s-12">Project Name</p>'+
+                            '<input type="text" class="form-control input-flat" value="{{ project.name }}" disabled>'+
+                        '</div>'+
+                        '<div class="col-6">'+
+                            '<p class="text-muted m-b-15 f-s-12">Status</p>'+
+                            '<input type="text" class="form-control input-flat" value="{{ project.project_status }}" disabled>'+
+                        '</div>'+
+                        '<div class="col-6">'+
+                            '<p class="text-muted m-b-15 f-s-12">Project Code</p>'+
+                            '<input type="text" class="form-control input-flat" value="{{ project.project_code }}" disabled>'+
+                        '</div>'+
+                        '<div class="col-6">'+
+                            '<p class="text-muted m-b-15 f-s-12">Estimated Cost</p>'+
+                            '<input type="text" class="form-control input-flat" value="{{ project.estimated_cost }}" disabled>'+
+                        '</div>'+
+                        '<div class="col-6">'+
+                            '<p class="text-muted m-b-15 f-s-12">Start Date</p>'+
+                            '<input type="text" class="form-control input-flat" value="{{ project.estimated_start_date }}" disabled>'+
+                        '</div>'+
+                        '<div class="col-6">'+
+                            '<p class="text-muted m-b-15 f-s-12">End Date</p>'+
+                            '<input type="text" class="form-control input-flat" value="{{ project.estimated_end_date }}" disabled>'+
+                        '</div></div></div></div></div>',
+            type: 'blue',
+            typeAnimated: true,
+            boxWidth: '60%',
+            useBootstrap: false,
+            closeIcon: true,
+            buttons: {
+                close: {
+                    text: 'Close',
+                    btnClass: 'btn-gray close-dialog',
+                    action: function () {
+                    }
+                }
+            }
+        });
+    }
+
+</script>
+{% endblock %}

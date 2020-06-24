@@ -1,15 +1,15 @@
 <div>
-    <input type="text" value="{{ project_id }}" style="display: none;">
+    <input type="text" value="{{ company_id }}" style="display: none;">
     <input type="text" value="{{ milestone_id }}" style="display: none;">
 
 <div class="card-body assigned-task">
     <div class="row page-titles">
         <div class="col-md-8 col-sm-12 align-self-center">
-            <h5 class="text-primary">TASK: {{ task }}</h3>
+            <h5 class="text-primary">Projects: {{ task }}</h3>
         </div>
         <div class="col-md-4 col-sm-12 align-self-center">
             <ol class="breadcrumb">
-                <li class="breadcrumb-item"><a href="#" onclick="listTasks('{{project_id}}')">Project Tasks</a></li>
+                <li class="breadcrumb-item"><a href="#" onclick="listCustomerProjects('{{company_id}}')">Projects</a></li>
                 <li class="breadcrumb-item active">Members</li>
             </ol>
         </div>
@@ -62,30 +62,17 @@
 <script>
     $('#table_assigned_tasks').DataTable();
 
-    // returning list of tasks
-    function listTasks(project_id){
-        
-        urldata = "{% url 'listProjectTasks' %}";
+    function listCustomerProjects(company_id){
+        urldata = "{% url 'listCustomerProjects' %}";
         $.ajax({
             type: "GET",
             cache: false,
             data: {
-                project_id: project_id
+                company_id: company_id
             },
             url: urldata,
             success: function (resp) {
-                $('.task-card').html(resp);
-                $.ajax({
-                    type:"GET",
-                    cache: false,
-                    data:{
-                        project_id:project_id,
-                    },
-                    url: "{% url 'openTasks' %}",
-                    success: function(resp){      
-                        $('#openPane').html(resp);                                         
-                    }
-                });
+                $('.project-card').html(resp);
             }
         });
     }
