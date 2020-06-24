@@ -239,4 +239,18 @@ urlpatterns = [
 
     path('SLAsByCustomer', views.fetch_SLAs_by_customer, name='SLAsByCustomer'),
     path('requestsBySLA', views.fetch_requests_by_sla, name='requestsBySLA'),
+    
+    # CUSTOMER URLS
+    path('listCustomerProjects/', views.list_customer_projects, name='listCustomerProjects'),
+    path('addCustomerProjects/', views.add_customer_projects, name='addCustomerProjects'),
+    path('returnStatus/', views.return_status, name='returnStatus'),
+    path('saveProject/', views.save_project, name='saveProject'),
+    path('assignedUsers/', views.assigned_users, name='assignedUsers'),
+    path('updateCustomerProject/<int:pk>', views.UpdateCustomerProject.as_view(), name='updateCustomerProject'),
+
+    
+    path('listCustomerServiceRequests/', views.list_customer_service_requests, name='listCustomerServiceRequests'),
+    path('listCustomerSLAs/', views.list_customer_sla, name='listCustomerSLAs'),
+    path('checkTask/', views.check_task, name='checkTask'),
+    
 ]

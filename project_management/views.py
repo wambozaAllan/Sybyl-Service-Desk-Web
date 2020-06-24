@@ -6668,6 +6668,50 @@ def customer_request_home(request):
         'cancelled_reg_list': cancelled_reg_list,
         'onhold_reg_list': onhold_reg_list
     }
+    
+    return HttpResponse(template.render(context, request))
+
+        
+# CUSTOMER PROJECT VIEWS
+def list_customer_projects(request):
+    """list users under customer company"""
+    company_id = request.GET.get('company_id')
+    
+    template = loader.get_template('project_management/list_customer_projects.html')
+
+    project_list = []
+    company = Company.objects.get(id=int(company_id))
+    projects =Project.company.through.objects.filter(company_id=int(company_id))
+    
+    for project in projects:
+        project_list.append(project.project_id)
+
+    new_list = []
+
+    for project_id in project_list:
+        new_project = Project.objects.filter(id=project_id)
+
+        for val in new_project:
+            new_list.append(val)
+
+    context = {
+        "projects": new_list,
+        "company_id": company_id,
+        "company_name": company.name
+    }
+
+    return HttpResponse(template.render(context, request))
+
+
+def add_customer_projects(request):
+    company_id = request.GET.get('company_id')
+    company_name = request.GET.get('company_name')
+    
+    template = loader.get_template('project_management/add_customer_projects.html')
+    context = {
+        'company_id': company_id,
+        'company_name': company_name,
+    }
 
     return HttpResponse(template.render(context, request))
 
@@ -6852,6 +6896,177 @@ def foward_customer_requests(request):
 
     return HttpResponse(template.render(context, request))
 
+    
+def return_status(request):
+    """
+    populate status field with status
+    """
+
+    status = Status.objects.all()
+
+    data = {
+        'status': serializers.serialize("json", status)
+    }
+
+    return JsonResponse(data)
+
+
+def save_project(request):
+    # save project customer
+    name = request.GET.get('name')
+    description = request.GET.get('description')
+    project_code = request.GET.get('project_code')
+    client_company = int(request.GET.get('company_id'))
+    start_date = request.GET.get('estimated_start_date')
+    end_date = request.GET.get('estimated_end_date')
+    project_status = request.GET.get('status')
+    created_by = request.user.id
+    parent = request.session['company_id']
+
+    new_list = []
+    new_list.append(client_company)
+    new_list.append(parent)
+
+    project_count = Project.objects.all().count()            
+    project_number = project_count + 1
+
+    test_string = str(project_number)
+
+    # only pick short year
+    current_year_short = datetime.datetime.now().strftime('%y')
+    str_date = str(current_year_short)
+    
+    result = ""
+    final_result_code = ""
+
+    # retrieve project code format from database
+    codes = ProjectCode.objects.all().first()
+    code = codes.project_code
+
+    if project_code is not None:
+        final_result_code = project_code
+    else:
+        if len(test_string) ==  1:
+            N=2
+            result = test_string.zfill(N + len(test_string)) 
+            final_result_code = code + "/" + str_date + "/" + result
+        elif len(test_string) == 2:
+            N=1
+            result = test_string.zfill(N + len(test_string)) 
+            final_result_code = code + "/"  + str_date + "/" + result
+        else:
+            result = test_string
+            final_result_code = code + "/"  + str_date + "/" + result
+
+
+    estimated_cost = 0;
+    
+    if start_date == "":
+        start_date = None
+        estimated_start_date = None
+    else:
+        estimated_start_date = datetime.datetime.strptime(start_date, "%m/%d/%Y").strftime("%Y-%m-%d")
+        
+    if end_date == "":
+        end_date = None
+        estimated_end_date = None
+    else:
+        estimated_end_date = datetime.datetime.strptime(end_date, "%m/%d/%Y").strftime("%Y-%m-%d")
+    
+    if project_status == "":
+        status = None
+    else:            
+        status = Status.objects.get(id=project_status)
+
+    estimate = float(estimated_cost)
+    user_id = User.objects.get(id=created_by)
+
+    project = Project(name=name, description=description, project_code=final_result_code, estimated_cost=estimate,
+    estimated_start_date=estimated_start_date, estimated_end_date=estimated_end_date,
+    project_status=status, created_by=user_id)
+
+    project.save()
+    for value in new_list:
+        project.company.add(value)
+        
+    template = loader.get_template('project_management/list_customer_projects.html')
+
+    projects =Project.company.through.objects.filter(company_id=int(client_company))
+    company = Company.objects.get(id=int(client_company))
+    project_list = []
+
+    for project in projects:
+        project_list.append(project.project_id)
+
+    new_list = []
+
+    for project_id in project_list:
+        new_project = Project.objects.filter(id=project_id)
+
+        for val in new_project:
+            new_list.append(val)
+    
+    context = {
+        "projects": new_list,
+        "company_id": company.id,
+        "company_name": company.name
+    }
+
+    return HttpResponse(template.render(context, request))
+
+
+def assigned_users(request):
+    """view members assigned to projects"""
+
+    project_id = int(request.GET.get('project_id'))
+    company_id = int(request.GET.get('company_id'))
+
+    projects =Project.company.through.objects.filter(company_id=int(company_id))
+    company = Company.objects.get(id=int(company_id))
+    project_list = []
+
+    for project in projects:
+        project_list.append(project.project_id)
+
+    new_list = []
+
+    for project_id in project_list:
+        new_project = Project.objects.filter(id=project_id)
+
+        for val in new_project:
+            new_list.append(val)
+
+    context = {
+        'company_id': company_id,
+        'project_id': project.id,
+    }
+
+    return render(request, 'project_management/assigned_users.html', context) 
+
+
+class UpdateCustomerProject(UpdateView):
+    model = Project
+    fields = ['name', 'project_status', 'company', 'project_code', 'final_cost', 'estimated_start_date', 'estimated_end_date', 'actual_start_date', 'actual_end_date', 'description', 'logo']
+    template_name = 'project_management/update_customer_project.html'
+    success_url = reverse_lazy('listProjects')
+
+
+def list_customer_service_requests(request):
+    """view service requests by customer"""
+
+    company_id = request.GET.get('company_id')
+    
+    template = loader.get_template('project_management/list_customer_service_requests.html')
+    
+    company = Company.objects.get(id=int(company_id))
+
+    context = {
+        "company_id": company_id,
+        "company_name": company.name
+    }
+
+    return HttpResponse(template.render(context, request))
+
 
 def fetch_SLAs_by_customer(request):
     id_customer = request.GET.get('id_customer')
@@ -6875,3 +7090,42 @@ def fetch_requests_by_sla(request):
         'req': serializers.serialize("json", list_sla_requests)
     }
     return JsonResponse(data)
+
+    
+def list_customer_sla(request):
+    """view SLAs by customer"""
+
+    company_id = request.GET.get('company_id')
+    
+    template = loader.get_template('project_management/list_customer_sla.html')
+
+    company = Company.objects.get(id=int(company_id))
+
+    context = {
+        "company_id": company_id,
+        "company_name": company.name
+    }
+
+    return HttpResponse(template.render(context, request))
+
+
+def check_task(request):
+    task_name = request.GET.get('task_name')
+    task_id = int(request.GET.get('task_id'))
+
+    print(task_id)
+
+    if Timesheet.objects.filter(task_id=task_id).exists():
+        response_data = {
+            "success": False,
+            "message": "Cannot delete"
+        }
+
+        return JsonResponse(response_data)
+    else:
+        response_data = {
+            "success": True,
+            "message": "Can delete"
+        }
+
+        return JsonResponse(response_data)

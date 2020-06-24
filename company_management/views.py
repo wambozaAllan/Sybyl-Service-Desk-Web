@@ -1,15 +1,23 @@
+import datetime
 from django.views import generic
 from django.views.generic.edit import CreateView, UpdateView, DeleteView
+from django.views.generic import DetailView
 from django.shortcuts import render, get_object_or_404
 from django.http import HttpResponse, HttpResponseRedirect
 from django.urls import reverse, reverse_lazy
 from django.http import JsonResponse
 from django.shortcuts import redirect
+from django.contrib.auth.hashers import make_password
+from django.template.loader import render_to_string
+from django.core.mail import EmailMultiAlternatives
 
 from .forms import CompanyForm, DepartmentForm, BranchForm, BranchContactForm, BranchEmailForm
 
 from .models import Company, Department, Branch, CompanyDomain, CompanyCategory, BranchPhoneContact, \
     BranchEmailAddresses, ServiceLevelAgreement
+
+from user_management.models import User
+from project_management.models import Project, Status, ProjectCode
 
 from django.core import serializers
 from django.template import loader
@@ -465,6 +473,7 @@ def customer_sla_list(request):
     
     return HttpResponse(template.render(context, request))
 
+
 class AddSla(CreateView):
     model = ServiceLevelAgreement
     fields = ['name', 'customer','description', 'company']
@@ -493,6 +502,71 @@ def save_sla(request):
 
     context = {
         'sla_obj': sla_obj
+    }
+
+    return HttpResponse(template.render(context, request))
+
+    
+# CUSTOMERS
+class AddCustomer(CreateView):
+    model = Company
+    fields = ['name', 'category', 'domain', 'owner', 'description', 'has_domain']
+    template_name = 'company_management/add_customer.html'
+    success_url = reverse_lazy('listCustomers')
+
+    
+def list_customers(request):
+    """Return list of customers"""
+    all_customers = Company.objects.filter(category_id=1)
+    template = loader.get_template('company_management/list_customers.html')
+    context = {
+        'all_customers': all_customers
+    }
+
+    return HttpResponse(template.render(context, request))
+
+
+def add_customer(request):
+    template = loader.get_template('company_management/add_customer.html')
+    context = {
+
+    }
+    return HttpResponse(template.render(context, request))
+
+
+def return_client_company(request):
+    client = CompanyCategory.objects.filter(id=1)
+
+    data = {
+        'clients': serializers.serialize("json", client),
+        'success': True,
+
+    }
+
+    return JsonResponse(data)
+
+
+def save_customer(request):
+    """save customer"""
+    has_domain = request.GET.get('has_domain')
+    id_domain = request.GET.get('id_domain')
+    category = request.GET.get('category')
+    company_name = request.GET.get('company_name')
+    owner = request.GET.get('id_owner')
+    description = request.GET.get('description')
+    parent = request.session['company_id']
+
+    if int(has_domain) == 1:
+        save_company = Company(name=company_name, domain_id=int(id_domain), category_id=int(category),
+                               description=description, owner=owner, has_domain=has_domain, parent=1)
+    else:
+        save_company = Company(name=company_name, category_id=int(category), description=description, owner=owner, parent=parent)
+    save_company.save()
+
+    all_customers = Company.objects.filter(category_id=1)
+    template = loader.get_template('company_management/list_customers.html')
+    context = {
+        'all_customers': all_customers,
     }
 
     return HttpResponse(template.render(context, request))
@@ -530,3 +604,56 @@ def save_sla_update(request):
     }
 
     return HttpResponse(template.render(context, request))
+
+    
+def customer_list_pane(request):
+    template = loader.get_template('company_management/customer_list_container.html')
+    context = {
+
+    }
+    return HttpResponse(template.render(context, request))
+
+
+class UpdateCustomer(UpdateView):
+    model = Company
+    fields = ['name', 'description']
+    template_name = 'company_management/update_customer.html'
+    success_url = reverse_lazy('listCustomers')
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        companyid = int(self.request.GET['companyid'])
+        status = Company.objects.get(pk=int(self.kwargs['pk']))
+        context['status'] = status
+        context['pk'] = self.kwargs['pk']
+        context['companyid'] = companyid
+        return context
+
+
+def save_customer_update(request):
+    company_name = request.GET.get('company_name')
+    description = request.GET.get('description')
+    pk = request.GET.get('pk')
+    parent = parent = request.session['company_id']
+
+    Company.objects.filter(pk=int(pk)).update(name=company_name, description=description, parent=parent)
+
+    all_customers = Company.objects.filter(category_id=1)
+    template = loader.get_template('company_management/list_customers.html')
+    context = {
+        'all_customers': all_customers,
+    }
+
+    return HttpResponse(template.render(context, request))
+
+
+class DetailCustomer(DetailView):
+    model = Company
+    context_object_name = 'company'
+    template_name = 'company_management/details_customer.html'
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        company_id = self.kwargs['pk']
+        context['company_id'] = company_id
+        return context

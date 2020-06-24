@@ -1,0 +1,248 @@
+<div class="card-body">
+    <div class="basic-form">
+        {% csrf_token %}
+        <div class="row col-12">
+            <div class="col-6" style="display: none;">
+                <div class="checkbox">
+                    <label>
+                        <input id="domainCheck" type="checkbox"> Has Domain
+                    </label>
+                </div>
+
+                <div id="div_id_domain" class="form-group" style="display: none;">
+                     <label for="id_domain" class="col-form-label">Domain <a href="#" onclick="AddDomain2();">
+                         <i style="font-size: 151%; color: #5d5de6;" class="fa fa-plus"></i></a>
+                     </label>
+                    <div class="">
+                        <select name="domain" class="select form-control" id="id_domain">
+                            <option selected="" value="" disabled>-----Select Domain----</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-6" style="display:none;">
+                <label class="col-form-label  requiredField">Client
+                    <span class="asteriskField">*</span></label>
+                <select id='id_category' class="select form-control" name="category">
+                    
+                </select>
+            </div>
+
+            <div class="col-md-12">
+                <div class="form-group">
+                    <label for="id_name" class="col-form-label  requiredField">
+                        Name<span class="asteriskField">*</span>
+                    </label>
+            
+                    <div class="">
+                        <input type="text" name="name" maxlength="100" class="textinput textInput form-control status" required="" id="id_name">
+                    </div>
+                </div>
+                <medium id="validate_campany_name" class="text-muted hidden">
+                    <font color="red">
+                        Company Name Already Exists!
+                    </font>
+                </medium>
+
+            </div>
+
+            <div class="col-12">
+
+                <div id="div_id_owner" class="form-group" style="display:none;">
+                     <label for="id_owner" class="col-form-label">Owner
+                     </label>
+                    <div class="">
+                        <input type="" id='id_owner' class="form-control" value="" />
+                    </div>
+                </div>
+
+                <div id="div_id_description" class="form-group">
+                     <label for="id_description" class="col-form-label">Description
+                     </label>
+                    <div class="">
+                        <textarea class="form-control" id="id_description"></textarea>
+                    </div>
+                </div>
+                <div>
+                    <button col-md-12 id="btnAddCustomer" class="btn btn-success pull-right">
+                        <i class="fa fa-fw fa-lg fa-save"></i>Save
+                    </button>
+                </div>
+            </div>
+        </div>
+
+    </div>
+</div>
+
+<script>
+
+    $(function(){
+        $.ajax({
+            url: '{% url 'returnCustomer' %}',
+            data: {},
+            dataType: 'json',
+            success: function (data) {
+                var res = JSON.parse(data.clients);
+                if (res !== '' && res.length > 0) {
+                    $('#id_category').html('');
+                    for (i in res) {
+                        $('#id_category').append('<option value="' + res[i].pk + '">' + res[i].fields.category_value + '</option>').trigger("change");
+                    }
+                }
+            }
+        });
+
+    })
+
+    $("#id_name").attr('autocomplete', 'off');
+    $("#id_description").attr('autocomplete', 'off');
+
+    var has_domain = 0;
+    $('#id_domain').focus(function () {
+        $.ajax({
+            url: '{% url 'fetchDomainList' %}',
+            data: {},
+            dataType: 'json',
+            success: function (data) {
+                var res = JSON.parse(data.perm);
+                if (res !== '' && res.length > 0) {
+                    $('#id_domain').html('');
+                    for (i in res) {
+                        $('#id_domain').append('<option value="' + res[i].pk + '">' + res[i].fields.name + '</option>').trigger("change");
+                    }
+                }
+            }
+        });
+    });
+
+    $('#btnAddCustomer').click(function () {
+        var id_domain = $('#id_domain').val();
+        var category = $('#id_category').val();
+        var company_name = $('#id_name').val();
+        var id_owner = $('#id_owner').val();
+        var description = $('#id_description').val();
+
+        if(has_domain === 0){
+            id_domain = 'none';
+        }
+
+        
+
+        if(company_name == "" || company_name.length < 0){
+            document.getElementById('id_name').style.borderColor = "red";
+            event.preventDefault();
+        }
+        else{
+            var savedData = {
+                has_domain: has_domain,
+                id_domain: id_domain,
+                category: category,
+                company_name: company_name,
+                id_owner: id_owner,
+                description: description
+            };
+
+            urldata = "{% url 'saveCustomer'%}";
+            $.ajax({
+                type: "GET",
+                cache: false,
+                data: savedData,
+                url: urldata,
+                success: function (resp) {
+                    $('.customerContainerPane').html(resp);
+                    $('.close-dialog').click();
+                }
+            });
+        }
+     
+    });
+
+
+    var ckbox = $('#domainCheck');
+
+    $('input[type="checkbox"]').click(function(){
+        if (ckbox.is(':checked')) {
+            $('#div_id_domain').show();
+            has_domain = 1;
+        } else {
+            $('#id_domain').html('');
+            $('#div_id_domain').hide();
+            has_domain = 0;
+        }
+    });
+
+    $("#id_category_value").attr("placeholder", "Enter Company Category");
+    $("#id_description").attr("placeholder", "Enter Description");
+    $("#id_owner").attr("placeholder", "Enter Company Owner");
+    $("#id_name").attr("placeholder", "Enter Company Name");
+
+    $('#id_name').on('input', function () {
+        var company_name = $(this).val();
+
+        $.ajax({
+            url: '{% url 'validateCompanyName' %}',
+            data: {
+                'companyname': company_name
+            },
+            dataType: 'json',
+            success: function (data) {
+                if (data.is_taken) {
+                    $("#validate_campany_name").show();
+                    document.getElementById('id_name').style.borderColor = "red";
+                    document.getElementById("btnAddCustomer").disabled = true;
+                } else {
+                    $("#validate_campany_name").hide();
+                    document.getElementById('id_name').style.borderColor = "#e7e7e7";
+                    document.getElementById("btnAddCustomer").disabled = false;
+                }
+            }
+        });
+    });
+
+    function AddDomain2() {
+        $.confirm({
+            title: 'Add Domain!',
+            content: '' +
+            '<div class="form-group">' +
+            '<label>Domain Name<span class="asteriskField text-danger">*</span></label>' +
+            '<input type="text" placeholder="Your name" class="dname form-control" required />' +
+            '</div>'+
+            '<div class="form-group">' +
+            '<label>Description</label>' +
+            '<input type="text" placeholder="Domain Description" class="desc form-control"/>' +
+            '</div>',
+            buttons: {
+                formSubmit: {
+                    text: 'Submit',
+                    btnClass: 'btn-blue',
+                    action: function () {
+                        var name = this.$content.find('.dname').val();
+                        var desc = this.$content.find('.desc').val();
+                        if(!name){
+                            $.alert('Please provide a valid Domain name');
+                            return false;
+                        }
+                        else{
+                            $.ajax({
+                                type: "GET",
+                                cache: false,
+                                data: {
+                                    dname: name,
+                                    desc: desc
+                                },
+                                url: '{% url 'addDomains2' %}',
+                                success: function (resp) {
+
+                                }
+                            });
+                        }
+                    }
+                },
+                cancel: function () {
+                    //close
+                },
+            }
+        });
+    }
+</script>

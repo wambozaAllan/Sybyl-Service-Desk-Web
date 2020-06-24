@@ -1,0 +1,39 @@
+{% extends 'base.html' %}
+
+{% load static %}
+
+{% block content %}
+
+<div id="main-wrapper">
+    {% include 'header.html' %}
+
+    <script type="text/javascript" src="{% static 'fusioncharts/fusioncharts.js' %}"></script>
+    <script type="text/javascript" src="{% static 'fusioncharts/themes/fusioncharts.theme.fint.js' %}"></script>
+
+  
+    {% include 'left-nav.html' %}
+
+    <div class="page-wrapper">
+
+        <div class="row page-titles">
+            <div class="col-md-7 align-self-center">
+                <h3 class="text-primary">Customer Portal</h3> </div>
+            
+        </div>
+
+        <div class="container-fluid">
+            <!-- Start Page Content -->
+            <div class="row">
+
+
+
+            </div>
+            <div>{% include 'footer.html' %}</div>
+            <!-- End PAge Content -->
+        </div>
+        <!-- End Container fluid  -->
+
+    </div>
+    <!-- End Page wrapper  -->
+</div>
+{% endblock %}

@@ -1,0 +1,121 @@
+{% extends 'base.html' %}
+
+{% load static %}
+
+{% block content %}
+<!-- Main wrapper  -->
+<div id="main-wrapper">
+    <!-- header header  -->
+    {% include 'header.html' %}
+    <!-- End header header -->
+    {% include 'left-nav.html' %}
+    <!-- Page wrapper  -->
+    <div class="page-wrapper">
+        <!-- Bread crumb -->
+        <div class="row page-titles">
+            <div class="col-md-5 align-self-center">
+                <h3 class="text-primary">Customers</h3>
+            </div>
+            <div class="col-md-7 align-self-center">
+                <ol class="breadcrumb">
+                    <li class="breadcrumb-item"><a href="{% url 'home' %}">Home</a></li>
+                    <li class="breadcrumb-item active">Customers</li>
+                </ol>
+            </div>
+        </div>
+        <!-- End Bread crumb -->
+        <!-- Container fluid  -->
+        <div class="container-fluid">
+            <!-- Start Page Content -->
+            <div class="card" style="margin-top: -2%;">
+                <ul class="nav nav-tabs" role="tablist">
+                    <li class="nav-item" onclick="listCustomers()">
+                        <a class="nav-link active" data-toggle="tab" href="#home" role="tab"><span class="hidden-sm-up"><i class="ti-home"></i></span>
+                        <span class="hidden-xs-down">Customers</span></a>
+                    </li>
+                </ul>
+                <div class="tab-content tabcontent-border tab-content-1" style="padding-left: 1%;padding-right: 1%;">
+                    <div class="tab-pane active" id="customer_container_home" role="tabpanel">
+                        <div class="row p-10">
+                            <div class="col-md-12 container">
+                                
+                                <button id="" class="btn btn-info pull-right" onclick="functAddCustomer();">
+                                    <i class="fa fa-fw fa-lg fa-plus"></i>Add Customers
+                                </button>
+                            </div>
+                        </div>
+                        <div class="customerContainerPane">
+                            {% include "company_management/list_customers.html" %}
+                        </div>
+                    </div>
+                </div>     
+            </div>
+            
+          
+            {% include 'footer.html' %}
+            <!-- End PAge Content -->
+        </div>
+        <!-- End Container fluid  -->
+    </div>
+    <!-- End Page wrapper  -->
+</div>
+<script>
+
+    function functAddCustomer() {
+        urldata = "{% url 'addCustomer'%}";
+        $.ajax({
+            type: "GET",
+            cache: false,
+            data: {},
+            url: urldata,
+            success: function (resp) {
+                $.confirm({
+                    title: '<h3>Add New Customer</h3>',
+                    content: '' + resp,
+                    type: 'blue',
+                    typeAnimated: true,
+                    boxWidth: '50%',
+                    useBootstrap: false,
+                    closeIcon: true,
+                    buttons: {
+                        close: {
+                            text: 'Cancel',
+                            btnClass: 'btn-gray, close-dialog',
+                            action: function () {
+                            }
+                        }
+                    }
+                });
+            }
+        });
+    }
+
+    function listCustomers(){
+        urldata = "{% url 'listCustomers' %}";
+        $.ajax({
+            type: "GET",
+            cache: false,
+            data: {
+            },
+            url: urldata,
+            success: function (resp) {
+                $('.customerContainerPane').html(resp);
+            }
+        });
+    }
+
+    $(function(){
+        urldata = "{% url 'listCustomers' %}";
+        $.ajax({
+            type: "GET",
+            cache: false,
+            data: {
+            },
+            url: urldata,
+            success: function (resp) {
+                $('.customerContainerPane').html(resp);
+            }
+        });
+    })
+</script>
+{% endblock %}

@@ -1,0 +1,238 @@
+<div id="save-user-pane">
+    {% load crispy_forms_tags %} {% csrf_token %}
+    <div class="row col-12">
+        <div class="col-6">
+            <div class="form-group">
+                <label class="col-form-label  requiredField">Company<span class="asteriskField">*</span></label>
+                <div class="">
+                    <input id="id_name" type="text" name="" class="textinput textInput form-control" disabled
+                        value="{{ company_name }}" />
+                    <input id="id_company" type="text" name="" class="textinput textInput form-control" style="display: none;"
+                    value="{{ company_id }}" />
+                </div>
+            </div>
+
+            <div id="div_id_first_name" class="form-group">
+                <label for="id_first_name" class="col-form-label  requiredField">
+                    First name<span class="asteriskField">*</span>
+                </label>
+                <div class="">
+                    <input type="text" name="first_name" maxlength="100" class="textinput textInput form-control" required="" id="id_first_name">
+                </div>
+            </div>
+
+            <div id="div_id_last_name" class="form-group">
+                <label for="id_last_name" class="col-form-label  requiredField">
+                    Last name<span class="asteriskField">*</span>
+                </label>
+                <div class="">
+                    <input type="text" name="last_name" maxlength="100" class="textinput textInput form-control" required="" id="id_last_name">
+                </div>
+            </div>
+        </div>
+
+        <div class="col-6">
+            <div id="div_id_gender" class="form-group">
+                <label for="id_gender" class="col-form-label  requiredField">
+                    Gender<span class="asteriskField">*</span>
+                </label>
+            
+                <div class="">
+                    <select name="gender" class="select form-control" id="id_gender">
+                        <option value="Male" selected="">Male</option> 
+                        <option value="Female">Female</option>
+                    </select>  
+                </div>
+            </div>
+
+            <div id="div_id_email" class="form-group">
+                <label for="id_email" class="col-form-label ">
+                    Email<span class="asteriskField">*</span>
+                </label>
+                <div class="">
+                    <input type="email" name="email" maxlength="254" class="emailinput form-control" id="id_email" style="border: 1px solid rgb(206, 212, 218);">
+                </div>
+            </div>
+
+            <medium id="email_addr_error" class="text-muted hidden">
+                <font color="red">
+                    Invalid Email Adress!
+                </font>
+            </medium>
+
+            <div class="">
+                Default Login Credentials
+            </div>
+
+            <div id="div_id_username" class="form-group">
+                <label for="id_username" class="col-form-label  requiredField">
+                    Username<span class="asteriskField">*</span>
+                </label>
+
+                <div class="">
+                    <input type="text" name="username" maxlength="100" class="textinput textInput form-control" required="" id="id_username">
+                </div>  
+            </div>
+
+            <medium id="validate_user_name" class="text-muted hidden">
+                <font color="red">
+                    User Name Already Exists!
+                </font>
+            </medium><br />
+            <div class="">
+                <div class="col-md-12" style="margin-top: 2%;">
+                    <button id="btnAddUser" class="btn btn-success pull-right col-12">
+                        <span class="btn-save-user"><i class="fa fa-fw fa-lg fa-save"></i>Submit</span>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    $('#btnAddUser').click(function () {
+        var first_name = $('#id_first_name').val();
+        var last_name = $('#id_last_name').val();
+        var gender = $('#id_gender').val();
+
+        var company_id = $('#id_company').val();
+        var email = $('#id_email').val();
+        var username = $('#id_username').val();
+
+        if (first_name < 1 || last_name < 1 || gender < 1 || username < 1 || email < 1) {
+            if (first_name < 1) {
+                $('#id_first_name').css({ "border": '2px solid #00635a' });
+            }
+
+            if (last_name < 1) {
+                $('#id_last_name').css({ "border": '2px solid #00635a' });
+            }
+
+            if (gender < 1) {
+                $('#id_gender').css({ "border": '2px solid #00635a' });
+            }
+
+            if (username < 1) {
+                $('#id_username').css({ "border": '2px solid #00635a' });
+            }
+
+            if (email < 1) {
+                $('#id_email').css({ "border": '2px solid #00635a' });
+            }
+        } else {
+            if (validateEmail(email)) {
+                url_data12 = "{% url 'testConnection'%}";
+                $.ajax({
+                    type: "GET",
+                    cache: false,
+                    data: {},
+                    url: url_data12,
+                    success: function (data) {
+                        if (data.test) {
+                            $('.btn-save-user').html('Submit <i class="fa fa-spinner fa-spin"></i>');
+                            document.getElementById('btnAddUser').disabled = true;
+                            data3 = {
+                                first_name: first_name,
+                                last_name: last_name,
+                                gender: gender,
+                                email: email,
+                                username: username,
+                                company_id:company_id
+                            };
+
+                            url_data = "{% url 'saveCustomerUser'%}";
+                            $.ajax({
+                                type: "GET",
+                                cache: false,
+                                data: data3,
+                                url: url_data,
+                                success: function (resp) {
+                                    $('.close-dialog').click();
+                                    $('.customer-users').html(resp);
+
+                                    $.confirm({
+                                        title: 'Success!',
+                                        content: 'An Email Has been sent to <span class="text-info">' + email + '.</span> User should get his/her credentials from the sent mail to login on to the system.',
+                                        type: 'green',
+                                        boxWidth: '35%',
+                                        useBootstrap: false,
+                                        typeAnimated: true,
+                                        buttons: {
+                                            ok: function () {
+
+                                            }
+                                        }
+                                    });
+
+                                }
+                            });
+                        } else {
+                            $.confirm({
+                                title: 'Alert!',
+                                content: 'Please Check your Internet and Proceed.',
+                                type: 'red',
+                                boxWidth: '35%',
+                                useBootstrap: false,
+                                typeAnimated: true,
+                                buttons: {
+                                    close: function () {
+
+                                    }
+                                }
+                            });
+                        }
+                    }
+                });
+            } else {
+                $('#email_addr_error').show();
+                $('#id_email').css({ "border": '2px solid #00635a' });
+                document.getElementById('btnAddUser').disabled = false;
+            }
+        }
+    });
+
+    $('#id_first_name').on('input', function () {
+        $('#id_first_name').css({ "border": '1px solid #ced4da' });
+    });
+
+    $('#id_last_name').on('input', function () {
+        $('#id_last_name').css({ "border": '1px solid #ced4da' });
+    });
+
+    $('#id_gender').on('input', function () {
+        $('#id_gender').css({ "border": '1px solid #ced4da' });
+    });
+
+    $('#id_username').on('input', function () {
+        $('#id_username').css({ "border": '1px solid #ced4da;' });
+    });
+
+    $('#id_email').on('input', function () {
+        $('#id_email').css({ "border": '1px solid #ced4da' });
+        $('#email_addr_error').hide();
+    });
+
+    $('#id_username').on('input', function () {
+        var id_user_name = $(this).val();
+
+        $.ajax({
+            url: '{% url 'validateUserName' %}',
+            data: {
+                'username': id_user_name
+            },
+            dataType: 'json',
+            success: function (data) {
+                if (data.is_taken) {
+                    $("#validate_user_name").show();
+                    document.getElementById('id_username').style.borderColor = "red";
+                    document.getElementById("btnAddUser").disabled = true;
+                } else {
+                    $("#validate_user_name").hide();
+                    document.getElementById('id_username').style.borderColor = "#e7e7e7";
+                    document.getElementById("btnAddUser").disabled = false;
+                }
+            }
+        });
+    });
+</script>

@@ -12,8 +12,8 @@ from .managers import UserManager
 class User(AbstractBaseUser, PermissionsMixin):
     groups = models.ManyToManyField(Group, related_name='groups')
     company = models.ForeignKey(Company, default=1, on_delete=models.CASCADE)
-    branch = models.ForeignKey(Branch, default=1, on_delete=models.CASCADE)
-    department = models.ForeignKey(Department, default=1, on_delete=models.CASCADE)
+    branch = models.ForeignKey(Branch, on_delete=models.CASCADE, null=True, blank=True)
+    department = models.ForeignKey(Department, on_delete=models.CASCADE, null=True, blank=True)
     first_name = models.CharField(max_length=100)
     last_name = models.CharField(max_length=100)
     email = models.EmailField(blank=True)
@@ -33,6 +33,7 @@ class User(AbstractBaseUser, PermissionsMixin):
     postal_code = models.CharField(max_length=100, null=True, blank=True)
     address = models.CharField(max_length=255, null=True, blank=True)
     secondary_email = models.EmailField(blank=True, null=True)
+    user_type = models.CharField(max_length=100, null=True, blank=True)
 
     objects = UserManager()
 

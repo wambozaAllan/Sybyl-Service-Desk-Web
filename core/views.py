@@ -72,22 +72,36 @@ class Login(LoginView):
                 # Create user session
                 login(request, user)
 
-                # Other sessions
-                request.session['pk'] = user.pk
-                request.session['username'] = username
-                request.session['first_name'] = user.first_name
-                request.session['last_name'] = user.last_name
-                request.session['company'] = user.company.name
-                request.session['company_id'] = user.company.id
-                request.session['branch'] = user.branch.name
-                request.session['department'] = user.department.name
-                request.session['department_id'] = user.department.id
-                if user_login_state:
-                    return redirect("/home/")
+                if user.user_type == "clientuser":
+                    request.session['pk'] = user.pk
+                    request.session['username'] = username
+                    request.session['first_name'] = user.first_name
+                    request.session['last_name'] = user.last_name
+                    request.session['company'] = user.company.name
+                    request.session['company_id'] = user.company.id
+                    if user_login_state:
+                        return redirect("/customer-home/")
+                    else:
+                        User.objects.filter(id=user.pk).update(last_login=None)
+                        return render(request, 'core/change_password.html', {'user_name': username, 'user_id': user.pk})
+
                 else:
-                    User.objects.filter(id=user.pk).update(last_login=None)
-                    return render(request, 'core/change_password.html', {'user_name': username, 'user_id': user.pk})
-        return render(request, self.template_name, {'form': form})
+                    # Other sessions
+                    request.session['pk'] = user.pk
+                    request.session['username'] = username
+                    request.session['first_name'] = user.first_name
+                    request.session['last_name'] = user.last_name
+                    request.session['company'] = user.company.name
+                    request.session['company_id'] = user.company.id
+                    request.session['branch'] = user.branch.name
+                    request.session['department'] = user.department.name
+                    request.session['department_id'] = user.department.id
+                    if user_login_state:
+                        return redirect("/home/")
+                    else:
+                        User.objects.filter(id=user.pk).update(last_login=None)
+                        return render(request, 'core/change_password.html', {'user_name': username, 'user_id': user.pk})
+            return render(request, self.template_name, {'form': form})
 
 
 @login_required()
@@ -151,3 +165,7 @@ def save_new_password(request):
     now = datetime.datetime.utcnow()
     User.objects.filter(id=int(user_id)).update(username=user_name, password=make_password(new_password), last_login=now.strftime('%Y-%m-%d %H:%M:%S'))
     return redirect("/login/")
+
+
+def customer_home(request):
+    return render(request, 'core/customer_home_page.html',context=None )
