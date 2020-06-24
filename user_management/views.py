@@ -515,6 +515,7 @@ def save_user_to_global_group(request):
     group_id = request.GET.get('grpid')
     grpname = request.GET.get('grpname')
 
+    # MANY TO MANY SAVE
     user_id1 = User.objects.get(id=int(user_id))
     groupid1 = Group.objects.get(id=int(group_id))
     user_id1.groups.add(groupid1)

@@ -1,0 +1,76 @@
+<div class="card-body">
+    {% load crispy_forms_tags %}
+    {% csrf_token %}
+    <div class="row col-12">
+        <input type="hidden" id="sla_id" value="{{sla_id}}">
+        <div class="col-6">
+            {{ form.name|as_crispy_field }}
+        </div>
+
+        <div class="col-6">
+            {{ form.customer|as_crispy_field }}
+        </div>
+        
+    </div>
+
+    <div class="row col-12">
+
+        <div class="col-6">
+            {{ form.description|as_crispy_field }}
+        </div>
+
+        <div class="col-6" style="margin-top: 7%;">
+            <button id="updateSLA" class="btn btn-success pull-right col-6">
+                <i class="fa fa-fw fa-lg fa-save"></i>Update
+            </button>
+        </div>
+    </div>
+</div>
+
+
+<script>
+
+   $('#id_name').on('input', function () {
+        $('#id_name').css({ "border": '1px solid #ced4da' });
+    });
+
+    $('#id_customer').change(function () {
+        $('#id_customer').css({"border": '1px solid #ced4da'});
+    });
+
+    $('#updateSLA').click(function () { 
+        var sla_name = $('#id_name').val();
+        var id_description = $('#id_description').val();
+        var id_customer = $('#id_customer').val();
+        var sla_id = $('#sla_id').val();
+
+        if (sla_name < 1 || id_customer < 1) {
+            if (sla_name < 1) {
+                $('#id_name').css({ "border": '2px solid #00635a' });
+            }
+
+            if (id_customer < 1) {
+                $('#id_customer').css({ "border": '2px solid #00635a' });
+            }
+        } else {
+            document.getElementById('updateSLA').disabled = true;
+            data3 = {
+                sla_name: sla_name,
+                id_description: id_description,
+                sla_id: sla_id,
+                id_customer: id_customer
+            };
+            url_data = "{% url 'saveSLAupdate'%}";
+            $.ajax({
+                type: "GET",
+                cache: false,
+                data: data3,
+                url: url_data,
+                success: function (resp) {
+                    $('.close-dialog').click();
+                    $('.sla-pane').html(resp);
+                }
+            });
+        }
+    });
+</script>

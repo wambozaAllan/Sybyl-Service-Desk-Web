@@ -1,5 +1,5 @@
 from django import forms
-from .models import Company, Department, Branch, CompanyCategory, CompanyDomain, BranchPhoneContact, BranchEmailAddresses
+from .models import Company, Department, Branch, CompanyCategory, CompanyDomain, BranchPhoneContact, BranchEmailAddresses, ServiceLevelAgreement
 
 
 class CompanyDomainForm(forms.ModelForm):
@@ -61,3 +61,10 @@ class BranchEmailForm(forms.ModelForm):
                                                     'placeholder': 'emailvalue@email.com',
                                                     'required': True}),
         }
+
+class ServiceLevelAgreementForm(forms.ModelForm):
+    class Meta:
+        model = ServiceLevelAgreement
+        fields = ('name', 'company','description', 'customer',)
+        widgets = {'name': forms.TextInput(attrs={'class': 'form-control input-flat'})}
+

@@ -272,7 +272,8 @@
                 end_time: end_time,
                 timesheet_id: timesheet_id,
                 notes: id_timesheet_notes,
-                uid: uid
+                uid: uid,
+                structural_vale: 'project'
             };
             url_data = "{% url 'saveUpdateTimesheet'%}";
             $.ajax({

@@ -109,3 +109,14 @@ class Department(models.Model):
     class Meta:
         db_table = 'department'
 
+
+# SLA(Service Level Agreement)
+class ServiceLevelAgreement(models.Model):
+    name = models.CharField(max_length=255)
+    customer = models.ForeignKey(Company, on_delete=models.CASCADE, related_name='customer')
+    company = models.ForeignKey(Company, on_delete=models.CASCADE, related_name='company')
+    description = models.CharField(max_length=255, null=True, blank=True) 
+    created_time = models.DateTimeField(auto_now_add=True)
+    modified_time = models.DateTimeField(auto_now=True)
+
+

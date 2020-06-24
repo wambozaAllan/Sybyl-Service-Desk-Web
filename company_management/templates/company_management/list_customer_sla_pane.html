@@ -1,0 +1,155 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block content %}
+
+<style>
+    .show-pane {
+        display: contents;
+    }
+</style>
+<div>
+    <!-- Main wrapper  -->
+    <div id="main-wrapper">
+        {% include 'header.html' %}
+        {% include 'left-nav.html' %}
+
+        <!-- Page wrapper  -->
+        <div class="page-wrapper">
+            <!-- Bread crumb -->
+            <div class="row page-titles">
+                <div class="col-md-5 align-self-center">
+                    <h3 class="text-primary">SLA CONTRACTS</h3>
+                </div>
+                <div class="col-md-7 align-self-center">
+                    <ol class="breadcrumb">
+                        <li class="breadcrumb-item"><a href="javascript:void(0)">Home</a></li>
+                        <li class="breadcrumb-item active">SLAs</li>
+                    </ol>
+                </div>
+            </div>
+            <!-- End Bread crumb -->
+            <!-- Container fluid  -->
+            <div class="">
+                <!-- Start Page Content -->
+                <div class="card" style="margin-top: -2%;">
+                    <div class="card-body">
+                        <h4 class="card-title">SLAs</h4>
+                        <div class="row">
+                            <div class="col-md-12">
+                                <button id="" class="btn btn-info pull-right" onclick="functAddSLA();">
+                                    <i class="fa fa-fw fa-lg fa-plus"></i>Add SLA
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="table-responsive sla-pane">
+                        <table id="table-approvals" class="display nowrap table table-hover" cellspacing="0"
+                            width="100%">
+                            <thead>
+                                <tr>
+                                    <th>#</th>
+                                    <th>SLA</th>
+                                    <th>Customer</th>
+                                    <th>Description</th>
+                                    <th>Added By</th>
+                                    <th>Date Added</th>
+                                    <th class="text-center">Action</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+
+                                {% for sla in sla_obj %}
+                                <tr>
+                                    <td>{{ forloop.counter }}</td>
+                                    <td>{{ sla.name}}</td>
+                                    <td>{{ sla.customer}} </td>
+                                    <td>{{ sla.description}}</td>
+                                    <td>{{sla.created_time}}</td>
+                                    <td>{{sla.modified_time}}</td>
+                                    <td class="text-center">
+                                        <button onclick=""  id="" class="btn btn-outline-success btn-sm" type="button">
+                                            <i title="Manage Company" class="fa fa-dedent"></i>
+                                        </button>
+                                        <button onclick="functionEditSla({{ sla.id }}, '{{ sla.name }}')"  id="" class="btn btn-outline-success btn-sm" type="button">
+                                            <i title="Edit Company" class="fa fa-edit"></i>
+                                        </button>
+                                        <button onclick=""  id="" class="btn btn-outline-danger btn-sm" type="button">
+                                            <i title="Edit Company" class="fa fa-remove"></i>
+                                        </button>
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    function functAddSLA() {
+        urldata = "{% url 'addSla'%}";
+        $.ajax({
+            type: "GET",
+            cache: false,
+            data: {},
+            url: urldata,
+            success: function (resp) {
+                $.confirm({
+                    title: '<h3>Add Project SLA</h3>',
+                    content: '' + resp,
+                    type: 'blue',
+                    typeAnimated: true,
+                    boxWidth: '50%',
+                    useBootstrap: false,
+                    closeIcon: true,
+                    buttons: {
+                        close: {
+                            text: 'Cancel',
+                            btnClass: 'btn-gray close-dialog',
+                            action: function () {
+                                
+                            }
+                        }
+                    }
+                });
+            }
+        });
+    }
+    
+    function functionEditSla(slaid, slaname) {
+        urldata = "{% url 'updateSLA' 999%}".replace(999, slaid);
+        $.ajax({
+            type: "GET",
+            cache: false,
+            data: {
+                slaname: slaname
+            },
+            url: urldata,
+            success: function (resp) {
+                $.confirm({
+                    title: '<h3>Update <strong class="text-info">' + slaname + ' </strong></h3>',
+                    content: '' + resp,
+                    type: 'blue',
+                    typeAnimated: true,
+                    boxWidth: '50%',
+                    useBootstrap: false,
+                    closeIcon: true,
+                    buttons: {
+                        close: {
+                            text: 'Close',
+                            btnClass: 'btn-gray close-dialog',
+                            action: function () {
+                            }
+                        }
+                    }
+                });
+            }
+        });
+    }
+</script>
+{% endblock %}
+

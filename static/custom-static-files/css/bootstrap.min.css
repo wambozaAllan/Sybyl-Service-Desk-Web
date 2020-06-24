@@ -175,3 +175,173 @@
     -webkit-appearance: none;
     -moz-appearance: none;
 }
+
+/* TRELLO LAYOUT BOARD */
+.masthead {
+    flex-basis: 4rem;
+    display: flex;
+    align-items: center;
+    padding: 0 0.8rem;
+    background-color: #0067a3;
+    box-shadow: 0 0.1rem 0.1rem rgba(0, 0, 0, 0.1);
+}
+
+.masthead .btn {
+    background-color: #4c94be;
+    border-radius: 0.3rem;
+    transition: background-color 150ms;
+}
+
+.masthead .btn:hover {
+    background-color: #3385b5;
+}
+
+.board-controls {
+    display: flex;
+}
+
+.board-controls .btn {
+    margin-right: 1rem;
+}
+
+.board-controls .btn:last-of-type {
+    margin-right: 0;
+}
+
+.private-btn-icon,
+.menu-btn-icon {
+    padding-right: 0.6rem;
+    white-space: nowrap;
+}
+
+.board-title h2 {
+    font-size: 1.8rem;
+    font-weight: 700;
+    white-space: nowrap;
+}
+
+/* Lists */
+
+.lists-container::-webkit-scrollbar {
+    height: 2.4rem;
+}
+
+.lists-container::-webkit-scrollbar-thumb {
+    background-color: #66a3c7;
+    border: 0.8rem solid #0079bf;
+    border-top-width: 0;
+}
+
+.lists-container {
+    display: flex;
+    align-items: start;
+    padding: 0 0.8rem 0.8rem;
+    overflow-x: auto;
+    height: calc(100vh - 8.6rem);
+}
+
+.list {
+    flex: 0 0 27rem;
+    display: flex;
+    flex-direction: column;
+    background-color: #e2e4e6;
+    max-height: calc(100vh - 11.8rem);
+    border-radius: 0.3rem;
+    margin-right: 1rem;
+}
+
+.list:last-of-type {
+    margin-right: 0;
+}
+
+.list-title {
+    font-size: 1.4rem;
+    font-weight: 700;
+    color: #333;
+    padding: 1rem;
+}
+
+.list-items {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-content: start;
+    padding: 0 0.6rem 0.5rem;
+    overflow-y: auto;
+}
+
+.list-items::-webkit-scrollbar {
+    width: 1.6rem;
+}
+
+.list-items::-webkit-scrollbar-thumb {
+    background-color: #c4c9cc;
+    border-right: 0.6rem solid #e2e4e6;
+}
+
+.list-items li {
+    font-size: 1.4rem;
+    font-weight: 400;
+    line-height: 1.3;
+    background-color: #fff;
+    padding: 0.65rem 0.6rem;
+    color: #4d4d4d;
+    border-bottom: 0.1rem solid #ccc;
+    border-radius: 0.3rem;
+    margin-bottom: 0.6rem;
+    word-wrap: break-word;
+    cursor: pointer;
+}
+
+.list-items li:last-of-type {
+    margin-bottom: 0;
+}
+
+.list-items li:hover {
+    background-color: #eee;
+}
+
+@supports (display: grid) {
+    .masthead {
+        display: grid;
+        grid-template-columns: auto 1fr auto;
+        grid-column-gap: 2rem;
+    }
+
+    .boards-menu {
+        display: grid;
+        grid-template-columns: 9rem 18rem;
+        grid-column-gap: 0.8rem;
+    }
+
+    .board-controls {
+        display: grid;
+        grid-auto-flow: column;
+        grid-column-gap: 1rem;
+    }
+
+    .lists-container {
+        display: grid;
+        grid-auto-columns: 27rem;
+        grid-auto-flow: column;
+        grid-column-gap: 1rem;
+    }
+
+    .list {
+        display: grid;
+        grid-template-rows: auto minmax(auto, 1fr) auto;
+    }
+
+    .list-items {
+        display: grid;
+        grid-row-gap: 0.6rem;
+    }
+
+    .list,
+    .list-items li,
+    .boards-btn,
+    .board-controls .btn,
+    .user-settings-btn {
+        margin: 0;
+    }
+}

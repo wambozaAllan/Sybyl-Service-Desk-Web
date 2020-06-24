@@ -21,41 +21,72 @@
                                 <thead class="">
                                     <tr>
                                         <th>#</th>
-                                        <th>Task</th>
+                                        <th>Name</th>
                                         <th>Duration</th>
                                         <th>Day</th>
                                         <th>Start Time</th>
                                         <th>End Time</th>
+                                        <th class="">Type</th>
                                         <th class="text-center">Action</th>
                                     </tr>
                                     </thead>
                                     <tbody>
                                         {% for tm in sheet.dictt %}
                                             <tr>
-                                                <td>{{ forloop.counter }}</td>
-                                                <td><a href="#" onclick="functionViewTaskDetails({{ tm.task_id }})" title="View Task Details!" class="text-info font-weight-bold">{{ tm.task | truncatechars:17 }}</a></td>
-                                                <td><span class="badge badge-success"><strong><h6>{{ tm.duration }}</h6></strong></span></td>
-                                                <td>{{ tm.log_day | date:"D, d M, Y" }}</td>
-                                                <td>{{ tm.start_time | time:"TIME_FORMAT" }}</td>
-                                                <td>{{ tm.end_time | time:"TIME_FORMAT" }}</td>
-                                                <td class="text-center">
-                                                    <form class="form">
-                                                        <input type="checkbox" id="itemcheckbox{{tm.id}}" onclick="functionManageTimesheets({{tm.id}})" class="timesheet-checkbox" name="rowSelectCheckBox"/>&nbsp;
-                                                        
-                                                        <button onclick="functionViewTimesheetDesc('{{ tm.task }}', '{{ tm.notes }}', '{{  tm.start_time  | date:'H:i A' }} - {{ tm.end_time  | date:'H:i A' }}', '{{tm.created_time | date:"D, d M, Y"}}')" class="btn btn-outline-success btn-sm" type="button">
-                                                            <i title="View Timesheet Description" class="fa fa-dedent"></i>
-                                                        </button> &nbsp;
+                                                {% if tm.timesheet_type == "request_type" %}
+                                                    <td>{{ forloop.counter }}</td>
+                                                    <td><a href="#" onclick="functionViewRequestDetails({{ tm.task_id }}, '{{tm.name}}', {{tm.sla_id}}, '{{tm.sla_name}}')" title="View Request Details!" class="text-info font-weight-bold">{{ tm.name | truncatechars:17 }}</a></td>
+                                                    <td><span class="badge badge-success"><strong><h6>{{ tm.duration }}</h6></strong></span></td>
+                                                    <td>{{ tm.log_day | date:"D, d M, Y" }}</td>
+                                                    <td>{{ tm.start_time | time:"TIME_FORMAT" }}</td>
+                                                    <td>{{ tm.end_time | time:"TIME_FORMAT" }}</td>
+                                                    <td class=""><span class="badge badge-secondary"><strong>Request</strong></span></td>
+                                                    <td class="text-center">
+                                                        <form class="form">
+                                                            <input type="checkbox" id="itemcheckbox{{tm.tm_id}}" onclick="functionManageTimesheets({{tm.tm_id}})" class="timesheet-checkbox" name="rowSelectCheckBox"/>&nbsp;
+                                                            
+                                                            <button onclick="functionViewTimesheetDescRequest('{{ tm.name }}', '{{ tm.notes }}', '{{  tm.start_time  | date:'H:i A' }} - {{ tm.end_time  | date:'H:i A' }}', '{{tm.created_time | date:"D, d M, Y"}}')" class="btn btn-outline-success btn-sm" type="button">
+                                                                <i title="View Timesheet Description" class="fa fa-dedent"></i>
+                                                            </button> &nbsp;
 
-                                                        <button onclick="functionEditTimesheet({{ tm.id }}, '{{ tm.log_day | date:"d-m-Y"}}', '{{ tm.start_time  | date:'H:i A'}}', '{{ tm.end_time  | date:'H:i A'}}', '{{ tm.task }}', {{tm.task_id}}, '{{tm.notes}}')"
-                                                            class="btn btn-outline-success btn-sm" type="button">
-                                                            <i title="Edit Group" class="fa fa-edit"></i>
-                                                        </button> &nbsp;
-                                                        
-                                                        <button onclick="functionDeleteTimesheet({{ tm.id }}, '{{ tm.log_day | date:"d-m-Y"}}', '{{ tm.start_time  | date:'H:i A'}}', '{{ tm.end_time  | date:'H:i A'}}', '{{ tm.task }}')" class="btn btn-outline-danger btn-sm" type="button">
-                                                            <i title="Delete Timesheet" class="fa fa-remove"></i>
-                                                        </button> &nbsp;
-                                                    </form>
-                                                </td>
+                                                            <button onclick="functionEditTimesheet({{ tm.tm_id }}, '{{ tm.log_day | date:"d-m-Y"}}', '{{ tm.start_time  | date:'H:i A'}}', '{{ tm.end_time  | date:'H:i A'}}', '{{ tm.name }}', {{tm.task_id}}, '{{tm.notes}}', 'req', '{{tm.sla_name}}', {{tm.sla_id}})"
+                                                                class="btn btn-outline-success btn-sm" type="button">
+                                                                <i title="Edit Group" class="fa fa-edit"></i>
+                                                            </button> &nbsp;
+                                                            
+                                                            <button onclick="functionDeleteTimesheet({{ tm.tm_id }}, '{{ tm.log_day | date:"d-m-Y"}}', '{{ tm.start_time  | date:'H:i A'}}', '{{ tm.end_time  | date:'H:i A'}}', '{{ tm.name }}', {{ tm.task_id }}, 'req')" class="btn btn-outline-danger btn-sm" type="button">
+                                                                <i title="Delete Timesheet" class="fa fa-remove"></i>
+                                                            </button> &nbsp;
+                                                        </form>
+                                                    </td>
+                                                {% else %}
+                                                    <td>{{ forloop.counter }}</td>
+                                                    <td><a href="#" onclick="functionViewTaskDetails({{ tm.task_id }})" title="View Request Details!" class="text-info font-weight-bold">{{ tm.name | truncatechars:17 }}</a></td>
+                                                    <td><span class="badge badge-success"><strong><h6>{{ tm.duration }}</h6></strong></span></td>
+                                                    <td>{{ tm.log_day | date:"D, d M, Y" }}</td>
+                                                    <td>{{ tm.start_time | time:"TIME_FORMAT" }}</td>
+                                                    <td>{{ tm.end_time | time:"TIME_FORMAT" }}</td>
+                                                    <td class=""><span class="badge badge-secondary"><strong>Task</strong></span></td>
+                                                    <td class="text-center">
+                                                        <form class="form">
+                                                            <input type="checkbox" id="itemcheckbox{{tm.tm_id}}" onclick="functionManageTimesheets({{tm.tm_id}})" class="timesheet-checkbox" name="rowSelectCheckBox"/>&nbsp;
+                                                            
+                                                            <button onclick="functionViewTimesheetDesc('{{ tm.name }}', '{{ tm.notes }}', '{{  tm.start_time  | date:'H:i A' }} - {{ tm.end_time  | date:'H:i A' }}', '{{tm.created_time | date:"D, d M, Y"}}')" class="btn btn-outline-success btn-sm" type="button">
+                                                                <i title="View Timesheet Description" class="fa fa-dedent"></i>
+                                                            </button> &nbsp;
+
+                                                            <button onclick="functionEditTimesheet({{ tm.tm_id }}, '{{ tm.log_day | date:"d-m-Y"}}', '{{ tm.start_time  | date:'H:i A'}}', '{{ tm.end_time  | date:'H:i A'}}', '{{ tm.name }}', {{tm.task_id}}, '{{tm.notes}}', 'task', '{{tm.sla_name}}', {{sla_id}})"
+                                                                class="btn btn-outline-success btn-sm" type="button">
+                                                                <i title="Edit" class="fa fa-edit"></i>
+                                                            </button> &nbsp;
+                                                            
+                                                            <button onclick="functionDeleteTimesheet({{ tm.tm_id }}, '{{ tm.log_day | date:"d-m-Y"}}', '{{ tm.start_time  | date:'H:i A'}}', '{{ tm.end_time  | date:'H:i A'}}', '{{ tm.name }}', {{ tm.task_id }}, 'project')" class="btn btn-outline-danger btn-sm" type="button">
+                                                                <i title="Delete Timesheet" class="fa fa-remove"></i>
+                                                            </button> &nbsp;
+                                                        </form>
+                                                    </td>
+                                                {% endif %}
+                                                
                                             </tr>
                                         {% endfor %}
                                 </tbody>
@@ -177,7 +208,7 @@
         });
     }
 
-    function functionEditTimesheet(timesheet_id, log_day, start_time, end_time, task, task_id, notes) {
+    function functionEditTimesheet(timesheet_id, log_day, start_time, end_time, task, task_id, notes, state, sla_name, sla_id) {
         urldata = "{% url 'updateTimesheet' %}";
         var id_user_dept = parseInt($('#id_user_dept').val());
         $.ajax({
@@ -191,7 +222,10 @@
                 task: task,
                 task_id: task_id,
                 notes: notes,
-                id_user_dept: id_user_dept
+                id_user_dept: id_user_dept,
+                state: state,
+                sla_name: sla_name,
+                sla_id: sla_id
             },
             url: urldata,
             success: function (resp) {
@@ -216,55 +250,105 @@
         });
     }
 
-    function functionDeleteTimesheet(timesheet_id, day, s_time, e_time, task){
+    function functionDeleteTimesheet(timesheet_id, day, s_time, e_time, task, task_id, state){
         urldata = "{% url 'deleteTimesheet'%}";
         var id_user_dept = parseInt($('#id_user_dept').val());
-        $.confirm({
-            title: '<h3 class="font-weight-bold">Delete Timesheet!</h3>',
-            content: '<h4>Day: <span class="text-info">'+ day +'</span></h4>'+
-                    '<h4>Task: <span class="text-info">'+ task +'</span></h4>'+
-                    '<h4>Time: <span class="text-info">'+ s_time +' - '+e_time+'</span></h4>',
-            type: 'red',
-            typeAnimated: true,
-            boxWidth: '40%',
-            useBootstrap: false,
-            theme: 'modern',
-            icon: 'fa fa-exclamation-circle',
-            closeIcon: true,
-            buttons: {
-                formSubmit: {
-                    text: 'Remove',
-                    btnClass: 'btn-red',
-                    action: function () {
-                        $.ajax({
-                            type: "GET",
-                            cache: false,
-                            data: {
-                                timesheet_id: timesheet_id,
-                                id_user_dept: id_user_dept
-                            },
-                            url: urldata,
-                            success: function (resp) {
-                                $('.close-dialog').click();
-                                $('.timesheet-pane').html(resp);
-                                $( "#heading1" ).removeClass( "collapsed");
-                                $( "#collapseOne" ).addClass( "show" );
-                            }
-                        });
-                    }
-                },
-                close: {
-                    text: 'Cancel',
-                    btnClass: 'btn-gray',
-                    action: function () {
+        if(state === 'project'){
+            $.confirm({
+                title: '<h3 class="font-weight-bold">Delete Timesheet!</h3>',
+                content: '<h4>Day: <span class="text-info">'+ day +'</span></h4>'+
+                        '<h4>Task: <span class="text-info">'+ task +'</span></h4>'+
+                        '<h4>Time: <span class="text-info">'+ s_time +' - '+e_time+'</span></h4>',
+                type: 'red',
+                typeAnimated: true,
+                boxWidth: '40%',
+                useBootstrap: false,
+                theme: 'modern',
+                icon: 'fa fa-exclamation-circle',
+                closeIcon: true,
+                buttons: {
+                    formSubmit: {
+                        text: 'Remove',
+                        btnClass: 'btn-red',
+                        action: function () {
+                            $.ajax({
+                                type: "GET",
+                                cache: false,
+                                data: {
+                                    timesheet_id: timesheet_id,
+                                    id_user_dept: id_user_dept,
+                                    task_id: task_id,
+                                    state: state
+                                },
+                                url: urldata,
+                                success: function (resp) {
+                                    $('.close-dialog').click();
+                                    $('.timesheet-pane').html(resp);
+                                    $( "#heading1" ).removeClass( "collapsed");
+                                    $( "#collapseOne" ).addClass( "show" );
+                                }
+                            });
+                        }
+                    },
+                    close: {
+                        text: 'Cancel',
+                        btnClass: 'btn-gray',
+                        action: function () {
+                        }
                     }
                 }
-            }
-        });
+            });
+        }else{
+            $.confirm({
+                title: '<h3 class="font-weight-bold">Delete Timesheet!</h3>',
+                content: '<h4>Day: <span class="text-info">'+ day +'</span></h4>'+
+                        '<h4>Request: <span class="text-info">'+ task +'</span></h4>'+
+                        '<h4>Time: <span class="text-info">'+ s_time +' - '+e_time+'</span></h4>',
+                type: 'red',
+                typeAnimated: true,
+                boxWidth: '40%',
+                useBootstrap: false,
+                theme: 'modern',
+                icon: 'fa fa-exclamation-circle',
+                closeIcon: true,
+                buttons: {
+                    formSubmit: {
+                        text: 'Remove',
+                        btnClass: 'btn-red',
+                        action: function () {
+                            $.ajax({
+                                type: "GET",
+                                cache: false,
+                                data: {
+                                    timesheet_id2: timesheet_id,
+                                    id_user_dept: id_user_dept,
+                                    request_id: task_id,
+                                    state: state
+                                },
+                                url: urldata,
+                                success: function (resp) {
+                                    $('.close-dialog').click();
+                                    $('.timesheet-pane').html(resp);
+                                    $( "#heading1" ).removeClass( "collapsed");
+                                    $( "#collapseOne" ).addClass( "show" );
+                                }
+                            });
+                        }
+                    },
+                    close: {
+                        text: 'Cancel',
+                        btnClass: 'btn-gray',
+                        action: function () {
+                        }
+                    }
+                }
+            });
+        }
+        
     }
 
     function functionManageTimesheets(timesheetid) {
-        var checkBox = document.getElementById("itemcheckbox" + timesheetid);
+        var checkBox = document.getElementById("itemcheckbox" + timesheetid);       
         if (checkBox.checked === true) {
             if (!checktimesheetset.has(timesheetid)) {
                 checktimesheetset.add(timesheetid);
