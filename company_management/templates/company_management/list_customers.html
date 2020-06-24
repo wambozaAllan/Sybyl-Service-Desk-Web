@@ -1,0 +1,65 @@
+<div class="card-body">
+    <div class="table-responsive">
+        <table id="table_customers" class="table table-hover">
+            <thead>
+            <tr>
+                <th>Client Name</th>
+                <th>Category</th>
+                <th>Description</th>
+                <th class="text-center">Action</th>
+            </tr>
+            </thead>
+            <tbody>
+            {% for company in all_customers %}
+                <tr>
+                    <td>{{ company.name }}</td>
+                    <td>{{ company.category }}</td>
+                    <td>{{ company.description }}</td>
+                    <td class="text-center">
+                        <a class="btn btn-outline-success btn-sm" href="{% url 'detailsCustomer' company.id %}"><i title="Manage" class="fa fa-dedent"></i></a> &nbsp;
+                        <button onclick="functionEditCustomer({{ company.id }}, '{{ company.name }}')"  id="" class="btn btn-outline-success btn-sm" type="button">
+                            <i title="Edit Company" class="fa fa-edit"></i>
+                        </button>
+                    </td>
+                </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<script>
+    $('#table_customers').DataTable();
+    function functionEditCustomer(companyid, companyname) {
+            urldata = "{% url 'updateCustomer' 999%}".replace(999, companyid);
+            $.ajax({
+                type: "GET",
+                cache: false,
+                data: {
+                    companyid: companyid
+                },
+                url: urldata,
+                success: function (resp) {
+                    $.confirm({
+                        title: '<h3>Update Customer: <strong class="text-info">' + companyname + ' </strong></h3>',
+                        content: '' + resp,
+                        type: 'blue',
+                        typeAnimated: true,
+                        boxWidth: '50%',
+                        useBootstrap: false,
+                        closeIcon: true,
+                        buttons: {
+                            close: {
+                                text: 'Close',
+                                btnClass: 'btn-gray close-dialog',
+                                action: function () {
+                                }
+                            }
+                        }
+                    });
+                }
+            });
+        }
+</script>
+
+

@@ -1,0 +1,74 @@
+{% load crispy_forms_tags %}
+<div class="card-body">
+    <div class="basic-form">
+        {% csrf_token %}
+        <div class="row col-12">
+            <div class="col-12">
+                {{ form.name|as_crispy_field }}
+                <small id="validate_company_name" class="text-muted hidden">
+                    <font color="red">
+                       Can't Update. Company Name Already Exists!
+                    </font>
+                </small>
+            </div>
+            <div class="col-12">
+                {{ form.description|as_crispy_field }}
+                <div>
+                    <button col-6 id="btnUpdateCustomer" class="btn btn-success pull-right">
+                    <i class="fa fa-fw fa-lg fa-save"></i>Update
+                </button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<input value="{{pk}}" style="display: none;" id="id_pk">
+<script>
+    $('#id_name').on('input', function () {
+        var company_name = $(this).val();
+
+        $.ajax({
+            url: '{% url 'validateCompanyName' %}',
+            data: {
+                'companyname': company_name
+            },
+            dataType: 'json',
+            success: function (data) {
+                if (data.is_taken) {
+                    $("#validate_company_name").show();
+                    document.getElementById('id_name').style.borderColor = "red";
+                    document.getElementById("btnUpdateCustomer").disabled = true;
+                } else {
+                    $("#validate_company_name").hide();
+                    document.getElementById('id_name').style.borderColor = "#e7e7e7";
+                    document.getElementById("btnUpdateCustomer").disabled = false;
+                }
+            }
+        });
+    });
+
+    $('#btnUpdateCustomer').click(function () {
+        var company_name = $('#id_name').val();
+        var id_description = $('#id_description').val();
+        var id_pk = $('#id_pk').val();
+
+        data = {
+            company_name: company_name,
+            description: id_description,
+            pk: id_pk
+        };
+
+        urldata = "{% url 'saveCustomerUpdate'%}";
+        $.ajax({
+            type: "GET",
+            cache: false,
+            data: data,
+            url: urldata,
+            success: function (resp) {
+                $('.customerContainerPane').html(resp);
+                $('.close-dialog').click();
+            }
+        });
+
+    });
+</script>

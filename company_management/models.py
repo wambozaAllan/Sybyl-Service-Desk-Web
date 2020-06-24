@@ -44,6 +44,7 @@ class Company(models.Model):
     owner = models.CharField(max_length=255, blank=True)
     description = models.CharField(max_length=255, blank=True)
     has_domain = models.BooleanField(default=False)
+    parent = models.CharField(max_length=255, blank=True)
 
     def get_branch_count(self):
         return Branch.objects.filter(company=self).count()

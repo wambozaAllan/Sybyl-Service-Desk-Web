@@ -60,4 +60,14 @@ urlpatterns = [
     path('testConnection/', views.check_internet_connection, name='testConnection'),
     path('resendEmail/', views.update_resend_user_email, name='resendEmail'),
     path('saveUserProfileUpdate/', views.save_profile_user_update, name='saveUserProfileUpdate'),
+
+    # CUSTOMER USERS
+    path('listCustomerUsers/', views.list_customer_users, name='listCustomerUsers'),
+    path('addCustomerUser/', views.add_customer_user, name='addCustomerUser'),
+    path('saveCustomerUser/', views.save_customer_user, name='saveCustomerUser'),
+    path('detailCustomerUser/<int:pk>/', views.DetailsCustomerUser.as_view(), name='detailCustomerUser'),
+    path('deleteCustomerUser/', views.delete_customer_user, name='deleteCustomerUser'),
+    path('resendCustomerEmail/', views.update_resend_customer_email, name='resendCustomerEmail'),
+    path('updateCustomerUser/<int:pk>/', views.UpdateCustomerUser.as_view(), name='updateCustomerUser'),
+    path('saveCustomerUserUpdate/', views.save_system_customer_update, name='saveCustomerUserUpdate'),
 ]
