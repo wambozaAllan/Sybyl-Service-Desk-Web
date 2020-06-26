@@ -4330,8 +4330,6 @@ def update_timesheet_paginator(request):
     timesheet_id = int(request.GET.get('timesheet_id'))
     task_id = int(request.GET.get('task_id'))
     notes = request.GET.get('notes')
-    print('------------------------------')
-    print(notes)
     id_user_dept = request.GET.get('id_user_dept')
 
     if state == "project":

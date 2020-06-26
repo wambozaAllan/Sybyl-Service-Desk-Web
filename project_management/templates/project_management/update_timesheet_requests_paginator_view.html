@@ -33,7 +33,7 @@
 <div class="row col-12">
     <div class="col-6">
         <div id="div_id_customer4411" class="form-group">
-            <label for="id_customer4411" class="col-form-label  requiredField">Customer<span class="asteriskField">*</span>
+            <label for="id_customer4411" class="col-form-label requiredField">Customer<span class="asteriskField">*</span>
             </label>                    
             <div class="">
                 <select name="customer" class="select form-control" id="id_customer4411">
@@ -303,9 +303,7 @@
                 url: url_data,
                 success: function (resp) {
                     $('.close-dialog').click();
-                    $('.timesheet-pane').html(resp);
-                    $( "#heading1" ).removeClass( "collapsed");
-                    $( "#collapseOne" ).addClass( "show" );
+                    $('#timesheet-manage-pane').html(resp);
                 }
             });
         }
