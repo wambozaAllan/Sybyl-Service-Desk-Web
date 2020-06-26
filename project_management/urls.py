@@ -236,7 +236,8 @@ urlpatterns = [
     path('viewCustomerRequest/<int:pk>/', views.ViewCustomerRequest.as_view(), name='viewCustomerRequest'),
     path('deleteCustomerRequest', views.delete_customer_request, name='deleteCustomerRequest'),
     path('fowardRequests', views.foward_customer_requests, name='fowardRequests'),
-
+    path('manageCustomerViewRequests/', views.manager_view_customer_requests, name="manageCustomerViewRequests"),
+    
     path('SLAsByCustomer', views.fetch_SLAs_by_customer, name='SLAsByCustomer'),
     path('requestsBySLA', views.fetch_requests_by_sla, name='requestsBySLA'),
     
@@ -252,5 +253,7 @@ urlpatterns = [
     path('listCustomerServiceRequests/', views.list_customer_service_requests, name='listCustomerServiceRequests'),
     path('listCustomerSLAs/', views.list_customer_sla, name='listCustomerSLAs'),
     path('checkTask/', views.check_task, name='checkTask'),
+
+    path('assignRequests', views.assign_customer_request, name='assignRequests'),
     
 ]

@@ -5,6 +5,7 @@
             <th>#</th>
             <th>User</th>
             <th>Name</th>
+            <th>Type</th>
             <th>Status</th>
             <th>Log Date</th>
             <th>Duration</th>
@@ -26,6 +27,7 @@
                         </span>
                     </td>
                     <td><a href="#" onclick="functionViewRequestDetails({{ tm.task_id }}, '{{tm.name}}', {{tm.sla_id}}, '{{tm.sla_name}}')" title="View Request Details!" class="text-info font-weight-bold">{{ tm.name | truncatechars:17 }}</a></td>
+                    <td class=""><span class="badge badge-secondary">Request</span></td> 
                     {% if tm.status == 'ACCEPTED'%}
                         <td class="text-center">
                             <span class="badge badge-success"><strong>{{tm.status}}</strong></span>
@@ -60,7 +62,7 @@
                         </select>
                     </td>
                     <td class="text-center">
-                        <button onclick="functionViewApprovedTimesheetDesc('{{ tm.name }}', '{{ tm.notes }}', '{{  tm.start_time  | date:'H:i A' }} - {{ tm.end_time  | date:'H:i A' }}', '{{tm.created_time | date:"D, d M, Y"}}', '{{tm.date_submitted | date:"d-m-y"}}', '{{tm.submitted_by}}', '{{tm.approved_by}}', '{{ tm.date_approved | date:"D, d M, Y" }}', '{{tm.approver_notes}}')" class="btn btn-outline-success btn-sm" type="button">
+                        <button onclick="functionViewApprovedRequestTimesheetDesc('{{ tm.name }}', '{{ tm.notes }}', '{{  tm.start_time  | date:'H:i A' }} - {{ tm.end_time  | date:'H:i A' }}', '{{tm.created_time | date:"D, d M, Y"}}', '{{tm.date_submitted | date:"d-m-y"}}', '{{tm.submitted_by}}', '{{tm.approved_by}}', '{{ tm.date_approved | date:"D, d M, Y" }}', '{{tm.approver_notes}}')" class="btn btn-outline-success btn-sm" type="button">
                             <i title="View Timesheet Description" class="fa fa-dedent"></i>
                         </button>
                     </td>
@@ -72,6 +74,7 @@
                         </span>
                     </td>
                     <td><a href="#" onclick="functionViewTaskDetails({{ tm.task_id }})" title="View Task Details!" class="text-info font-weight-bold">{{ tm.name | truncatechars:17 }}</a></td>
+                    <td class=""><span class="badge badge-secondary">Task</span></td>
                     {% if tm.status == 'ACCEPTED'%}
                         <td class="text-center">
                             <span class="badge badge-success"><strong>{{tm.status}}</strong></span>

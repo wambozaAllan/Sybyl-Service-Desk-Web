@@ -1,0 +1,92 @@
+<div id="assign-request-pane">
+    {% load crispy_forms_tags %} {% csrf_token %}
+    <div class="row col-12">
+        <div class="col-12"">
+            <label class="col-form-label  requiredField">Request Name</label>
+            <input type="text" value="{{ req_name }}" class="form-control" id="id_name" disabled/>
+            <input type="text" value="{{ req_id }}" class="form-control" id="id_request" style="display: none;"/>
+        </div>
+    </div>
+
+    <div class="row col-12">
+        <div class="col-12">
+            <div id="div_id_project_member" class="form-group">
+                <label for="id_project_member" class="col-form-label  requiredField">Assign To<span class="asteriskField">*</span>
+                </label>                    
+                <div class="">
+                    <select name="projectmember" class="select form-control assigned" id="id_project_member" multiple="multiple">
+                        <option value="" selected>--Assign--</option>
+                        {% for user in users %}
+                            <option value="{{user.id}}">{{user.first_name}} {{user.first_name}}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    <button id="btnAssignCustomerRequest" class="btn btn-success pull-right col-12">
+        <span class="btn-save-request"><i class="fa fa-fw fa-lg fa-save"></i>Submit</span>
+    </button>
+</div>
+
+<script>
+
+    $('#id_project_member').attr('data-live-search', "true"); 
+    $('#id_project_member').selectpicker({
+        size: 3
+    });
+
+    $(".assigned").on('change', function(){
+        if ( $('option:selected', this).val() == 0 ){
+            $('.assigned').css({ "border": '2px solid #00635a' });     
+        }
+        else if ($(this).val() > 0) {
+            $('.assigned').css({ "border": '' }); 
+        }
+    }); 
+
+
+   $('#btnAssignCustomerRequest').click(function () { 
+        var request_name = $('#id_name').val();
+
+        var project_member = $('#id_project_member').val();
+        var selectednumbers = [];
+        $('#id_project_member :selected').each(function(i, selected) {
+            selectednumbers[i] = $(selected).val();
+        });
+        var assigned_to = JSON.stringify(selectednumbers);
+        console.log(assigned_to+" we are here")
+
+
+        if (request_name < 1 || project_member < 0) {
+            if (request_name < 1) {
+                $('#id_name').css({ "border": '2px solid #00635a' });
+            }
+
+            if (project_member < 0) {
+                $('#id_ticket_code').css({ "border": '2px solid #00635a' });
+            }
+
+        } else {
+            document.getElementById('btnAssignCustomerRequest').disabled = true;
+            data3 = {
+                request_name: request_name,
+                project_member: assigned_to,
+            };
+            
+            
+        }
+    });
+
+    $('#id_name').on('input', function () {
+        $('#id_name').css({ "border": '1px solid #ced4da' });
+    });
+
+    $('#id_project_member').on('input', function () {
+        $('#id_project_member').css({ "border": '' });
+    });
+
+   
+</script>

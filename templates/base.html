@@ -1627,12 +1627,13 @@
             }
         }
 
-        function functionCalendarTimesheetSheetDetails(tm_id){
+        function functionCalendarTimesheetSheetDetails(tm_id, state){
             $.ajax({
                 type: "GET",
                 cache: false,
                 data: {
-                    timesheet_id: tm_id
+                    timesheet_id: tm_id,
+                    state: state
                 },
                 url: '{% url 'calenderTimesheetView'%}',
                 success: function (resp) {
@@ -1718,6 +1719,53 @@
                 $.confirm({
                     title: '<h3>Timesheet Description</h3>',
                     content: '<strong>Task: <font class="text-info">'+task+'</font></strong><br><br> <strong>Time: <font class="text-info">'+time+'</font></strong><br><br> <strong>Datecreated: <font class="text-info">'+datecreated+'</font></strong><br><br> <strong>Notes: <font class="text-info">'+notes+'</font></strong><br><br>'+
+                    '<strong>Date Submitted: <font class="text-info">'+submission_date+'</font></strong><br><br> <strong>Submitted By: <font class="text-info">'+submitted_by+'</font></strong><br><br>'+
+                    '<strong>Date Approved: <font class="text-info">'+date_approved+'</font></strong><br><br> <strong>Approved By: <font class="text-info">'+approved_by+'</font></strong><br><br> <strong>Approver Comments: <strong>'+approver_notes+'</strong></strong>',
+                    type: 'blue',
+                    typeAnimated: true,
+                    boxWidth: '40%',
+                    useBootstrap: false,
+                    closeIcon: true,
+                    buttons: {
+                        close: {
+                            text: 'Close',
+                            btnClass: 'btn-gray',
+                            action: function () {
+                            }
+                        }
+                    }
+                });
+            }
+        }
+
+        function functionViewApprovedRequestTimesheetDesc(task, notes, time, datecreated, submission_date, submitted_by, approved_by, date_approved, approver_notes){
+            if(approver_notes === '' || approver_notes === null || approver_notes === 'None'){
+                approver_notes = 'No added comments!'
+            }
+            if(notes < 1){
+                $.confirm({
+                    title: '<h3>Timesheet Description</h3>',
+                    content: '<strong>Request: <font class="text-info">'+task+'</font></strong><br><br> <strong>Time: <font class="text-info">'+time+'</font></strong><br><br> <strong>Datecreated: <font class="text-info">'+datecreated+'</font></strong><br><br> <span><strong>Notes: </strong> No Added Notes!</span><br><br>'+
+                    '<strong>Date Submitted: <font class="text-info">'+submission_date+'</font></strong><br><br> <strong>Submitted By: <font class="text-info">'+submitted_by+'</font></strong><br><br>'+
+                    '<strong>Date Approved: <font class="text-info">'+date_approved+'</font></strong><br><br> <strong>Approved By: <font class="text-info">'+approved_by+'</font></strong><br><br> <strong>Approver Comments: <strong>'+approver_notes+'</strong></strong>',
+                    type: 'blue',
+                    typeAnimated: true,
+                    boxWidth: '40%',
+                    useBootstrap: false,
+                    closeIcon: true,
+                    buttons: {
+                        close: {
+                            text: 'Close',
+                            btnClass: 'btn-gray',
+                            action: function () {
+                            }
+                        }
+                    }
+                });
+            }else{
+                $.confirm({
+                    title: '<h3>Timesheet Description</h3>',
+                    content: '<strong>Request: <font class="text-info">'+task+'</font></strong><br><br> <strong>Time: <font class="text-info">'+time+'</font></strong><br><br> <strong>Datecreated: <font class="text-info">'+datecreated+'</font></strong><br><br> <strong>Notes: <font class="text-info">'+notes+'</font></strong><br><br>'+
                     '<strong>Date Submitted: <font class="text-info">'+submission_date+'</font></strong><br><br> <strong>Submitted By: <font class="text-info">'+submitted_by+'</font></strong><br><br>'+
                     '<strong>Date Approved: <font class="text-info">'+date_approved+'</font></strong><br><br> <strong>Approved By: <font class="text-info">'+approved_by+'</font></strong><br><br> <strong>Approver Comments: <strong>'+approver_notes+'</strong></strong>',
                     type: 'blue',

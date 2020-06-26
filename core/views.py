@@ -80,7 +80,7 @@ class Login(LoginView):
                     request.session['company'] = user.company.name
                     request.session['company_id'] = user.company.id
                     if user_login_state:
-                        return redirect("/customer-home/")
+                        return redirect("/projectManagement/customerRequests/")
                     else:
                         User.objects.filter(id=user.pk).update(last_login=None)
                         return render(request, 'core/change_password.html', {'user_name': username, 'user_id': user.pk})

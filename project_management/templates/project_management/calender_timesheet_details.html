@@ -6,10 +6,18 @@
         <div class="table-responsive">
             <table class="table">
                 <tbody>
-                    <tr>
-                        <td class="text-left">Task Name: <strong class="text-info">{{timesheetdetails.task}}</strong></td>
-                        <td class="text-left">Log Date: <strong class="text-info">{{timesheetdetails.log_day | date:"D, d M, Y"}}</strong></td>
-                    </tr>
+                    {% if timesheetdetails.timesheet_type == "request_type" %}
+                        <tr>
+                            <td class="text-left">Request Name: <strong class="text-info">{{timesheetdetails.name}}</strong></td>
+                            <td class="text-left">Log Date: <strong class="text-info">{{timesheetdetails.log_day | date:"D, d M, Y"}}</strong></td>
+                        </tr>
+                    {% else %}
+                        <tr>
+                            <td class="text-left">Task Name: <strong class="text-info">{{timesheetdetails.name}}</strong></td>
+                            <td class="text-left">Log Date: <strong class="text-info">{{timesheetdetails.log_day | date:"D, d M, Y"}}</strong></td>
+                        </tr>
+                    {% endif %}
+                    
                     <tr>
                         <td class="text-left">Start Time: <strong class="text-info">{{timesheetdetails.start_time | time:"TIME_FORMAT"}}</strong></td>
                         <td class="text-left">End Time: <strong class="text-info">{{timesheetdetails.end_time | time:"TIME_FORMAT"}}</strong></td>

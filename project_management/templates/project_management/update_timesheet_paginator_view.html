@@ -274,7 +274,8 @@
                 timesheet_id: timesheet_id,
                 notes: id_timesheet_notes,
                 dateSelected: date_selected,
-                id_user_dept: id_user_dept
+                id_user_dept: id_user_dept,
+                state: 'project'
             };
             url_data = "{% url 'saveUpdateTimesheetPaginator'%}";
             $.ajax({

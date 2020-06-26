@@ -64,7 +64,8 @@
                                                     <tr>
                                                         <th>#</th>
                                                         <th>User</th>
-                                                        <th>Task</th>
+                                                        <th>Name</th>
+                                                        <th>Type</th>
                                                         <th>Log Date</th>
                                                         <th>Duration</th>
                                                         <th>Submitted</th>
@@ -76,7 +77,6 @@
                                             
                                                     {% for tm in timesheet_list %}
                                                         <tr>
-                                                            
                                                             {% if tm.timesheet_type == "request_type" %}
                                                             <td>{{ forloop.counter }}</td>
                                                             <td>
@@ -85,6 +85,7 @@
                                                                 </span>
                                                             </td>
                                                             <td><a href="#" onclick="functionViewRequestDetails({{ tm.task_id }}, '{{tm.name}}', {{tm.sla_id}}, '{{tm.sla_name}}')" title="View Request Details!" class="text-info font-weight-bold">{{ tm.name | truncatechars:17 }}</a></td>
+                                                            <td class=""><span class="badge badge-secondary">Request</span></td>
                                                             <td>{{ tm.log_day | date:"d-m-y"}}</td>
                                                             <td class="text-info">{{tm.duration}}</td>
                                                             <td>{{tm.date_submitted | date:"d-m-y"}}</td>
@@ -124,6 +125,7 @@
                                                                 </span>
                                                             </td>
                                                             <td><a href="#" onclick="functionViewTaskDetails({{ tm.task_id }})" title="View Task Details!" class="text-info font-weight-bold">{{ tm.name | truncatechars:17 }}</a></td>
+                                                            <td class=""><span class="badge badge-secondary">Task</span></td>
                                                             <td>{{ tm.log_day | date:"d-m-y"}}</td>
                                                             <td class="text-info">{{tm.duration}}</td>
                                                             <td>{{tm.date_submitted | date:"d-m-y"}}</td>
