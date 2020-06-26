@@ -910,19 +910,56 @@
         };
 
         function functAddNewProject() {
-            urldata = "{% url 'addProject'%}";
+            console.log("hello")
+            url = "{% url 'checkProjectCodeExist' %}"
             $.ajax({
-                type: "GET",
-                cache: false,
+                url: url,                                                                                      
                 data: {},
-                url: urldata,
-                success: function (resp) {
-                    $('#dialog_create_project').html(resp);
+                type:"GET",
+                cache: false,
+                dataType: 'json',
+                success: function (data) {
+                    if(data.status === false){
+                        $.confirm({
+                            title: '<h3>Alert</h3>',
+                            content: 'Please contact admin to add project code format' ,
+                            type: 'blue',
+                            theme: 'material',
+                            typeAnimated: true,
+                            boxWidth: '35%',
+                            useBootstrap: false,
+                            closeIcon: true,
+                            buttons: {
+                                formSubmit: {
+                                    text: 'OK',
+                                    btnClass: 'btn-blue',
+                                    action: function () {
+                                        
+                                    }
+                                }
+                            }
+                        });
+                    }
+                    else{
+                        urldata = "{% url 'addProject'%}";
+                        $.ajax({
+                            type: "GET",
+                            cache: false,
+                            data: {},
+                            url: urldata,
+                            success: function (resp) {
+                                $('#dialog_create_project').html(resp);
 
-                    window.location = '#projectFormModalDialog';
-                    initDialog('modalDialog');
+                                window.location = '#projectFormModalDialog';
+                                initDialog('modalDialog');
+                            }
+                        });
+                        
+                    }
+                    
                 }
             });
+            
         }
 
 

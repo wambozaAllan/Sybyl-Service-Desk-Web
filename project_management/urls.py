@@ -79,6 +79,8 @@ urlpatterns = [
     path('checkAssignedTaskMembers/', views.check_assigned_task_members, name="checkAssignedTaskMembers"),
     path('saveMembersAssignedTask/', views.save_members_assigned_task, name="saveMembersAssignedTask"),
     path('tasks/', views.tasks_container, name="tasksContainer"),
+    path('saveTeamTasks', views.save_team_project_tasks, name='saveTeamTasks'),
+    
 
     path('addIncident/', views.AddIncident.as_view(), name='addIncident'),
     path('addProjectIncident/', views.AddProjectIncident.as_view(), name='addProjectIncident'),
@@ -224,6 +226,7 @@ urlpatterns = [
     path('updateCodeFormat/<int:pk>/', views.UpdateCodeFormat.as_view(), name='updateCodeFormat'),
     path('deleteCodeFormat/<int:pk>', views.DeleteCodeFormat.as_view(), name="deleteCodeFormat"),
     path('validateProjectCode/', views.validate_project_code, name='validateProjectCode'),
+    path('checkProjectCodeExist/', views.check_project_code_exists, name='checkProjectCodeExist'),
     path('populateUpload/', views.populate_upload_document, name='populateUpload'),
     path('addMilestone/', views.load_add_milestone, name='addMilestone'),
     path('selectMembersByProject', views.fetch_members_by_project, name='selectMembersByProject'),
@@ -253,7 +256,6 @@ urlpatterns = [
     path('listCustomerServiceRequests/', views.list_customer_service_requests, name='listCustomerServiceRequests'),
     path('listCustomerSLAs/', views.list_customer_sla, name='listCustomerSLAs'),
     path('checkTask/', views.check_task, name='checkTask'),
-
     path('assignRequests', views.assign_customer_request, name='assignRequests'),
     
 ]

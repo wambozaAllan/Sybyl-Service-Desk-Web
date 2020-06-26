@@ -108,22 +108,6 @@
     </div>
     <!-- END The Modal -->
     <script>
-        
-        function functAddNewProject() {
-            urldata = "{% url 'addProject'%}";
-            $.ajax({
-                type: "GET",
-                cache: false,
-                data: {},
-                url: urldata,
-                success: function (resp) {
-                    $('#dialog_create_project').html(resp);
-
-                    window.location = '#projectFormModalDialog';
-                    initDialog('modalDialog');
-                }
-            });
-        }
 
         function uploadDocument(project_id){
             urldata = "{% url 'populateUpload' %}";

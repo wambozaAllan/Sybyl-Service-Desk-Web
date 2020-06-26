@@ -1367,6 +1367,77 @@ def save_milestone_tasks(request):
     return JsonResponse(response_data)
 
 
+def save_team_project_tasks(request):
+    """
+    save team project tasks
+    """
+    project_id = request.GET.get('project_id')
+    name = request.GET.get('name')
+    status_id = request.GET.get('status_id')
+    milestone_id = request.GET.get('milestone')
+    description = request.GET.get('description')
+    start_date = request.GET.get('start_date')
+    end_date = request.GET.get('end_date')
+    actual_start = request.GET.get('actual_start')
+    actual_end = request.GET.get('actual_end')
+    created_by = request.user.id
+    assigned_to = json.loads(request.GET['assigned_to'])
+
+    response_data = {}
+
+    if status_id == "":
+        status_id = None
+
+    if description == "":
+        description = None
+
+    if start_date != "null":
+        start_date = datetime.datetime.strptime(start_date, "%m/%d/%Y").strftime("%Y-%m-%d")
+    else:
+        start_date = None
+
+    if actual_start != "null":
+        actual_start = datetime.datetime.strptime(actual_start, "%m/%d/%Y").strftime("%Y-%m-%d")
+    else:
+        actual_start = None
+
+    if actual_end != "null":
+        actual_end = datetime.datetime.strptime(actual_end, "%m/%d/%Y").strftime("%Y-%m-%d")
+    else:
+        actual_end = None
+
+    if end_date != "null":
+        end_date = datetime.datetime.strptime(end_date, "%m/%d/%Y").strftime("%Y-%m-%d")
+    else:
+        end_date = None
+
+    project = Project.objects.get(id=project_id)
+    team = ProjectTeam.objects.get(project_id= project_id)
+    
+    milestone = Milestone.objects.get(id=milestone_id, project_id=project.id)
+    
+    if Task.objects.filter(name=name, milestone_id=milestone.id).exists():
+        response_data['error'] = "Name exists"
+        response_data['state'] = False
+    else:   
+        task = Task(name=name, description=description, status_id=status_id, milestone_id=milestone.id, project_id=project.id, start_date=start_date, end_date=end_date, creator_id=created_by, actual_start_date=actual_start , actual_end_date=actual_end)
+        task.save()
+        
+        for val in assigned_to:
+            if val == "":
+                project_member = None
+            else:
+                val = int(val)   
+                project_member = ProjectTeamMember.objects.get(member_id=val, project_team=team)
+                task.assigned_to.add(project_member)
+
+        response_data['success'] = "Task created successfully"
+        response_data['name'] = task.name
+        response_data['state'] = True
+
+    return JsonResponse(response_data)
+
+
 class UpdateProjectTask(UpdateView, LoginRequiredMixin):
     model = Task
     fields = ['name', 'status', 'description', 'start_date', 'end_date', 'actual_start_date', 'actual_end_date']
@@ -6495,7 +6566,6 @@ def export_task_report(request):
                 ws.write(row_num, col_num, str(row[col_num]), font_style)
                 
         wb.save(response)
-        print(f"{response} is the response")
         return response
 
 
@@ -7113,8 +7183,6 @@ def check_task(request):
     task_name = request.GET.get('task_name')
     task_id = int(request.GET.get('task_id'))
 
-    print(task_id)
-
     if Timesheet.objects.filter(task_id=task_id).exists():
         response_data = {
             "success": False,
@@ -7170,3 +7238,17 @@ def assign_customer_request(request):
     }
     
     return HttpResponse(template.render(context, request))
+
+
+def check_project_code_exists(request):
+    """ check if project_code added"""
+    if ProjectCode.objects.all().exists():
+        data = {
+            "status": True
+        }
+    else:
+        data = {
+            "status": False
+        }
+
+    return JsonResponse(data)
