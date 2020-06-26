@@ -14,10 +14,10 @@
     <div class="row col-12">
         <div class="col-6">
             <div id="div_id_log_day" class="form-group">
-                <label for="id_log_day5" class="col-form-label  requiredField">Log Date<span class="asteriskField">*</span>
+                <label for="id_log_day66" class="col-form-label  requiredField">Log Date<span class="asteriskField">*</span>
                 </label>                    
                 <div class=""> 
-                    <input type="text" name="id_log_day5" class="dateinput form-control" id="id_log_day5" value="{{log_date}}" disabled>
+                    <input type="text" name="id_log_day66" class="dateinput form-control" id="id_log_day66" value="{{log_date}}" disabled>
                 </div>
             </div>
         </div>
@@ -26,7 +26,7 @@
                 <label for="" class="col-form-label  requiredField">User<span class="asteriskField">*</span>
                 </label>                    
                 <div class="">
-                    <input type="text" maxlength="255" class="textinput textInput form-control" required="" value="{{user_name}}" disabled>
+                    <input type="text" maxlength="255" class="textinput textInput form-control" required="" value="{{user_name }}" disabled>
                 </div>
             </div>
         </div>
@@ -34,77 +34,187 @@
 
     <div class="row col-12">
         <div class="col-6">
-            <div id="div_id_project" class="form-group">
-                <label for="id_project5" class="col-form-label  requiredField">Project<span class="asteriskField">*</span>
+            <div id="div_id_customer66" class="form-group">
+                <label for="id_customer66" class="col-form-label  requiredField">Customer<span class="asteriskField">*</span>
                 </label>                    
                 <div class="">
-                    <select name="project" class="select form-control" id="id_project5">
-                        <option selected="" value="" disabled>--Select Project--</option>
-                        {% for pro in project_list %}
-                            <option value="{{pro.id}}">{{pro.name}}</option>
+                    <select name="customer" class="select form-control" id="id_customer66">
+                        <option value="" selected disabled>--Select Customer--</option>
+                        {% for cl in client_list %}
+                            <option value="{{cl.id}}">{{cl.name}}</option>
                         {% endfor %}
                     </select>
                 </div>
             </div>
         </div>
-        <div class="col-6">
-            <div id="div_id_milestone" class="form-group">
-                <label for="id_milestone5" class="col-form-label  requiredField">Milestone<span class="asteriskField">*</span>
-                </label>                    
-                <div class="">
-                    <select name="milestone" class="select form-control" id="id_milestone5">
-                        <option selected="" value="" disabled>--Select Milestone--</option>
-                    </select>
-                </div>
-            </div>
-        </div>
-    </div>
 
-    <div class="row col-12">
-        <div class="col-6">
-            <div id="div_id_task" class="form-group">
-                <label for="id_task5" class="col-form-label requiredField">Task<span class="asteriskField">*</span>
-                </label>                    
-                <div class="">
-                    <select name="task" class="select form-control" id="id_task5">
-                        <option selected="" value="" disabled>--Select Task--</option>
-                    </select>
-                </div>
-            </div>
-        </div>
-        <div class="col-6">
-            <div id="div_id_workedtime" class="form-group">
-                <label for="id_workedtime5" class="col-form-label  requiredField">Worked Time<span class="asteriskField">*  | Duration: <big class="text-info font-weight-bold hide" id="time_duration5"></big></span>
-                </label>                    
-                <div class="">
-                    <input onkeypress="return false;" style="box-shadow: none; font-family: 'Poppins', sans-serif; display: block; height: calc(2.25rem + 2px); padding: .375rem .75rem; padding-left: 0.75rem; font-size: 1rem; line-height: 1.5; color: #495057; background-color: #fff; background-clip: padding-box; border: 1px solid #ced4da; border-top-color: rgb(206, 212, 218); border-right-color: rgb(206, 212, 218); border-bottom-color: rgb(206, 212, 218); border-left-color: rgb(206, 212, 218); border-radius: .25rem; transition: border-color .15s ease-in-out,box-shadow .15s ease-in-out; flex: 1 1 auto; width: 100%; margin-bottom: 0; margin-top: 2%" class="daterange" name="datefilter" id="id_workedtime5" type="text" />
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <div class="row col-12">
-        <div class="col-6">
+        <div class="col-6" style="margin-top: 2%;">
             <div class="form-group">
-                <label class=" control-label">Notes</label>
-                <div class="">
-                    <textarea id="id_timesheet_notes" class="form-control" placeholder="Notes"></textarea>
+                <div class="control-label required">
+                    <label >Select Category:</label>
+                </div>
+                <div class="form-check" id="structurediv">
+                    <label class="form-check-label">
+                        <input id="projectStructure" value="project" class="form-check-input" type="radio" name="structure" checked><span class="label-text">PROJECT</span> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                    </label>
+
+                    <label class="form-check-label">
+                        <input id="slaStructure" value="sla" class="form-check-input" type="radio" name="structure"><span class="label-text">SLA</span>
+                    </label>
                 </div>
             </div>
         </div>
         
-        <div class="col-6">
-            <button style="margin-top: 18%;" id="btnSaveTimesheet" class="btn btn-success pull-right col-10">
-                <span class="btn-save-timesheet"><i class="fa fa-fw fa-lg fa-save"></i>Submit</span>
-            </button>
+    </div>
+
+    <!-- PROJECT STRUCTURE DIV -->
+    <div id="div_project_structure_section">
+        <div class="row col-12">
+            <div class="col-6">
+                <div id="div_id_project66" class="form-group">
+                    <label for="id_project66" class="col-form-label  requiredField">Project<span class="asteriskField">*</span>
+                    </label>                    
+                    <div class="">
+                        <select name="project" class="select form-control" id="id_project66">
+                            <option selected="" value="" disabled>--Select Project--</option>
+                            {% for pro in project_list %}
+                                <option value="{{pro.id}}">{{pro.name}}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                </div>
+            </div>
+            <div class="col-6">
+                <div id="div_id_milestone66" class="form-group">
+                    <label for="id_milestone66" class="col-form-label  requiredField">Milestone<span class="asteriskField">*</span>
+                    </label>                    
+                    <div class="">
+                        <select name="milestone" class="select form-control" id="id_milestone66">
+                            <option selected="" value="" disabled>--Select Milestone--</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
         </div>
-        
+
+        <div class="row col-12">
+            <div class="col-6">
+                <div id="div_id_task66" class="form-group">
+                    <label for="id_task66" class="col-form-label requiredField">Task<span class="asteriskField">*</span>
+                    </label>                    
+                    <div class="">
+                        <select name="task" class="select form-control" id="id_task66">
+                            <option selected="" value="" disabled>--Select Task--</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+            <div class="col-6">
+                <div id="div_id_workedtime66" class="form-group">
+                    <label for="id_workedtime66" class="col-form-label requiredField">Worked Time<span class="asteriskField">*  | Duration: <big class="text-info font-weight-bold hide" id="time_duration66"></big></span>
+                    </label>                    
+                    <div class="">
+                        <input onkeypress="return false;" style="box-shadow: none; font-family: 'Poppins', sans-serif; display: block; height: calc(2.25rem + 2px); padding: .375rem .75rem; padding-left: 0.75rem; font-size: 1rem; line-height: 1.5; color: #495057; background-color: #fff; background-clip: padding-box; border: 1px solid #ced4da; border-top-color: rgb(206, 212, 218); border-right-color: rgb(206, 212, 218); border-bottom-color: rgb(206, 212, 218); border-left-color: rgb(206, 212, 218); border-radius: .25rem; transition: border-color .15s ease-in-out,box-shadow .15s ease-in-out; flex: 1 1 auto; width: 100%; margin-bottom: 0; margin-top: 2%" class="daterange" name="datefilter" id="id_workedtime66" type="text" />
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="row col-12">
+            <div class="col-6">
+                <div class="form-group">
+                    <label class=" control-label">Notes</label>
+                    <div class="">
+                        <textarea id="id_timesheet_notes" class="form-control" placeholder="Notes"></textarea>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="col-6">
+                <button style="margin-top: 10%;" id="btnSaveTimesheet111" class="btn btn-success pull-right col-12">
+                    <span class="btn-save-timesheet"><i class="fa fa-fw fa-lg fa-save"></i>Submit</span>
+                </button>
+            </div>
+            
+        </div>
+
+    </div>
+    <!-- CLOSE PROJECT STRUCTURE DIV -->
+
+    <!-- SLA STRUCTURE DIV -->
+    <div id="div_sla_structure_section">
+        <div class="row col-12">
+            <div class="col-6">
+                <div id="div_id_sla_contract66" class="form-group">
+                    <label for="id_sla_contract66" class="col-form-label  requiredField">SLA CONTRACT<span class="asteriskField">*</span>
+                    </label>                    
+                    <div class="">
+                        <select name="sla_contract" class="select form-control" id="id_sla_contract66">
+                            <option selected="" value="" disabled>--Select SLA Contract--</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+            <div class="col-6">
+                <div id="div_id_assigned_requests66" class="form-group">
+                    <label for="id_assigned_requests66" class="col-form-label requiredField">Assigned Requests<span class="asteriskField">*</span>
+                    </label>                    
+                    <div class="">
+                        <select name="assigned_requests" class="select form-control" id="id_assigned_requests66">
+                            <option selected="" value="" disabled>--Select Request--</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="row col-12">
+            
+            <div class="col-6">
+                <div id="div_id_workedtime6602" class="form-group">
+                    <label for="id_workedtime6602" class="col-form-label  requiredField">Worked Time<span class="asteriskField">*  | Duration: <big class="text-info font-weight-bold hide" id="time_duration6602"></big></span>
+                    </label>                    
+                    <div class="">
+                        <input onkeypress="return false;" style="box-shadow: none; font-family: 'Poppins', sans-serif; display: block; height: calc(2.25rem + 2px); padding: .375rem .75rem; padding-left: 0.75rem; font-size: 1rem; line-height: 1.5; color: #495057; background-color: #fff; background-clip: padding-box; border: 1px solid #ced4da; border-top-color: rgb(206, 212, 218); border-right-color: rgb(206, 212, 218); border-bottom-color: rgb(206, 212, 218); border-left-color: rgb(206, 212, 218); border-radius: .25rem; transition: border-color .15s ease-in-out,box-shadow .15s ease-in-out; flex: 1 1 auto; width: 100%; margin-bottom: 0; margin-top: 2%" class="daterange" name="datefilter66" id="id_workedtime6602" type="text" />
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-6">
+                <div class="form-group">
+                    <label class=" control-label">Notes</label>
+                    <div class="">
+                        <textarea id="id_timesheet_notes02" class="form-control" placeholder="Notes"></textarea>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="row col-12">
+            
+            <div class="col-6">
+                
+            </div>
+
+            <div class="col-6">
+                <button id="btnSaveTimesheet1111" class="btn btn-success pull-right col-12">
+                    <span class="btn-save-timesheet"><i class="fa fa-fw fa-lg fa-save"></i>Submit</span>
+                </button>
+            </div>
+        </div>
     </div>
     
     <script>
-        $("#time_duration5" ).hide();
-        document.getElementById("btnSaveTimesheet").disabled=false;
-        $('#id_log_day5').datepicker({
+        var uid = {{user_id}};
+        var structureRadioValue = 'project';
+        $("#div_sla_structure_section" ).hide();
+        $("#div_project_structure_section" ).show();
+
+        $("#time_duration66" ).hide();
+        $("#time_duration6602" ).hide();
+        document.getElementById("btnSaveTimesheet111").disabled=false;
+        document.getElementById("btnSaveTimesheet1111").disabled=false;
+        $('#id_log_day66').datepicker({
             format: "dd-mm-yyyy",
             autoclose: true,
             clearBtn: true,
@@ -124,13 +234,27 @@
             durationCalculating5();
         });
         durationCalculating5();
-    
-        $('#id_project5').change(function () {
-            $('#id_milestone5').val(null).trigger('change');
-            $('#id_milestone5').html('');
-            $('#id_task5').html('');
 
-            var project_id = parseInt($('#id_project5').val());
+        $('input[name="datefilter66"]').daterangepicker({
+            timePicker: true,
+            timePickerIncrement: 1,
+            timePickerSeconds: false,
+            locale: {
+                format: 'h:mm A'
+            }
+        }).on('show.daterangepicker', function (ev, picker) {
+            picker.container.find(".calendar-table").hide();
+        }).on('change.daterangepicker', function (ev, picker) {
+            durationCalculating5_sla();
+        });
+        durationCalculating5_sla();
+    
+        $('#id_project66').change(function () {
+            $('#id_milestone66').val(null).trigger('change');
+            $('#id_milestone66').html('');
+            $('#id_task66').html('');
+
+            var project_id = parseInt($('#id_project66').val());
             urldata = "{% url 'selectMilestonesByProject'%}";
 
             $.ajax({
@@ -142,13 +266,13 @@
                 success: function (data) {
                     var res = JSON.parse(data.mil);
                     if (res !== '' && res.length > 0) {
-                        $('#id_milestone5').html('');
+                        $('#id_milestone66').html('');
                         for (i in res) {
-                            $('#id_milestone5').append('<option value="' + res[i].pk + '">' + res[i].fields.name + '</option>');
+                            $('#id_milestone66').append('<option value="' + res[i].pk + '">' + res[i].fields.name + '</option>');
                         }
 
-                        $('#id_task5').val(null).trigger('change');
-                        var id_milestone1 = parseInt($('#id_milestone5').val());
+                        $('#id_task66').val(null).trigger('change');
+                        var id_milestone1 = parseInt($('#id_milestone66').val());
                         urldata = "{% url 'selectTasksByMilestone'%}";
 
                         $.ajax({
@@ -160,26 +284,26 @@
                             success: function (data) {
                                 var res = JSON.parse(data.task);
                                 if (res !== '' && res.length > 0) {
-                                    $('#id_task5').html('');
+                                    $('#id_task66').html('');
                                     for (i in res) {
-                                        $('#id_task5').append('<option value="' + res[i].pk + '">' + res[i].fields.name + '</option>');
+                                        $('#id_task66').append('<option value="' + res[i].pk + '">' + res[i].fields.name + '</option>');
                                     }
                                 }
                             }
                         });
-                        $('#id_milestone5').css({ "border": '1px solid #ced4da' });
-                        $('#id_task5').css({"border": '1px solid #ced4da'});
+                        $('#id_milestone66').css({ "border": '1px solid #ced4da' });
+                        $('#id_task66').css({"border": '1px solid #ced4da'});
 
                     }
                 }
             });
         });
 
-        $('#id_milestone5').change(function () {
-            $('#id_task5').val(null).trigger('change');
-            $('#id_task5').html('');
+        $('#id_milestone66').change(function () {
+            $('#id_task66').val(null).trigger('change');
+            $('#id_task66').html('');
 
-            var id_milestone = parseInt($('#id_milestone5').val());
+            var id_milestone = parseInt($('#id_milestone66').val());
             if (id_milestone > 0) {
                 urldata = "{% url 'selectTasksByMilestone'%}";
 
@@ -192,72 +316,250 @@
                     success: function (data) {
                         var res = JSON.parse(data.task);
                         if (res !== '' && res.length > 0) {
-                            $('#id_task5').html('');
+                            $('#id_task66').html('');
                             for (i in res) {
-                                $('#id_task5').append('<option value="' + res[i].pk + '">' + res[i].fields.name + '</option>');
+                                $('#id_task66').append('<option value="' + res[i].pk + '">' + res[i].fields.name + '</option>');
                             }
                         }
-                        $('#id_task5').css({"border": '1px solid #ced4da'});
+                        $('#id_task66').css({"border": '1px solid #ced4da'});
                     }
                 }); 
             }
         });
 
-        $('#id_log_day5').on('change', function () {
-            $('#id_log_day5').css({ "border": '1px solid #ced4da' });
+        $('#id_log_day66').on('change', function () {
+            $('#id_log_day66').css({ "border": '1px solid #ced4da' });
         });
 
-        $('#id_project5').on('input', function () {
-            $('#id_project5').css({ "border": '1px solid #ced4da' });
+        $('#id_project66').on('input', function () {
+            $('#id_project66').css({ "border": '1px solid #ced4da' });
         });
 
-        $('#id_milestone5').on('input', function () {
-            $('#id_milestone5').css({ "border": '1px solid #ced4da' });
+        $('#id_milestone66').on('input', function () {
+            $('#id_milestone66').css({ "border": '1px solid #ced4da' });
         });
 
-        $('#id_task5').change(function () {
-            $('#id_task5').css({"border": '1px solid #ced4da'});
+        $('#id_task66').change(function () {
+            $('#id_task66').css({"border": '1px solid #ced4da'});
         });
 
-        $('#btnSaveTimesheet').click(function () { 
-            var id_log_day = $('#id_log_day5').val();
-            var id_project = $('#id_project5').val();
-            var id_milestone = $('#id_milestone5').val();
-            var id_task = $('#id_task5').val();
+        // PROJECT RADIO BUTTON CLICK CONTROLS
+        $('input:radio[name="structure"]').change(
+            function(){
+                if ($(this).is(':checked') && $(this).val() == 'project') {
+                    
+                    $("#div_sla_structure_section" ).hide();
+                    $("#div_project_structure_section" ).show();
+                    structureRadioValue = 'project';
+                }
+            }
+        );
+
+        // SLA RADIO BUTTON CLICK CONTROLS
+        $('input:radio[name="structure"]').change(
+            function(){
+                if ($(this).is(':checked') && $(this).val() == 'sla') {
+                    $("#div_project_structure_section" ).hide();
+                    $("#div_sla_structure_section" ).show();
+                    structureRadioValue = 'sla';
+                }
+            }
+        );
+
+        $('#id_customer66').change(function () {
+            $('#id_customer66').css({"border": '1px solid #ced4da'});
+
+            $('#id_sla_contract66').val(null).trigger('change');
+            $('#id_sla_contract66').html('');
+            $('#id_assigned_requests66').html('');
+
+            var id_customer = parseInt($('#id_customer66').val());
+            urldata = "{% url 'SLAsByCustomer'%}";
+
+            $.ajax({
+                type: 'GET',
+                url: urldata,
+                data: {
+                    id_customer: id_customer
+                },
+                success: function (data) {
+                    var res = JSON.parse(data.sla);
+                    if (res !== '' && res.length > 0) {
+                        $('#id_sla_contract66').html('');
+                        for (i in res) {
+                            $('#id_sla_contract66').append('<option value="' + res[i].pk + '">' + res[i].fields.name + '</option>');
+                        }
+
+                        $('#id_assigned_requests66').val(null).trigger('change');
+                        var id_sla_contract1 = parseInt($('#id_sla_contract66').val());
+                        urldata = "{% url 'requestsBySLA'%}";
+
+                        $.ajax({
+                            type: 'GET',
+                            url: urldata,
+                            data: {
+                                id_sla_contract: id_sla_contract1,
+                                id_user_dept01: uid
+                            },
+                            success: function (data) {
+                                var res = JSON.parse(data.req);
+                                if (res !== '' && res.length > 0) {
+                                    $('#id_assigned_requests66').html('');
+                                    for (i in res) {
+                                        $('#id_assigned_requests66').append('<option value="' + res[i].pk + '">' + res[i].fields.name + '</option>');
+                                    }
+                                }
+                            }
+                        });
+                        $('#id_sla_contract66').css({ "border": '1px solid #ced4da' });
+                        $('#id_assigned_requests66').css({"border": '1px solid #ced4da'});
+
+                    }
+                }
+            });
+        });
+
+        $('#id_sla_contract66').click(function () {
+            var cust = $('#id_customer66').val();
+            
+            if (cust < 1) {
+                $('#id_customer66').css({ "border": '2px solid #00635a' });
+            }
+        });
+        
+        $('#id_sla_contract66').change(function () {
+            $('#id_assigned_requests66').val(null).trigger('change');
+            $('#id_assigned_requests66').html('');
+
+            var id_sla_contract = parseInt($('#id_sla_contract66').val());
+            if (id_sla_contract > 0) {
+                urldata = "{% url 'requestsBySLA'%}";
+
+                $.ajax({
+                    type: 'GET',
+                    url: urldata,
+                    data: {
+                        id_sla_contract: id_sla_contract,
+                        id_user_dept01: uid
+                    },
+                    success: function (data) {
+                        var res = JSON.parse(data.req);
+                        if (res !== '' && res.length > 0) {
+                            $('#id_assigned_requests66').html('');
+                            for (i in res) {
+                                $('#id_assigned_requests66').append('<option value="' + res[i].pk + '">' + res[i].fields.name + '</option>');
+                            }
+                        }
+                        $('#id_assigned_requests66').css({"border": '1px solid #ced4da'});
+                    }
+                }); 
+            }
+        });
+
+
+        $('#btnSaveTimesheet111').click(function () { 
+            var id_log_day = $('#id_log_day66').val();
+            var id_project = $('#id_project66').val();
+            var id_milestone = $('#id_milestone66').val();
+            var id_task = $('#id_task66').val();
             var id_timesheet_notes = $('#id_timesheet_notes').val();
-            var uid = {{user_id}};
+            var id_customer001 = $('#id_customer66').val();
 
-            var id_workedtime = $('#id_workedtime5').val();
+            var id_workedtime = $('#id_workedtime66').val();
             var worked_time_ranges = id_workedtime.split(" - ");
             var start_time = worked_time_ranges[0];
             var end_time = worked_time_ranges[1];
 
-            if (id_log_day < 1 || id_project < 1 || id_milestone < 1  || id_task < 1) {
+            if (id_log_day < 1 || id_project < 1 || id_milestone < 1  || id_task < 1 || id_customer001 < 1) {
                 if (id_log_day < 1) {
-                    $('#id_log_day5').css({ "border": '2px solid #00635a' });
+                    $('#id_log_day66').css({ "border": '2px solid #00635a' });
                 }
 
                 if (id_project < 1) {
-                    $('#id_project5').css({ "border": '2px solid #00635a' });
+                    $('#id_project66').css({ "border": '2px solid #00635a' });
                 }
 
                 if (id_milestone < 1) {
-                    $('#id_milestone5').css({ "border": '2px solid #00635a' });
+                    $('#id_milestone66').css({ "border": '2px solid #00635a' });
                 }
 
                 if (id_task < 1) {
-                    $('#id_task5').css({ "border": '2px solid #00635a' });
+                    $('#id_task66').css({ "border": '2px solid #00635a' });
+                }
+
+                if (id_customer001 < 1) {
+                    $('#id_customer66').css({ "border": '2px solid #00635a' });
                 }
 
             } else {
-                document.getElementById("btnSaveTimesheet").disabled=true;
+                document.getElementById("btnSaveTimesheet111").disabled=true;
                 data3 = {
                     id_log_day: id_log_day,
                     id_task: id_task,
                     start_time: start_time,
                     end_time: end_time,
                     notes: id_timesheet_notes,
-                    uid: uid
+                    uid: uid,
+                    structureRadioValue: structureRadioValue
+                };
+                url_data = "{% url 'savePaginatorTimeSheet'%}";
+                $.ajax({
+                    type: "GET",
+                    cache: false,
+                    data: data3,
+                    url: url_data,
+                    success: function (resp) {
+                        $('.close-dialog').click();
+                        window.location = '#close';
+                        $('#timesheet-manage-pane').html('');
+                        $('#timesheet-manage-pane').html('<i class="fa fa-spinner fa-spin fa-5x text-center" style="margin-left: 50%;"></i>');
+                        $('#timesheet-manage-pane').html(resp);
+                        
+                    }
+                });
+            }
+        });
+
+        $('#btnSaveTimesheet1111').click(function () { 
+            var id_log_day = $('#id_log_day66').val();
+            var id_timesheet_notes02 = $('#id_timesheet_notes02').val();
+            var id_customer001 = $('#id_customer66').val();
+            var id_sla_contract = $('#id_sla_contract66').val();
+
+            var id_workedtime02 = $('#id_workedtime6602').val();
+            var worked_time_ranges2 = id_workedtime02.split(" - ");
+            var start_time2 = worked_time_ranges2[0];
+            var end_time2 = worked_time_ranges2[1];
+            var id_assigned_requests = $('#id_assigned_requests66').val();
+            var uid = {{user_id}};
+
+            if (id_log_day < 1 || id_assigned_requests < 1 || id_customer001 < 1 || id_sla_contract < 1) {
+                if (id_log_day < 1) {
+                    $('#id_log_day66').css({ "border": '2px solid #00635a' });
+                }
+
+                if (id_assigned_requests < 1) {
+                    $('#id_assigned_requests66').css({ "border": '2px solid #00635a' });
+                }
+
+                if (id_customer001 < 1) {
+                    $('#id_customer66').css({ "border": '2px solid #00635a' });
+                }
+
+                if (id_sla_contract < 1) {
+                    $('#id_sla_contract66').css({ "border": '2px solid #00635a' });
+                }
+
+            } else {
+                document.getElementById("btnSaveTimesheet1111").disabled=true;
+                data3 = {
+                    id_log_day: id_log_day,
+                    start_time2: start_time2,
+                    end_time2: end_time2,
+                    notes2: id_timesheet_notes02,
+                    uid: uid,
+                    structureRadioValue: structureRadioValue,
+                    id_assigned_requests: id_assigned_requests
                 };
                 url_data = "{% url 'savePaginatorTimeSheet'%}";
                 $.ajax({
@@ -278,7 +580,7 @@
         });
 
         function durationCalculating5(){
-            var id_workedtime = $('#id_workedtime5').val();
+            var id_workedtime = $('#id_workedtime66').val();
             var worked_time_ranges = id_workedtime.split(" - ");
             
             var time1 = worked_time_ranges[0];
@@ -301,8 +603,36 @@
 
             var hourDiff = hh + ":" + mm;
 
-            $("#time_duration5" ).show();
-            $("#time_duration5").text(hourDiff);
+            $("#time_duration66" ).show();
+            $("#time_duration66").text(hourDiff);
+        }
+
+        function durationCalculating5_sla(){
+            var id_workedtime = $('#id_workedtime6602').val();
+            var worked_time_ranges = id_workedtime.split(" - ");
+            
+            var time1 = worked_time_ranges[0];
+            var time2 = worked_time_ranges[1];
+
+            var startDate = new Date("January 1, 1970 " + time1);
+            var endDate = new Date("January 1, 1970 " + time2);
+            
+            var timeDiff = Math.abs(startDate - endDate);
+
+            var hh = Math.floor(timeDiff / 1000 / 60 / 60);
+            if(hh < 10) {
+                hh = '0' + hh;
+            }
+            timeDiff -= hh * 1000 * 60 * 60;
+            var mm = Math.floor(timeDiff / 1000 / 60);
+            if(mm < 10) {
+                mm = '0' + mm;
+            }
+
+            var hourDiff = hh + ":" + mm;
+
+            $("#time_duration6602" ).show();
+            $("#time_duration6602").text(hourDiff);
         }
 
     </script>

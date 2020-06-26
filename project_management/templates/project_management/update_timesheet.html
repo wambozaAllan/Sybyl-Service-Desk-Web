@@ -78,7 +78,7 @@
     </div>
     <div class="col-6">
         <div id="div_id_workedtime" class="form-group">
-            <label for="id_workedtime2" class="col-form-label  requiredField">Worked Time<span class="asteriskField">* | Duration: <big class="text-info font-weight-bold hide" id="time_duration2"></big></span>
+            <label for="id_workedtime2" class="col-form-label requiredField">Worked Time<span class="asteriskField">* | Duration: <big class="text-info font-weight-bold hide" id="time_durations"></big></span>
             </label>                    
             <div class="">
                 <input onkeypress="return false;" style="box-shadow: none; font-family: 'Poppins', sans-serif; display: block; height: calc(2.25rem + 2px); padding: .375rem .75rem; padding-left: 0.75rem; font-size: 1rem; line-height: 1.5; color: #495057; background-color: #fff; background-clip: padding-box; border: 1px solid #ced4da; border-top-color: rgb(206, 212, 218); border-right-color: rgb(206, 212, 218); border-bottom-color: rgb(206, 212, 218); border-left-color: rgb(206, 212, 218); border-radius: .25rem; transition: border-color .15s ease-in-out,box-shadow .15s ease-in-out; flex: 1 1 auto; width: 100%; margin-bottom: 0; margin-top: 2%" class="daterange" name="datefilter" id="id_workedtime2" type="text" value=""/>
@@ -134,7 +134,6 @@
     }).on('change.daterangepicker', function (ev, picker) {
         durationCalculating2();
     });
-
     durationCalculating2();
 
 
@@ -292,31 +291,31 @@
     });
 
     function durationCalculating2(){
-            var id_workedtime = $('#id_workedtime2').val();
-            var worked_time_ranges = id_workedtime.split(" - ");
-            
-            var time1 = worked_time_ranges[0];
-            var time2 = worked_time_ranges[1];
+        var id_workedtime = $('#id_workedtime2').val();
+        var worked_time_ranges = id_workedtime.split(" - ");
+        
+        var time1 = worked_time_ranges[0];
+        var time2 = worked_time_ranges[1];
 
-            var startDate = new Date("January 1, 1970 " + time1);
-            var endDate = new Date("January 1, 1970 " + time2);
-            
-            var timeDiff = Math.abs(startDate - endDate);
+        var startDate = new Date("January 1, 1970 " + time1);
+        var endDate = new Date("January 1, 1970 " + time2);
+        
+        var timeDiff = Math.abs(startDate - endDate);
 
-            var hh = Math.floor(timeDiff / 1000 / 60 / 60);
-            if(hh < 10) {
-                hh = '0' + hh;
-            }
-            timeDiff -= hh * 1000 * 60 * 60;
-            var mm = Math.floor(timeDiff / 1000 / 60);
-            if(mm < 10) {
-                mm = '0' + mm;
-            }
-
-            var hourDiff = hh + ":" + mm;
-
-            $("#time_duration2" ).show();
-            $("#time_duration2").text(hourDiff);
+        var hh = Math.floor(timeDiff / 1000 / 60 / 60);
+        if(hh < 10) {
+            hh = '0' + hh;
         }
+        timeDiff -= hh * 1000 * 60 * 60;
+        var mm = Math.floor(timeDiff / 1000 / 60);
+        if(mm < 10) {
+            mm = '0' + mm;
+        }
+
+        var hourDiff = hh + ":" + mm;
+
+        $("#time_durations" ).show();
+        $("#time_durations").text(hourDiff);
+    }
 
 </script>

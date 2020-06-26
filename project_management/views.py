@@ -4042,6 +4042,10 @@ def daily_timesheets_pane(request):
             sum_duration = 0 
             for ii in daily_tm_tasks:
 	            sum_duration = sum_duration + ii.timesheet.durationsec()
+
+            for req in daily_tm_requests:
+                sum_duration = sum_duration + req.timesheet.durationsec()
+
             new_dict['duration'] = compute_duration(sum_duration)
             new_list2.append(new_dict)
     else: 
@@ -4217,6 +4221,10 @@ def save_new_timesheet(request):
             sum_duration = 0 
             for ii in daily_tm_tasks:
 	            sum_duration = sum_duration + ii.timesheet.durationsec()
+
+            for req in daily_tm_requests:
+                sum_duration = sum_duration + req.timesheet.durationsec()
+
             new_dict['duration'] = compute_duration(sum_duration)
             new_list2.append(new_dict)
     else: 
@@ -4311,7 +4319,9 @@ def update_timesheet(request):
 
     return HttpResponse(template.render(context, request))
 
+
 def update_timesheet_paginator(request):
+    state = request.GET.get('state')
     company_id = request.session['company_id']
     log_day = request.GET.get('log_day')
     start_time = request.GET.get('start_time')
@@ -4322,40 +4332,77 @@ def update_timesheet_paginator(request):
     notes = request.GET.get('notes')
     id_user_dept = request.GET.get('id_user_dept')
 
-    obj_task = Task.objects.get(id=int(task_id))
-    project_name = obj_task.project
-    project_id = obj_task.project_id
-    milestone_id = obj_task.milestone_id
-    milestone_name = obj_task.milestone    
+    if state == "project":
+        obj_task = Task.objects.get(id=task_id)
+        project_name = obj_task.project
+        project_id = obj_task.project_id
+        milestone_id = obj_task.milestone_id
+        milestone_name = obj_task.milestone    
 
-    project_list = Project.objects.filter(~Q(id = int(project_id)))
-    list_project_milestones = Milestone.objects.filter(Q(project_id=int(project_id)), ~Q(id = int(milestone_id)))
-    list_milestone_tasks = Task.objects.filter(Q(milestone_id=int(milestone_id)), ~Q(id = task_id))
+        project_list = Project.objects.filter(~Q(id = int(project_id)))
+        list_project_milestones = Milestone.objects.filter(Q(project_id=int(project_id)), ~Q(id = int(milestone_id)))
+        list_milestone_tasks = Task.objects.filter(Q(milestone_id=int(milestone_id)), ~Q(id = task_id))
 
-    template = loader.get_template('project_management/update_timesheet_paginator_view.html')
-    context = {
-        'log_day': log_day,
-        'start_time': start_time,
-        'end_time': end_time,
-        'task': task,
-        'timesheet_id': timesheet_id,
-        'project_list': project_list,
-        'list_milestone_tasks': list_milestone_tasks,
-        'list_project_milestones': list_project_milestones,
-        'milestone_id': milestone_id,
-        'milestone_name': milestone_name,
-        'project_name': project_name,
-        'project_id': project_id,
-        'task_id': task_id,
-        'notes': notes,
-        'user_id' : id_user_dept,
-        'user_name' : User.objects.get(id=int(id_user_dept))
-    }
+        template = loader.get_template('project_management/update_timesheet_paginator_view.html')
+        context = {
+            'log_day': log_day,
+            'start_time': start_time,
+            'end_time': end_time,
+            'task': task,
+            'timesheet_id': timesheet_id,
+            'project_list': project_list,
+            'list_milestone_tasks': list_milestone_tasks,
+            'list_project_milestones': list_project_milestones,
+            'milestone_id': milestone_id,
+            'milestone_name': milestone_name,
+            'project_name': project_name,
+            'project_id': project_id,
+            'task_id': task_id,
+            'notes': notes,
+            'user_id' : id_user_dept,
+            'user_name' : User.objects.get(id=int(id_user_dept))
+        }
+    else:
+        sla_name = request.GET.get('sla_name')
+        sla_id = int(request.GET.get('sla_id'))
+
+        customer = ServiceLevelAgreement.objects.get(id=sla_id)
+        curr_customer_id = customer.customer_id
+        curr_customer_name = customer.customer.name
+
+        # PEDDING PLEADE ADD COMPANY ID (PARENT) FILTER
+        client_list = Company.objects.filter(Q(category__category_value='CLIENT'), ~Q(id = curr_customer_id))
+        sla_list = ServiceLevelAgreement.objects.filter(Q(customer_id=curr_customer_id), ~Q(id = sla_id))
+
+        project_team_member_id1 = ProjectTeamMember.objects.get(member=id_user_dept)
+        project_team_member_id2 = project_team_member_id1.id
+        list_sla_requests = CustomerRequest.objects.filter(Q(sla_id=int(sla_id)), Q(assigned_member=project_team_member_id2), ~Q(id = task_id))
+        
+        template = loader.get_template('project_management/update_timesheet_requests_paginator_view.html')
+        context = {
+            'log_day': log_day,
+            'start_time': start_time,
+            'end_time': end_time,
+            'req': task,
+            'timesheet_id': timesheet_id,
+            'req_id': task_id,
+            'notes': notes,
+            'user_id' : id_user_dept,
+            'user_name' : User.objects.get(id=int(id_user_dept)),
+            'client_list': client_list,
+            'sla_id': sla_id,
+            'sla_name': sla_name,
+            'curr_customer_id': curr_customer_id,
+            'curr_customer_name': curr_customer_name,
+            'sla_list': sla_list,
+            'request_list': list_sla_requests
+        }
 
     return HttpResponse(template.render(context, request))
 
 
 def resubmit_timesheet(request):
+    state = request.GET.get('state')
     company_id = request.session['company_id']
     log_day = request.GET.get('log_day')
     start_time = request.GET.get('start_time')
@@ -4366,35 +4413,72 @@ def resubmit_timesheet(request):
     notes = request.GET.get('notes')
     id_user_dept = int(request.GET.get('id_user_dept'))
 
-    obj_task = Task.objects.get(id=int(task_id))
-    project_name = obj_task.project
-    project_id = obj_task.project_id
-    milestone_id = obj_task.milestone_id
-    milestone_name = obj_task.milestone    
+    if state == "project":
+        obj_task = Task.objects.get(id=int(task_id))
+        project_name = obj_task.project
+        project_id = obj_task.project_id
+        milestone_id = obj_task.milestone_id
+        milestone_name = obj_task.milestone    
 
-    project_list = Project.objects.filter(~Q(id = int(project_id)))
-    list_project_milestones = Milestone.objects.filter(Q(project_id=int(project_id)), ~Q(id = int(milestone_id)))
-    list_milestone_tasks = Task.objects.filter(Q(milestone_id=int(milestone_id)), ~Q(id = task_id))
+        project_list = Project.objects.filter(~Q(id = int(project_id)))
+        list_project_milestones = Milestone.objects.filter(Q(project_id=int(project_id)), ~Q(id = int(milestone_id)))
+        list_milestone_tasks = Task.objects.filter(Q(milestone_id=int(milestone_id)), ~Q(id = task_id))
 
-    template = loader.get_template('project_management/resubmit_timesheet.html')
-    context = {
-        'log_day': log_day,
-        'start_time': start_time,
-        'end_time': end_time,
-        'task': task,
-        'timesheet_id': timesheet_id,
-        'project_list': project_list,
-        'list_milestone_tasks': list_milestone_tasks,
-        'list_project_milestones': list_project_milestones,
-        'milestone_id': milestone_id,
-        'milestone_name': milestone_name,
-        'project_name': project_name,
-        'project_id': project_id,
-        'task_id': task_id,
-        'notes': notes,
-        'user_id' : id_user_dept,
-        'user_name' : User.objects.get(id=id_user_dept)
-    }
+        template = loader.get_template('project_management/resubmit_timesheet.html')
+        context = {
+            'log_day': log_day,
+            'start_time': start_time,
+            'end_time': end_time,
+            'task': task,
+            'timesheet_id': timesheet_id,
+            'project_list': project_list,
+            'list_milestone_tasks': list_milestone_tasks,
+            'list_project_milestones': list_project_milestones,
+            'milestone_id': milestone_id,
+            'milestone_name': milestone_name,
+            'project_name': project_name,
+            'project_id': project_id,
+            'task_id': task_id,
+            'notes': notes,
+            'user_id' : id_user_dept,
+            'user_name' : User.objects.get(id=id_user_dept)
+        }
+
+    else: 
+        sla_name = request.GET.get('sla_name')
+        sla_id = int(request.GET.get('sla_id'))
+
+        customer = ServiceLevelAgreement.objects.get(id=sla_id)
+        curr_customer_id = customer.customer_id
+        curr_customer_name = customer.customer.name
+
+        # PEDDING PLEADE ADD COMPANY ID (PARENT) FILTER
+        client_list = Company.objects.filter(category__category_value='CLIENT')
+        sla_list = ServiceLevelAgreement.objects.filter(customer_id=curr_customer_id)
+
+        project_team_member_id1 = ProjectTeamMember.objects.get(member=id_user_dept)
+        project_team_member_id2 = project_team_member_id1.id
+        list_sla_requests = CustomerRequest.objects.filter(sla_id=int(sla_id), assigned_member=project_team_member_id2)
+        
+        template = loader.get_template('project_management/resubmit_request_timesheet.html')
+        context = {
+            'log_day': log_day,
+            'start_time': start_time,
+            'end_time': end_time,
+            'req': task,
+            'timesheet_id': timesheet_id,
+            'req_id': task_id,
+            'notes': notes,
+            'user_id' : id_user_dept,
+            'user_name' : User.objects.get(id=int(id_user_dept)),
+            'client_list': client_list,
+            'sla_id': sla_id,
+            'sla_name': sla_name,
+            'curr_customer_id': curr_customer_id,
+            'curr_customer_name': curr_customer_name,
+            'sla_list': sla_list,
+            'request_list': list_sla_requests
+        }
 
     return HttpResponse(template.render(context, request))
 
@@ -4534,6 +4618,10 @@ def save_update_timesheet(request):
             sum_duration = 0 
             for ii in daily_tm_tasks:
 	            sum_duration = sum_duration + ii.timesheet.durationsec()
+            
+            for req in daily_tm_requests:
+                sum_duration = sum_duration + req.timesheet.durationsec()
+
             new_dict['duration'] = compute_duration(sum_duration)
             new_list2.append(new_dict)
     
@@ -4618,6 +4706,10 @@ def delete_timesheet(request):
             sum_duration = 0 
             for ii in daily_tm_tasks:
 	            sum_duration = sum_duration + ii.timesheet.durationsec()
+
+            for req in daily_tm_requests:
+                sum_duration = sum_duration + req.timesheet.durationsec()
+
             new_dict['duration'] = compute_duration(sum_duration)
             new_list2.append(new_dict)
     else: 
@@ -4698,6 +4790,10 @@ def send_timesheet_for_approval(request):
             sum_duration = 0 
             for ii in daily_tm_tasks:
 	            sum_duration = sum_duration + ii.timesheet.durationsec()
+            
+            for req in daily_tm_requests:
+                sum_duration = sum_duration + req.timesheet.durationsec()
+
             new_dict['duration'] = compute_duration(sum_duration)
             new_list2.append(new_dict)
     else: 
@@ -4713,8 +4809,6 @@ def send_timesheet_for_approval(request):
 def timesheet_pending_approval(request):
     id_user_dept = request.GET.get('id_user_dept')
     company_id = request.session['company_id']
-
-    timesheet_list1 = Timesheet.objects.filter(status='SUBMITTED', company_id=company_id, project_team_member_id=id_user_dept)
 
     task_request_list_final = []           
     daily_tm_tasks = TaskTimesheetExtend.objects.filter(timesheet__status='SUBMITTED', timesheet__project_team_member_id=id_user_dept, timesheet__company_id=company_id)
@@ -4770,11 +4864,51 @@ def approve_timesheet_pane(request):
     company_id = request.session['company_id']
     department_id = request.session['department_id']
 
-    timesheet_list1 = Timesheet.objects.filter(status='SUBMITTED', company_id=company_id, project_team_member__department_id=department_id)
+    task_request_list_final = []           
+    daily_tm_tasks = TaskTimesheetExtend.objects.filter(timesheet__status='SUBMITTED', timesheet__project_team_member_id__department_id=department_id, timesheet__company_id=company_id)
+    daily_tm_requests = RequestTimesheetExtend.objects.filter(timesheet__status='SUBMITTED', timesheet__project_team_member__department_id=department_id, timesheet__company_id=company_id)
+    
+    for tsk in daily_tm_tasks:
+        dict_tasks = {}
+        dict_tasks['tm_id'] = tsk.timesheet.id
+        dict_tasks['name'] = tsk.task
+        dict_tasks['task_id'] = tsk.task_id
+        dict_tasks['duration'] = tsk.timesheet.duration
+        dict_tasks['log_day'] = tsk.timesheet.log_day
+        dict_tasks['start_time'] = tsk.timesheet.start_time
+        dict_tasks['end_time'] = tsk.timesheet.end_time
+        dict_tasks['created_time'] = tsk.timesheet.created_time
+        dict_tasks['notes'] = tsk.timesheet.notes
+        dict_tasks['timesheet_type'] = 'task_type'
+        dict_tasks['sla_name'] = ''
+        dict_tasks['sla_id'] = ''
+        dict_tasks['get_resubmission_count'] = tsk.timesheet.get_resubmission_count
+        dict_tasks['date_submitted'] = tsk.timesheet.date_submitted
+        dict_tasks['project_team_member'] = tsk.timesheet.project_team_member
+        task_request_list_final.append(dict_tasks)
+
+    for req in daily_tm_requests:
+        dict_requests = {}
+        dict_requests['tm_id'] = req.timesheet.id
+        dict_requests['name'] = req.customer_request
+        dict_requests['task_id'] = req.customer_request_id
+        dict_requests['duration'] = req.timesheet.duration
+        dict_requests['log_day'] = req.timesheet.log_day
+        dict_requests['start_time'] = req.timesheet.start_time
+        dict_requests['end_time'] = req.timesheet.end_time
+        dict_requests['notes'] = req.timesheet.notes
+        dict_requests['created_time'] = req.timesheet.created_time
+        dict_requests['timesheet_type'] = 'request_type'
+        dict_requests['sla_name'] = req.customer_request.sla.name
+        dict_requests['sla_id'] = req.customer_request.sla.id
+        dict_requests['get_resubmission_count'] = req.timesheet.get_resubmission_count
+        dict_requests['date_submitted'] = req.timesheet.date_submitted
+        dict_requests['project_team_member'] = req.timesheet.project_team_member
+        task_request_list_final.append(dict_requests)
 
     template = loader.get_template('project_management/approve_timesheet_pane.html')
     context = {
-        'timesheet_list': timesheet_list1,
+        'timesheet_list': task_request_list_final,
     }
 
     return HttpResponse(template.render(context, request))
@@ -4807,11 +4941,61 @@ def manage_approved_timesheets(request):
     company_id = request.session['company_id']
     department_id = request.session['department_id']
 
-    timesheet_list1 = Timesheet.objects.filter(Q(status='ACCEPTED')|Q(status='REJECTED'), company_id=company_id, project_team_member__department_id=department_id)
+    task_request_list_final = []           
+    daily_tm_tasks = TaskTimesheetExtend.objects.filter(Q(timesheet__status='ACCEPTED')|Q(timesheet__status='REJECTED'), timesheet__project_team_member_id__department_id=department_id, timesheet__company_id=company_id)
+    daily_tm_requests = RequestTimesheetExtend.objects.filter(Q(timesheet__status='ACCEPTED')|Q(timesheet__status='REJECTED'), timesheet__project_team_member_id__department_id=department_id, timesheet__company_id=company_id)
+    
+    for tsk in daily_tm_tasks:
+        dict_tasks = {}
+        dict_tasks['tm_id'] = tsk.timesheet.id
+        dict_tasks['name'] = tsk.task
+        dict_tasks['task_id'] = tsk.task_id
+        dict_tasks['duration'] = tsk.timesheet.duration
+        dict_tasks['log_day'] = tsk.timesheet.log_day
+        dict_tasks['start_time'] = tsk.timesheet.start_time
+        dict_tasks['end_time'] = tsk.timesheet.end_time
+        dict_tasks['created_time'] = tsk.timesheet.created_time
+        dict_tasks['notes'] = tsk.timesheet.notes
+        dict_tasks['timesheet_type'] = 'task_type'
+        dict_tasks['sla_name'] = ''
+        dict_tasks['sla_id'] = ''
+        dict_tasks['get_resubmission_count'] = tsk.timesheet.get_resubmission_count
+        dict_tasks['date_submitted'] = tsk.timesheet.date_submitted
+        dict_tasks['project_team_member'] = tsk.timesheet.project_team_member
+        dict_tasks['status'] = tsk.timesheet.status
+        dict_tasks['approver_notes'] = tsk.timesheet.approver_notes
+        dict_tasks['date_approved'] = tsk.timesheet.date_approved
+        dict_tasks['approved_by'] = tsk.timesheet.approved_by
+        dict_tasks['submitted_by'] = tsk.timesheet.submitted_by
+        task_request_list_final.append(dict_tasks)
+
+    for req in daily_tm_requests:
+        dict_requests = {}
+        dict_requests['tm_id'] = req.timesheet.id
+        dict_requests['name'] = req.customer_request
+        dict_requests['task_id'] = req.customer_request_id
+        dict_requests['duration'] = req.timesheet.duration
+        dict_requests['log_day'] = req.timesheet.log_day
+        dict_requests['start_time'] = req.timesheet.start_time
+        dict_requests['end_time'] = req.timesheet.end_time
+        dict_requests['notes'] = req.timesheet.notes
+        dict_requests['created_time'] = req.timesheet.created_time
+        dict_requests['timesheet_type'] = 'request_type'
+        dict_requests['sla_name'] = req.customer_request.sla.name
+        dict_requests['sla_id'] = req.customer_request.sla.id
+        dict_requests['get_resubmission_count'] = req.timesheet.get_resubmission_count
+        dict_requests['date_submitted'] = req.timesheet.date_submitted
+        dict_requests['project_team_member'] = req.timesheet.project_team_member
+        dict_requests['status'] = req.timesheet.status 
+        dict_requests['approver_notes'] = req.timesheet.approver_notes
+        dict_requests['date_approved'] = req.timesheet.date_approved
+        dict_requests['approved_by'] = req.timesheet.approved_by
+        dict_requests['submitted_by'] = req.timesheet.submitted_by
+        task_request_list_final.append(dict_requests)
 
     template = loader.get_template('project_management/list_confirmed_timesheets.html')
     context = {
-        'timesheet_list': timesheet_list1,
+        'timesheet_list': task_request_list_final,
     }
 
     return HttpResponse(template.render(context, request))
@@ -4826,10 +5010,61 @@ def update_timesheet_approval(request):
 
     Timesheet.objects.filter(pk=int(timesheet_id)).update(status=new_status, last_updated_date=datetime.date.today(), last_updated_by_id=uid)
 
-    timesheet_list1 = Timesheet.objects.filter(Q(status='ACCEPTED')|Q(status='REJECTED'), company_id=company_id, project_team_member__department_id=department_id)
+    task_request_list_final = []           
+    daily_tm_tasks = TaskTimesheetExtend.objects.filter(Q(timesheet__status='ACCEPTED')|Q(timesheet__status='REJECTED'), timesheet__project_team_member_id__department_id=department_id, timesheet__company_id=company_id)
+    daily_tm_requests = RequestTimesheetExtend.objects.filter(Q(timesheet__status='ACCEPTED')|Q(timesheet__status='REJECTED'), timesheet__project_team_member_id__department_id=department_id, timesheet__company_id=company_id)
+    
+    for tsk in daily_tm_tasks:
+        dict_tasks = {}
+        dict_tasks['tm_id'] = tsk.timesheet.id
+        dict_tasks['name'] = tsk.task
+        dict_tasks['task_id'] = tsk.task_id
+        dict_tasks['duration'] = tsk.timesheet.duration
+        dict_tasks['log_day'] = tsk.timesheet.log_day
+        dict_tasks['start_time'] = tsk.timesheet.start_time
+        dict_tasks['end_time'] = tsk.timesheet.end_time
+        dict_tasks['created_time'] = tsk.timesheet.created_time
+        dict_tasks['notes'] = tsk.timesheet.notes
+        dict_tasks['timesheet_type'] = 'task_type'
+        dict_tasks['sla_name'] = ''
+        dict_tasks['sla_id'] = ''
+        dict_tasks['get_resubmission_count'] = tsk.timesheet.get_resubmission_count
+        dict_tasks['date_submitted'] = tsk.timesheet.date_submitted
+        dict_tasks['project_team_member'] = tsk.timesheet.project_team_member
+        dict_tasks['status'] = tsk.timesheet.status
+        dict_tasks['approver_notes'] = tsk.timesheet.approver_notes
+        dict_tasks['date_approved'] = tsk.timesheet.date_approved
+        dict_tasks['approved_by'] = tsk.timesheet.approved_by
+        dict_tasks['submitted_by'] = tsk.timesheet.submitted_by
+        task_request_list_final.append(dict_tasks)
+
+    for req in daily_tm_requests:
+        dict_requests = {}
+        dict_requests['tm_id'] = req.timesheet.id
+        dict_requests['name'] = req.customer_request
+        dict_requests['task_id'] = req.customer_request_id
+        dict_requests['duration'] = req.timesheet.duration
+        dict_requests['log_day'] = req.timesheet.log_day
+        dict_requests['start_time'] = req.timesheet.start_time
+        dict_requests['end_time'] = req.timesheet.end_time
+        dict_requests['notes'] = req.timesheet.notes
+        dict_requests['created_time'] = req.timesheet.created_time
+        dict_requests['timesheet_type'] = 'request_type'
+        dict_requests['sla_name'] = req.customer_request.sla.name
+        dict_requests['sla_id'] = req.customer_request.sla.id
+        dict_requests['get_resubmission_count'] = req.timesheet.get_resubmission_count
+        dict_requests['date_submitted'] = req.timesheet.date_submitted
+        dict_requests['project_team_member'] = req.timesheet.project_team_member
+        dict_requests['status'] = req.timesheet.status
+        dict_requests['approver_notes'] = req.timesheet.approver_notes
+        dict_requests['date_approved'] = req.timesheet.date_approved
+        dict_requests['approved_by'] = req.timesheet.approved_by
+        dict_requests['submitted_by'] = req.timesheet.submitted_by
+        task_request_list_final.append(dict_requests)
+    
     template = loader.get_template('project_management/list_confirmed_timesheets.html')
     context = {
-        'timesheet_list': timesheet_list1,
+        'timesheet_list': task_request_list_final,
     }
 
     return HttpResponse(template.render(context, request))
@@ -4839,11 +5074,53 @@ def view_user_approved_timesheets(request):
     id_user_dept = request.GET.get('id_user_dept')
     company_id = request.session['company_id']
 
-    timesheet_list1 = Timesheet.objects.filter(Q(status='ACCEPTED'), company_id=company_id, project_team_member_id=id_user_dept)
+    task_request_list_final = []           
+    daily_tm_tasks = TaskTimesheetExtend.objects.filter(timesheet__status='ACCEPTED', timesheet__project_team_member_id=id_user_dept, timesheet__company_id=company_id)
+    daily_tm_requests = RequestTimesheetExtend.objects.filter(timesheet__status='ACCEPTED', timesheet__project_team_member_id=id_user_dept, timesheet__company_id=company_id)
+    
+    for tsk in daily_tm_tasks:
+        dict_tasks = {}
+        dict_tasks['tm_id'] = tsk.timesheet.id
+        dict_tasks['name'] = tsk.task
+        dict_tasks['task_id'] = tsk.task_id
+        dict_tasks['duration'] = tsk.timesheet.duration
+        dict_tasks['log_day'] = tsk.timesheet.log_day
+        dict_tasks['start_time'] = tsk.timesheet.start_time
+        dict_tasks['end_time'] = tsk.timesheet.end_time
+        dict_tasks['created_time'] = tsk.timesheet.created_time
+        dict_tasks['notes'] = tsk.timesheet.notes
+        dict_tasks['timesheet_type'] = 'task_type'
+        dict_tasks['sla_name'] = ''
+        dict_tasks['sla_id'] = ''
+        dict_tasks['get_resubmission_count'] = tsk.timesheet.get_resubmission_count
+        dict_tasks['date_submitted'] = tsk.timesheet.date_submitted
+        dict_tasks['date_approved'] = tsk.timesheet.date_approved
+        dict_tasks['approved_by'] = tsk.timesheet.approved_by
+        task_request_list_final.append(dict_tasks)
+
+    for req in daily_tm_requests:
+        dict_requests = {}
+        dict_requests['tm_id'] = req.timesheet.id
+        dict_requests['name'] = req.customer_request
+        dict_requests['task_id'] = req.customer_request_id
+        dict_requests['duration'] = req.timesheet.duration
+        dict_requests['log_day'] = req.timesheet.log_day
+        dict_requests['start_time'] = req.timesheet.start_time
+        dict_requests['end_time'] = req.timesheet.end_time
+        dict_requests['notes'] = req.timesheet.notes
+        dict_requests['created_time'] = req.timesheet.created_time
+        dict_requests['timesheet_type'] = 'request_type'
+        dict_requests['sla_name'] = req.customer_request.sla.name
+        dict_requests['sla_id'] = req.customer_request.sla.id
+        dict_requests['get_resubmission_count'] = req.timesheet.get_resubmission_count
+        dict_requests['date_submitted'] = req.timesheet.date_submitted
+        dict_requests['date_approved'] = req.timesheet.date_approved
+        dict_requests['approved_by'] = req.timesheet.approved_by
+        task_request_list_final.append(dict_requests)
 
     template = loader.get_template('project_management/list_user_accepted_timesheets.html')
     context = {
-        'timesheet_list': timesheet_list1,
+        'timesheet_list': task_request_list_final,
     }
 
     return HttpResponse(template.render(context, request))
@@ -4853,7 +5130,49 @@ def manage_rejected_timesheets(request):
     id_user_dept = request.GET.get('id_user_dept')
     company_id = request.session['company_id']
 
-    timesheet_list1 = Timesheet.objects.filter(Q(status='REJECTED'), company_id=company_id, project_team_member_id=id_user_dept)
+    timesheet_list1 = []           
+    daily_tm_tasks = TaskTimesheetExtend.objects.filter(timesheet__status='REJECTED', timesheet__project_team_member_id=id_user_dept, timesheet__company_id=company_id)
+    daily_tm_requests = RequestTimesheetExtend.objects.filter(timesheet__status='REJECTED', timesheet__project_team_member_id=id_user_dept, timesheet__company_id=company_id)
+    
+    for tsk in daily_tm_tasks:
+        dict_tasks = {}
+        dict_tasks['tm_id'] = tsk.timesheet.id
+        dict_tasks['name'] = tsk.task
+        dict_tasks['task_id'] = tsk.task_id
+        dict_tasks['duration'] = tsk.timesheet.duration
+        dict_tasks['log_day'] = tsk.timesheet.log_day
+        dict_tasks['start_time'] = tsk.timesheet.start_time
+        dict_tasks['end_time'] = tsk.timesheet.end_time
+        dict_tasks['created_time'] = tsk.timesheet.created_time
+        dict_tasks['notes'] = tsk.timesheet.notes
+        dict_tasks['timesheet_type'] = 'task_type'
+        dict_tasks['sla_name'] = ''
+        dict_tasks['sla_id'] = ''
+        dict_tasks['get_resubmission_count'] = tsk.timesheet.get_resubmission_count
+        dict_tasks['date_submitted'] = tsk.timesheet.date_submitted
+        dict_tasks['date_approved'] = tsk.timesheet.date_approved
+        dict_tasks['approved_by'] = tsk.timesheet.approved_by
+        timesheet_list1.append(dict_tasks)
+
+    for req in daily_tm_requests:
+        dict_requests = {}
+        dict_requests['tm_id'] = req.timesheet.id
+        dict_requests['name'] = req.customer_request
+        dict_requests['task_id'] = req.customer_request_id
+        dict_requests['duration'] = req.timesheet.duration
+        dict_requests['log_day'] = req.timesheet.log_day
+        dict_requests['start_time'] = req.timesheet.start_time
+        dict_requests['end_time'] = req.timesheet.end_time
+        dict_requests['notes'] = req.timesheet.notes
+        dict_requests['created_time'] = req.timesheet.created_time
+        dict_requests['timesheet_type'] = 'request_type'
+        dict_requests['sla_name'] = req.customer_request.sla.name
+        dict_requests['sla_id'] = req.customer_request.sla.id
+        dict_requests['get_resubmission_count'] = req.timesheet.get_resubmission_count
+        dict_requests['date_submitted'] = req.timesheet.date_submitted
+        dict_requests['date_approved'] = req.timesheet.date_approved
+        dict_requests['approved_by'] = req.timesheet.approved_by
+        timesheet_list1.append(dict_requests)
 
     template = loader.get_template('project_management/list_user_rejected_timesheets.html')
     context = {
@@ -4875,7 +5194,47 @@ def filter_pending_daily_timesheets_by_date(request):
     min_dt = datetime.datetime.combine(startdate, datetime.time.min)
     max_dt = datetime.datetime.combine(enddate, datetime.time.max)
 
-    timesheet_list1 = Timesheet.objects.filter(status='SUBMITTED', company_id=company_id, log_day__range=(min_dt, max_dt), project_team_member_id=uid)
+    timesheet_list1 = []           
+    daily_tm_tasks = TaskTimesheetExtend.objects.filter(timesheet__status='SUBMITTED', timesheet__project_team_member_id=uid, timesheet__company_id=company_id, timesheet__log_day__range=(min_dt, max_dt))
+    daily_tm_requests = RequestTimesheetExtend.objects.filter(timesheet__status='SUBMITTED', timesheet__project_team_member_id=uid, timesheet__company_id=company_id, timesheet__log_day__range=(min_dt, max_dt))
+    
+    for tsk in daily_tm_tasks:
+        dict_tasks = {}
+        dict_tasks['tm_id'] = tsk.timesheet.id
+        dict_tasks['name'] = tsk.task
+        dict_tasks['task_id'] = tsk.task_id
+        dict_tasks['duration'] = tsk.timesheet.duration
+        dict_tasks['log_day'] = tsk.timesheet.log_day
+        dict_tasks['start_time'] = tsk.timesheet.start_time
+        dict_tasks['end_time'] = tsk.timesheet.end_time
+        dict_tasks['created_time'] = tsk.timesheet.created_time
+        dict_tasks['notes'] = tsk.timesheet.notes
+        dict_tasks['timesheet_type'] = 'task_type'
+        dict_tasks['sla_name'] = ''
+        dict_tasks['sla_id'] = ''
+        dict_tasks['get_resubmission_count'] = tsk.timesheet.get_resubmission_count
+        dict_tasks['date_submitted'] = tsk.timesheet.date_submitted
+        dict_tasks['status'] = tsk.timesheet.status
+        timesheet_list1.append(dict_tasks)
+
+    for req in daily_tm_requests:
+        dict_requests = {}
+        dict_requests['tm_id'] = req.timesheet.id
+        dict_requests['name'] = req.customer_request
+        dict_requests['task_id'] = req.customer_request_id
+        dict_requests['duration'] = req.timesheet.duration
+        dict_requests['log_day'] = req.timesheet.log_day
+        dict_requests['start_time'] = req.timesheet.start_time
+        dict_requests['end_time'] = req.timesheet.end_time
+        dict_requests['notes'] = req.timesheet.notes
+        dict_requests['created_time'] = req.timesheet.created_time
+        dict_requests['timesheet_type'] = 'request_type'
+        dict_requests['sla_name'] = req.customer_request.sla.name
+        dict_requests['sla_id'] = req.customer_request.sla.id
+        dict_requests['get_resubmission_count'] = req.timesheet.get_resubmission_count
+        dict_requests['date_submitted'] = req.timesheet.date_submitted
+        dict_requests['status'] = req.timesheet.status
+        timesheet_list1.append(dict_requests)
 
     template = loader.get_template('project_management/list_timesheets_pending_approval.html')
     context = {
@@ -4897,7 +5256,49 @@ def filter_daily_proved_timesheets(request):
     min_dt = datetime.datetime.combine(startdate, datetime.time.min)
     max_dt = datetime.datetime.combine(enddate, datetime.time.max)
     
-    timesheet_list1 = Timesheet.objects.filter(Q(status='ACCEPTED')|Q(status='REJECTED'), company_id=company_id, project_team_member_id=uid, log_day__range=(min_dt, max_dt))
+    timesheet_list1 = []           
+    daily_tm_tasks = TaskTimesheetExtend.objects.filter(Q(timesheet__status='ACCEPTED')|Q(timesheet__status='REJECTED'), timesheet__project_team_member_id=uid, timesheet__company_id=company_id, timesheet__log_day__range=(min_dt, max_dt))
+    daily_tm_requests = RequestTimesheetExtend.objects.filter(Q(timesheet__status='ACCEPTED')|Q(timesheet__status='REJECTED'), timesheet__project_team_member_id=uid, timesheet__company_id=company_id, timesheet__log_day__range=(min_dt, max_dt))
+    
+    for tsk in daily_tm_tasks:
+        dict_tasks = {}
+        dict_tasks['tm_id'] = tsk.timesheet.id
+        dict_tasks['name'] = tsk.task
+        dict_tasks['task_id'] = tsk.task_id
+        dict_tasks['duration'] = tsk.timesheet.duration
+        dict_tasks['log_day'] = tsk.timesheet.log_day
+        dict_tasks['start_time'] = tsk.timesheet.start_time
+        dict_tasks['end_time'] = tsk.timesheet.end_time
+        dict_tasks['created_time'] = tsk.timesheet.created_time
+        dict_tasks['notes'] = tsk.timesheet.notes
+        dict_tasks['timesheet_type'] = 'task_type'
+        dict_tasks['sla_name'] = ''
+        dict_tasks['sla_id'] = ''
+        dict_tasks['get_resubmission_count'] = tsk.timesheet.get_resubmission_count
+        dict_tasks['date_submitted'] = tsk.timesheet.date_submitted
+        dict_tasks['date_approved'] = tsk.timesheet.date_approved
+        dict_tasks['approved_by'] = tsk.timesheet.approved_by
+        timesheet_list1.append(dict_tasks)
+
+    for req in daily_tm_requests:
+        dict_requests = {}
+        dict_requests['tm_id'] = req.timesheet.id
+        dict_requests['name'] = req.customer_request
+        dict_requests['task_id'] = req.customer_request_id
+        dict_requests['duration'] = req.timesheet.duration
+        dict_requests['log_day'] = req.timesheet.log_day
+        dict_requests['start_time'] = req.timesheet.start_time
+        dict_requests['end_time'] = req.timesheet.end_time
+        dict_requests['notes'] = req.timesheet.notes
+        dict_requests['created_time'] = req.timesheet.created_time
+        dict_requests['timesheet_type'] = 'request_type'
+        dict_requests['sla_name'] = req.customer_request.sla.name
+        dict_requests['sla_id'] = req.customer_request.sla.id
+        dict_requests['get_resubmission_count'] = req.timesheet.get_resubmission_count
+        dict_requests['date_submitted'] = req.timesheet.date_submitted
+        dict_requests['date_approved'] = req.timesheet.date_approved
+        dict_requests['approved_by'] = req.timesheet.approved_by
+        timesheet_list1.append(dict_requests)
 
     template = loader.get_template('project_management/list_user_accepted_timesheets.html')
     context = {
@@ -4933,18 +5334,69 @@ def filter_all_member_approved_timesheets(request):
     company_id = request.session['company_id']
     start_date1 = request.GET.get('start_date')
     end_date1 = request.GET.get('end_date')
+    department_id = request.session['department_id']
 
     startdate = datetime.datetime.strptime(start_date1, '%d-%m-%Y')
     enddate = datetime.datetime.strptime(end_date1, '%d-%m-%Y')
 
     min_dt = datetime.datetime.combine(startdate, datetime.time.min)
     max_dt = datetime.datetime.combine(enddate, datetime.time.max)
-        
-    timesheet_list1 = Timesheet.objects.filter(Q(status='ACCEPTED')|Q(status='REJECTED'), company_id=company_id, log_day__range=(min_dt, max_dt))
+            
+    task_request_list_final = []           
+    daily_tm_tasks = TaskTimesheetExtend.objects.filter(Q(timesheet__status='ACCEPTED')|Q(timesheet__status='REJECTED'), timesheet__project_team_member_id__department_id=department_id, timesheet__company_id=company_id, timesheet__log_day__range=(min_dt, max_dt))
+    daily_tm_requests = RequestTimesheetExtend.objects.filter(Q(timesheet__status='ACCEPTED')|Q(timesheet__status='REJECTED'), timesheet__project_team_member_id__department_id=department_id, timesheet__company_id=company_id, timesheet__log_day__range=(min_dt, max_dt))
+    
+    for tsk in daily_tm_tasks:
+        dict_tasks = {}
+        dict_tasks['tm_id'] = tsk.timesheet.id
+        dict_tasks['name'] = tsk.task
+        dict_tasks['task_id'] = tsk.task_id
+        dict_tasks['duration'] = tsk.timesheet.duration
+        dict_tasks['log_day'] = tsk.timesheet.log_day
+        dict_tasks['start_time'] = tsk.timesheet.start_time
+        dict_tasks['end_time'] = tsk.timesheet.end_time
+        dict_tasks['created_time'] = tsk.timesheet.created_time
+        dict_tasks['notes'] = tsk.timesheet.notes
+        dict_tasks['timesheet_type'] = 'task_type'
+        dict_tasks['sla_name'] = ''
+        dict_tasks['sla_id'] = ''
+        dict_tasks['get_resubmission_count'] = tsk.timesheet.get_resubmission_count
+        dict_tasks['date_submitted'] = tsk.timesheet.date_submitted
+        dict_tasks['project_team_member'] = tsk.timesheet.project_team_member
+        dict_tasks['status'] = tsk.timesheet.status
+        dict_tasks['approver_notes'] = tsk.timesheet.approver_notes
+        dict_tasks['date_approved'] = tsk.timesheet.date_approved
+        dict_tasks['approved_by'] = tsk.timesheet.approved_by
+        dict_tasks['submitted_by'] = tsk.timesheet.submitted_by
+        task_request_list_final.append(dict_tasks)
+
+    for req in daily_tm_requests:
+        dict_requests = {}
+        dict_requests['tm_id'] = req.timesheet.id
+        dict_requests['name'] = req.customer_request
+        dict_requests['task_id'] = req.customer_request_id
+        dict_requests['duration'] = req.timesheet.duration
+        dict_requests['log_day'] = req.timesheet.log_day
+        dict_requests['start_time'] = req.timesheet.start_time
+        dict_requests['end_time'] = req.timesheet.end_time
+        dict_requests['notes'] = req.timesheet.notes
+        dict_requests['created_time'] = req.timesheet.created_time
+        dict_requests['timesheet_type'] = 'request_type'
+        dict_requests['sla_name'] = req.customer_request.sla.name
+        dict_requests['sla_id'] = req.customer_request.sla.id
+        dict_requests['get_resubmission_count'] = req.timesheet.get_resubmission_count
+        dict_requests['date_submitted'] = req.timesheet.date_submitted
+        dict_requests['project_team_member'] = req.timesheet.project_team_member
+        dict_requests['status'] = req.timesheet.status
+        dict_requests['approver_notes'] = req.timesheet.approver_notes
+        dict_requests['date_approved'] = req.timesheet.date_approved
+        dict_requests['approved_by'] = req.timesheet.approved_by
+        dict_requests['submitted_by'] = req.timesheet.submitted_by
+        task_request_list_final.append(dict_requests)
 
     template = loader.get_template('project_management/list_confirmed_timesheets.html')
     context = {
-        'timesheet_list': timesheet_list1,
+        'timesheet_list': task_request_list_final,
     }
 
     return HttpResponse(template.render(context, request))
@@ -4991,28 +5443,92 @@ def user_general_timesheet_report(request):
 
 def save_resent_timesheet(request):
     company_id = request.session['company_id']
-
+    structural_vale = request.GET.get('structureRadioValue')
     log_day = request.GET.get('id_log_day')
-    start_time = request.GET.get('start_time')
-    end_time = request.GET.get('end_time')
-    task = int(request.GET.get('id_task'))
-    timesheet_id = int(request.GET.get('timesheet_id'))
-    notes = request.GET.get('notes')
-    comment = request.GET.get('comment')
     uid = request.user.id
+    log_day = datetime.datetime.strptime(log_day, '%d-%m-%Y')
     id_user_dept = int(request.GET.get('id_user_dept'))
 
-    log_day = datetime.datetime.strptime(log_day, '%d-%m-%Y')
-    start_time1 = datetime.datetime.strptime(start_time, '%I:%M %p')
-    end_time1 =   datetime.datetime.strptime(end_time, '%I:%M %p')
-    
-    Timesheet.objects.filter(pk=int(timesheet_id)).update(status='SUBMITTED', log_day=log_day, start_time=start_time1, end_time=end_time1, task_id=task, last_updated_date=datetime.date.today(), last_updated_by_id=uid, notes=notes, is_resubmitted=True)
-    
-    obj1 = ResubmittedTimesheet(comment=comment, resubmitted_by_id=uid, timesheet_id=int(timesheet_id))
-    obj1.save()
+    if structureRadioValue == 'project':
+        start_time = request.GET.get('start_time')
+        end_time = request.GET.get('end_time')
+        task = int(request.GET.get('id_task'))
+        timesheet_id = int(request.GET.get('timesheet_id'))
+        notes = request.GET.get('notes')
+        comment = request.GET.get('comment')
 
-    timesheet_list1 = Timesheet.objects.filter(Q(status='REJECTED'), company_id=company_id, project_team_member_id=id_user_dept)
+        start_time1 = datetime.datetime.strptime(start_time, '%I:%M %p')
+        end_time1 =   datetime.datetime.strptime(end_time, '%I:%M %p')
+        
+        Timesheet.objects.filter(pk=int(timesheet_id)).update(log_day=log_day, start_time=start_time1, end_time=end_time1, last_updated_date=datetime.date.today(), last_updated_by_id=uid, notes=notes, is_resubmitted=True)
+        TaskTimesheetExtend.objects.filter(pk=timesheet_id).update(task_id=task)
+
+        obj1 = ResubmittedTimesheet(comment=comment, resubmitted_by_id=uid, timesheet_id=int(timesheet_id))
+        obj1.save()
+
+    else:
+        id_assigned_requests = request.GET.get('id_assigned_requests')
+        timesheet_id2 = int(request.GET.get('timesheet_id2'))
+        start_time02 = request.GET.get('start_time2')
+        end_time02 = request.GET.get('end_time2')
+        id_timesheet_notes02 = request.GET.get('notes2')
+        comment2 = request.GET.get('comment2')
+        
+        start_time003 = datetime.datetime.strptime(start_time02, '%I:%M %p')
+        end_time003 =   datetime.datetime.strptime(end_time02, '%I:%M %p')
+
+        Timesheet.objects.filter(pk=int(timesheet_id2)).update(log_day=log_day, start_time=start_time003, end_time=end_time003, last_updated_date=datetime.date.today(), last_updated_by_id=uid, notes=notes, is_resubmitted=True)
+        RequestTimesheetExtend.objects.filter(pk=timesheet_id2).update(customer_request_id=id_assigned_requests) 
+
+        obj1 = ResubmittedTimesheet(comment=comment2, resubmitted_by_id=uid, timesheet_id=int(timesheet_id2))
+        obj1.save()
+
+    timesheet_list1 = []           
+    daily_tm_tasks = TaskTimesheetExtend.objects.filter(timesheet__status='REJECTED', timesheet__project_team_member_id=id_user_dept, timesheet__company_id=company_id)
+    daily_tm_requests = RequestTimesheetExtend.objects.filter(timesheet__status='REJECTED', timesheet__project_team_member_id=id_user_dept, timesheet__company_id=company_id)
+    
+    for tsk in daily_tm_tasks:
+        dict_tasks = {}
+        dict_tasks['tm_id'] = tsk.timesheet.id
+        dict_tasks['name'] = tsk.task
+        dict_tasks['task_id'] = tsk.task_id
+        dict_tasks['duration'] = tsk.timesheet.duration
+        dict_tasks['log_day'] = tsk.timesheet.log_day
+        dict_tasks['start_time'] = tsk.timesheet.start_time
+        dict_tasks['end_time'] = tsk.timesheet.end_time
+        dict_tasks['created_time'] = tsk.timesheet.created_time
+        dict_tasks['notes'] = tsk.timesheet.notes
+        dict_tasks['timesheet_type'] = 'task_type'
+        dict_tasks['sla_name'] = ''
+        dict_tasks['sla_id'] = ''
+        dict_tasks['get_resubmission_count'] = tsk.timesheet.get_resubmission_count
+        dict_tasks['date_submitted'] = tsk.timesheet.date_submitted
+        dict_tasks['date_approved'] = tsk.timesheet.date_approved
+        dict_tasks['approved_by'] = tsk.timesheet.approved_by
+        timesheet_list1.append(dict_tasks)
+
+    for req in daily_tm_requests:
+        dict_requests = {}
+        dict_requests['tm_id'] = req.timesheet.id
+        dict_requests['name'] = req.customer_request
+        dict_requests['task_id'] = req.customer_request_id
+        dict_requests['duration'] = req.timesheet.duration
+        dict_requests['log_day'] = req.timesheet.log_day
+        dict_requests['start_time'] = req.timesheet.start_time
+        dict_requests['end_time'] = req.timesheet.end_time
+        dict_requests['notes'] = req.timesheet.notes
+        dict_requests['created_time'] = req.timesheet.created_time
+        dict_requests['timesheet_type'] = 'request_type'
+        dict_requests['sla_name'] = req.customer_request.sla.name
+        dict_requests['sla_id'] = req.customer_request.sla.id
+        dict_requests['get_resubmission_count'] = req.timesheet.get_resubmission_count
+        dict_requests['date_submitted'] = req.timesheet.date_submitted
+        dict_requests['date_approved'] = req.timesheet.date_approved
+        dict_requests['approved_by'] = req.timesheet.approved_by
+        timesheet_list1.append(dict_requests)
+
     template = loader.get_template('project_management/list_user_rejected_timesheets.html')
+    
     rejected_count = Timesheet.objects.filter(Q(status='REJECTED'), company_id=company_id, project_team_member_id=id_user_dept).count()
     context = {
         'timesheet_list': timesheet_list1,
@@ -5040,13 +5556,65 @@ def update_approver_comment(request):
     uid = request.user.id
     appr_comment = request.GET.get('appr_comment')
     tm_id = request.GET.get('tm_id')
+    department_id = request.session['department_id']
     
     Timesheet.objects.filter(pk=int(tm_id)).update(last_updated_date=datetime.date.today(), last_updated_by_id=uid, approver_notes=appr_comment)
 
-    timesheet_list1 = Timesheet.objects.filter(Q(status='ACCEPTED')|Q(status='REJECTED'), company_id=company_id)
+    task_request_list_final = []           
+    daily_tm_tasks = TaskTimesheetExtend.objects.filter(Q(timesheet__status='ACCEPTED')|Q(timesheet__status='REJECTED'), timesheet__project_team_member_id__department_id=department_id, timesheet__company_id=company_id)
+    daily_tm_requests = RequestTimesheetExtend.objects.filter(Q(timesheet__status='ACCEPTED')|Q(timesheet__status='REJECTED'), timesheet__project_team_member_id__department_id=department_id, timesheet__company_id=company_id)
+    
+    for tsk in daily_tm_tasks:
+        dict_tasks = {}
+        dict_tasks['tm_id'] = tsk.timesheet.id
+        dict_tasks['name'] = tsk.task
+        dict_tasks['task_id'] = tsk.task_id
+        dict_tasks['duration'] = tsk.timesheet.duration
+        dict_tasks['log_day'] = tsk.timesheet.log_day
+        dict_tasks['start_time'] = tsk.timesheet.start_time
+        dict_tasks['end_time'] = tsk.timesheet.end_time
+        dict_tasks['created_time'] = tsk.timesheet.created_time
+        dict_tasks['notes'] = tsk.timesheet.notes
+        dict_tasks['timesheet_type'] = 'task_type'
+        dict_tasks['sla_name'] = ''
+        dict_tasks['sla_id'] = ''
+        dict_tasks['get_resubmission_count'] = tsk.timesheet.get_resubmission_count
+        dict_tasks['date_submitted'] = tsk.timesheet.date_submitted
+        dict_tasks['project_team_member'] = tsk.timesheet.project_team_member
+        dict_tasks['status'] = tsk.timesheet.status
+        dict_tasks['approver_notes'] = tsk.timesheet.approver_notes
+        dict_tasks['date_approved'] = tsk.timesheet.date_approved
+        dict_tasks['approved_by'] = tsk.timesheet.approved_by
+        dict_tasks['submitted_by'] = tsk.timesheet.submitted_by
+        task_request_list_final.append(dict_tasks)
+
+    for req in daily_tm_requests:
+        dict_requests = {}
+        dict_requests['tm_id'] = req.timesheet.id
+        dict_requests['name'] = req.customer_request
+        dict_requests['task_id'] = req.customer_request_id
+        dict_requests['duration'] = req.timesheet.duration
+        dict_requests['log_day'] = req.timesheet.log_day
+        dict_requests['start_time'] = req.timesheet.start_time
+        dict_requests['end_time'] = req.timesheet.end_time
+        dict_requests['notes'] = req.timesheet.notes
+        dict_requests['created_time'] = req.timesheet.created_time
+        dict_requests['timesheet_type'] = 'request_type'
+        dict_requests['sla_name'] = req.customer_request.sla.name
+        dict_requests['sla_id'] = req.customer_request.sla.id
+        dict_requests['get_resubmission_count'] = req.timesheet.get_resubmission_count
+        dict_requests['date_submitted'] = req.timesheet.date_submitted
+        dict_requests['project_team_member'] = req.timesheet.project_team_member
+        dict_requests['status'] = req.timesheet.status
+        dict_requests['approver_notes'] = req.timesheet.approver_notes
+        dict_requests['date_approved'] = req.timesheet.date_approved
+        dict_requests['approved_by'] = req.timesheet.approved_by
+        dict_requests['submitted_by'] = req.timesheet.submitted_by
+        task_request_list_final.append(dict_requests)
+    
     template = loader.get_template('project_management/list_confirmed_timesheets.html')
     context = {
-        'timesheet_list': timesheet_list1,
+        'timesheet_list': task_request_list_final,
     }
 
     return HttpResponse(template.render(context, request))
@@ -5097,7 +5665,10 @@ def add_new_timesheet_from_datepaginator(request):
         'project_list': project_list,
         'log_date': datetime.datetime.strptime(log_date, "%Y-%m-%d").strftime("%d-%m-%Y"),
         'user_id' : id_user_dept,
-        'user_name' : User.objects.get(id=int(id_user_dept))
+        'user_name' : User.objects.get(id=int(id_user_dept)),
+
+        # PEDDING PLEADE ADD COMPANY ID (PARENT) FILTER
+        'client_list' : Company.objects.filter(category__category_value='CLIENT')
     }
 
     return HttpResponse(template.render(context, request))
@@ -5126,32 +5697,104 @@ def save_calender_timesheet(request):
 
 
 def save_paginator_timesheet(request):
+    structureRadioValue = request.GET.get('structureRadioValue')
     uid = request.user.id
     company_id = request.session['company_id']
     id_log_day = request.GET.get('id_log_day')
-    id_task = request.GET.get('id_task')
-    start_time = request.GET.get('start_time')
-    end_time = request.GET.get('end_time')
-    id_timesheet_notes = request.GET.get('notes')
     id_dept_user = int(request.GET.get('uid'))
-
     log_day = datetime.datetime.strptime(id_log_day, '%d-%m-%Y')
-    start_time1 = datetime.datetime.strptime(start_time, '%I:%M %p')
-    end_time1 =   datetime.datetime.strptime(end_time, '%I:%M %p')
-    
-    obj = Timesheet(log_day=log_day, start_time=start_time1, end_time=end_time1, added_by_id=uid, task_id=int(id_task), project_team_member_id=id_dept_user, company_id=int(company_id), last_updated_date=datetime.date.today(), last_updated_by_id=uid, notes=id_timesheet_notes)
-    obj.save()
 
-    timesheet_list1 = Timesheet.objects.filter(log_day=log_day, company_id=company_id, project_team_member_id=id_dept_user)
+    if structureRadioValue == 'project':
+        id_task = request.GET.get('id_task')
+        start_time = request.GET.get('start_time')
+        end_time = request.GET.get('end_time')
+        id_timesheet_notes = request.GET.get('notes')
+
+        start_time1 = datetime.datetime.strptime(start_time, '%I:%M %p')
+        end_time1 =   datetime.datetime.strptime(end_time, '%I:%M %p')
+        
+        obj = Timesheet(log_day=log_day, start_time=start_time1, end_time=end_time1, added_by_id=uid, project_team_member_id=id_dept_user, company_id=int(company_id), last_updated_date=datetime.date.today(), last_updated_by_id=uid, notes=id_timesheet_notes)
+        obj.save()
+        
+        new_timesheet_id = obj.id
+        if new_timesheet_id != "":
+            TaskTimesheetExtend.objects.create(timesheet_id=new_timesheet_id, task_id=int(id_task))
+
+    else:
+        id_assigned_requests = request.GET.get('id_assigned_requests')
+
+        start_time02 = request.GET.get('start_time2')
+        end_time02 = request.GET.get('end_time2')
+        id_timesheet_notes02 = request.GET.get('notes2')
+        
+        start_time003 = datetime.datetime.strptime(start_time02, '%I:%M %p')
+        end_time003 =   datetime.datetime.strptime(end_time02, '%I:%M %p')
+
+        obj2 = Timesheet(log_day=log_day, start_time=start_time003, end_time=end_time003, added_by_id=uid, project_team_member_id=id_dept_user, company_id=int(company_id), last_updated_date=datetime.date.today(), last_updated_by_id=uid, notes=id_timesheet_notes02)
+        obj2.save()
+
+        new_timesheet_id2 = obj2.id
+        if new_timesheet_id2 != "":
+            RequestTimesheetExtend.objects.create(timesheet_id=new_timesheet_id2, customer_request_id=int(id_assigned_requests))
+
+    timesheet_list1 = []           
+    daily_tm_tasks = TaskTimesheetExtend.objects.filter(timesheet__log_day=log_day, timesheet__project_team_member_id=id_dept_user, timesheet__company_id=company_id)
+    daily_tm_requests = RequestTimesheetExtend.objects.filter(timesheet__log_day=log_day, timesheet__project_team_member_id=id_dept_user, timesheet__company_id=company_id)
     
+    for tsk in daily_tm_tasks:
+        dict_tasks = {}
+        dict_tasks['tm_id'] = tsk.timesheet.id
+        dict_tasks['name'] = tsk.task
+        dict_tasks['task_id'] = tsk.task_id
+        dict_tasks['duration'] = tsk.timesheet.duration
+        dict_tasks['log_day'] = tsk.timesheet.log_day
+        dict_tasks['start_time'] = tsk.timesheet.start_time
+        dict_tasks['end_time'] = tsk.timesheet.end_time
+        dict_tasks['created_time'] = tsk.timesheet.created_time
+        dict_tasks['notes'] = tsk.timesheet.notes
+        dict_tasks['timesheet_type'] = 'task_type'
+        dict_tasks['sla_name'] = ''
+        dict_tasks['sla_id'] = ''
+        dict_tasks['get_resubmission_count'] = tsk.timesheet.get_resubmission_count
+        dict_tasks['date_submitted'] = tsk.timesheet.date_submitted
+        dict_tasks['date_approved'] = tsk.timesheet.date_approved
+        dict_tasks['approved_by'] = tsk.timesheet.approved_by
+        dict_tasks['status'] = tsk.timesheet.status
+        timesheet_list1.append(dict_tasks)
+
+    for req in daily_tm_requests:
+        dict_requests = {}
+        dict_requests['tm_id'] = req.timesheet.id
+        dict_requests['name'] = req.customer_request
+        dict_requests['task_id'] = req.customer_request_id
+        dict_requests['duration'] = req.timesheet.duration
+        dict_requests['log_day'] = req.timesheet.log_day
+        dict_requests['start_time'] = req.timesheet.start_time
+        dict_requests['end_time'] = req.timesheet.end_time
+        dict_requests['notes'] = req.timesheet.notes
+        dict_requests['created_time'] = req.timesheet.created_time
+        dict_requests['timesheet_type'] = 'request_type'
+        dict_requests['sla_name'] = req.customer_request.sla.name
+        dict_requests['sla_id'] = req.customer_request.sla.id
+        dict_requests['get_resubmission_count'] = req.timesheet.get_resubmission_count
+        dict_requests['date_submitted'] = req.timesheet.date_submitted
+        dict_requests['date_approved'] = req.timesheet.date_approved
+        dict_requests['approved_by'] = req.timesheet.approved_by
+        dict_requests['status'] = req.timesheet.status
+        timesheet_list1.append(dict_requests)
+
     if Timesheet.objects.filter(log_day=log_day, status='INITIAL', company_id=company_id, project_team_member_id=id_dept_user).exists():
         intial_state = True
     else:
         intial_state = False
     
     sum_duration = 0 
-    for ii in timesheet_list1:
-        sum_duration = sum_duration + ii.durationsec()
+    for ii in daily_tm_tasks:
+        sum_duration = sum_duration + ii.timesheet.durationsec()
+    
+    for req in daily_tm_requests:
+        sum_duration = sum_duration + req.timesheet.durationsec()
+
     tm_day_duration = compute_duration(sum_duration)
 
     template = loader.get_template('project_management/list_date_timesheet.html')
@@ -5166,11 +5809,65 @@ def save_paginator_timesheet(request):
 
 def calenderTimesheetView(request):
     timesheet_id = request.GET.get('timesheet_id')
-   
-    timesheetdetails = Timesheet.objects.get(id=int(timesheet_id))
+    state = request.GET.get('state')
+    dict_data = {}
+
+    if state == 'project':
+        tsk = TaskTimesheetExtend.objects.get(timesheet__id=int(timesheet_id))
+        
+        dict_data['tm_id'] = tsk.timesheet.id
+        dict_data['name'] = tsk.task
+        dict_data['task_id'] = tsk.task_id
+        dict_data['duration'] = tsk.timesheet.duration
+        dict_data['log_day'] = tsk.timesheet.log_day
+        dict_data['start_time'] = tsk.timesheet.start_time
+        dict_data['end_time'] = tsk.timesheet.end_time
+        dict_data['created_time'] = tsk.timesheet.created_time
+        dict_data['notes'] = tsk.timesheet.notes
+        dict_data['timesheet_type'] = 'task_type'
+        dict_data['sla_name'] = ''
+        dict_data['sla_id'] = ''
+        dict_data['get_resubmission_count'] = tsk.timesheet.get_resubmission_count
+        dict_data['date_submitted'] = tsk.timesheet.date_submitted
+        dict_data['project_team_member'] = tsk.timesheet.project_team_member
+        dict_data['status'] = tsk.timesheet.status
+        dict_data['approver_notes'] = tsk.timesheet.approver_notes
+        dict_data['date_approved'] = tsk.timesheet.date_approved
+        dict_data['approved_by'] = tsk.timesheet.approved_by
+        dict_data['submitted_by'] = tsk.timesheet.submitted_by
+        dict_data['status'] = tsk.timesheet.status
+        dict_data['is_submitted'] = tsk.timesheet.is_submitted
+        dict_data['approved'] = tsk.timesheet.approved
+    
+    else:
+        req = RequestTimesheetExtend.objects.get(timesheet__id=int(timesheet_id))
+        dict_data['tm_id'] = req.timesheet.id
+        dict_data['name'] = req.customer_request
+        dict_data['task_id'] = req.customer_request_id
+        dict_data['duration'] = req.timesheet.duration
+        dict_data['log_day'] = req.timesheet.log_day
+        dict_data['start_time'] = req.timesheet.start_time
+        dict_data['end_time'] = req.timesheet.end_time
+        dict_data['notes'] = req.timesheet.notes
+        dict_data['created_time'] = req.timesheet.created_time
+        dict_data['timesheet_type'] = 'request_type'
+        dict_data['sla_name'] = req.customer_request.sla.name
+        dict_data['sla_id'] = req.customer_request.sla.id
+        dict_data['get_resubmission_count'] = req.timesheet.get_resubmission_count
+        dict_data['date_submitted'] = req.timesheet.date_submitted
+        dict_data['project_team_member'] = req.timesheet.project_team_member
+        dict_data['status'] = req.timesheet.status
+        dict_data['approver_notes'] = req.timesheet.approver_notes
+        dict_data['date_approved'] = req.timesheet.date_approved
+        dict_data['approved_by'] = req.timesheet.approved_by
+        dict_data['submitted_by'] = req.timesheet.submitted_by       
+        dict_data['status'] = req.timesheet.status  
+        dict_data['is_submitted'] = req.timesheet.is_submitted
+        dict_data['approved'] = req.timesheet.approved
+
     template = loader.get_template('project_management/calender_timesheet_details.html')
     context = {
-        'timesheetdetails': timesheetdetails
+        'timesheetdetails': dict_data
     }
 
     return HttpResponse(template.render(context, request))
@@ -5191,7 +5888,51 @@ def filter_timesheets_by_date(request):
     dateSelected = request.GET.get('dateSelected')
     log_day = datetime.datetime.strptime(dateSelected, '%d-%m-%Y')
 
-    timesheet_list1 = Timesheet.objects.filter(log_day=log_day, company_id=company_id, project_team_member_id=id_user_dept)
+    timesheet_list1 = []           
+    daily_tm_tasks = TaskTimesheetExtend.objects.filter(timesheet__log_day=log_day, timesheet__project_team_member_id=id_user_dept, timesheet__company_id=company_id)
+    daily_tm_requests = RequestTimesheetExtend.objects.filter(timesheet__log_day=log_day, timesheet__project_team_member_id=id_user_dept, timesheet__company_id=company_id)
+    
+    for tsk in daily_tm_tasks:
+        dict_tasks = {}
+        dict_tasks['tm_id'] = tsk.timesheet.id
+        dict_tasks['name'] = tsk.task
+        dict_tasks['task_id'] = tsk.task_id
+        dict_tasks['duration'] = tsk.timesheet.duration
+        dict_tasks['log_day'] = tsk.timesheet.log_day
+        dict_tasks['start_time'] = tsk.timesheet.start_time
+        dict_tasks['end_time'] = tsk.timesheet.end_time
+        dict_tasks['created_time'] = tsk.timesheet.created_time
+        dict_tasks['notes'] = tsk.timesheet.notes
+        dict_tasks['timesheet_type'] = 'task_type'
+        dict_tasks['sla_name'] = ''
+        dict_tasks['sla_id'] = ''
+        dict_tasks['get_resubmission_count'] = tsk.timesheet.get_resubmission_count
+        dict_tasks['date_submitted'] = tsk.timesheet.date_submitted
+        dict_tasks['date_approved'] = tsk.timesheet.date_approved
+        dict_tasks['approved_by'] = tsk.timesheet.approved_by
+        dict_tasks['status'] = tsk.timesheet.status
+        timesheet_list1.append(dict_tasks)
+
+    for req in daily_tm_requests:
+        dict_requests = {}
+        dict_requests['tm_id'] = req.timesheet.id
+        dict_requests['name'] = req.customer_request
+        dict_requests['task_id'] = req.customer_request_id
+        dict_requests['duration'] = req.timesheet.duration
+        dict_requests['log_day'] = req.timesheet.log_day
+        dict_requests['start_time'] = req.timesheet.start_time
+        dict_requests['end_time'] = req.timesheet.end_time
+        dict_requests['notes'] = req.timesheet.notes
+        dict_requests['created_time'] = req.timesheet.created_time
+        dict_requests['timesheet_type'] = 'request_type'
+        dict_requests['sla_name'] = req.customer_request.sla.name
+        dict_requests['sla_id'] = req.customer_request.sla.id
+        dict_requests['get_resubmission_count'] = req.timesheet.get_resubmission_count
+        dict_requests['date_submitted'] = req.timesheet.date_submitted
+        dict_requests['date_approved'] = req.timesheet.date_approved
+        dict_requests['approved_by'] = req.timesheet.approved_by
+        dict_requests['status'] = req.timesheet.status
+        timesheet_list1.append(dict_requests)
 
     if Timesheet.objects.filter(log_day=log_day, status='INITIAL', company_id=company_id, project_team_member_id=id_user_dept).exists():
         intial_state = True
@@ -5199,8 +5940,12 @@ def filter_timesheets_by_date(request):
         intial_state = False
 
     sum_duration = 0 
-    for ii in timesheet_list1:
-        sum_duration = sum_duration + ii.durationsec()
+    for ii in daily_tm_tasks:
+        sum_duration = sum_duration + ii.timesheet.durationsec()
+
+    for req in daily_tm_requests:
+        sum_duration = sum_duration + req.timesheet.durationsec()
+
     tm_day_duration = compute_duration(sum_duration)
 
     template = loader.get_template('project_management/list_date_timesheet.html')
@@ -5292,6 +6037,10 @@ def list_timesheet_view(request):
             sum_duration = 0 
             for ii in daily_tm_tasks:
 	            sum_duration = sum_duration + ii.timesheet.durationsec()
+            
+            for req in daily_tm_requests:
+                sum_duration = sum_duration + req.timesheet.durationsec()
+
             new_dict['duration'] = compute_duration(sum_duration)
             new_list2.append(new_dict)
     else: 
@@ -5324,16 +6073,65 @@ def send_timesheet_for_approval_paginator(request):
         tm_id = timesheet_id['tm']
         Timesheet.objects.filter(pk=int(tm_id)).update(status='SUBMITTED', is_submitted=True, date_submitted=datetime.date.today(), submitted_by_id=uid)
 
-    timesheet_list1 = Timesheet.objects.filter(log_day=log_day, company_id=company_id, project_team_member_id=id_user_dept)
+    
+    timesheet_list1 = []           
+    daily_tm_tasks = TaskTimesheetExtend.objects.filter(timesheet__log_day=log_day, timesheet__project_team_member_id=id_user_dept, timesheet__company_id=company_id)
+    daily_tm_requests = RequestTimesheetExtend.objects.filter(timesheet__log_day=log_day, timesheet__project_team_member_id=id_user_dept, timesheet__company_id=company_id)
+    
+    for tsk in daily_tm_tasks:
+        dict_tasks = {}
+        dict_tasks['tm_id'] = tsk.timesheet.id
+        dict_tasks['name'] = tsk.task
+        dict_tasks['task_id'] = tsk.task_id
+        dict_tasks['duration'] = tsk.timesheet.duration
+        dict_tasks['log_day'] = tsk.timesheet.log_day
+        dict_tasks['start_time'] = tsk.timesheet.start_time
+        dict_tasks['end_time'] = tsk.timesheet.end_time
+        dict_tasks['created_time'] = tsk.timesheet.created_time
+        dict_tasks['notes'] = tsk.timesheet.notes
+        dict_tasks['timesheet_type'] = 'task_type'
+        dict_tasks['sla_name'] = ''
+        dict_tasks['sla_id'] = ''
+        dict_tasks['get_resubmission_count'] = tsk.timesheet.get_resubmission_count
+        dict_tasks['date_submitted'] = tsk.timesheet.date_submitted
+        dict_tasks['date_approved'] = tsk.timesheet.date_approved
+        dict_tasks['approved_by'] = tsk.timesheet.approved_by
+        dict_tasks['status'] = tsk.timesheet.status
+        timesheet_list1.append(dict_tasks)
 
+    for req in daily_tm_requests:
+        dict_requests = {}
+        dict_requests['tm_id'] = req.timesheet.id
+        dict_requests['name'] = req.customer_request
+        dict_requests['task_id'] = req.customer_request_id
+        dict_requests['duration'] = req.timesheet.duration
+        dict_requests['log_day'] = req.timesheet.log_day
+        dict_requests['start_time'] = req.timesheet.start_time
+        dict_requests['end_time'] = req.timesheet.end_time
+        dict_requests['notes'] = req.timesheet.notes
+        dict_requests['created_time'] = req.timesheet.created_time
+        dict_requests['timesheet_type'] = 'request_type'
+        dict_requests['sla_name'] = req.customer_request.sla.name
+        dict_requests['sla_id'] = req.customer_request.sla.id
+        dict_requests['get_resubmission_count'] = req.timesheet.get_resubmission_count
+        dict_requests['date_submitted'] = req.timesheet.date_submitted
+        dict_requests['date_approved'] = req.timesheet.date_approved
+        dict_requests['approved_by'] = req.timesheet.approved_by
+        dict_requests['status'] = req.timesheet.status
+        timesheet_list1.append(dict_requests)
+    
     if Timesheet.objects.filter(log_day=log_day, status='INITIAL', company_id=company_id, project_team_member_id=id_user_dept).exists():
         intial_state = True
     else:
         intial_state = False
     
     sum_duration = 0 
-    for ii in timesheet_list1:
-        sum_duration = sum_duration + ii.durationsec()
+    for ii in daily_tm_tasks:
+        sum_duration = sum_duration + ii.timesheet.durationsec()
+    
+    for req in daily_tm_requests:
+        sum_duration = sum_duration + req.timesheet.durationsec()
+
     tm_day_duration = compute_duration(sum_duration)
 
     template = loader.get_template('project_management/list_date_timesheet.html')
@@ -5377,40 +6175,111 @@ def delete_timesheet_in_paginator(request):
 
 
 def save_update_paginator_timesheet(request):
+    state = request.GET.get('state')
     dateSelected = request.GET.get('dateSelected')
     log_day = datetime.datetime.strptime(dateSelected, '%Y-%m-%d')
     company_id = request.session['company_id']
 
     id_user_dept = int(request.GET.get('id_user_dept'))
     log_day = request.GET.get('id_log_day')
-    start_time = request.GET.get('start_time')
-    end_time = request.GET.get('end_time')
-    task = int(request.GET.get('id_task'))
-    timesheet_id = int(request.GET.get('timesheet_id'))
-    notes = request.GET.get('notes')
     uid = request.user.id
-
     log_day = datetime.datetime.strptime(log_day, '%d-%m-%Y')
-    start_time1 = datetime.datetime.strptime(start_time, '%I:%M %p')
-    end_time1 =   datetime.datetime.strptime(end_time, '%I:%M %p')
     
-    Timesheet.objects.filter(pk=int(timesheet_id)).update(log_day=log_day, start_time=start_time1, end_time=end_time1, task_id=task, last_updated_date=datetime.date.today(), last_updated_by_id=uid, notes=notes)
+    if state == 'project':
+        start_time = request.GET.get('start_time')
+        end_time = request.GET.get('end_time')
+        task = int(request.GET.get('id_task'))
+        timesheet_id = int(request.GET.get('timesheet_id'))
+        notes = request.GET.get('notes')
+        
+        start_time1 = datetime.datetime.strptime(start_time, '%I:%M %p')
+        end_time1 =   datetime.datetime.strptime(end_time, '%I:%M %p')
+        
+        Timesheet.objects.filter(pk=int(timesheet_id)).update(log_day=log_day, start_time=start_time1, end_time=end_time1, last_updated_date=datetime.date.today(), last_updated_by_id=uid, notes=notes)
+        TaskTimesheetExtend.objects.filter(pk=timesheet_id).update(task_id=task)
+    else:
+        id_assigned_requests = request.GET.get('id_assigned_requests')
 
-    timesheet_list1 = Timesheet.objects.filter(log_day=log_day, company_id=company_id, project_team_member_id=id_user_dept)
+        start_time02 = request.GET.get('start_time2')
+        end_time02 = request.GET.get('end_time2')
+        id_timesheet_notes02 = request.GET.get('notes2')
+        timesheet_id02 = int(request.GET.get('timesheet_id2'))
+        notes02 = request.GET.get('notes2')
+        
+        start_time003 = datetime.datetime.strptime(start_time02, '%I:%M %p')
+        end_time003 =   datetime.datetime.strptime(end_time02, '%I:%M %p')
+        
+        Timesheet.objects.filter(pk=int(timesheet_id02)).update(log_day=log_day, start_time=start_time003, end_time=end_time003, last_updated_date=datetime.date.today(), last_updated_by_id=uid, notes=notes02)
+        RequestTimesheetExtend.objects.filter(pk=timesheet_id02).update(customer_request_id=id_assigned_requests) 
+
+    task_request_list_final = []           
+    daily_tm_tasks = TaskTimesheetExtend.objects.filter(timesheet__log_day=log_day, timesheet__project_team_member_id=id_user_dept, timesheet__company_id=company_id)
+    daily_tm_requests = RequestTimesheetExtend.objects.filter(timesheet__log_day=log_day, timesheet__project_team_member_id=id_user_dept, timesheet__company_id=company_id)
+    
+    for tsk in daily_tm_tasks:
+        dict_tasks = {}
+        dict_tasks['tm_id'] = tsk.timesheet.id
+        dict_tasks['name'] = tsk.task
+        dict_tasks['task_id'] = tsk.task_id
+        dict_tasks['duration'] = tsk.timesheet.duration
+        dict_tasks['log_day'] = tsk.timesheet.log_day
+        dict_tasks['start_time'] = tsk.timesheet.start_time
+        dict_tasks['end_time'] = tsk.timesheet.end_time
+        dict_tasks['created_time'] = tsk.timesheet.created_time
+        dict_tasks['notes'] = tsk.timesheet.notes
+        dict_tasks['timesheet_type'] = 'task_type'
+        dict_tasks['sla_name'] = ''
+        dict_tasks['sla_id'] = ''
+        dict_tasks['get_resubmission_count'] = tsk.timesheet.get_resubmission_count
+        dict_tasks['date_submitted'] = tsk.timesheet.date_submitted
+        dict_tasks['project_team_member'] = tsk.timesheet.project_team_member
+        dict_tasks['status'] = tsk.timesheet.status
+        dict_tasks['approver_notes'] = tsk.timesheet.approver_notes
+        dict_tasks['date_approved'] = tsk.timesheet.date_approved
+        dict_tasks['approved_by'] = tsk.timesheet.approved_by
+        dict_tasks['submitted_by'] = tsk.timesheet.submitted_by
+        task_request_list_final.append(dict_tasks)
+
+    for req in daily_tm_requests:
+        dict_requests = {}
+        dict_requests['tm_id'] = req.timesheet.id
+        dict_requests['name'] = req.customer_request
+        dict_requests['task_id'] = req.customer_request_id
+        dict_requests['duration'] = req.timesheet.duration
+        dict_requests['log_day'] = req.timesheet.log_day
+        dict_requests['start_time'] = req.timesheet.start_time
+        dict_requests['end_time'] = req.timesheet.end_time
+        dict_requests['notes'] = req.timesheet.notes
+        dict_requests['created_time'] = req.timesheet.created_time
+        dict_requests['timesheet_type'] = 'request_type'
+        dict_requests['sla_name'] = req.customer_request.sla.name
+        dict_requests['sla_id'] = req.customer_request.sla.id
+        dict_requests['get_resubmission_count'] = req.timesheet.get_resubmission_count
+        dict_requests['date_submitted'] = req.timesheet.date_submitted
+        dict_requests['project_team_member'] = req.timesheet.project_team_member
+        dict_requests['status'] = req.timesheet.status 
+        dict_requests['approver_notes'] = req.timesheet.approver_notes
+        dict_requests['date_approved'] = req.timesheet.date_approved
+        dict_requests['approved_by'] = req.timesheet.approved_by
+        dict_requests['submitted_by'] = req.timesheet.submitted_by
+        task_request_list_final.append(dict_requests)
+
+    sum_duration = 0 
+    for ii in daily_tm_tasks:
+        sum_duration = sum_duration + ii.timesheet.durationsec()
+    
+    for req in daily_tm_requests:
+        sum_duration = sum_duration + req.timesheet.durationsec()
+    tm_day_duration = compute_duration(sum_duration)
 
     if Timesheet.objects.filter(log_day=log_day, status='INITIAL', company_id=company_id, project_team_member_id=id_user_dept).exists():
         intial_state = True
     else:
         intial_state = False
 
-    sum_duration = 0 
-    for ii in timesheet_list1:
-        sum_duration = sum_duration + ii.durationsec()
-    tm_day_duration = compute_duration(sum_duration)
-
     template = loader.get_template('project_management/list_date_timesheet.html')
     context = {
-        'timesheet_list': timesheet_list1,
+        'timesheet_list': task_request_list_final,
         'initial_status': intial_state,
         'tm_day_duration': tm_day_duration
     }
@@ -5679,6 +6548,10 @@ def select_daily_timesheets_by_user(request):
             sum_duration = 0 
             for ii in daily_tm_tasks:
 	            sum_duration = sum_duration + ii.timesheet.durationsec()
+            
+            for req in daily_tm_requests:
+                sum_duration = sum_duration + req.timesheet.durationsec()
+
             new_dict['duration'] = compute_duration(sum_duration)
             new_list2.append(new_dict)
     else: 
@@ -7091,7 +7964,7 @@ def fetch_requests_by_sla(request):
     }
     return JsonResponse(data)
 
-    
+
 def list_customer_sla(request):
     """view SLAs by customer"""
 

@@ -4,7 +4,7 @@
     <thead class="">
         <tr>
             <th>#</th>
-            <th>Task</th>
+            <th>Name</th>
             <th>Duration</th>
             <th>Start Time</th>
             <th>End Time</th>
@@ -14,74 +14,143 @@
         </thead>
         <tbody>
             {% if initial_status %}
-                <h5 class="text-info pull-right"><form class="form"><a onclick="functionCheckAll()" href="#"><input type="checkbox" class="select-all-check text-info" id="select_all_timesheets"/></a> Select All</form></h5>
+                <h5 class="text-info pull-right"><form class="form"><a onclick="functionCheckAll111()" href="#"><input type="checkbox" class="select-all-check text-info" id="select_all_timesheets"/></a> Select All</form></h5>
             {% endif %}
             {% for tm in timesheet_list %}
                 <tr class="">
-                    <td>{{ forloop.counter }}</td>
-                    <td><a href="#" onclick="functionViewTaskDetails({{ tm.task_id }})" title="View Task Details!" class="text-info font-weight-bold">{{ tm.task | truncatechars:17 }}</a></td>
-                    <td><span class="badge badge-success"><strong>{{ tm.duration }}</strong></span></td>
-                    <td>{{ tm.start_time | time:"TIME_FORMAT" }}</td>
-                    <td>{{ tm.end_time | time:"TIME_FORMAT" }}</td>
 
-                    {% if tm.status == 'INITIAL' %}
-                        <td class="font-weight-bold text-primary">NOT SUBMITTED</td>
-                    {% elif tm.status == 'SUBMITTED' %}
-                        <td class="font-weight-bold text-primary">Pending Approval</td>
-                    {% elif tm.status == 'REJECTED' %}
-                        <td class="font-weight-bold text-danger">REJECTED</td>
+                    {% if tm.timesheet_type == "request_type" %}
+                        <td>{{ forloop.counter }}</td>
+                        <td><a href="#" onclick="functionViewRequestDetails({{ tm.task_id }}, '{{tm.name}}', {{tm.sla_id}}, '{{tm.sla_name}}')" title="View Request Details!" class="text-info font-weight-bold">{{ tm.name | truncatechars:17 }}</a></td>
+                        <td><span class="badge badge-success"><strong>{{ tm.duration }}</strong></span></td>
+                        <td>{{ tm.start_time | time:"TIME_FORMAT" }}</td>
+                        <td>{{ tm.end_time | time:"TIME_FORMAT" }}</td>
+
+                        {% if tm.status == 'INITIAL' %}
+                            <td class="font-weight-bold text-primary">NOT SUBMITTED</td>
+                        {% elif tm.status == 'SUBMITTED' %}
+                            <td class="font-weight-bold text-primary">Pending Approval</td>
+                        {% elif tm.status == 'REJECTED' %}
+                            <td class="font-weight-bold text-danger">REJECTED</td>
+                        {% else %}
+                            <td class="font-weight-bold text-success">APPROVED</td>
+                        {% endif %}
+
+                        {% if tm.status == 'INITIAL' %}
+                            <td class="text-center">
+                                <form class="form">
+                                    <input type="checkbox" id="itemcheckbox{{tm.tm_id}}" onclick="functionManageTimesheetst({{tm.tm_id}})" class="timesheet-checkbox" name="rowSelectCheckBox"/>&nbsp;
+                                    
+                                    <button onclick="functionCalendarTimesheetSheetDetails({{tm.tm_id}}, 'sla')" class="btn btn-outline-success btn-sm" type="button">
+                                        <i title="View Timesheet Description" class="fa fa-dedent"></i>
+                                    </button> &nbsp;
+
+                                    <button onclick="functionEditTimesheet11({{ tm.tm_id }}, '{{ tm.log_day | date:"d-m-Y"}}', '{{ tm.start_time  | date:'H:i A'}}', '{{ tm.end_time  | date:'H:i A'}}', '{{ tm.name }}', {{tm.task_id}}, '{{tm.notes}}', 'sla', '{{tm.sla_name}}', {{tm.sla_id}})"
+                                        class="btn btn-outline-success btn-sm" type="button">
+                                        <i title="Edit Group" class="fa fa-edit"></i>
+                                    </button> &nbsp;
+                                    
+                                    <button onclick="functionDeleteTimesheet({{ tm.tm_id }}, '{{ tm.log_day | date:"d-m-Y"}}', '{{ tm.start_time  | date:'H:i A'}}', '{{ tm.end_time  | date:'H:i A'}}', '{{ tm.name }}')" class="btn btn-outline-danger btn-sm" type="button">
+                                        <i title="Delete Timesheet" class="fa fa-remove"></i>
+                                    </button> &nbsp;
+                                </form>
+                            </td>
+                        {% elif tm.status == 'SUBMITTED' %}
+                            <td class="text-center">
+                                <form class="form">
+                                    <button onclick="functionCalendarTimesheetSheetDetails({{tm.tm_id}}, 'sla')" class="btn btn-outline-success btn-sm" type="button">
+                                        <i title="View Timesheet Description" class="fa fa-dedent"></i>
+                                    </button>
+                                </form>
+                            </td>
+                        {% elif tm.status == 'REJECTED' %}
+                            <td class="text-center">
+                                <form class="form">
+                                    <button onclick="functionCalendarTimesheetSheetDetails({{tm.tm_id}}, 'sla')" class="btn btn-outline-success btn-sm" type="button">
+                                        <i title="View Timesheet Description" class="fa fa-dedent"></i>
+                                    </button> &nbsp;
+
+                                    <button onclick="paginatorResubmitTimesheets({{ tm.tm_id }}, '{{ tm.log_day | date:"d-m-Y"}}', '{{ tm.start_time  | date:'H:i A'}}', '{{ tm.end_time  | date:'H:i A'}}', '{{ tm.name }}', {{tm.task_id}}, '{{tm.notes}}')" class="btn btn-outline-success btn-sm" type="button">
+                                        <i title="Re-submit Timesheet for Approval!" class="fa fa-repeat"></i>
+                                    </button>
+                                </form>
+                            </td>
+                        {% else %}
+                            <td class="text-center">
+                                <form class="form">
+                                    <button onclick="functionCalendarTimesheetSheetDetails({{tm.tm_id}}, 'sla')" class="btn btn-outline-success btn-sm" type="button">
+                                        <i title="View Timesheet Description" class="fa fa-dedent"></i>
+                                    </button>
+                                </form>
+                            </td>
+                        {% endif %}
                     {% else %}
-                        <td class="font-weight-bold text-success">APPROVED</td>
+                        <td>{{ forloop.counter }}</td>
+                        <td><a href="#" onclick="functionViewTaskDetails({{ tm.task_id }})" title="View Task Details!" class="text-info font-weight-bold">{{ tm.name | truncatechars:17 }}</a></td>
+                        <td><span class="badge badge-success"><strong>{{ tm.duration }}</strong></span></td>
+                        <td>{{ tm.start_time | time:"TIME_FORMAT" }}</td>
+                        <td>{{ tm.end_time | time:"TIME_FORMAT" }}</td>
+
+                        {% if tm.status == 'INITIAL' %}
+                            <td class="font-weight-bold text-primary">NOT SUBMITTED</td>
+                        {% elif tm.status == 'SUBMITTED' %}
+                            <td class="font-weight-bold text-primary">Pending Approval</td>
+                        {% elif tm.status == 'REJECTED' %}
+                            <td class="font-weight-bold text-danger">REJECTED</td>
+                        {% else %}
+                            <td class="font-weight-bold text-success">APPROVED</td>
+                        {% endif %}
+
+                        {% if tm.status == 'INITIAL' %}
+                            <td class="text-center">
+                                <form class="form">
+                                    <input type="checkbox" id="itemcheckbox{{tm.tm_id}}" onclick="functionManageTimesheetst({{tm.tm_id}})" class="timesheet-checkbox" name="rowSelectCheckBox"/>&nbsp;
+                                    
+                                    <button onclick="functionCalendarTimesheetSheetDetails({{tm.tm_id}}, 'project')" class="btn btn-outline-success btn-sm" type="button">
+                                        <i title="View Timesheet Description" class="fa fa-dedent"></i>
+                                    </button> &nbsp;
+
+                                    <button onclick="functionEditTimesheet11({{ tm.tm_id }}, '{{ tm.log_day | date:"d-m-Y"}}', '{{ tm.start_time  | date:'H:i A'}}', '{{ tm.end_time  | date:'H:i A'}}', '{{ tm.name }}', {{tm.task_id}}, '{{tm.notes}}', 'project', '{{tm.sla_name}}', {{tm.sla_id}})"
+                                        class="btn btn-outline-success btn-sm" type="button">
+                                        <i title="Edit Group" class="fa fa-edit"></i>
+                                    </button> &nbsp;
+                                    
+                                    <button onclick="functionDeleteTimesheet({{ tm.tm_id }}, '{{ tm.log_day | date:"d-m-Y"}}', '{{ tm.start_time  | date:'H:i A'}}', '{{ tm.end_time  | date:'H:i A'}}', '{{ tm.name }}')" class="btn btn-outline-danger btn-sm" type="button">
+                                        <i title="Delete Timesheet" class="fa fa-remove"></i>
+                                    </button> &nbsp;
+                                </form>
+                            </td>
+                        {% elif tm.status == 'SUBMITTED' %}
+                            <td class="text-center">
+                                <form class="form">
+                                    <button onclick="functionCalendarTimesheetSheetDetails({{tm.tm_id}}, 'project')" class="btn btn-outline-success btn-sm" type="button">
+                                        <i title="View Timesheet Description" class="fa fa-dedent"></i>
+                                    </button>
+                                </form>
+                            </td>
+                        {% elif tm.status == 'REJECTED' %}
+                            <td class="text-center">
+                                <form class="form">
+                                    <button onclick="functionCalendarTimesheetSheetDetails({{tm.tm_id}}, 'project')" class="btn btn-outline-success btn-sm" type="button">
+                                        <i title="View Timesheet Description" class="fa fa-dedent"></i>
+                                    </button> &nbsp;
+
+                                    <button onclick="paginatorResubmitTimesheets({{ tm.tm_id }}, '{{ tm.log_day | date:"d-m-Y"}}', '{{ tm.start_time  | date:'H:i A'}}', '{{ tm.end_time  | date:'H:i A'}}', '{{ tm.name }}', {{tm.task_id}}, '{{tm.notes}}')" class="btn btn-outline-success btn-sm" type="button">
+                                        <i title="Re-submit Timesheet for Approval!" class="fa fa-repeat"></i>
+                                    </button>
+                                </form>
+                            </td>
+                        {% else %}
+                            <td class="text-center">
+                                <form class="form">
+                                    <button onclick="functionCalendarTimesheetSheetDetails({{tm.tm_id}}, 'project')" class="btn btn-outline-success btn-sm" type="button">
+                                        <i title="View Timesheet Description" class="fa fa-dedent"></i>
+                                    </button>
+                                </form>
+                            </td>
+                        {% endif %}
                     {% endif %}
 
-                    {% if tm.status == 'INITIAL' %}
-                        <td class="text-center">
-                            <form class="form">
-                                <input type="checkbox" id="itemcheckbox{{tm.id}}" onclick="functionManageTimesheets({{tm.id}})" class="timesheet-checkbox" name="rowSelectCheckBox"/>&nbsp;
-                                
-                                <button onclick="functionCalendarTimesheetSheetDetails({{tm.id}})" class="btn btn-outline-success btn-sm" type="button">
-                                    <i title="View Timesheet Description" class="fa fa-dedent"></i>
-                                </button> &nbsp;
-
-                                <button onclick="functionEditTimesheet({{ tm.id }}, '{{ tm.log_day | date:"d-m-Y"}}', '{{ tm.start_time  | date:'H:i A'}}', '{{ tm.end_time  | date:'H:i A'}}', '{{ tm.task }}', {{tm.task_id}}, '{{tm.notes}}')"
-                                    class="btn btn-outline-success btn-sm" type="button">
-                                    <i title="Edit Group" class="fa fa-edit"></i>
-                                </button> &nbsp;
-                                
-                                <button onclick="functionDeleteTimesheet({{ tm.id }}, '{{ tm.log_day | date:"d-m-Y"}}', '{{ tm.start_time  | date:'H:i A'}}', '{{ tm.end_time  | date:'H:i A'}}', '{{ tm.task }}')" class="btn btn-outline-danger btn-sm" type="button">
-                                    <i title="Delete Timesheet" class="fa fa-remove"></i>
-                                </button> &nbsp;
-                            </form>
-                        </td>
-                    {% elif tm.status == 'SUBMITTED' %}
-                        <td class="text-center">
-                            <form class="form">
-                                <button onclick="functionCalendarTimesheetSheetDetails({{tm.id}})" class="btn btn-outline-success btn-sm" type="button">
-                                    <i title="View Timesheet Description" class="fa fa-dedent"></i>
-                                </button>
-                            </form>
-                        </td>
-                    {% elif tm.status == 'REJECTED' %}
-                        <td class="text-center">
-                            <form class="form">
-                                <button onclick="functionCalendarTimesheetSheetDetails({{tm.id}})" class="btn btn-outline-success btn-sm" type="button">
-                                    <i title="View Timesheet Description" class="fa fa-dedent"></i>
-                                </button> &nbsp;
-
-                                <button onclick="paginatorResubmitTimesheets({{ tm.id }}, '{{ tm.log_day | date:"d-m-Y"}}', '{{ tm.start_time  | date:'H:i A'}}', '{{ tm.end_time  | date:'H:i A'}}', '{{ tm.task }}', {{tm.task_id}}, '{{tm.notes}}')" class="btn btn-outline-success btn-sm" type="button">
-                                    <i title="Re-submit Timesheet for Approval!" class="fa fa-repeat"></i>
-                                </button>
-                            </form>
-                        </td>
-                    {% else %}
-                        <td class="text-center">
-                            <form class="form">
-                                <button onclick="functionCalendarTimesheetSheetDetails({{tm.id}})" class="btn btn-outline-success btn-sm" type="button">
-                                    <i title="View Timesheet Description" class="fa fa-dedent"></i>
-                                </button>
-                            </form>
-                        </td>
-                    {% endif %}
                 </tr>
             {% endfor %}
     </tbody>
@@ -174,7 +243,7 @@
         }
     }
 
-    function functionEditTimesheet(timesheet_id, log_day, start_time, end_time, task, task_id, notes) {
+    function functionEditTimesheet11(timesheet_id, log_day, start_time, end_time, task, task_id, notes, state, sla_name, sla_id) {
         var id_user_dept = parseInt($('.id_user_dept_tb').val());
         urldata = "{% url 'updateTimesheetPaginator' %}";
         $.ajax({
@@ -188,7 +257,10 @@
                 task: task,
                 task_id: task_id,
                 notes: notes,
-                id_user_dept: id_user_dept
+                id_user_dept: id_user_dept,
+                state: state,
+                sla_name: sla_name,
+                sla_id: sla_id
             },
             url: urldata,
             success: function (resp) {
@@ -260,7 +332,7 @@
         });
     }
 
-    function functionManageTimesheets(timesheetid) {
+    function functionManageTimesheetst(timesheetid) {
         var checkBox = document.getElementById("itemcheckbox" + timesheetid);
         if (checkBox.checked === true) {
             if (!checktimesheetset.has(timesheetid)) {
@@ -274,7 +346,7 @@
         }
     }
 
-    function functionCheckAll(){
+    function functionCheckAll111(){
         var selectAllCheckbox=document.getElementById("select_all_timesheets");
         if(selectAllCheckbox.checked==true){
             var checkboxes =  document.getElementsByName("rowSelectCheckBox");
