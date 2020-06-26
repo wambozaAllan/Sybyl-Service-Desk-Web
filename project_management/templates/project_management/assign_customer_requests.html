@@ -9,13 +9,13 @@
     </div>
 
     <div class="row col-12">
-        <div class="col-12">
+        <div class="col-md-12">
             <div id="div_id_project_member" class="form-group">
                 <label for="id_project_member" class="col-form-label  requiredField">Assign To<span class="asteriskField">*</span>
                 </label>                    
                 <div class="">
                     <select name="projectmember" class="select form-control assigned" id="id_project_member" multiple="multiple">
-                        <option value="" selected>--Assign--</option>
+                        <option value="" disabled>--Assign--</option>
                         {% for user in users %}
                             <option value="{{user.id}}">{{user.first_name}} {{user.first_name}}</option>
                         {% endfor %}
@@ -25,10 +25,16 @@
         </div>
 
     </div>
+    <br>
 
-    <button id="btnAssignCustomerRequest" class="btn btn-success pull-right col-12">
-        <span class="btn-save-request"><i class="fa fa-fw fa-lg fa-save"></i>Submit</span>
-    </button>
+    <div class="row col-12">
+        <div class="col-md-12">
+            <button id="btnAssignCustomerRequest" class="btn btn-success pull-right col-12">
+                <span class="btn-save-request"><i class="fa fa-fw fa-lg fa-save"></i>Submit</span>
+            </button>
+        </div>
+    </div>
+    
 </div>
 
 <script>
@@ -37,6 +43,8 @@
     $('#id_project_member').selectpicker({
         size: 3
     });
+
+    $("#div_id_project_member").removeClass("form-group");
 
     $(".assigned").on('change', function(){
         if ( $('option:selected', this).val() == 0 ){
@@ -57,7 +65,7 @@
             selectednumbers[i] = $(selected).val();
         });
         var assigned_to = JSON.stringify(selectednumbers);
-        console.log(assigned_to+" we are here")
+        console.log(assigned_to+" we are here");
 
 
         if (request_name < 1 || project_member < 0) {

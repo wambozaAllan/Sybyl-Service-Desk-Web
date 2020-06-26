@@ -19,7 +19,7 @@
                         <li>
                             <span class="pull-right">
                                 <form class="form">
-                                    <i style="margin-top: 0%;" class="fa fa-arrow-right fa-lg color-primary pull-right" onclick="functAssignOpenRequest({{req.id}}, '{{req.name}}', {{req.sla_id}}, '{{req.sla.name}}')"></i>
+                                    <i style="margin-top: 0%;" class="fa fa-fw fa-send fa-lg color-primary pull-right" onclick="functAssignOpenRequest({{req.id}}, '{{req.name}}', {{req.sla_id}}, '{{req.sla.name}}')"></i>
                                     <i style="margin-top: 0%;" class="fa fa-edit fa-lg color-primary pull-right" onclick="functEditOpenRequest({{req.id}}, '{{req.name}}', {{req.sla_id}}, '{{req.sla.name}}')"></i>
                                 </form>
                             </span>
@@ -232,6 +232,7 @@
                         type: 'blue',
                         typeAnimated: true,
                         boxWidth: '40%',
+                        height: '60%',
                         useBootstrap: false,
                         closeIcon: true,
                         buttons: {

@@ -1,12 +1,11 @@
 {% load crispy_forms_tags %}
-<div>
+<div class="col-12">
     <input type="text" value="{{project_id}}" style="display: none;" id='id_project'/>
-</div>
-<div class="card-body">
-    <div class="basic-form">
-        <form class="form-horizontal" action="{% url 'saveMilestone' %}" method="GET" class="form-group" id="postForm">
-            {% csrf_token %}
-            <div class="col-12">
+
+    <div class="card-body">
+        <div class="basic-form">
+            <form class="form-horizontal" action="{% url 'saveMilestone' %}" method="GET" class="form-group" id="postForm">
+                {% csrf_token %}
                 <div class="row">
                     <div class="col-md-6" style="display: none;">
                         <label class="col-form-label  requiredField">Project<span
@@ -81,20 +80,22 @@
                     </div>  
                 </div>
                 <br>
-                <div class="row col-md-12">
-                    <label>Description</label>
-                    <textarea class="form-control" id="id_description"></textarea>
+                <div class="row">
+                    <div class="col-md-12">
+                        <label>Description</label>
+                        <textarea class="form-control" id="id_description"></textarea>
+                    </div>    
                 </div>
                 <br>
                 <div class="row col-md-12">
                     <button type="submit" id="btnAddMilestone" class="col-md-12 col-sm-12 form-control btn btn-success pull-right">
                         <i class="fa fa-fw fa-lg fa-save"></i>Add Milestone
                     </button>
-                </div>
-            </div>
-            
-        </form>
+                </div>      
+            </form>
+        </div>
     </div>
+
 </div>
 
 <script>
