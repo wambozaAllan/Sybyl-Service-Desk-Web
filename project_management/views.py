@@ -4167,7 +4167,7 @@ def add_new_timesheet(request):
         'user_name' : User.objects.get(id=int(id_user_dept)),
 
         # PEDDING PLEADE ADD COMPANY ID (PARENT) FILTER
-        'client_list' : Company.objects.filter(category__category_value='CLIENT')
+        'client_list' : Company.objects.filter(category__category_value='CLIENT', parent=company_id)
     }
 
     return HttpResponse(template.render(context, request))
@@ -4359,8 +4359,7 @@ def update_timesheet(request):
         curr_customer_id = customer.customer_id
         curr_customer_name = customer.customer.name
 
-        # PEDDING PLEADE ADD COMPANY ID (PARENT) FILTER
-        client_list = Company.objects.filter(category__category_value='CLIENT')
+        client_list = Company.objects.filter(category__category_value='CLIENT', parent=company_id)
         sla_list = ServiceLevelAgreement.objects.filter(customer_id=curr_customer_id)
 
         project_team_member_id1 = ProjectTeamMember.objects.get(member=id_user_dept)
@@ -4441,8 +4440,7 @@ def update_timesheet_paginator(request):
         curr_customer_id = customer.customer_id
         curr_customer_name = customer.customer.name
 
-        # PEDDING PLEADE ADD COMPANY ID (PARENT) FILTER
-        client_list = Company.objects.filter(Q(category__category_value='CLIENT'), ~Q(id = curr_customer_id))
+        client_list = Company.objects.filter(Q(category__category_value='CLIENT'), ~Q(id = curr_customer_id), Q(parent=company_id))
         sla_list = ServiceLevelAgreement.objects.filter(Q(customer_id=curr_customer_id), ~Q(id = sla_id))
 
         project_team_member_id1 = ProjectTeamMember.objects.get(member=id_user_dept)
@@ -4523,8 +4521,7 @@ def resubmit_timesheet(request):
         curr_customer_id = customer.customer_id
         curr_customer_name = customer.customer.name
 
-        # PEDDING PLEADE ADD COMPANY ID (PARENT) FILTER
-        client_list = Company.objects.filter(category__category_value='CLIENT')
+        client_list = Company.objects.filter(category__category_value='CLIENT', parent=company_id)
         sla_list = ServiceLevelAgreement.objects.filter(customer_id=curr_customer_id)
 
         project_team_member_id1 = ProjectTeamMember.objects.get(member=id_user_dept)
@@ -4555,6 +4552,7 @@ def resubmit_timesheet(request):
 
 
 def paginator_resubmit_timesheet(request):
+    state = request.GET.get('state')
     company_id = request.session['company_id']
     log_day = request.GET.get('log_day')
     start_time = request.GET.get('start_time')
@@ -4565,36 +4563,71 @@ def paginator_resubmit_timesheet(request):
     notes = request.GET.get('notes')
     id_user_dept = int(request.GET.get('id_user_dept'))
 
-    obj_task = Task.objects.get(id=int(task_id))
-    project_name = obj_task.project
-    project_id = obj_task.project_id
-    milestone_id = obj_task.milestone_id
-    milestone_name = obj_task.milestone    
+    if state == "project":
+        obj_task = Task.objects.get(id=int(task_id))
+        project_name = obj_task.project
+        project_id = obj_task.project_id
+        milestone_id = obj_task.milestone_id
+        milestone_name = obj_task.milestone    
 
-    project_list = Project.objects.filter(~Q(id = int(project_id)))
-    list_project_milestones = Milestone.objects.filter(Q(project_id=int(project_id)), ~Q(id = int(milestone_id)))
-    list_milestone_tasks = Task.objects.filter(Q(milestone_id=int(milestone_id)), ~Q(id = task_id))
+        project_list = Project.objects.filter(~Q(id = int(project_id)))
+        list_project_milestones = Milestone.objects.filter(Q(project_id=int(project_id)), ~Q(id = int(milestone_id)))
+        list_milestone_tasks = Task.objects.filter(Q(milestone_id=int(milestone_id)), ~Q(id = task_id))
 
-    template = loader.get_template('project_management/paginator_resubmit_timesheet.html')
-    context = {
-        'log_day': log_day,
-        'start_time': start_time,
-        'end_time': end_time,
-        'task': task,
-        'timesheet_id': timesheet_id,
-        'project_list': project_list,
-        'list_milestone_tasks': list_milestone_tasks,
-        'list_project_milestones': list_project_milestones,
-        'milestone_id': milestone_id,
-        'milestone_name': milestone_name,
-        'project_name': project_name,
-        'project_id': project_id,
-        'task_id': task_id,
-        'notes': notes,
-        'user_id' : id_user_dept,
-        'user_name' : User.objects.get(id=id_user_dept)
+        template = loader.get_template('project_management/paginator_resubmit_timesheet.html')
+        context = {
+            'log_day': log_day,
+            'start_time': start_time,
+            'end_time': end_time,
+            'task': task,
+            'timesheet_id': timesheet_id,
+            'project_list': project_list,
+            'list_milestone_tasks': list_milestone_tasks,
+            'list_project_milestones': list_project_milestones,
+            'milestone_id': milestone_id,
+            'milestone_name': milestone_name,
+            'project_name': project_name,
+            'project_id': project_id,
+            'task_id': task_id,
+            'notes': notes,
+            'user_id' : id_user_dept,
+            'user_name' : User.objects.get(id=id_user_dept)
+        }
 
-    }
+    else: 
+        sla_name = request.GET.get('sla_name')
+        sla_id = int(request.GET.get('sla_id'))
+
+        customer = ServiceLevelAgreement.objects.get(id=sla_id)
+        curr_customer_id = customer.customer_id
+        curr_customer_name = customer.customer.name
+
+        client_list = Company.objects.filter(category__category_value='CLIENT', parent=company_id)
+        sla_list = ServiceLevelAgreement.objects.filter(customer_id=curr_customer_id)
+
+        project_team_member_id1 = ProjectTeamMember.objects.get(member=id_user_dept)
+        project_team_member_id2 = project_team_member_id1.id
+        list_sla_requests = CustomerRequest.objects.filter(sla_id=int(sla_id), assigned_member=project_team_member_id2)
+        
+        template = loader.get_template('project_management/paginator_resubmit_request_timesheet.html')
+        context = {
+            'log_day': log_day,
+            'start_time': start_time,
+            'end_time': end_time,
+            'req': task,
+            'timesheet_id': timesheet_id,
+            'req_id': task_id,
+            'notes': notes,
+            'user_id' : id_user_dept,
+            'user_name' : User.objects.get(id=int(id_user_dept)),
+            'client_list': client_list,
+            'sla_id': sla_id,
+            'sla_name': sla_name,
+            'curr_customer_id': curr_customer_id,
+            'curr_customer_name': curr_customer_name,
+            'sla_list': sla_list,
+            'request_list': list_sla_requests
+        }
 
     return HttpResponse(template.render(context, request))
 
@@ -5514,13 +5547,13 @@ def user_general_timesheet_report(request):
 
 def save_resent_timesheet(request):
     company_id = request.session['company_id']
-    structural_vale = request.GET.get('structureRadioValue')
+    structural_state = request.GET.get('structural_state')
     log_day = request.GET.get('id_log_day')
     uid = request.user.id
     log_day = datetime.datetime.strptime(log_day, '%d-%m-%Y')
     id_user_dept = int(request.GET.get('id_user_dept'))
 
-    if structureRadioValue == 'project':
+    if structural_state == 'project':
         start_time = request.GET.get('start_time')
         end_time = request.GET.get('end_time')
         task = int(request.GET.get('id_task'))
@@ -5530,8 +5563,8 @@ def save_resent_timesheet(request):
 
         start_time1 = datetime.datetime.strptime(start_time, '%I:%M %p')
         end_time1 =   datetime.datetime.strptime(end_time, '%I:%M %p')
-        
-        Timesheet.objects.filter(pk=int(timesheet_id)).update(log_day=log_day, start_time=start_time1, end_time=end_time1, last_updated_date=datetime.date.today(), last_updated_by_id=uid, notes=notes, is_resubmitted=True)
+
+        Timesheet.objects.filter(pk=int(timesheet_id)).update(status='SUBMITTED', log_day=log_day, start_time=start_time1, end_time=end_time1, last_updated_date=datetime.date.today(), last_updated_by_id=uid, notes=notes, is_resubmitted=True)
         TaskTimesheetExtend.objects.filter(pk=timesheet_id).update(task_id=task)
 
         obj1 = ResubmittedTimesheet(comment=comment, resubmitted_by_id=uid, timesheet_id=int(timesheet_id))
@@ -5548,11 +5581,11 @@ def save_resent_timesheet(request):
         start_time003 = datetime.datetime.strptime(start_time02, '%I:%M %p')
         end_time003 =   datetime.datetime.strptime(end_time02, '%I:%M %p')
 
-        Timesheet.objects.filter(pk=int(timesheet_id2)).update(log_day=log_day, start_time=start_time003, end_time=end_time003, last_updated_date=datetime.date.today(), last_updated_by_id=uid, notes=notes, is_resubmitted=True)
+        Timesheet.objects.filter(pk=int(timesheet_id2)).update(status='SUBMITTED', log_day=log_day, start_time=start_time003, end_time=end_time003, last_updated_date=datetime.date.today(), last_updated_by_id=uid, notes=id_timesheet_notes02, is_resubmitted=True)
         RequestTimesheetExtend.objects.filter(pk=timesheet_id2).update(customer_request_id=id_assigned_requests) 
 
-        obj1 = ResubmittedTimesheet(comment=comment2, resubmitted_by_id=uid, timesheet_id=int(timesheet_id2))
-        obj1.save()
+        obj2 = ResubmittedTimesheet(comment=comment2, resubmitted_by_id=uid, timesheet_id=int(timesheet_id2))
+        obj2.save()
 
     timesheet_list1 = []           
     daily_tm_tasks = TaskTimesheetExtend.objects.filter(timesheet__status='REJECTED', timesheet__project_team_member_id=id_user_dept, timesheet__company_id=company_id)
@@ -5738,8 +5771,7 @@ def add_new_timesheet_from_datepaginator(request):
         'user_id' : id_user_dept,
         'user_name' : User.objects.get(id=int(id_user_dept)),
 
-        # PEDDING PLEADE ADD COMPANY ID (PARENT) FILTER
-        'client_list' : Company.objects.filter(category__category_value='CLIENT')
+        'client_list' : Company.objects.filter(category__category_value='CLIENT', parent=company_id)
     }
 
     return HttpResponse(template.render(context, request))
@@ -6144,7 +6176,6 @@ def send_timesheet_for_approval_paginator(request):
         tm_id = timesheet_id['tm']
         Timesheet.objects.filter(pk=int(tm_id)).update(status='SUBMITTED', is_submitted=True, date_submitted=datetime.date.today(), submitted_by_id=uid)
 
-    
     timesheet_list1 = []           
     daily_tm_tasks = TaskTimesheetExtend.objects.filter(timesheet__log_day=log_day, timesheet__project_team_member_id=id_user_dept, timesheet__company_id=company_id)
     daily_tm_requests = RequestTimesheetExtend.objects.filter(timesheet__log_day=log_day, timesheet__project_team_member_id=id_user_dept, timesheet__company_id=company_id)
@@ -6217,14 +6248,68 @@ def send_timesheet_for_approval_paginator(request):
 
 def delete_timesheet_in_paginator(request):
     company_id = request.session['company_id']
-    dateSelected = request.GET.get('dateSelected')
     id_user_dept = int(request.GET.get('id_user_dept'))
+    dateSelected = request.GET.get('dateSelected')
     log_day = datetime.datetime.strptime(dateSelected, '%Y-%m-%d')
+    
+    structural_vale = request.GET.get('state')
+    if structural_vale == 'project':
+        timesheet_id = request.GET.get('timesheet_id')
+        task_id = request.GET.get('task_id')
 
-    timesheet_id = request.GET.get('timesheet_id')
-    Timesheet.objects.filter(id=int(timesheet_id)).delete()
+        TaskTimesheetExtend.objects.filter(pk=timesheet_id).delete()
+        Timesheet.objects.filter(id=int(timesheet_id)).delete()
+    else:
+        timesheet_id2 = request.GET.get('timesheet_id2')
+        req_id = request.GET.get('request_id')
+        RequestTimesheetExtend.objects.filter(pk=timesheet_id2).delete()
+        Timesheet.objects.filter(id=int(timesheet_id2)).delete()
 
-    timesheet_list1 = Timesheet.objects.filter(log_day=log_day, company_id=company_id, project_team_member_id=id_user_dept)
+    timesheet_list1 = []           
+    daily_tm_tasks = TaskTimesheetExtend.objects.filter(timesheet__log_day=log_day, timesheet__project_team_member_id=id_user_dept, timesheet__company_id=company_id)
+    daily_tm_requests = RequestTimesheetExtend.objects.filter(timesheet__log_day=log_day, timesheet__project_team_member_id=id_user_dept, timesheet__company_id=company_id)
+    
+    for tsk in daily_tm_tasks:
+        dict_tasks = {}
+        dict_tasks['tm_id'] = tsk.timesheet.id
+        dict_tasks['name'] = tsk.task
+        dict_tasks['task_id'] = tsk.task_id
+        dict_tasks['duration'] = tsk.timesheet.duration
+        dict_tasks['log_day'] = tsk.timesheet.log_day
+        dict_tasks['start_time'] = tsk.timesheet.start_time
+        dict_tasks['end_time'] = tsk.timesheet.end_time
+        dict_tasks['created_time'] = tsk.timesheet.created_time
+        dict_tasks['notes'] = tsk.timesheet.notes
+        dict_tasks['timesheet_type'] = 'task_type'
+        dict_tasks['sla_name'] = ''
+        dict_tasks['sla_id'] = ''
+        dict_tasks['get_resubmission_count'] = tsk.timesheet.get_resubmission_count
+        dict_tasks['date_submitted'] = tsk.timesheet.date_submitted
+        dict_tasks['date_approved'] = tsk.timesheet.date_approved
+        dict_tasks['approved_by'] = tsk.timesheet.approved_by
+        dict_tasks['status'] = tsk.timesheet.status
+        timesheet_list1.append(dict_tasks)
+
+    for req in daily_tm_requests:
+        dict_requests = {}
+        dict_requests['tm_id'] = req.timesheet.id
+        dict_requests['name'] = req.customer_request
+        dict_requests['task_id'] = req.customer_request_id
+        dict_requests['duration'] = req.timesheet.duration
+        dict_requests['log_day'] = req.timesheet.log_day
+        dict_requests['start_time'] = req.timesheet.start_time
+        dict_requests['end_time'] = req.timesheet.end_time
+        dict_requests['notes'] = req.timesheet.notes
+        dict_requests['created_time'] = req.timesheet.created_time
+        dict_requests['timesheet_type'] = 'request_type'
+        dict_requests['sla_name'] = req.customer_request.sla.name
+        dict_requests['sla_id'] = req.customer_request.sla.id
+        dict_requests['get_resubmission_count'] = req.timesheet.get_resubmission_count
+        dict_requests['date_submitted'] = req.timesheet.date_submitted
+        dict_requests['date_approved'] = req.timesheet.date_approved
+        dict_requests['approved_by'] = req.timesheet.approved_by
+        dict_requests['status'] = req.timesheet.status
+        timesheet_list1.append(dict_requests)
 
     if Timesheet.objects.filter(log_day=log_day, status='INITIAL', company_id=company_id, project_team_member_id=id_user_dept).exists():
         intial_state = True
@@ -6232,8 +6317,12 @@ def delete_timesheet_in_paginator(request):
         intial_state = False
 
     sum_duration = 0 
-    for ii in timesheet_list1:
-        sum_duration = sum_duration + ii.durationsec()
+    for ii in daily_tm_tasks:
+        sum_duration = sum_duration + ii.timesheet.durationsec()
+    
+    for req in daily_tm_requests:
+        sum_duration = sum_duration + req.timesheet.durationsec()
+
     tm_day_duration = compute_duration(sum_duration)
 
     template = loader.get_template('project_management/list_date_timesheet.html')
@@ -6361,38 +6450,116 @@ def save_update_paginator_timesheet(request):
 def save_resent_paginator_timesheet(request):
     dateSelected = request.GET.get('dateSelected')
     selected_day = datetime.datetime.strptime(dateSelected, '%Y-%m-%d')
+    structural_state = request.GET.get('structural_state')
 
     company_id = request.session['company_id']
 
     log_day = request.GET.get('id_log_day')
-    start_time = request.GET.get('start_time')
-    end_time = request.GET.get('end_time')
-    task = int(request.GET.get('id_task'))
-    timesheet_id = int(request.GET.get('timesheet_id'))
-    notes = request.GET.get('notes')
-    comment = request.GET.get('comment')
     uid = request.user.id
     id_user_dept = int(request.GET.get('uid'))
-
     log_day = datetime.datetime.strptime(log_day, '%d-%m-%Y')
-    start_time1 = datetime.datetime.strptime(start_time, '%I:%M %p')
-    end_time1 =   datetime.datetime.strptime(end_time, '%I:%M %p')
-    
-    Timesheet.objects.filter(pk=int(timesheet_id)).update(status='SUBMITTED', log_day=log_day, start_time=start_time1, end_time=end_time1, task_id=task, last_updated_date=datetime.date.today(), last_updated_by_id=uid, notes=notes, is_resubmitted=True)
-    
-    obj1 = ResubmittedTimesheet(comment=comment, resubmitted_by_id=uid, timesheet_id=int(timesheet_id))
-    obj1.save()
 
-    timesheet_list1 = Timesheet.objects.filter(log_day=selected_day, company_id=company_id, project_team_member_id=id_user_dept)
+
+    if structural_state == 'project':
+        start_time = request.GET.get('start_time')
+        end_time = request.GET.get('end_time')
+        task = int(request.GET.get('id_task'))
+        timesheet_id = int(request.GET.get('timesheet_id'))
+        notes = request.GET.get('notes')
+        comment = request.GET.get('comment')
+        
+        start_time1 = datetime.datetime.strptime(start_time, '%I:%M %p')
+        end_time1 =   datetime.datetime.strptime(end_time, '%I:%M %p')
+        
+        Timesheet.objects.filter(pk=int(timesheet_id)).update(status='SUBMITTED', log_day=log_day, start_time=start_time1, end_time=end_time1, last_updated_date=datetime.date.today(), last_updated_by_id=uid, notes=notes, is_resubmitted=True)
+        TaskTimesheetExtend.objects.filter(pk=timesheet_id).update(task_id=task)
+
+        obj1 = ResubmittedTimesheet(comment=comment, resubmitted_by_id=uid, timesheet_id=int(timesheet_id))
+        obj1.save()
+
+    else:
+        id_assigned_requests = request.GET.get('id_assigned_requests')
+        timesheet_id2 = int(request.GET.get('timesheet_id2'))
+        start_time02 = request.GET.get('start_time2')
+        end_time02 = request.GET.get('end_time2')
+        id_timesheet_notes02 = request.GET.get('notes2')
+        comment2 = request.GET.get('comment2')
+        
+        start_time003 = datetime.datetime.strptime(start_time02, '%I:%M %p')
+        end_time003 =   datetime.datetime.strptime(end_time02, '%I:%M %p')
+
+        Timesheet.objects.filter(pk=int(timesheet_id2)).update(status='SUBMITTED', log_day=log_day, start_time=start_time003, end_time=end_time003, last_updated_date=datetime.date.today(), last_updated_by_id=uid, notes=id_timesheet_notes02, is_resubmitted=True)
+        RequestTimesheetExtend.objects.filter(pk=timesheet_id2).update(customer_request_id=id_assigned_requests) 
+
+        obj2 = ResubmittedTimesheet(comment=comment2, resubmitted_by_id=uid, timesheet_id=int(timesheet_id2))
+        obj2.save()
+        
     
+    timesheet_list1 = []           
+    daily_tm_tasks = TaskTimesheetExtend.objects.filter(timesheet__log_day=selected_day, timesheet__project_team_member_id=id_user_dept, timesheet__company_id=company_id)
+    daily_tm_requests = RequestTimesheetExtend.objects.filter(timesheet__log_day=selected_day, timesheet__project_team_member_id=id_user_dept, timesheet__company_id=company_id)
+    
+    for tsk in daily_tm_tasks:
+        dict_tasks = {}
+        dict_tasks['tm_id'] = tsk.timesheet.id
+        dict_tasks['name'] = tsk.task
+        dict_tasks['task_id'] = tsk.task_id
+        dict_tasks['duration'] = tsk.timesheet.duration
+        dict_tasks['log_day'] = tsk.timesheet.log_day
+        dict_tasks['start_time'] = tsk.timesheet.start_time
+        dict_tasks['end_time'] = tsk.timesheet.end_time
+        dict_tasks['created_time'] = tsk.timesheet.created_time
+        dict_tasks['notes'] = tsk.timesheet.notes
+        dict_tasks['timesheet_type'] = 'task_type'
+        dict_tasks['sla_name'] = ''
+        dict_tasks['sla_id'] = ''
+        dict_tasks['get_resubmission_count'] = tsk.timesheet.get_resubmission_count
+        dict_tasks['date_submitted'] = tsk.timesheet.date_submitted
+        dict_tasks['project_team_member'] = tsk.timesheet.project_team_member
+        dict_tasks['status'] = tsk.timesheet.status
+        dict_tasks['approver_notes'] = tsk.timesheet.approver_notes
+        dict_tasks['date_approved'] = tsk.timesheet.date_approved
+        dict_tasks['approved_by'] = tsk.timesheet.approved_by
+        dict_tasks['submitted_by'] = tsk.timesheet.submitted_by
+        timesheet_list1.append(dict_tasks)
+
+    for req in daily_tm_requests:
+        dict_requests = {}
+        dict_requests['tm_id'] = req.timesheet.id
+        dict_requests['name'] = req.customer_request
+        dict_requests['task_id'] = req.customer_request_id
+        dict_requests['duration'] = req.timesheet.duration
+        dict_requests['log_day'] = req.timesheet.log_day
+        dict_requests['start_time'] = req.timesheet.start_time
+        dict_requests['end_time'] = req.timesheet.end_time
+        dict_requests['notes'] = req.timesheet.notes
+        dict_requests['created_time'] = req.timesheet.created_time
+        dict_requests['timesheet_type'] = 'request_type'
+        dict_requests['sla_name'] = req.customer_request.sla.name
+        dict_requests['sla_id'] = req.customer_request.sla.id
+        dict_requests['get_resubmission_count'] = req.timesheet.get_resubmission_count
+        dict_requests['date_submitted'] = req.timesheet.date_submitted
+        dict_requests['project_team_member'] = req.timesheet.project_team_member
+        dict_requests['status'] = req.timesheet.status 
+        dict_requests['approver_notes'] = req.timesheet.approver_notes
+        dict_requests['date_approved'] = req.timesheet.date_approved
+        dict_requests['approved_by'] = req.timesheet.approved_by
+        dict_requests['submitted_by'] = req.timesheet.submitted_by
+        timesheet_list1.append(dict_requests)
+
+
     if Timesheet.objects.filter(log_day=log_day, status='INITIAL', company_id=company_id, project_team_member_id=id_user_dept).exists():
         intial_state = True
     else:
         intial_state = False
     
     sum_duration = 0 
-    for ii in timesheet_list1:
-        sum_duration = sum_duration + ii.durationsec()
+    for ii in daily_tm_tasks:
+        sum_duration = sum_duration + ii.timesheet.durationsec()
+    
+    for req in daily_tm_requests:
+        sum_duration = sum_duration + req.timesheet.durationsec()
+
     tm_day_duration = compute_duration(sum_duration)
 
     template = loader.get_template('project_management/list_date_timesheet.html')

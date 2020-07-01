@@ -42,7 +42,7 @@
                             <i title="View Timesheet Description" class="fa fa-dedent"></i>
                         </button>
 
-                        <button onclick="resentTimesheet({{ tm.tm_id }}, '{{ tm.log_day | date:"d-m-Y"}}', '{{ tm.start_time  | date:'H:i A'}}', '{{ tm.end_time  | date:'H:i A'}}', '{{ tm.name }}', {{tm.task_id}}, '{{tm.notes}}', 'sla', '{{tm.sla_name}}', {{sla_id}})" class="btn btn-outline-success btn-sm" type="button">
+                        <button onclick="resentTimesheet({{ tm.tm_id }}, '{{ tm.log_day | date:"d-m-Y"}}', '{{ tm.start_time  | date:'H:i A'}}', '{{ tm.end_time  | date:'H:i A'}}', '{{ tm.name }}', {{tm.task_id}}, '{{tm.notes}}', 'sla', '{{tm.sla_name}}', {{tm.sla_id}})" class="btn btn-outline-success btn-sm" type="button">
                             <i title="Re-submit Timesheet for Approval!" class="fa fa-repeat"></i>
                         </button>
                     </td>
@@ -71,7 +71,7 @@
                             <i title="View Timesheet Description" class="fa fa-dedent"></i>
                         </button>
 
-                        <button onclick="resentTimesheet({{ tm.tm_id }}, '{{ tm.log_day | date:"d-m-Y"}}', '{{ tm.start_time  | date:'H:i A'}}', '{{ tm.end_time  | date:'H:i A'}}', '{{ tm.name }}', {{tm.task_id}}, '{{tm.notes}}', 'project', '{{tm.sla_name}}', {{sla_id}})" class="btn btn-outline-success btn-sm" type="button">
+                        <button onclick="resentTimesheet({{ tm.tm_id }}, '{{ tm.log_day | date:"d-m-Y"}}', '{{ tm.start_time  | date:'H:i A'}}', '{{ tm.end_time  | date:'H:i A'}}', '{{ tm.name }}', {{tm.task_id}}, '{{tm.notes}}', 'project', '{{tm.sla_name}}', {{tm.sla_id}})" class="btn btn-outline-success btn-sm" type="button">
                             <i title="Re-submit Timesheet for Approval!" class="fa fa-repeat"></i>
                         </button>
                     </td>

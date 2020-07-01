@@ -275,6 +275,7 @@
 
         } else {
             var date_selected = $('#date_selected_val').val();
+            document.getElementById("btnResendTimesheet2").disabled=true;
             data3 = {
                 id_log_day: id_log_day,
                 id_task: id_task,
@@ -285,6 +286,7 @@
                 comment: id_timesheet_comment,
                 dateSelected: date_selected, 
                 uid: uid,
+                structural_state: 'project'
             };
             url_data = "{% url 'saveResentPaginatorTimesheet' %}";
             $.ajax({
@@ -295,7 +297,6 @@
                 success: function (resp) {
                     $('.close-dialog').click();
                     $('#timesheet-manage-pane').html(resp);
-                    document.getElementById("btnResendTimesheet2").disabled=true;
                 }
             });
         }

@@ -50,7 +50,7 @@
                                         <i title="Edit Group" class="fa fa-edit"></i>
                                     </button> &nbsp;
                                     
-                                    <button onclick="functionDeleteTimesheet({{ tm.tm_id }}, '{{ tm.log_day | date:"d-m-Y"}}', '{{ tm.start_time  | date:'H:i A'}}', '{{ tm.end_time  | date:'H:i A'}}', '{{ tm.name }}')" class="btn btn-outline-danger btn-sm" type="button">
+                                    <button onclick="functionDeleteTimesheet111({{ tm.tm_id }}, '{{ tm.log_day | date:"d-m-Y"}}', '{{ tm.start_time  | date:'H:i A'}}', '{{ tm.end_time  | date:'H:i A'}}', '{{ tm.name }}', 'sla', {{tm.task_id}})" class="btn btn-outline-danger btn-sm" type="button">
                                         <i title="Delete Timesheet" class="fa fa-remove"></i>
                                     </button> &nbsp;
                                 </form>
@@ -70,7 +70,7 @@
                                         <i title="View Timesheet Description" class="fa fa-dedent"></i>
                                     </button> &nbsp;
 
-                                    <button onclick="paginatorResubmitTimesheets({{ tm.tm_id }}, '{{ tm.log_day | date:"d-m-Y"}}', '{{ tm.start_time  | date:'H:i A'}}', '{{ tm.end_time  | date:'H:i A'}}', '{{ tm.name }}', {{tm.task_id}}, '{{tm.notes}}')" class="btn btn-outline-success btn-sm" type="button">
+                                    <button onclick="paginatorResubmitTimesheets({{ tm.tm_id }}, '{{ tm.log_day | date:"d-m-Y"}}', '{{ tm.start_time  | date:'H:i A'}}', '{{ tm.end_time  | date:'H:i A'}}', '{{ tm.name }}', {{tm.task_id}}, '{{tm.notes}}', 'sla', '{{tm.sla_name}}', {{tm.sla_id}})" class="btn btn-outline-success btn-sm" type="button">
                                         <i title="Re-submit Timesheet for Approval!" class="fa fa-repeat"></i>
                                     </button>
                                 </form>
@@ -115,7 +115,7 @@
                                         <i title="Edit Group" class="fa fa-edit"></i>
                                     </button> &nbsp;
                                     
-                                    <button onclick="functionDeleteTimesheet({{ tm.tm_id }}, '{{ tm.log_day | date:"d-m-Y"}}', '{{ tm.start_time  | date:'H:i A'}}', '{{ tm.end_time  | date:'H:i A'}}', '{{ tm.name }}')" class="btn btn-outline-danger btn-sm" type="button">
+                                    <button onclick="functionDeleteTimesheet111({{ tm.tm_id }}, '{{ tm.log_day | date:"d-m-Y"}}', '{{ tm.start_time  | date:'H:i A'}}', '{{ tm.end_time  | date:'H:i A'}}', '{{ tm.name }}', 'project', {{tm.task_id}})" class="btn btn-outline-danger btn-sm" type="button">
                                         <i title="Delete Timesheet" class="fa fa-remove"></i>
                                     </button> &nbsp;
                                 </form>
@@ -135,7 +135,7 @@
                                         <i title="View Timesheet Description" class="fa fa-dedent"></i>
                                     </button> &nbsp;
 
-                                    <button onclick="paginatorResubmitTimesheets({{ tm.tm_id }}, '{{ tm.log_day | date:"d-m-Y"}}', '{{ tm.start_time  | date:'H:i A'}}', '{{ tm.end_time  | date:'H:i A'}}', '{{ tm.name }}', {{tm.task_id}}, '{{tm.notes}}')" class="btn btn-outline-success btn-sm" type="button">
+                                    <button onclick="paginatorResubmitTimesheets({{ tm.tm_id }}, '{{ tm.log_day | date:"d-m-Y"}}', '{{ tm.start_time  | date:'H:i A'}}', '{{ tm.end_time  | date:'H:i A'}}', '{{ tm.name }}', {{tm.task_id}}, '{{tm.notes}}', 'project', '{{tm.sla_name}}', {{tm.sla_id}})" class="btn btn-outline-success btn-sm" type="button">
                                         <i title="Re-submit Timesheet for Approval!" class="fa fa-repeat"></i>
                                     </button>
                                 </form>
@@ -285,51 +285,100 @@
         });
     }
 
-    function functionDeleteTimesheet(timesheet_id, day, s_time, e_time, task){
+    function functionDeleteTimesheet111(timesheet_id, day, s_time, e_time, task, state, task_id){
         var date_selected = $('#date_selected_val').val();
         var id_user_dept = parseInt($('.id_user_dept_tb').val());
         urldata = "{% url 'deleteTimesheetPaginator'%}";
-        $.confirm({
-            title: '<h3 class="font-weight-bold">Delete Timesheet!</h3>',
-            content: '<h4>Day: <span class="text-info">'+ day +'</span></h4>'+
-                    '<h4>Task: <span class="text-info">'+ task +'</span></h4>'+
-                    '<h4>Time: <span class="text-info">'+ s_time +' - '+e_time+'</span></h4>',
-            type: 'red',
-            typeAnimated: true,
-            boxWidth: '40%',
-            useBootstrap: false,
-            theme: 'modern',
-            icon: 'fa fa-exclamation-circle',
-            closeIcon: true,
-            buttons: {
-                formSubmit: {
-                    text: 'Remove',
-                    btnClass: 'btn-red',
-                    action: function () {
-                        $.ajax({
-                            type: "GET",
-                            cache: false,
-                            data: {
-                                timesheet_id: timesheet_id,
-                                dateSelected: date_selected,
-                                id_user_dept: id_user_dept,
-                            },
-                            url: urldata,
-                            success: function (resp) {
-                                $('.close-dialog').click();
-                                $('#timesheet-manage-pane').html(resp);
-                            }
-                        });
-                    }
-                },
-                close: {
-                    text: 'Cancel',
-                    btnClass: 'btn-gray',
-                    action: function () {
+        
+        if(state === 'project'){
+            $.confirm({
+                title: '<h3 class="font-weight-bold">Delete Timesheet!</h3>',
+                content: '<h4>Day: <span class="text-info">'+ day +'</span></h4>'+
+                        '<h4>Task: <span class="text-info">'+ task +'</span></h4>'+
+                        '<h4>Time: <span class="text-info">'+ s_time +' - '+e_time+'</span></h4>',
+                type: 'red',
+                typeAnimated: true,
+                boxWidth: '40%',
+                useBootstrap: false,
+                theme: 'modern',
+                icon: 'fa fa-exclamation-circle',
+                closeIcon: true,
+                buttons: {
+                    formSubmit: {
+                        text: 'Remove',
+                        btnClass: 'btn-red',
+                        action: function () {
+                            $.ajax({
+                                type: "GET",
+                                cache: false,
+                                data: {
+                                    timesheet_id: timesheet_id,
+                                    dateSelected: date_selected,
+                                    id_user_dept: id_user_dept,
+                                    task_id: task_id,
+                                    state: state
+                                },
+                                url: urldata,
+                                success: function (resp) {
+                                    $('.close-dialog').click();
+                                    $('#timesheet-manage-pane').html(resp);
+                                }
+                            });
+                        }
+                    },
+                    close: {
+                        text: 'Cancel',
+                        btnClass: 'btn-gray',
+                        action: function () {
+                        }
                     }
                 }
-            }
-        });
+            });
+        }else{
+            $.confirm({
+                title: '<h3 class="font-weight-bold">Delete Timesheet!</h3>',
+                content: '<h4>Day: <span class="text-info">'+ day +'</span></h4>'+
+                        '<h4>Request: <span class="text-info">'+ task +'</span></h4>'+
+                        '<h4>Time: <span class="text-info">'+ s_time +' - '+e_time+'</span></h4>',
+                type: 'red',
+                typeAnimated: true,
+                boxWidth: '40%',
+                useBootstrap: false,
+                theme: 'modern',
+                icon: 'fa fa-exclamation-circle',
+                closeIcon: true,
+                buttons: {
+                    formSubmit: {
+                        text: 'Remove',
+                        btnClass: 'btn-red',
+                        action: function () {
+                            $.ajax({
+                                type: "GET",
+                                cache: false,
+                                data: {
+                                    timesheet_id2: timesheet_id,
+                                    dateSelected: date_selected,
+                                    id_user_dept: id_user_dept,
+                                    request_id: task_id,
+                                    state: state
+                                },
+                                url: urldata,
+                                success: function (resp) {
+                                    $('.close-dialog').click();
+                                    $('#timesheet-manage-pane').html(resp);
+                                }
+                            });
+                        }
+                    },
+                    close: {
+                        text: 'Cancel',
+                        btnClass: 'btn-gray',
+                        action: function () {
+                        }
+                    }
+                }
+            });
+        }
     }
 
     function functionManageTimesheetst(timesheetid) {
@@ -369,7 +418,7 @@
         }
     }
 
-    function paginatorResubmitTimesheets(timesheet_id, log_day, start_time, end_time, task, task_id, notes) {
+    function paginatorResubmitTimesheets(timesheet_id, log_day, start_time, end_time, task, task_id, notes, state, sla_name, sla_id) {
         var id_user_dept = parseInt($('.id_user_dept_tb').val());
         urldata = "{% url 'paginatorResubmitTimesheet' %}";
         $.ajax({
@@ -383,7 +432,10 @@
                 task: task,
                 task_id: task_id,
                 notes: notes,
-                id_user_dept: id_user_dept
+                id_user_dept: id_user_dept,
+                state: state,
+                sla_name: sla_name,
+                sla_id: sla_id
             },
             url: urldata,
             success: function (resp) {
