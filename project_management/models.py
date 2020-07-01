@@ -294,8 +294,7 @@ class Task(models.Model):
         current = date.today()
         status_name = self.status.name.lower()
         delta = ""
-
-        print("this is my status")
+    
         if status_name == "open": 
             if self.end_date is not None:
                 if self.end_date > current :
