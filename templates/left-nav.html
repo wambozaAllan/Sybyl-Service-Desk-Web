@@ -98,6 +98,18 @@
                                     <span class="hide-menu">Daily Timesheets </span>
                                 </a>
                             </li>
+                            <li onclick="">
+                                <a href="{% url 'dailyTimesheetRReport' %}" aria-expanded="false"><i class="fa fa-calendar-plus-o"></i>
+                                    <span class="hide-menu">Daily Report </span>
+                                </a>
+                            </li>
+
+                            <li onclick="">
+                                <a href="{% url 'detailedTaskReport' %}" aria-expanded="false"><i class="fa fa-tasks"></i>
+                                    <span class="hide-menu">Detailed Task Report </span>
+                                </a>
+                            </li>
+
                             {% if user.is_superuser%}
                                 <li onclick="">
                                     <a href="{% url 'approveTimesheets' %}" aria-expanded="false"><i class="fa fa-calendar-check-o"></i>

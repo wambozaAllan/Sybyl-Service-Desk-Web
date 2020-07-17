@@ -41,6 +41,9 @@ from reportlab.platypus import Paragraph, SimpleDocTemplate, TableStyle, Table
 from reportlab.lib.styles import getSampleStyleSheet, ParagraphStyle
 from reportlab.pdfgen import canvas
 from reportlab.lib import colors
+from django.core.mail import EmailMultiAlternatives
+from django.template.loader import render_to_string
+from background_task import background
 
 
 # Custom Views
@@ -4211,7 +4214,7 @@ def save_new_timesheet(request):
         start_time1 = datetime.datetime.strptime(start_time, '%I:%M %p')
         end_time1 =   datetime.datetime.strptime(end_time, '%I:%M %p')
         
-        obj = Timesheet(log_day=log_day, start_time=start_time1, end_time=end_time1, added_by_id=uid, project_team_member_id=dept_uid, company_id=int(company_id), last_updated_date=datetime.date.today(), last_updated_by_id=uid, notes=id_timesheet_notes)
+        obj = Timesheet(log_day=log_day, start_time=start_time1, end_time=end_time1, added_by_id=uid, project_team_member_id=dept_uid, company_id=int(company_id), last_updated_date=datetime.date.today(), last_updated_by_id=uid, notes=id_timesheet_notes, timesheet_category="TIMESHEET")
         obj.save()
         
         new_timesheet_id = obj.id
@@ -4228,7 +4231,7 @@ def save_new_timesheet(request):
         start_time003 = datetime.datetime.strptime(start_time02, '%I:%M %p')
         end_time003 =   datetime.datetime.strptime(end_time02, '%I:%M %p')
 
-        obj2 = Timesheet(log_day=log_day, start_time=start_time003, end_time=end_time003, added_by_id=uid, project_team_member_id=dept_uid, company_id=int(company_id), last_updated_date=datetime.date.today(), last_updated_by_id=uid, notes=id_timesheet_notes02)
+        obj2 = Timesheet(log_day=log_day, start_time=start_time003, end_time=end_time003, added_by_id=uid, project_team_member_id=dept_uid, company_id=int(company_id), last_updated_date=datetime.date.today(), last_updated_by_id=uid, notes=id_timesheet_notes02, timesheet_category="REQUEST")
         obj2.save()
 
         new_timesheet_id2 = obj2.id
@@ -6708,13 +6711,15 @@ def filter_project_timesheets_by_week(request):
                 
                 dict_mems['mem_total'] = compute_duration(yy['day0'] + yy['day1'] + yy['day2'] + yy['day3'] + yy['day4'] + yy['day5'] + yy['day6'])
                 final_list.append(dict_mems)
+        
+        all_member_tms = final_list
     else:
         all_member_tms = ''
         days_list = ''
 
     template = loader.get_template('project_management/list_project_timesheet_by_week.html')
     context = {
-        'timesheet_list': final_list,
+        'timesheet_list': all_member_tms,
         'days_list': days_list
     }
 
@@ -7044,9 +7049,7 @@ def export_staff_utilization(request):
     """exporting staff utilization"""
     if request.method == 'POST':
         start_time = request.POST.get('start')
-        end_time = request.POST.get("end")
-        print(f"{start_time} {end_time} are the dates")
-        
+        end_time = request.POST.get("end")        
 
         convert_start = datetime.datetime.strptime(start_time, "%d-%m-%Y").strftime("%Y-%m-%d")
         convert_end = datetime.datetime.strptime(end_time, "%d-%m-%Y").strftime("%Y-%m-%d")
@@ -8263,8 +8266,6 @@ def assign_customer_request(request):
     req_id = request.GET.get('req_id')
     req_name = request.GET.get('req_name')
 
-    print(f"{req_id} is the request")
-
     department_id = request.session['department_id']
 
     users = User.objects.filter(department_id=department_id)
@@ -8292,3 +8293,552 @@ def check_project_code_exists(request):
         }
 
     return JsonResponse(data)
+
+
+def timesheet_daily_report(request):
+    today_date = datetime.datetime.today().date()
+    today_date = datetime.datetime.strptime(str(today_date), "%Y-%m-%d").strftime("%d-%m-%Y")
+    default_date_date = datetime.datetime.strptime(today_date, '%d-%m-%Y').strftime("%A, %d. %B %Y")
+    template = loader.get_template('project_management/timesheet_daily_report_pane.html')
+    context = {
+        'today_date': today_date,
+        'selected_date': default_date_date
+        }
+
+    return HttpResponse(template.render(context, request))
+
+
+def filter_timesheet_daily_report(request):
+    company_id = request.session['company_id']
+    selected_date = request.GET.get('selected_date')
+    selected_date2 = request.GET.get('selected_date')
+    department_id = request.session['department_id']
+
+    selected_date = datetime.datetime.strptime(selected_date, '%d-%m-%Y')
+    selected_date2 = datetime.datetime.strptime(selected_date2, '%d-%m-%Y').strftime("%A, %d. %B %Y")
+
+    dept_members_exist = User.objects.filter(company_id=company_id, department_id=department_id).exists()
+    if dept_members_exist == True:
+        dept_members = User.objects.filter(company_id=company_id, department_id=department_id)
+        all_member_tms = []
+        for mem in dept_members:
+            sum_duration = 0
+            new_dict = {}
+            new_dict['label'] = mem.first_name + " " + (mem.last_name)
+            duration = Timesheet.objects.filter(log_day=selected_date, project_team_member_id=mem.id, company_id=company_id)
+            for ii in duration:
+                sum_duration = sum_duration + ii.durationsec()
+            new_dict['value'] = compute_duration(sum_duration)
+            all_member_tms.append(new_dict)
+    else:
+        all_member_tms = ''
+
+    template = loader.get_template('project_management/filter_members_daily_timesheets.html')
+    context = {
+        'timesheet_report': all_member_tms,
+        'selected_date': selected_date2
+    }
+
+    return HttpResponse(template.render(context, request))
+
+
+def export_daily_tm_report(request):
+    company_id = request.session['company_id']
+    selected_date = request.POST.get('id_selected_day')
+    department_id = request.session['department_id']
+
+    selected_date = datetime.datetime.strptime(selected_date, '%d-%m-%Y')
+
+    dept_members_exist = User.objects.filter(company_id=company_id, department_id=department_id).exists()
+    if dept_members_exist == True:
+        dept_members = User.objects.filter(company_id=company_id, department_id=department_id)
+        all_member_tms = []
+        for mem in dept_members:
+            sum_duration = 0
+            new_dict = {}
+            new_dict['label'] = mem.first_name + " " + (mem.last_name)
+            duration = Timesheet.objects.filter(log_day=selected_date, project_team_member_id=mem.id, company_id=company_id)
+            for ii in duration:
+                sum_duration = sum_duration + ii.durationsec()
+            new_dict['value'] = compute_duration(sum_duration)
+            all_member_tms.append(new_dict)
+    else:
+        all_member_tms = ''
+
+    response = HttpResponse(content_type='application/ms-excel')
+    response['Content-Disposition'] = 'attachment; filename=Timesheetreport.xls'
+    wb = xlwt.Workbook(encoding='utf-8')
+    ws = wb.add_sheet("DailyTimesheet")
+
+    row_num = 1
+
+    columns = [(u"Name", 5000), (u"Duration", 5000)]
+
+    font_style = xlwt.XFStyle()
+    font_style.font.bold = True
+
+    for col_num in range(len(columns)):
+        ws.write(row_num, col_num, columns[col_num][0], font_style)
+        # set column width
+        ws.col(col_num).width = columns[col_num][1]
+
+    font_style = xlwt.XFStyle()
+    font_style.alignment.wrap = 1
+
+    for obj in all_member_tms:
+        row_num += 1
+
+        row = [
+            obj['label'],
+            obj['value'],
+        ]
+
+        for col_num in range(len(row)):
+            ws.write(row_num, col_num, str(row[col_num]), font_style)
+
+    wb.save(response)
+    return response
+
+
+def export_and_send_email_daily_tm_report(request):
+    company_id = request.session['company_id']
+    selected_date = request.GET.get('id_selected_day')
+    department_id = request.session['department_id']
+    selected_date2 = request.GET.get('id_selected_day')
+    selected_date = datetime.datetime.strptime(selected_date, '%d-%m-%Y')
+
+    excelfile = BytesIO()
+
+    dept_members_exist = User.objects.filter(company_id=company_id, department_id=department_id).exists()
+    if dept_members_exist == True:
+        dept_members = User.objects.filter(company_id=company_id, department_id=department_id)
+        all_member_tms = []
+        for mem in dept_members:
+            sum_duration = 0
+            new_dict = {}
+            new_dict['label'] = mem.first_name + " " + (mem.last_name)
+            duration = Timesheet.objects.filter(log_day=selected_date, project_team_member_id=mem.id, company_id=company_id)
+            for ii in duration:
+                sum_duration = sum_duration + ii.durationsec()
+            new_dict['value'] = compute_duration(sum_duration)
+            all_member_tms.append(new_dict)
+    else:
+        all_member_tms = ''
+
+    wb = xlwt.Workbook(encoding='utf-8')
+    ws = wb.add_sheet("DailyTimesheet")
+
+    row_num = 1
+
+    columns = [(u"Name", 5000), (u"Duration", 5000)]
+
+    font_style = xlwt.XFStyle()
+    font_style.font.bold = True
+
+    for col_num in range(len(columns)):
+        ws.write(row_num, col_num, columns[col_num][0], font_style)
+        # set column width
+        ws.col(col_num).width = columns[col_num][1]
+
+    font_style = xlwt.XFStyle()
+    font_style.alignment.wrap = 1
+
+    for obj in all_member_tms:
+        row_num += 1
+
+        row = [
+            obj['label'],
+            obj['value'],
+        ]
+
+        for col_num in range(len(row)):
+            ws.write(row_num, col_num, str(row[col_num]), font_style)
+
+    wb.save(excelfile)
+
+    selected_date2 = datetime.datetime.strptime(selected_date2, '%d-%m-%Y').strftime("%A, %d. %B %Y")
+
+    context22 = {
+        'selected_date': selected_date2,
+        'department': request.session['department']
+    }
+
+    msg = render_to_string('project_management/email_template_timesheet_report.html', context22)
+
+    email_address = 'gracebabiryek@gmail.com'
+    subject, from_email, to = 'SYBYL', 'from@example.com', email_address
+    text_content = 'SERVICE DESK.'
+    html_content = msg
+    msg = EmailMultiAlternatives(subject, text_content, from_email, [to])
+    msg.attach('TimesheetReport.xls', excelfile.getvalue(), 'application/ms-excel')
+    msg.attach_alternative(html_content, "text/html")
+    msg.send()
+
+    context1 = {
+        'timesheet_report': all_member_tms,
+        'selected_date': selected_date2
+    }
+
+    template = loader.get_template('project_management/filter_members_daily_timesheets.html')
+    return HttpResponse(template.render(context1, request))
+
+
+def detailed_task_report_pane(request):
+    today_date = datetime.datetime.today().date()
+    today_date = datetime.datetime.strptime(str(today_date), "%Y-%m-%d").strftime("%d-%m-%Y")
+    default_date_date = datetime.datetime.strptime(today_date, '%d-%m-%Y').strftime("%A, %d. %B %Y")
+    template = loader.get_template('project_management/detailed_task_timesheet_report_pane.html')
+    context = {
+        'today_date': today_date,
+        'selected_date': default_date_date
+        }
+
+    return HttpResponse(template.render(context, request))
+
+
+def filter_detailed_task_timesheet_report(request):
+    company_id = request.session['company_id']
+    selected_date = request.GET.get('selected_date')
+    selected_date2 = request.GET.get('selected_date')
+    department_id = request.session['department_id']
+
+    selected_date = datetime.datetime.strptime(selected_date, '%d-%m-%Y')
+    selected_date2 = datetime.datetime.strptime(selected_date2, '%d-%m-%Y').strftime("%A, %d. %B %Y")
+
+    dept_members_exist = User.objects.filter(company_id=company_id, department_id=department_id).exists()
+    if dept_members_exist == True:
+        dept_members = User.objects.filter(company_id=company_id, department_id=department_id)
+        all_mem_gen_list = []
+        
+        for mem in dept_members:
+            sum_duration = 0
+            new_dict = {}
+            all_member_tasks = []
+            individual_tms = {}
+            new_dict['mid'] = mem.id
+            new_dict['label'] = mem.first_name + " " + (mem.last_name)
+            member_tms = Timesheet.objects.filter(log_day=selected_date, project_team_member_id=mem.id, company_id=company_id)
+            for duration in member_tms:
+                sum_duration = sum_duration + duration.durationsec()
+            new_dict['total_dur'] = compute_duration(sum_duration)
+
+            for tm_list in member_tms:
+                tm_dict_mem = {}
+                tm_dict_mem['duration'] = compute_duration(tm_list.durationsec())
+                tm_dict_mem['notes'] = tm_list.notes
+                tm_dict_mem['timesheet_category'] = tm_list.timesheet_category
+                tm_dict_mem['tmid'] = tm_list.id
+                tm_dict_mem['stime'] = tm_list.start_time
+                tm_dict_mem['etime'] = tm_list.end_time
+                            
+                if tm_list.timesheet_category == "TIMESHEET":
+
+                    task_detail = TaskTimesheetExtend.objects.get(timesheet_id=tm_list.id)
+                    task_id_1 = task_detail.task_id
+                    task_name = Task.objects.get(id=task_id_1).name
+                    tm_dict_mem['task'] = task_name
+                    project_det = Task.objects.get(id=task_id_1)
+                    milestone_det = Task.objects.get(id=task_id_1)
+                    tm_dict_mem['project'] = project_det
+                    tm_dict_mem['milestone'] = milestone_det
+                else: 
+                    request_detail = RequestTimesheetExtend.objects.get(timesheet_id=tm_list.id)
+                    req_id = request_detail.customer_request_id
+                    req_name = CustomerRequest.objects.get(id=req_id).name
+                    tm_dict_mem['task'] = req_name
+
+                    cust_req = CustomerRequest.objects.get(id=req_id)
+                    milestone_det = "Customer Request"
+                    tm_dict_mem['project'] = cust_req
+                    tm_dict_mem['milestone'] = milestone_det
+
+                all_member_tasks.append(tm_dict_mem)
+            new_dict['timesheets'] = all_member_tasks
+            all_mem_gen_list.append(new_dict)
+                        
+            final_list = []
+            proj_set = set()
+            for rr in all_mem_gen_list:
+                for yy in rr['timesheets']:
+                    dict_mems = {}
+
+                    if(rr['mid'] not in proj_set):
+                        proj_set.add(rr['mid'])
+                        dict_mems['name'] = rr['label']
+                        dict_mems['total_dur'] = rr['total_dur']
+                    else:
+                        dict_mems['name'] = ''
+                        dict_mems['total_dur'] = rr['total_dur']
+
+                    dict_mems['task'] = yy['task']
+                    dict_mems['duration'] = yy['duration']
+                    dict_mems['notes'] = yy['notes']
+                    dict_mems['project'] = yy['project']
+                    dict_mems['milestone'] = yy['milestone']
+                    dict_mems['stime'] = yy['stime']
+                    dict_mems['etime'] = yy['etime']
+                    final_list.append(dict_mems)
+
+        all_mem_gen_list = final_list
+
+    else:
+        all_mem_gen_list = ''
+
+    template = loader.get_template('project_management/filter_detailed_completed_task_report.html')
+    context = {
+        'timesheet_report': all_mem_gen_list,
+        'selected_date': selected_date2
+    }
+
+    return HttpResponse(template.render(context, request))
+
+
+def export_timesheet_task_report(request):
+    company_id = request.session['company_id']
+    selected_date = request.POST.get('id_selected_day_002')
+    department_id = request.session['department_id']
+
+    selected_date = datetime.datetime.strptime(selected_date, '%d-%m-%Y')
+
+    response = HttpResponse(content_type='application/ms-excel')
+    response['Content-Disposition'] = 'attachment; filename=DetailedTaskReport.xls'
+    wb = xlwt.Workbook(encoding='utf-8')
+
+    dept_members_exist = User.objects.filter(company_id=company_id, department_id=department_id).exists()
+    if dept_members_exist == True:
+        dept_members = User.objects.filter(company_id=company_id, department_id=department_id)
+        all_mem_gen_list = []
+        
+        for mem in dept_members:
+            sum_duration = 0
+            new_dict = {}
+            all_member_tasks = []
+            individual_tms = {}
+            new_dict['mid'] = mem.id
+            new_dict['label'] = mem.first_name + " " + (mem.last_name)
+            member_tms = Timesheet.objects.filter(log_day=selected_date, project_team_member_id=mem.id, company_id=company_id)
+            for duration in member_tms:
+                sum_duration = sum_duration + duration.durationsec()
+            new_dict['total_dur'] = compute_duration(sum_duration)
+
+            for tm_list in member_tms:
+                tm_dict_mem = {}
+                tm_dict_mem['duration'] = compute_duration(tm_list.durationsec())
+                tm_dict_mem['notes'] = tm_list.notes
+                tm_dict_mem['timesheet_category'] = tm_list.timesheet_category
+                tm_dict_mem['tmid'] = tm_list.id
+                stime = str(tm_list.start_time)
+                stime = datetime.datetime.strptime(stime, '%H:%M:%S').strftime('%I:%M %p')
+                etime = str(tm_list.end_time)
+                etime = datetime.datetime.strptime(etime, '%H:%M:%S').strftime('%I:%M %p')
+                tm_time = stime + " - " + etime
+                tm_dict_mem['tm_time'] = tm_time           
+                if tm_list.timesheet_category == "TIMESHEET":
+                    task_detail = TaskTimesheetExtend.objects.get(timesheet_id=tm_list.id)
+                    task_id_1 = task_detail.task_id
+                    task_name = Task.objects.get(id=task_id_1).name
+                    tm_dict_mem['task'] = task_name
+                    project_det = Task.objects.get(id=task_id_1)
+                    milestone_det = Task.objects.get(id=task_id_1)
+                    tm_dict_mem['project'] = project_det
+                    tm_dict_mem['milestone'] = milestone_det
+                else: 
+                    request_detail = RequestTimesheetExtend.objects.get(timesheet_id=tm_list.id)
+                    req_id = request_detail.customer_request_id
+                    req_name = CustomerRequest.objects.get(id=req_id).name
+                    tm_dict_mem['task'] = req_name
+
+                    cust_req = CustomerRequest.objects.get(id=req_id)
+                    milestone_det = "Customer Request"
+                    tm_dict_mem['project'] = cust_req
+                    tm_dict_mem['milestone'] = milestone_det
+
+                all_member_tasks.append(tm_dict_mem)
+            new_dict['timesheets'] = all_member_tasks
+            all_mem_gen_list.append(new_dict)
+
+        for obj11 in all_mem_gen_list:
+            font_style1 = xlwt.XFStyle()
+            font_style1.font.bold = True
+            font_style1.font.height = 270
+            font_style1.font.width = 270
+
+            ws = wb.add_sheet(obj11['label'])
+            m_header = 'User: '+ obj11['label'] + " - " + "Total Duration: "+ obj11['total_dur']
+            ws.write(0, 1, m_header, font_style1)
+            
+            row_num = 1
+            columns = [(u"Task", 5000), (u"Duration", 5000), (u"Time Range", 5000), (u"Project", 5000)
+            , (u"Milestone", 5000), (u"Details", 5000)]
+
+            font_style = xlwt.XFStyle()
+            font_style.font.bold = True
+            font_style.alignment.wrap = 1
+
+            for col_num in range(len(columns)):
+                ws.write(row_num, col_num, columns[col_num][0], font_style)
+                # set column width
+                ws.col(col_num).width = columns[col_num][1]
+
+            for obj in obj11['timesheets']:
+                row_num += 1
+                row = [
+                    obj['task'],
+                    obj['duration'],
+                    obj['tm_time'],
+                    obj['project'],
+                    obj['milestone'],
+                    obj['notes'],
+                ]
+                
+                for col_num in range(len(row)):
+                    ws.write(row_num, col_num, str(row[col_num]), font_style)
+
+        wb.save(response)
+        return response
+    else:
+        all_mem_gen_list = ''
+        return response
+
+
+def export_email_timesheet_task_report(request):
+    company_id = request.session['company_id']
+    selected_date = request.GET.get('id_selected_day_002')
+    department_id = request.session['department_id']
+    selected_date2 = request.GET.get('id_selected_day_002')
+    selected_date = datetime.datetime.strptime(selected_date, '%d-%m-%Y')
+
+    excelfile = BytesIO()
+
+    wb = xlwt.Workbook(encoding='utf-8')
+    
+    dept_members_exist = User.objects.filter(company_id=company_id, department_id=department_id).exists()
+    if dept_members_exist == True:
+        dept_members = User.objects.filter(company_id=company_id, department_id=department_id)
+        all_mem_gen_list = []
+        
+        for mem in dept_members:
+            sum_duration = 0
+            new_dict = {}
+            all_member_tasks = []
+            individual_tms = {}
+            new_dict['mid'] = mem.id
+            new_dict['label'] = mem.first_name + " " + (mem.last_name)
+            member_tms = Timesheet.objects.filter(log_day=selected_date, project_team_member_id=mem.id, company_id=company_id)
+            for duration in member_tms:
+                sum_duration = sum_duration + duration.durationsec()
+            new_dict['total_dur'] = compute_duration(sum_duration)
+
+            for tm_list in member_tms:
+                tm_dict_mem = {}
+                tm_dict_mem['duration'] = compute_duration(tm_list.durationsec())
+                tm_dict_mem['notes'] = tm_list.notes
+                tm_dict_mem['timesheet_category'] = tm_list.timesheet_category
+                tm_dict_mem['tmid'] = tm_list.id
+                stime = str(tm_list.start_time)
+                stime = datetime.datetime.strptime(stime, '%H:%M:%S').strftime('%I:%M %p')
+                etime = str(tm_list.end_time)
+                etime = datetime.datetime.strptime(etime, '%H:%M:%S').strftime('%I:%M %p')
+                tm_time = stime + " - " + etime
+                tm_dict_mem['tm_time'] = tm_time           
+                if tm_list.timesheet_category == "TIMESHEET":
+                    task_detail = TaskTimesheetExtend.objects.get(timesheet_id=tm_list.id)
+                    task_id_1 = task_detail.task_id
+                    task_name = Task.objects.get(id=task_id_1).name
+                    tm_dict_mem['task'] = task_name
+                    project_det = Task.objects.get(id=task_id_1)
+                    milestone_det = Task.objects.get(id=task_id_1)
+                    tm_dict_mem['project'] = project_det
+                    tm_dict_mem['milestone'] = milestone_det
+                else: 
+                    request_detail = RequestTimesheetExtend.objects.get(timesheet_id=tm_list.id)
+                    req_id = request_detail.customer_request_id
+                    req_name = CustomerRequest.objects.get(id=req_id).name
+                    tm_dict_mem['task'] = req_name
+
+                    cust_req = CustomerRequest.objects.get(id=req_id)
+                    milestone_det = "Customer Request"
+                    tm_dict_mem['project'] = cust_req
+                    tm_dict_mem['milestone'] = milestone_det
+
+                all_member_tasks.append(tm_dict_mem)
+            new_dict['timesheets'] = all_member_tasks
+            all_mem_gen_list.append(new_dict)
+
+        for obj11 in all_mem_gen_list:
+            font_style1 = xlwt.XFStyle()
+            font_style1.font.bold = True
+            font_style1.font.height = 270
+            font_style1.font.width = 270
+
+            ws = wb.add_sheet(obj11['label'])
+            m_header = 'User: '+ obj11['label'] + " - " + "Total Duration: "+ obj11['total_dur']
+            ws.write(0, 1, m_header, font_style1)
+            
+            row_num = 1
+            columns = [(u"Task", 5000), (u"Duration", 5000), (u"Time Range", 5000), (u"Project", 5000)
+            , (u"Milestone", 5000), (u"Details", 5000)]
+
+            font_style = xlwt.XFStyle()
+            font_style.font.bold = True
+            font_style.alignment.wrap = 1
+
+            for col_num in range(len(columns)):
+                ws.write(row_num, col_num, columns[col_num][0], font_style)
+                # set column width
+                ws.col(col_num).width = columns[col_num][1]
+
+            for obj in obj11['timesheets']:
+                row_num += 1
+                row = [
+                    obj['task'],
+                    obj['duration'],
+                    obj['tm_time'],
+                    obj['project'],
+                    obj['milestone'],
+                    obj['notes'],
+                ]
+                
+                for col_num in range(len(row)):
+                    ws.write(row_num, col_num, str(row[col_num]), font_style)
+
+        wb.save(excelfile)
+    else:
+        all_mem_gen_list = ''
+
+    selected_date2 = datetime.datetime.strptime(selected_date2, '%d-%m-%Y').strftime("%A, %d. %B %Y")
+
+    context22 = {
+        'selected_date': selected_date2,
+        'department': request.session['department']
+    }
+
+    msg = render_to_string('project_management/email_template_timesheet_report.html', context22)
+
+    email_address = 'gracebabiryek@gmail.com'
+    subject, from_email, to = 'SYBYL', 'from@example.com', email_address
+    text_content = 'SERVICE DESK.'
+    html_content = msg
+    msg = EmailMultiAlternatives(subject, text_content, from_email, [to])
+    msg.attach('TimesheetReport.xls', excelfile.getvalue(), 'application/ms-excel')
+    msg.attach_alternative(html_content, "text/html")
+    msg.send()
+
+    context1 = {
+        'timesheet_report': all_mem_gen_list,
+        'selected_date': selected_date2
+    }
+
+    template = loader.get_template('project_management/filter_detailed_completed_task_report.html')
+    return HttpResponse(template.render(context1, request))
+
+
+# @background(schedule=10)
+# def notify_user():
+#     # lookup user by id and send them a message
+#     # user = User.objects.get(pk=user_id)
+#     # user.email_user('Here is a notification', 'You have been notified')
+#     print('xxxxxxxxxxxxxxx-xxxx---------------------xxxxxxxxxxx')
+
+
+# notify_user()
