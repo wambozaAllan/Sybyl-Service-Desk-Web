@@ -1,0 +1,650 @@
+{% load crispy_forms_tags %}
+<div>
+    <input type="text" value="{{project_id}}" style="display: none;" id='id_project'/>
+    <input type="text" value="{{project_name}}" style="display: none;" id='id_project_name'/>
+    <input type="text" value="{{milestone_id}}" style="display: none;" id='id_milestone'/>
+    <input type="text" value="{{milestone_name}}" style="display: none;" id='id_milestone_name'/>
+    
+</div>
+<div class="card-body">
+    <div class="basic-form">
+        <form class="form-horizontal" >
+            {% csrf_token %}
+            <div class="col-12">
+                <div class="row">
+                    <div class="col-6" style="display: none;"> 
+                        <div id="div_id_project" class="form-group">
+                            <label for="id_project" class="col-form-label ">
+                                Project
+                            </label>
+                            <div class="">
+                                    <input name="project" class="textinput textInput form-control" required="" id="id_project" value="{{project_id}}" type="hidden">
+                                    <input type="text" name="" class="textinput textInput form-control" required="" value="{{project_name}}" placeholder="" disabled="">
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-6">
+                            {{form.name|as_crispy_field}}
+                    </div>
+                    <div class="col-6">
+                        {{form.status|as_crispy_field}}
+                    </div>
+                    
+                </div>
+                <div class="row">
+                    <div class="col-6">
+                        {{form.startdate|as_crispy_field}}
+                        <medium id="start_date" class="text-muted hidden">
+                            <font color="red">
+                                Start date has to be less or equal to end date
+                            </font>
+                        </medium>
+                    </div>
+                    <div class="col-6">
+                        {{form.enddate|as_crispy_field}}
+                        <medium id="end_date" class="text-muted hidden">
+                            <font color="red">
+                                End date has to be greater or equal to start date
+                            </font>
+                        </medium> 
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-6">
+                        {{form.actual_startdate|as_crispy_field}}
+                        <medium id="actual_start_date" class="text-muted hidden">
+                            <font color="red">
+                                Actual start date has to be less or equal to actual end date
+                            </font>
+                        </medium>
+                        <medium id="equal_start" class="text-muted hidden">
+                            <font color="red">
+                                Actual start date has to be greater or equal to start date
+                            </font>
+                        </medium>
+                    </div>
+                    <div class="col-6">
+                        {{form.actual_enddate|as_crispy_field}}
+                        <medium id="actual_end_date" class="text-muted hidden">
+                            <font color="red">
+                                Actual end date has to be greater or equal to actual start date
+                            </font>
+                        </medium>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-6">
+                        {{form.description|as_crispy_field}}
+                    </div>
+                    <div class="col-6">
+                        <button style="margin-top: 8%;" type="submit" id="btnUpdateMilestone" class="form-control btn btn-success pull-right">
+                            <i class="fa fa-fw fa-lg fa-save"></i>Update Milestone
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+
+<script>
+    $('#div_id_status').removeClass("form-group");
+
+    $('#id_startdate').datepicker({
+        format: "yyyy-mm-dd",
+        autoclose: true,
+        clearBtn: true
+    });
+
+    $('#id_enddate').datepicker({
+        format: "yyyy-mm-dd",
+        autoclose: true,
+        clearBtn: true
+    });
+    
+
+    $("#id_actual_startdate").prop("type", "text");
+    $("#id_actual_enddate").prop("type", "text");
+
+    $('#id_actual_startdate').datepicker({
+        format: "yyyy-mm-dd",
+        autoclose: true,
+        clearBtn: true
+    });
+
+    $('#id_actual_enddate').datepicker({
+        format: "yyyy-mm-dd",
+        autoclose: true,
+        clearBtn: true
+    });
+
+    var statusText = $("#id_status option:selected").text().toLowerCase();
+
+    $("#id_startdate").attr("placeholder", "yyyy-mm-dd");
+    $("#id_enddate").attr("placeholder", "yyyy-mm-dd");
+
+    $("#id_actual_startdate").attr("placeholder", "yyyy-mm-dd");
+    $("#id_actual_enddate").attr("placeholder", "yyyy-mm-dd");
+
+    $('#id_actual_enddate').on('focus', function(){
+        var date = $(this).blur();
+    });
+
+    $('#id_enddate').on('focus', function(){
+        var date = $(this).blur();
+    });
+
+    $('#id_actual_startdate').on('focus', function(){
+        var date = $(this).blur();
+    });
+
+    $('#id_startdate').on('focus', function(){
+        var date = $(this).blur();
+    });
+
+    $('#id_status').on('change', function(){
+        var statusId = $(this).val();
+        
+        $.ajax({
+            url: "{% url 'checkMilestoneStatus' %}",
+            data: {
+                status_id: statusId
+            },
+            dataType: 'json',
+            cache: false,
+            success: function(data){
+                var statusName = data.status_name;
+                if (statusName === "Open" || statusName === "Onhold"){
+                    $("#div_id_actual_startdate").css("display", "none");
+                    $("#div_id_actual_enddate").css("display", "none");
+                    document.getElementById("btnUpdateMilestone").disabled = false;
+                }
+                else {
+                    $("#div_id_actual_startdate").css("display", "block");
+                    $("#div_id_actual_enddate").css("display", "block");
+                }
+            }
+        });
+    });
+
+    // start date
+    $('#id_startdate').on('change', function(){
+        var startDate= document.getElementById('id_startdate').value;
+        var endDate= document.getElementById('id_enddate').value;
+        var actualStartDate= document.getElementById('id_actual_startdate').value;
+
+        var sDate = new Date(startDate);
+        var eDate = new Date(endDate);
+        var actualSDate = new Date(actualStartDate);
+
+        $(".clear").hover (function(){
+            $(this).css('cursor', 'pointer');
+        });
+
+        $(".clear").on('click', function(){
+            document.getElementById("btnUpdateMilestone").disabled = false;
+            document.getElementById('id_startdate').style.borderColor = "";
+            $('#start_date').hide();
+        });
+
+        if(startDate != '' && endDate != ''){
+            if(sDate <= eDate){
+                document.getElementById("btnUpdateMilestone").disabled = false;
+                document.getElementById('id_startdate').style.borderColor = "";
+                $('#start_date').hide();
+                document.getElementById('id_enddate').style.borderColor = "";
+                $('#end_date').hide();
+            }
+            else{
+                document.getElementById("btnUpdateMilestone").disabled = true;
+                document.getElementById('id_startdate').style.borderColor = "red";
+                $('#start_date').show();
+            }
+        }
+        else{
+            document.getElementById("btnUpdateMilestone").disabled = false;
+            document.getElementById('id_startdate').style.borderColor = "";
+            $('#start_date').hide();
+        }
+
+        if(actualStartDate != '' && startDate != ''){
+            if(actualSDate >= sDate){
+                document.getElementById('id_actual_startdate').style.borderColor = "";
+                $('#equal_start').hide();
+            }
+            else{
+                document.getElementById('id_actual_startdate').style.borderColor = "red";
+                $('#equal_start').show();
+            }
+        }
+        else{
+            document.getElementById('id_actual_startdate').style.borderColor = "";
+            $('#equal_start').hide();   
+        }
+    });
+
+    // end date
+    $('#id_enddate').on('change', function(){
+        var startDate= document.getElementById('id_startdate').value;
+        var endDate= document.getElementById('id_enddate').value;
+
+        var sDate = new Date(startDate);
+        var eDate = new Date(endDate);
+
+        $(".clear").hover (function(){
+            $(this).css('cursor', 'pointer');
+        });
+
+        $(".clear").on('click', function(){
+            document.getElementById("btnUpdateMilestone").disabled = false;
+            document.getElementById('id_enddate').style.borderColor = "";
+            $('#end_date').hide();
+        });
+
+        if(startDate != '' && endDate != ''){
+            if(sDate <= eDate){
+                document.getElementById("btnUpdateMilestone").disabled = false;
+                document.getElementById('id_enddate').style.borderColor = "";
+                $('#end_date').hide();
+                document.getElementById('id_startdate').style.borderColor = "";
+                $('#start_date').hide();
+            }
+            else{
+                document.getElementById("btnUpdateMilestone").disabled = true;
+                document.getElementById('id_enddate').style.borderColor = "red";
+                $('#end_date').show();
+            }
+        }
+        else{
+            document.getElementById("btnUpdateMilestone").disabled = false;
+            document.getElementById('id_enddate').style.borderColor = "";
+            $('#end_date').hide();
+        }
+
+    });
+
+    // actual start date
+    $('#id_actual_startdate').on('change', function(){
+        var actualStartDate= document.getElementById('id_actual_startdate').value;
+        var actualEndDate= document.getElementById('id_actual_enddate').value;
+        var startDate= document.getElementById('id_startdate').value;
+        var endDate= document.getElementById('id_enddate').value;
+
+        var actualSDate = new Date(actualStartDate);
+        var actualEDate = new Date(actualEndDate);
+        var sDate = new Date(startDate);
+
+        document.getElementById('id_actual_startdate').style.borderColor = "";
+        $("#id_actual_startdate").css('border','');
+
+        $(".clear").hover (function(){
+            $(this).css('cursor', 'pointer');
+        });
+
+        $(".clear").on('click', function(){
+            document.getElementById("btnUpdateMilestone").disabled = false;
+            document.getElementById('id_actual_startdate').style.borderColor = "";
+            $("#id_actual_startdate").css('borderWidth', '1px');
+            $('#actual_start_date').hide();
+            $('#equal_start').hide();
+        });
+
+        if(actualStartDate != '' && actualEndDate != ''){
+            if(actualSDate <= actualEDate){
+                document.getElementById("btnUpdateMilestone").disabled = false;
+                document.getElementById('id_actual_startdate').style.borderColor = "";
+                $("#id_actual_startdate").css('borderWidth', '1px');
+                $('#actual_start_date').hide();
+                document.getElementById('id_actual_enddate').style.borderColor = "";
+                $('#actual_end_date').hide();
+            }
+            else{
+                document.getElementById("btnUpdateMilestone").disabled = true;
+                document.getElementById('id_actual_startdate').style.borderColor = "red";
+                $('#actual_start_date').show();
+                $('#id_actual_startdate').css('border-color', red);
+            }
+        }
+        else{
+            document.getElementById("btnUpdateMilestone").disabled = false;
+            document.getElementById('id_actual_startdate').style.borderColor = "";
+            $("#id_actual_startdate").css('borderWidth', '1px');
+            $('#actual_start_date').hide();
+        }
+
+        if(actualStartDate != '' && startDate != ''){
+            if(actualSDate >= sDate){
+                document.getElementById('id_actual_startdate').style.borderColor = "";
+                document.getElementById("btnUpdateMilestone").disabled = false;
+                $('#equal_start').hide();
+            }
+            else{
+                document.getElementById('id_actual_startdate').style.borderColor = "red";
+                document.getElementById("btnUpdateMilestone").disabled = true;
+                $('#equal_start').show();
+            }
+        }
+        else{
+            document.getElementById('id_actual_startdate').style.borderColor = "";
+            document.getElementById("btnUpdateMilestone").disabled = false;
+            $('#equal_start').hide();
+        }
+        
+    });
+
+    // actual end date
+    $('#id_actual_enddate').on('change', function(){
+        var actualStartDate= document.getElementById('id_actual_startdate').value;
+        var actualEndDate= document.getElementById('id_actual_enddate').value;
+        var actualSDate = new Date(actualStartDate);
+        var actualEDate = new Date(actualEndDate);
+
+        document.getElementById('id_actual_enddate').style.borderColor = "";
+        $("#id_actual_end_date").css('border','');
+
+        $(".clear").hover (function(){
+            $(this).css('cursor', 'pointer');
+        });
+
+        $(".clear").on('click', function(){
+            document.getElementById("btnUpdateMilestone").disabled = false;
+            document.getElementById('id_actual_end_date').style.borderColor = "";
+            $("#id_actual_startdate").css('borderWidth', '1px');
+            $('#actual_end_date').hide();
+        });
+
+        if(actualStartDate != '' && actualEndDate != ''){
+            if(actualSDate <= actualEDate){
+                document.getElementById("btnUpdateMilestone").disabled = false;
+                document.getElementById('id_actual_startdate').style.borderColor = ""; 
+                $('#actual_start_date').hide();
+                document.getElementById('id_actual_enddate').style.borderColor = "";
+                $("#id_actual_enddate").css('borderWidth', '1px');
+                $('#actual_end_date').hide();
+            }
+            else{
+                document.getElementById("btnUpdateMilestone").disabled = true;
+                document.getElementById('id_actual_enddate').style.borderColor = "red";
+                $('#actual_end_date').show();
+            }
+        }
+        else{
+            document.getElementById("btnUpdateMilestone").disabled = false;
+            document.getElementById('id_actual_startdate').style.borderColor = ""; 
+            $('#actual_start_date').hide();
+        }
+    });
+
+    $('#id_project_name').attr( 'readOnly' , 'true' );
+
+    $('#id_status').attr('data-live-search', "true"); 
+    $('#id_status').selectpicker({
+        size: 3
+    });
+
+    // on load function for addition of milestone
+    $(function(){
+        if(statusText == 'open' || statusText == 'onhold'){
+            $("#div_id_actual_startdate").css("display", "none");
+            $("#div_id_actual_enddate").css("display", "none");
+            document.getElementById("btnUpdateMilestone").disabled = false;
+        }
+        else{
+            $("#div_id_actual_startdate").css("display", "block");
+            $("#div_id_actual_enddate").css("display", "block");
+        }
+   
+    });
+      
+    $("#id_name").attr('autocomplete', 'off');
+
+    $("#id_description").attr('autocomplete', 'off');
+
+    var milestone_val = {{milestone_id}};
+    
+    $("form").on('submit', function(event){
+        event.preventDefault();
+
+        if(statusText == 'completed' || statusText == 'terminated'){
+            if ($('#id_actual_startdate').val().length < 1){
+                $('#id_actual_startdate').css({ "border": '2px solid #00635a' });
+                event.preventDefault();
+            }
+
+            else if ($('#id_actual_enddate').val().length < 1){
+                $('#id_actual_enddate').css({ "border": '2px solid #00635a' });
+                event.preventDefault();
+            }
+            else{
+                var name = $('#id_name').val();
+                var status = $('#id_status').val();
+                var startdate = $('#id_startdate').val();
+                var enddate = $('#id_enddate').val();
+                var actual_startdate = $('#id_actual_startdate').val();
+                var actual_enddate = $('#id_actual_enddate').val();
+                var description = $('#id_description').val();
+                var project_id =$('#id_project').val();
+
+                $.ajax({
+                    url: "{% url 'checkMilestoneStatus' %}",
+                    data: {
+                        status_id: status
+                    },
+                    dataType: 'json',
+                    cache: false,
+                    success: function(data){
+                        var statusName = data.status_name;
+                        url_data = "{% url 'saveupdateProjectMilestone' 999%}".replace(999, milestone_val);
+
+                        if(statusName === "Terminated") {
+                            $.ajax({
+                                type: "GET",
+                                cache: false,
+                                data: {
+                                    name: name,
+                                    status: status,
+                                    startdate: startdate,
+                                    enddate: enddate,
+                                    actual_startdate: actual_startdate,
+                                    actual_enddate: actual_enddate,
+                                    description: description,
+                                    project_id: project_id
+                                    
+                                },
+                                url: url_data,
+                                success: function (resp) {
+                                    $('.close-dialog').click(); 
+                                    $('#terminatedMilestonePane').html(resp);
+
+                                    $.ajax({
+                                        type:"GET",
+                                        cache: false,
+                                        data:{
+                                            project_id:project_id,
+                                        },
+                                        dataType: 'json',
+                                        url: "{% url 'milestoneCount' %}",
+                                        success: function(data){
+                                            $("#count_open_milestones").text(data.open_count);
+                                            $("#count_onhold_milestones").text(data.onhold_count);
+                                            $("#count_terminated_milestones").text(data.terminated_count);
+                                            $("#count_completed_milestones").text(data.completed_count);  
+
+                                            $.ajax({
+                                                type:"GET",
+                                                cache: false,
+                                                data:{
+                                                    project_id:project_id,
+                                                },
+                                                url: "{% url 'onholdMilestones' %}",
+                                                success: function(resp){
+                                                    $('#onholdMilestonePane').html(resp);                                                 
+                                                }
+                                            });                                       
+                                        }
+                                    });
+                                }
+                            });
+                            return true;
+                        }
+                        else if(statusName === "Completed"){
+                            $.ajax({
+                                type: "GET",
+                                cache: false,
+                                data: {
+                                    name: name,
+                                    status: status,
+                                    startdate: startdate,
+                                    enddate: enddate,
+                                    actual_startdate: actual_startdate,
+                                    actual_enddate: actual_enddate,
+                                    description: description,
+                                    project_id: project_id  
+                                },
+                                url: url_data,
+                                success: function(resp) {
+                                    $('.close-dialog').click(); 
+                                    $('#completedMilestonePane').html(resp);
+                                    
+                                    $.ajax({
+                                        type:"GET",
+                                        cache: false,
+                                        data:{
+                                            project_id:project_id,
+                                        },
+                                        dataType: 'json',
+                                        url: "{% url 'milestoneCount' %}",
+                                        success: function(data){
+                                            $("#count_open_milestones").text(data.open_count);
+                                            $("#count_onhold_milestones").text(data.onhold_count);
+                                            $("#count_terminated_milestones").text(data.terminated_count);
+                                            $("#count_completed_milestones").text(data.completed_count);  
+
+                                            $.ajax({
+                                                type:"GET",
+                                                cache: false,
+                                                data:{
+                                                    project_id:project_id,
+                                                },
+                                                url: "{% url 'onholdMilestones' %}",
+                                                success: function(resp){
+                                                    $('#onholdMilestonePane').html(resp);                                                 
+                                                }
+                                            });                                       
+                                        }
+                                    }); 
+                                      
+                                }
+                            });
+                            return true;
+                        }                      
+                    }
+                });
+                return true;
+            }
+        }       
+        
+        else{
+            var name = $('#id_name').val();
+            var status = $('#id_status').val();
+            var startdate = $('#id_startdate').val();
+            var enddate = $('#id_enddate').val();
+            var actual_startdate = $('#id_actual_startdate').val();
+            var actual_enddate = $('#id_actual_enddate').val();
+            var description = $('#id_description').val();
+            var project_id =$('#id_project').val();
+
+            $.ajax({
+                    url: "{% url 'checkMilestoneStatus' %}",
+                    data: {
+                        status_id: status
+                    },
+                    dataType: 'json',
+                    cache: false,
+                    success: function(data){
+                        var statusName = data.status_name;
+                        url_data = "{% url 'saveupdateProjectMilestone' 999%}".replace(999, milestone_val);
+
+                        if(statusName === "Onhold") {
+                            $.ajax({
+                                type: "GET",
+                                cache: false,
+                                data: {
+                                    name: name,
+                                    status: status,
+                                    startdate: startdate,
+                                    enddate: enddate,
+                                    actual_startdate: actual_startdate,
+                                    actual_enddate: actual_enddate,
+                                    description: description,
+                                    project_id: project_id
+                                    
+                                },
+                                url: url_data,
+                                success: function (resp) {
+                                    $('.close-dialog').click(); 
+                                    $('#onholdMilestonePane').html(resp);
+                                }
+                            });
+                            return true;
+                        }
+                        else{
+                            $.ajax({
+                                type: "GET",
+                                cache: false,
+                                data: {
+                                    name: name,
+                                    status: status,
+                                    startdate: startdate,
+                                    enddate: enddate,
+                                    actual_startdate: actual_startdate,
+                                    actual_enddate: actual_enddate,
+                                    description: description,
+                                    project_id: project_id  
+                                },
+                                url: url_data,
+                                success: function(resp) {
+                                    $('.close-dialog').click(); 
+                                    
+                                    $("#openMilestonePane").html(resp);
+
+                                    $.ajax({
+                                        type:"GET",
+                                        cache: false,
+                                        data:{
+                                            project_id:project_id,
+                                        },
+                                        dataType: 'json',
+                                        url: "{% url 'milestoneCount' %}",
+                                        success: function(data){
+                                            $("#count_open_milestones").text(data.open_count);
+                                            $("#count_onhold_milestones").text(data.onhold_count);
+                                            $("#count_terminated_milestones").text(data.terminated_count);
+                                            $("#count_completed_milestones").text(data.completed_count);  
+
+                                            $.ajax({
+                                                type:"GET",
+                                                cache: false,
+                                                data:{
+                                                    project_id:project_id,
+                                                },
+                                                url: "{% url 'onholdMilestones' %}",
+                                                success: function(resp){
+                                                    $('#onholdMilestonePane').html(resp);                                                 
+                                                }
+                                            });                                       
+                                        }
+                                    });
+                                      
+                                }
+                            });
+                            return true;
+                        }
+                    }
+                });
+            
+            return true;
+        }
+    });
+
+</script>

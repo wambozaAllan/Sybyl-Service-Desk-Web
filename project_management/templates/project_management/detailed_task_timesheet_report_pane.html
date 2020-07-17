@@ -1,0 +1,116 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block content %}
+<!-- Main wrapper  -->
+{% include 'header.html' %}
+{% include 'left-nav.html' %}
+
+<script type="text/javascript" src="{% static 'fusioncharts/fusioncharts.js' %}"></script>
+<script type="text/javascript" src="{% static 'fusioncharts/themes/fusioncharts.theme.fint.js' %}"></script>
+
+<script type="text/javascript" src="{% static 'template-static-files/javascript/bootstrap-datepicker.js' %}"></script>
+<div id="main-wrapper">
+
+    <!-- Page wrapper  -->
+    <div class="page-wrapper">
+        <!-- Bread crumb -->
+        <div class="row page-titles">
+            <div class="col-md-5 align-self-center">
+                <h3 class="text-primary">Completed Task Report</h3>
+            </div>
+            <div class="col-md-7 align--selfcenter">
+                <ol class="breadcrumb">
+                    <li class="breadcrumb-item"><a href="javascript:void(0)">Home</a></li>
+                    <li class="breadcrumb-item active">Tasks</li>
+                </ol>
+            </div>
+        </div>
+        <!-- Container fluid  -->
+        <div class="container-fluid">
+            <div class="card">
+                <div class="card-body">
+                    <div id="" class="row">
+                        
+                            <div class="col-4">
+                                <h3 style="margin-top: 4%;" class="text-info current_daily_pane">{{today_date }}</h3>
+                            </div>
+                            <div class="col-8">
+                                <form  method="POST" action="{% url 'exportTimesheetTaskReport' %}" enctype="multipart/form-data" id="toPrint">
+                                    {% csrf_token %}
+                                    <div class="form-group pull-right col-">
+                                        <label>Filter by Date</label>
+                                        <input onkeypress="return false;" type="text" name="id_selected_day_002" class="form-control dateinput" placeholder="dd-mm-yyyy" id="id_selected_day_002" value="{{today_date}}">
+                                    </div>
+
+                                    <button type="submit" style="margin-top: 5%; margin-right: 3%;" id="" onclick="exportAndEmailSend02()" class="btn btn-info pull-right col-3">
+                                        <i class="fa fa-file-excel-o"></i> Export and Email <i class="fa fa-envelope"></i>
+                                    </button>
+                                    
+                                    <button type="submit" style="margin-top: 5%; margin-right: 3%;" id="" class="btn btn-info pull-right col-3">
+                                        <i class="fa fa-file-excel-o"></i> Export
+                                    </button>
+
+                                </form>
+                            </div>
+                    </div>
+                    <div id="dailytimesheet-report002"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    var selected_date1 = $('#id_selected_day_002').val();
+        
+    urldata = "{% url 'filterDetailedTaskTimesheetRReport'%}";
+    $.ajax({
+        type: 'GET',
+        data: {
+            selected_date: selected_date1
+        },
+        url: urldata,
+        success: function (resp) {
+            $('#dailytimesheet-report002').html(resp);
+        }
+    });
+
+    $('#id_selected_day_002').datepicker({
+        format: "dd-mm-yyyy",
+        autoclose: true,
+        clearBtn: true,
+        endDate : new Date()
+    }).on('changeDate', function (selected) {
+        $('#dailytimesheet-report002').html('<i class="fa fa-spinner fa-spin fa-5x" style="align-content: center;margin-left: 50%;"></i>');
+        var selected_date = $('#id_selected_day_002').val();
+        
+        urldata1 = "{% url 'filterDetailedTaskTimesheetRReport'%}";
+        $.ajax({
+            type: 'GET',
+            data: {
+                selected_date: selected_date
+            },
+            url: urldata1,
+            success: function (resp) {
+                $('#dailytimesheet-report002').html(resp);
+            }
+        });
+    });
+    
+    function exportAndEmailSend02(){
+        var selected_date3 = $('#id_selected_day_002').val();
+        urldata2 = "{% url 'exportEmailTimesheetTaskReport'%}";
+        $.ajax({
+            type: 'GET',
+            data: {
+                id_selected_day_002: selected_date3
+            },
+            url: urldata2,
+            success: function (resp) {
+               
+            }
+        });
+    }
+    
+</script>
+{% endblock %}

@@ -1,0 +1,191 @@
+{% load static %}
+<link href="{% static 'template-static-files/css/jquery.calendarPicker.css' %}" rel="stylesheet" media="screen"
+    type="text/css">
+<script type="text/javascript"
+    src="{% static 'template-static-files/javascript/lib/calendar-2/moment.latest.min.js' %}"></script>
+<script src="{% static 'template-static-files/javascript/jquery.calendarPicker.js' %}"></script>
+<script src="{% static 'template-static-files/javascript/jquery.mousewheel.js' %}"></script>
+<div class="card" style="margin-top: -2%;">
+    <div class="card-body">
+        <div class="row">
+            <div class="col-5"><h5><span class="text-info font-weight-bold" id="selected_day_timesheet">{% now "jS D, F, Y" %} </span> : <medium class="font-weight-bold daily_timesheet_duration1"></medium></h5></div>
+            <div class="col-3">
+                
+                <select name="id_user_dept_tb" class="select form-control id_user_dept_tb" id="id_user_dept_tb">
+                    <option selected="" value="{{user_id}}">{{user_name}}</option>
+                    {% if user.is_superuser%}
+                        {% for usr in dept_users %}
+                            <option value="{{usr.id}}">{{usr.first_name}} {{usr.last_name}}</option>
+                        {% endfor %}
+                    {% endif %}
+                </select>
+                
+            </div>
+            <div style="margin-left: 4%;">
+                <button onclick="calendarPicker2.changeDate(new Date())" type="button" style="width: 70px" class="btn btn-outline-secondary col-3">Today</button>&nbsp;
+                <button id="btn_add_timesheet02" class="btn btn-info" onclick="functionAddNewTimesheet2()">
+                    <i class="fa fa-fw fa-lg fa-plus"></i>Log Time
+                </button>&nbsp;
+                <span class="btn-group " style="height: 35px; padding: 0%; margin-top: 1px;">
+                    <button type="button" onclick="loadURL('{% url 'listTimesheetView'%}', '', 'container-fluid', 'GET');" title="Vertical Timesheet List" class="btn btn-default" id="view-vertical">
+                        <i class="fa fa-list" aria-hidden="true"></i></button>
+                    <button type="button" title="Table Timesheet List" class="btn btn-info" id="table-horizontal">
+                        <i class="fa fa-table" aria-hidden="true"></i></button>
+                </span>
+            </div>
+        </div>
+
+        <div id="TM_table_pane_view" class="TM_table_pane_view">
+            <div id="calendar_filter">
+
+            </div><hr>
+            <div id="timesheet-manage-pane" style="margin-top: -18px; max-height: 60%; overflow-y: scroll;">
+
+            </div>
+        </div>
+    </div>
+</div>
+
+<input type="hidden" value="" id="date_selected_val">
+
+<!-- The Modal -->
+<div class="">
+    <div id="timesheetFormModalDialog7" class="modalDialog">
+        <div>
+            <div id="head">
+                <a href="#close" title="Close" class="close2">X</a>
+                <h5 class="modalDialog-title font-weight-bold">Add Timesheet</h5>
+            </div>
+            <hr>
+
+            <div class="modal-body">
+                <div class="scrollbar-modal1">
+                    <div id="dialog_time_sheet">
+
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- END The Modal -->
+    
+<script>
+    //make default select option to be for the logged user
+    var def_user = {{user_id}};
+    $(".id_user_dept_tb").val(def_user);
+
+    document.getElementById("btn_add_timesheet02").disabled = false;
+
+    $('.id_user_dept_tb').change(function () {
+        var id_user_dept = parseInt($('.id_user_dept_tb').val());
+        if (id_user_dept > 0) {
+            urldata = "{% url 'selectTableTimesheetsByUser'%}";
+
+            $.ajax({
+                type: 'GET',
+                url: urldata,
+                data: {
+                    id_user_dept: id_user_dept
+                },
+                success: function (data) {
+                    $('.TM_table_pane_view').html('');
+                    $('.TM_table_pane_view').html(data);
+                }
+            }); 
+        }
+    });
+    
+    var calendarPicker2 = $("#calendar_filter").calendarPicker({
+        monthNames: ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"],
+        dayNames: ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"],
+        years: 0,
+        months: 2,
+        days: 5,
+        showDayArrows: true,
+        callback: function (cal) {
+            $("#selected_day_timesheet").html(moment(cal.currentDate).format('DD dddd, MMMM, YYYY'));
+            var dateSelected2 = moment(cal.currentDate).format('DD-MM-YYYY');
+            $('#date_selected_val').val(moment(cal.currentDate).format('YYYY-MM-DD'));
+
+            var todayDate = new Date();
+            var endDate= new Date(Date.parse(cal.currentDate));
+            var id_user_dept = parseInt($('.id_user_dept_tb').val());
+
+            if (endDate > todayDate) {
+                document.getElementById("btn_add_timesheet02").disabled = true;
+                $.confirm({
+                    title: 'Alert!',
+                    content: 'Cannot Add timesheet to a date beyond Today!',
+                    type: 'orange',
+                    typeAnimated: true,
+                    boxWidth: '25%',
+                    useBootstrap: false,
+                    closeIcon: true,
+                    buttons: {
+                        formSubmit: {
+                            text: 'close',
+                            btnClass: 'btn-gray close-dialog',
+                        },
+                    },
+                    onContentReady: function () {}
+                });
+                
+                $.ajax({
+                    type: "GET",
+                    cache: false,
+                    data: {
+                        dateSelected: dateSelected2,
+                        id_user_dept: id_user_dept
+                    },
+                    url: '{% url 'filterTimesheetsByDate' %}',
+                    success: function (resp) {
+                        $('#timesheet-manage-pane').html('');
+                        $('#timesheet-manage-pane').html('<i class="fa fa-spinner fa-spin fa-5x text-center" style="margin-left: 50%;"></i>');
+                        $('#timesheet-manage-pane').html(resp);
+                    }
+                });
+
+            }else{
+                document.getElementById("btn_add_timesheet02").disabled = false;
+                $.ajax({
+                    type: "GET",
+                    cache: false,
+                    data: {
+                        dateSelected: dateSelected2,
+                        id_user_dept: id_user_dept
+                    },
+                    url: '{% url 'filterTimesheetsByDate' %}',
+                    success: function (resp) {
+                        $('#timesheet-manage-pane').html('');
+                        $('#timesheet-manage-pane').html('<i class="fa fa-spinner fa-spin fa-5x text-center" style="margin-left: 50%;"></i>');
+                        $('#timesheet-manage-pane').html(resp);
+                        
+                    }
+                });
+            }
+        }
+    });
+
+    function functionAddNewTimesheet2() {
+        var id_user_dept = parseInt($('.id_user_dept_tb').val());
+
+        var date_selected = $('#date_selected_val').val();
+        urldata = "{% url 'addTimesheetOnDatePaginator'%}";
+        $.ajax({
+            type: "GET",
+            cache: false,
+            data: {
+                log_date: date_selected,
+                id_user_dept: id_user_dept,
+            },
+            url: urldata,
+            success: function (resp) {
+                $('#dialog_time_sheet').html(resp);
+
+                window.location = '#timesheetFormModalDialog7';
+                initDialog('modalDialog');
+            }
+        });
+    }
+</script>

@@ -1,0 +1,719 @@
+{% load crispy_forms_tags %}
+<div>
+    <input type="text" value="{{project_id}}" style="display: none;" id='id_project'/>
+    <input type="text" value="{{project_name}}" style="display: none;" id='id_project_name'/>
+    <input type="text" value="{{milestone_id}}" style="display: none;" id='id_milestone'/>
+    <input type="text" value="{{milestone_name}}" style="display: none;" id='id_milestone_name'/>
+    <input type="text" value="{{task_id}}" style="display: none;" id='id_task'/>
+    <input type="text" value="{{task_name}}" style="display: none;" id='id_task_name'/>
+</div>
+<div class="card-body">
+    <div class="basic-form">
+        <form class="form-horizontal" >
+            {% csrf_token %}
+            <div class="col-12">
+                <div class="row">
+                    <div class="col-6" style="display: none;"> 
+                        <div id="div_id_project" class="form-group">
+                            <label for="id_project" class="col-form-label ">
+                                Project
+                            </label>
+                            <div class="">
+                                    <input name="project" class="textinput textInput form-control" required="" id="id_project" value="{{project_id}}" type="hidden">
+                                    <input type="text" name="" class="textinput textInput form-control" required="" value="{{project_name}}" placeholder="" disabled="">
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-6 col-sm-12">
+                        {{form.name|as_crispy_field}}
+                    </div>
+                    <div class="col-md-6 col-sm-12">
+                        {{form.status|as_crispy_field}}
+                    </div>
+                </div>
+                
+                <div class="row">
+                    <div class="col-md-6">
+                        {{form.start_date|as_crispy_field}}
+                        <medium id="start_date" class="text-muted hidden">
+                            <font color="red">
+                                Start date has to be less or equal to end date
+                            </font>
+                        </medium>
+                    </div>
+                    <div class="col-md-6">
+                        {{form.end_date|as_crispy_field}}
+                        <medium id="end_date" class="text-muted hidden">
+                            <font color="red">
+                                End date has to be greater or equal to start date
+                            </font>
+                        </medium>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col-md-6">
+                        {{form.actual_start_date|as_crispy_field}}
+                        <medium id="actual_start_date" class="text-muted hidden">
+                            <font color="red">
+                                Actual start date has to be less or equal to actual end date
+                            </font>
+                        </medium>
+                        <medium id="equal_start" class="text-muted hidden">
+                            <font color="red">
+                                Actual start date has to be greater or equal to start date
+                            </font>
+                        </medium>
+                    </div>
+                    <div class="col-md-6">
+                        {{form.actual_end_date|as_crispy_field}}
+                        <medium id="actual_end_date" class="text-muted hidden">
+                            <font color="red">
+                                Actual end date has to be greater or equal to actual start date
+                            </font>
+                        </medium>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col-md-6">
+                        {{form.description|as_crispy_field}}
+                    </div>
+                    <div class="col-md-6">
+                        <button type="submit" id="btnUpdateTask" class="form-control btn btn-success pull-right" style="margin-top: 8%;">
+                            <i class="fa fa-fw fa-lg fa-save"></i>Update Task
+                        </button>
+                    </div>
+                </div>
+            </div>      
+        </form>
+    </div>
+</div>
+
+<script>
+    $('#id_start_date').datepicker({
+        format: "yyyy-mm-dd",
+        autoclose: true,
+        clearBtn: true
+    });
+
+    $('#id_end_date').datepicker({
+        format: "yyyy-mm-dd",
+        autoclose: true,
+        clearBtn: true
+    });
+
+    $("#id_actual_start_date").prop("type", "text");
+    $("#id_actual_end_date").prop("type", "text");
+
+    $('#id_actual_start_date').datepicker({
+        format: "yyyy-mm-dd",
+        autoclose: true,
+        clearBtn: true
+    });
+
+    $('#id_actual_end_date').datepicker({
+        format: "yyyy-mm-dd",
+        autoclose: true,
+        clearBtn: true
+    });
+
+    $("#id_start_date").attr("placeholder", "yyyy-mm-dd");
+    $("#id_end_date").attr("placeholder", "yyyy-mm-dd");
+
+    $("#id_actual_start_date").attr("placeholder", "yyyy-mm-dd");
+    $("#id_actual_end_date").attr("placeholder", "yyyy-mm-dd");
+
+    $("#div_id_status").removeClass("form-group");
+
+    $('#id_actual_end_date').on('focus', function(){
+        var date = $(this).blur();
+    });
+
+    $('#id_end_date').on('focus', function(){
+        var date = $(this).blur();
+    });
+
+    $('#id_actual_startdate').on('focus', function(){
+        var date = $(this).blur();
+    });
+
+    $('#id_start_date').on('focus', function(){
+        var date = $(this).blur();
+    });
+
+    $('#id_project_name').attr( 'readOnly' , 'true' );
+
+    $('#id_status').attr('data-live-search', "true"); 
+    $('#id_status').selectpicker({
+        size: 3
+    });
+
+    var statusText = $("#id_status option:selected").text().toLowerCase();
+
+    function changeDateFormat(inputDate){  // expects Y-m-d
+        var splitDate = inputDate.split('-');
+        if(splitDate.count == 0){
+            return null;
+        }
+
+        var year = splitDate[0];
+        var month = splitDate[1];
+        var day = splitDate[2]; 
+
+        return month + '\/' + day + '\/' + year;
+    }
+
+    $(function(){     
+        if(statusText == 'open' || statusText == 'onhold'){
+            $("#div_id_actual_start_date").css("display", "none");
+            $("#div_id_actual_end_date").css("display", "none");
+            document.getElementById("btnUpdateTask").disabled = false;
+        }
+        else{
+            $("#div_id_actual_start_date").css("display", "block");
+            $("#div_id_actual_end_date").css("display", "block");
+        }
+    });
+
+    $('#id_status').on('change', function(){
+        var statusId = $(this).val();
+        $.ajax({
+            url: "{% url 'checkMilestoneStatus' %}",
+            data: {
+                status_id: statusId
+            },
+            dataType: 'json',
+            cache: false,
+            success: function(data){
+                var statusName = data.status_name;
+                if (statusName === "Open" || statusName === "Onhold"){
+                    $("#div_id_actual_start_date").css("display", "none");
+                    $("#div_id_actual_end_date").css("display", "none");
+                    document.getElementById("btnUpdateTask").disabled = false;
+                }
+                else {
+                    $("#div_id_actual_start_date").css("display", "block");
+                    $("#div_id_actual_end_date").css("display", "block");
+                }
+            }
+        });
+    });
+
+    $("#id_name").attr('autocomplete', 'off');
+
+    $("#id_description").attr('autocomplete', 'off');
+    
+    // start date
+    $('#id_start_date').on('change', function(){
+        let startDate= document.getElementById('id_start_date').value;
+        let endDate= document.getElementById('id_end_date').value;
+        let actualStartDate= document.getElementById('id_actual_start_date').value;
+
+        let sDate = new Date(startDate);
+        let eDate = new Date(endDate);
+        let actualSDate = new Date(actualStartDate);
+
+        $(".clear").hover (function(){
+            $(this).css('cursor', 'pointer');
+        });
+
+        $(".clear").on('click', function(){
+            document.getElementById("btnUpdateTask").disabled = false;
+            document.getElementById('id_start_date').style.borderColor = "";
+            $('#start_date').hide();
+        });
+
+        if(startDate != '' && endDate != ''){
+            if(sDate <= eDate){
+                document.getElementById("btnUpdateTask").disabled = false;
+                document.getElementById('id_start_date').style.borderColor = "";
+                $('#start_date').hide();
+                document.getElementById('id_end_date').style.borderColor = "";
+                $('#end_date').hide();
+            }
+            else{
+                document.getElementById("btnUpdateTask").disabled = true;
+                document.getElementById('id_start_date').style.borderColor = "red";
+                $('#start_date').show();
+            }
+        }
+        else{
+            document.getElementById("btnUpdateTask").disabled = false;
+            document.getElementById('id_start_date').style.borderColor = "";
+            $('#start_date').hide();
+        }
+
+        if(actualStartDate != '' && startDate != ''){
+            if(actualSDate >= sDate){
+                document.getElementById('id_actual_start_date').style.borderColor = "";
+                document.getElementById("btnUpdateTask").disabled = false;
+                $('#equal_start').hide();  
+            }
+            else{
+                document.getElementById('id_actual_start_date').style.borderColor = "red";
+                document.getElementById("btnUpdateTask").disabled = true;
+                $('#equal_start').show();   
+            }
+        }
+        else{
+            document.getElementById('id_actual_start_date').style.borderColor = "";
+            document.getElementById("btnUpdateTask").disabled = false;
+            $('#equal_start').hide();
+        }
+
+    });
+
+    // end date
+    $('#id_end_date').on('change', function(){
+        let startDate= document.getElementById('id_start_date').value;
+        let endDate= document.getElementById('id_end_date').value;
+        let sDate = new Date(startDate);
+        let eDate = new Date(endDate);
+
+        $(".clear").hover (function(){
+            $(this).css('cursor', 'pointer');
+        });
+
+        $(".clear").on('click', function(){
+            document.getElementById("btnUpdateTask").disabled = false;
+            document.getElementById('id_end_date').style.borderColor = "";
+            $('#end_date').hide();
+        });
+
+        if(startDate != '' && endDate != '' ){
+            if(sDate <= eDate){
+                document.getElementById("btnUpdateTask").disabled = false;
+                document.getElementById('id_end_date').style.borderColor = "";
+                $('#end_date').hide();
+                document.getElementById('id_start_date').style.borderColor = "";
+                $('#start_date').hide(); 
+            }
+            else{
+                document.getElementById("btnUpdateTask").disabled = true;
+                document.getElementById('id_end_date').style.borderColor = "red";
+                $('#end_date').show();
+            }
+        }
+        else{
+            document.getElementById("btnUpdateTask").disabled = false;
+            document.getElementById('id_end_date').style.borderColor = "";
+            $('#end_date').hide();
+        }
+    });
+
+    // actual start date
+    $('#id_actual_start_date').on('change', function(){
+        var actualStartDate= document.getElementById('id_actual_start_date').value;
+        var actualEndDate= document.getElementById('id_actual_end_date').value;
+        var startDate= document.getElementById('id_start_date').value;
+        var endDate= document.getElementById('id_end_date').value;
+
+        var actualSDate = new Date(actualStartDate);
+        var actualEDate = new Date(actualEndDate);
+        var sDate = new Date(startDate);
+
+        document.getElementById('id_actual_start_date').style.borderColor = "";
+        $("#id_actual_start_date").css('border','');
+
+        $(".clear").hover (function(){
+            $(this).css('cursor', 'pointer');
+        });
+
+        $(".clear").on('click', function(){
+            document.getElementById("btnUpdateTask").disabled = false;
+            document.getElementById('id_actual_start_date').style.borderColor = "";
+            $("#id_actual_start_date").css('borderWidth', '1px');
+            $('#equal_start').hide();
+            $('#actual_start_date').hide();
+        });
+
+        if(actualStartDate != '' && actualEndDate != ''){
+            if(actualSDate <= actualEDate){
+                document.getElementById("btnUpdateTask").disabled = false;
+                document.getElementById('id_actual_start_date').style.borderColor = "";
+                $('#actual_start_date').hide();
+                document.getElementById('id_actual_end_date').style.borderColor = "";
+                $('#actual_end_date').hide();
+            }
+            else{
+                document.getElementById("btnUpdateTask").disabled = true;
+                document.getElementById('id_actual_start_date').style.borderColor = "red";
+                $('#actual_start_date').show();
+                $('#id_actual_start_date').css('border-color', red);
+            }
+        }
+        else{
+            document.getElementById("btnUpdateTask").disabled = false;
+            document.getElementById('id_actual_start_date').style.borderColor = "";
+            $('#actual_start_date').hide();
+        }
+
+        if(actualStartDate != '' && startDate != ''){
+            if(actualSDate >= sDate){
+                document.getElementById('id_actual_start_date').style.borderColor = "";
+                $('#equal_start').hide();
+            }
+            else{
+                document.getElementById('id_actual_start_date').style.borderColor = "red";
+                $('#equal_start').show();
+                document.getElementById("btnUpdateTask").disabled = true;
+            }
+        }
+        else{
+            document.getElementById('id_actual_start_date').style.borderColor = "";
+            $('#equal_start').hide();
+        }
+        
+    });
+
+    // actual end date
+    $('#id_actual_end_date').on('change', function(){
+        var actualStartDate= document.getElementById('id_actual_start_date').value;
+        var actualEndDate= document.getElementById('id_actual_end_date').value;
+        var startDate= document.getElementById('id_start_date').value;
+        var endDate= document.getElementById('id_end_date').value;
+
+        var actualSDate = new Date(actualStartDate);
+        var actualEDate = new Date(actualEndDate);
+        var sDate = new Date(startDate);
+        var eDate = new Date(endDate);
+
+        document.getElementById('id_actual_end_date').style.borderColor = "";
+        $("#id_actual_end_date").css('border','');
+
+        $(".clear").hover (function(){
+            $(this).css('cursor', 'pointer');
+        });
+
+        $(".clear").on('click', function(){
+            document.getElementById("btnUpdateTask").disabled = false;
+            document.getElementById('id_actual_end_date').style.borderColor = "";
+            $("#id_actual_end_date").css('borderWidth', '1px');
+            $('#actual_end_date').hide();
+        });
+
+        if(actualStartDate != '' && actualEndDate != ''){
+            if(actualSDate <= actualEDate){
+                document.getElementById("btnUpdateTask").disabled = false;
+                document.getElementById('id_actual_start_date').style.borderColor = "";
+                $('#actual_start_date').hide();
+                document.getElementById('id_actual_end_date').style.borderColor = "";
+                $('#actual_end_date').hide();
+            }
+            else{
+                document.getElementById("btnUpdateTask").disabled = true;
+                document.getElementById('id_actual_end_date').style.borderColor = "red";
+                $('#actual_end_date').show();
+            }
+        }
+        else{
+            document.getElementById("btnUpdateTask").disabled = false;
+            document.getElementById('id_actual_start_date').style.borderColor = "";
+            $('#actual_start_date').hide();
+        }
+
+    });
+
+    $("form").on('submit', function(event){
+        event.preventDefault();
+        
+        if(statusText == 'completed' || statusText == 'terminated'){
+            if ($('#id_actual_start_date').val().length < 1){
+                $('#id_actual_start_date').css({ "border": '2px solid #00635a' });
+                event.preventDefault();
+            }
+
+            else if ($('#id_actual_end_date').val().length < 1){
+                $('#id_actual_end_date').css({ "border": '2px solid #00635a' });
+                event.preventDefault();
+            }
+
+            else{
+                var name = $('#id_name').val();
+                var status = $('#id_status').val();
+                var start_date = $('#id_start_date').val();
+                var end_date = $('#id_end_date').val();
+                var actual_start_date = $('#id_actual_start_date').val();
+                var actual_end_date = $('#id_actual_end_date').val();
+                var description = $('#id_description').val();
+                var project_id =$('#id_project').val();
+                var milestone_id = $('#id_milestone').val();
+                var task_id = $("#id_task").val();
+
+                $.ajax({
+                    url: "{% url 'checkMilestoneStatus' %}",
+                    data: {
+                        status_id: status
+                    },
+                    dataType: 'json',
+                    cache: false,
+                    success: function(data){
+                        var statusName = data.status_name;
+                        url_data = "{% url 'saveupdateProjectTask' 999%}".replace(999, task_id);
+
+                        if(statusName === "Completed") {
+                            $.ajax({
+                                type: "GET",
+                                cache: false,
+                                data: {
+                                    name: name,
+                                    status: status,
+                                    start_date: start_date,
+                                    end_date: end_date,
+                                    actual_start_date: actual_start_date,
+                                    actual_end_date: actual_end_date,
+                                    description: description,
+                                    project_id: project_id, 
+                                    milestone_id: milestone_id,
+                                    task_id: task_id   
+                                },
+                                url: url_data,
+                                success: function (resp) {
+                                    $('.close-dialog').click();
+                                    $.ajax({
+                                        type: "GET",
+                                        cache: false,
+                                        data: {
+                                            project_id: project_id
+                                        },
+                                        url: "{% url 'completedTasks' %}",
+                                        success:function(resp){
+                                            $('#completedPane').html(resp);
+                                        }
+                                    }); 
+
+                                    $.ajax({
+                                        type:"GET",
+                                        cache: false,
+                                        data:{
+                                            project_id:project_id,
+                                        },
+                                        dataType: 'json',
+                                        url: "{% url 'taskCount' %}",
+                                        success: function(data){
+                                            $("#count_open_tasks").text(data.open_count);
+                                            $("#count_onhold_tasks").text(data.onhold_count);
+                                            $("#count_terminated_tasks").text(data.terminated_count);
+                                            $("#count_completed_tasks").text(data.completed_count);   
+
+                                            // returning user to tab he was working in
+                                            $.ajax({
+                                                type:"GET",
+                                                cache: false,
+                                                data:{
+                                                    project_id:project_id,
+                                                },
+                                                url: "{% url 'onholdTasks' %}",
+                                                success: function(resp){
+                                                    $('#onholdPane').html(resp);                                                 
+                                                }
+                                            });
+
+                                        }
+                                    });
+                                }
+                            });
+                            return true;
+                        }
+                        else{
+                            $.ajax({
+                                type: "GET",
+                                cache: false,
+                                data: {
+                                    name: name,
+                                    status: status,
+                                    start_date: start_date,
+                                    end_date: end_date,
+                                    actual_start_date: actual_start_date,
+                                    actual_end_date: actual_end_date,
+                                    description: description,
+                                    project_id: project_id, 
+                                    milestone_id: milestone_id,
+                                    task_id: task_id    
+                                },
+                                url: url_data,
+                                success: function(resp) {
+                                    // filling new data to terminated task tab
+                                    $('.close-dialog').click(); 
+                                    $.ajax({
+                                        type: "GET",
+                                        cache: false,
+                                        data: {
+                                            project_id: project_id
+                                        },
+                                        url: "{% url 'terminatedTasks' %}",
+                                        success:function(resp){
+                                            $('#terminatedPane').html(resp);
+                                        }
+                                    });
+
+                                    $.ajax({
+                                        type:"GET",
+                                        cache: false,
+                                        data:{
+                                            project_id:project_id,
+                                        },
+                                        dataType: 'json',
+                                        url: "{% url 'taskCount' %}",
+                                        success: function(data){
+                                            $("#count_open_tasks").text(data.open_count);
+                                            $("#count_onhold_tasks").text(data.onhold_count);
+                                            $("#count_terminated_tasks").text(data.terminated_count);
+                                            $("#count_completed_tasks").text(data.completed_count);   
+
+                                            // returning user to tab he was working in
+                                            $.ajax({
+                                                type:"GET",
+                                                cache: false,
+                                                data:{
+                                                    project_id:project_id,
+                                                },
+                                                url: "{% url 'onholdTasks' %}",
+                                                success: function(resp){
+                                                    $('#onholdPane').html(resp);                                                 
+                                                }
+                                            });
+
+                                        }
+                                    });  
+                                }
+                            });
+                            return true;
+                        }
+                    }
+                });
+                return true;
+            }                    
+        }
+        else{
+            var name = $('#id_name').val();
+            var status = $('#id_status').val();
+            var start_date = $('#id_start_date').val();
+            var end_date = $('#id_end_date').val();
+            var actual_start_date = $('#id_actual_start_date').val();
+            var actual_end_date = $('#id_actual_end_date').val();
+            var description = $('#id_description').val();
+            var project_id =$('#id_project').val();
+            var milestone_id = $('#id_milestone').val();
+            var task_id = $("#id_task").val();
+
+            $.ajax({
+                url: "{% url 'checkMilestoneStatus' %}",
+                data: {
+                    status_id: status
+                },
+                dataType: 'json',
+                cache: false,
+                success: function(data){
+                    var statusName = data.status_name;
+                    url_data = "{% url 'saveupdateProjectTask' 999%}".replace(999, task_id);
+
+                    // if onhold status
+                    if(statusName === "Onhold") {
+                        $.ajax({
+                            type: "GET",
+                            cache: false,
+                            data: {
+                                name: name,
+                                status: status,
+                                start_date: start_date,
+                                end_date: end_date,
+                                actual_start_date: actual_start_date,
+                                actual_end_date: actual_end_date,
+                                description: description,
+                                project_id: project_id, 
+                                milestone_id: milestone_id,
+                                task_id: task_id   
+                            },
+                            url: url_data,
+                            success: function (resp) {
+                                $('.close-dialog').click(); 
+                                $.ajax({
+                                    type: "GET",
+                                    cache: false,
+                                    data: {
+                                        project_id: project_id
+                                    },
+                                    url: "{% url 'onholdTasks' %}",
+                                    success:function(resp){
+                                        $('#onholdPane').html(resp);
+                                    }
+                                });
+                            }
+                        });
+                        return true;
+                    }
+                    // if open status
+                    else{
+                        $.ajax({
+                            type: "GET",
+                            cache: false,
+                            data: {
+                                name: name,
+                                status: status,
+                                start_date: start_date,
+                                end_date: end_date,
+                                actual_start_date: actual_start_date,
+                                actual_end_date: actual_end_date,
+                                description: description,
+                                project_id: project_id, 
+                                milestone_id: milestone_id,
+                                task_id: task_id    
+                            },
+                            url: url_data,
+                            success: function(resp) {
+                                // filling new data to open task tab
+                                $('.close-dialog').click(); 
+                                $.ajax({
+                                    type: "GET",
+                                    cache: false,
+                                    data: {
+                                        project_id: project_id
+                                    },
+                                    url: "{% url 'openTasks' %}",
+                                    success:function(resp){
+                                        $('#openPane').html(resp);
+                                    }
+                                });
+
+                                $.ajax({
+                                    type:"GET",
+                                    cache: false,
+                                    data:{
+                                        project_id:project_id,
+                                    },
+                                    dataType: 'json',
+                                    url: "{% url 'taskCount' %}",
+                                    success: function(data){
+                                        $("#count_open_tasks").text(data.open_count);
+                                        $("#count_onhold_tasks").text(data.onhold_count);
+                                        $("#count_terminated_tasks").text(data.terminated_count);
+                                        $("#count_completed_tasks").text(data.completed_count);   
+
+                                        // returning user to tab he was working in
+                                        $.ajax({
+                                            type:"GET",
+                                            cache: false,
+                                            data:{
+                                                project_id:project_id,
+                                            },
+                                            url: "{% url 'onholdTasks' %}",
+                                            success: function(resp){
+                                                $('#onholdPane').html(resp);                                                 
+                                            }
+                                        });
+
+                                    }
+                                });  
+                            }
+                        });
+                        return true;
+                    }
+                }
+            });
+            
+            return true;
+        }
+    });
+</script>

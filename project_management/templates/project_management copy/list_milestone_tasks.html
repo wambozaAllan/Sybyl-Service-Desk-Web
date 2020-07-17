@@ -1,0 +1,269 @@
+<div>
+    <input type="text" value="{{ project_id }}" style="display: none;">
+    <input type="text" value="{{ milestone_id }}" style="display: none;">
+
+<div class="card-body task-milestone">
+    <div class="row page-titles">
+        <div class="col-md-8 col-sm-12 align-self-center">
+            <h5 class="text-primary">MILESTONE: {{ milestone_name }}</h3>
+        </div>
+        <div class="col-md-4 col-sm-12 align-self-center">
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item"><a href="#" onclick="listMilestones('{{project_id}}')">Milestones</a></li>
+                <li class="breadcrumb-item active">Task List</li>
+            </ol>
+        </div>
+    </div>
+    <div class="card-title">
+        <div class="row">
+            <div class="col-10">
+                <h4 class="card-title">Tasks</h4>
+            </div>
+
+            <div class="col-2">
+                <a href="#" onclick="functAddMilestoneTask('{{ project_id }}', '{{ milestone_id}}', '{{ milestone_name }}')" class="btn btn-info pull-right">
+                        <i class="fa fa-fw fa-lg fa-plus"></i>Add Task</a>
+            </div>
+        </div>
+        
+    </div>
+    <div class="table-responsive">
+        <table class="table table-hover" id="table_tasks">
+            <thead>
+                <tr>
+                    <th>#</th>
+                    <th>Name</th>
+                    <th class="text-center">Assigned To</th>
+                    <th>Start Date</th>
+                    <th>End Date</th>
+                    <th>Status</th>
+                    <th class="text-center">Action</th>
+                </tr>
+            </thead>
+
+            <tbody>
+
+                {% for task in milestone_tasks %}
+                <tr>
+                    <td>{{ forloop.counter }}</td>
+                    <td>{{ task.name }}</td>
+                    <td class="text-center">
+                        <a href="#" style="color: #fff"
+                            onclick="assignedTaskMembersMilestone('{{ task.id }}', '{{ project_id }}')">
+                            <span class="badge badge-pill badge-success">{{ task.assigned }}</span>
+                        </a>
+                    </td>
+
+                    {% if task.start_date == None %}
+                        <td style="color:#99abb4;">Not set</td>
+                    {% else %}
+                        <td>{{task.start_date}}</td>
+                    {% endif %}
+                    
+                    {% if task.end_date == None %}
+                        <td style="color:#99abb4;">Not set</td>
+                    {% elif task.end_date|date:"m d, Y" < today or task.end_date|date:"m d, Y" == today%}
+                        <td style="color:red;">{{ task.end_date }}</td>
+                    {% else %}
+                        <td style="color:#99abb4;">{{ task.end_date }}</td>
+                    {% endif %}
+
+                    <td>{{ task.status }}</td>
+                    <td class="text-center">
+                        <button class="btn btn-outline-success btn-sm"
+                            onclick="editTask('{{ task.id }}', '{{ task.name }}', '{{project_id}}', '{{ milestone_id }}')">
+                            <i title="Manage Task" class="fa fa-edit"></i>
+                        </button>
+
+                        <button onclick="deleteTask('{{ task.id }}', '{{ task.name }}', '{{project_id}}', '{{milestone_id}}' )"
+                                class="btn btn-outline-danger btn-sm" type="button">
+                            <i title="Delete Task" class="fa fa-remove"></i>
+                        </button>
+                    </td>
+                </tr>
+                {% endfor %}
+
+            </tbody>
+        </table>
+    </div>
+</div>
+
+</div>
+
+<script>
+
+    $('#table_tasks').DataTable();
+    function listMilestones(project_id){
+        urldata = "{% url 'listProjectMilestones' %}";
+        $.ajax({
+            type: "GET",
+            cache: false,
+            data: {
+                project_id: project_id
+            },
+            url: urldata,
+            success: function (resp) {
+                $('.milestone-card').html(resp);
+            }
+        });
+    }
+
+    function functAddMilestoneTask(project_id, milestone_id, milestone_name){
+        urldata = "{% url 'addMilestoneTask' %}"
+        $.ajax({
+            type: "GET",
+            cache: false,
+            data:{
+                project_id: project_id,
+                milestone_id: milestone_id
+            },
+            url: urldata,
+            success: function (resp) {
+                $.confirm({
+                        title: '<h3>Add Task:</h3>',
+                        content: '' + resp,
+                        type: 'blue',
+                        theme: 'material',
+                        typeAnimated: true,
+                        boxWidth: '60%',
+                        useBootstrap: false,
+                        closeIcon: true,
+                        buttons: {
+                            close: {
+                                text: 'Close',
+                                btnClass: 'btn-gray close-dialog',
+                                action: function () {
+                                }
+                            }
+                        }
+                    });
+            }
+        })
+    }
+
+    function editTask(task_id, task_name, project_id, milestone_id) {
+        url = "{% url 'updateMilestoneTask' 999%}".replace(999, task_id);
+        $.ajax({
+            url: url,
+            type: "GET",
+            cache: false,
+            data: {
+                task_id: task_id,
+                task_name: task_name,
+                project_id: project_id,
+                milestone_id: milestone_id
+            },
+            success: function (resp) {
+                $.confirm({
+                    title: '<h3>Edit Task: <strong>'+ task_name +'<strong></h3>',
+                    content: '' + resp,
+                    type: 'blue',
+                    theme: 'material',
+                    typeAnimated: true,
+                    boxWidth: '60%',
+                    useBootstrap: false,
+                    closeIcon: true,
+                    buttons: {
+                        close: {
+                            text: 'Close',
+                            btnClass: 'btn-gray close-dialog',
+                            action: function () {
+                            }
+                        }
+                    }
+                });
+            }
+        });
+    }
+
+    function deleteTask(task_id, task_name, project_id, milestone_id) {
+        urldata = "{% url 'deleteTask'%}";
+        $.confirm({
+            title: '<h4>Delete Task: <strong class="text-danger">' + task_name + '</h4>',
+            content: '',
+            type: 'red',
+            typeAnimated: true,
+            boxWidth: '40%',
+            useBootstrap: false,
+            theme: 'modern',
+            icon: 'fa fa-exclamation-circle',
+            buttons: {
+                formSubmit: {
+                    text: 'Remove',
+                    btnClass: 'btn-red',
+                    action: function () {
+                        $.ajax({
+                            type: "GET",
+                            cache: false,
+                            data: {
+                                task_name: task_name,
+                                task_id: task_id
+                            },
+                            dataType: 'json',
+                            url: urldata,
+                            success: function (response_data){
+                                $('.close-dialog').click();
+                                if (response_data.success === true){
+                                    $.ajax({
+                                        type:"GET",
+                                        cache: false,
+                                        data:{
+                                            project_id:project_id,
+                                            milestone_id: milestone_id
+                                        },
+                                        url: "{% url 'milestoneTasks' %}",
+                                        success: function(resp){
+                                            $('.milestone-task').html(resp);                                                    
+                                        }
+                                    });
+                                    $.confirm({
+                                        title: "Success",
+                                        content: 'Task: ' + response_data.message,
+                                        type: 'blue',
+                                        typeAnimated: true,
+                                        boxWidth: '35%',
+                                        useBootstrap: false,
+                                        closeIcon: false,
+                                            buttons: {
+                                                formSubmit: {
+                                                    text: 'OK',
+                                                    btnClass: 'btn-blue close-dialog',
+                                                    action: function () {
+                                                        
+                                                    }
+                                                }
+                                            }
+                                    }); 
+                                }
+                            }
+                        });
+                    }
+                },
+                close: {
+                    text: 'Cancel',
+                    btnClass: 'btn-gray',
+                    action: function () {
+                    }
+                }
+            }
+        });
+    }
+
+    function assignedTaskMembersMilestone(task_id, project_id){
+        url = "{% url 'assignedTaskMembersMilestone' %}";
+        $.ajax({
+            url: url,
+            type: "GET",
+            cache: false,
+            data:{
+                task_id: task_id,
+                project_id: project_id
+            },
+            success:function (resp) {
+                $('.task-milestone').html(resp);
+                $('#table_assigned_tasks').DataTable();
+            }
+        });
+    }
+
+</script>

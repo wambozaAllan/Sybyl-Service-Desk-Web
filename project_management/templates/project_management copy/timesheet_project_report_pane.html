@@ -1,0 +1,228 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block content %}
+<!-- Main wrapper  -->
+{% include 'header.html' %}
+{% include 'left-nav.html' %}
+
+<script type="text/javascript"
+    src="{% static 'template-static-files/javascript/lib/calendar-2/moment.latest.min.js' %}"></script>
+
+<div id="main-wrapper">
+
+    <!-- Page wrapper  -->
+    <div class="page-wrapper">
+        <!-- Bread crumb -->
+        <div class="row page-titles">
+            <div class="col-md-5 align-self-center">
+                <h3 class="text-primary">Timesheet Project Report</h3>
+            </div>
+            <div class="col-md-7 align--selfcenter">
+                <ol class="breadcrumb">
+                    <li class="breadcrumb-item"><a href="javascript:void(0)">Home</a></li>
+                    <li class="breadcrumb-item active">Timesheet</li>
+                </ol>
+            </div>
+        </div>
+        <!-- Container fluid  -->
+        <div class="container-fluid">
+            <div class="p-5">
+                <div class="card">
+                    <div class="card-body weekly_project_data_pane1">
+
+                        <div class="">
+                            <div class="row ">
+                                <div class="col-5">
+                                    <div id="" class="form-group">
+                                        <label class="col-form-label requiredField">Select Week</label>
+                                        <div class="week-select input-group">
+                                            <span class="input-group-btn">
+                                                <button type="button" class="btn btn-rm week-prev">&laquo;</button>
+                                            </span>
+
+                                            <input id="weekpicker" onkeypress="return false;" type="text" name="week"
+                                                class="form-control" id="" placeholder="">
+
+                                            <span class="input-group-btn">
+                                                <button type="button" class="btn btn-rm week-next">&raquo;</button>
+                                            </span>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="col-7 ">
+                                    <button style="margin-top: 8%;" id="generateTimesheetProjectPDF"
+                                        class="btn btn-info pull right">
+                                        <i class="fa fa-file-pdf-o"></i> PDF
+                                    </button>
+                                </div>
+
+                            </div>
+                        </div>
+
+                        <div id="weekly_project_data" class="">
+                            <i class="fa fa-spinner fa-spin fa-5x" style="align-content: center;margin-left: 50%;"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    var startDate, endDate;
+
+    $(document).ready(function () {
+        var applyStyle = function (e, cssClass) {
+            var tr = e.parent('tr');
+            var index = e.index();
+
+            e.addClass(cssClass);
+            var daysRemainingInWeek = 6 - index;
+            var carryOver = 6 - daysRemainingInWeek;
+
+            for (var i = 0; i <= daysRemainingInWeek; i++) {
+                var pos = index + i;
+                tr.find('td:eq(' + pos + ')').addClass(cssClass);
+            }
+
+            if (carryOver > 0) {
+                var nextTr = tr.next('tr');
+                for (var i = 0; i < carryOver; i++) {
+                    nextTr.find('td:eq(' + i + ')').addClass(cssClass);
+                }
+            }
+        };
+
+        var highlightRange = function (e) {
+            var input = e.currentTarget;
+
+            $('.week-active', '.datepicker-days').removeClass('week-active');
+            var thisDay = $('td.active.day', '.datepicker-days');
+            applyStyle(thisDay, 'week-active');
+
+            var date = new Date(e.date);
+            var start_date = moment(date);
+            var end_date = moment(date).add(6, 'days');
+
+            startDate = new Date(date.getFullYear(), date.getMonth(), date.getDate() - date.getDay());
+            endDate = new Date(date.getFullYear(), date.getMonth(), date.getDate() - date.getDay() + 6);
+
+            var friendly_string = start_date.format('DD-MM-YYYY') + ' - '
+                + end_date.format('DD-MM-YYYY');
+
+            $(input).val(friendly_string);
+
+            $.ajax({
+                type: "GET",
+                cache: false,
+                data: {
+                    start_date: start_date.format('DD-MM-YYYY'),
+                    end_date: end_date.format('DD-MM-YYYY')
+                },
+                url: '{% url 'filterProjectTimesheetsByWeek' %}',
+                success: function (resp) {
+                    $('#weekly_project_data').html('');
+                    $('#weekly_project_data').html(resp);
+                }
+            });
+        };
+
+        highlightRange({ currentTarget: document.getElementsByName('week')[0], date: new Date() });
+
+        $('input[name=week]').datepicker({
+            format: "dd-mm-yyyy",
+            autoclose: true,
+            orientation: 'top auto'
+        }).on('show', function (e) {
+            var td = $('td', '.datepicker-days');
+            td.mouseover(function () {
+                applyStyle($(this), 'week');
+            }).mouseout(function () {
+                $('.week', '.datepicker-days').removeClass('week');
+            });
+
+            highlightRange(e);
+        }).on('hide', function (e) {
+            highlightRange(e);
+        });
+
+        $('.input-group-addon', '.week-select').click(function () {
+            $('input[name=week]').datepicker('show');
+        });
+
+
+        $('.week-prev').on('click', function (e) {
+            var date = $('#weekpicker').datepicker('getDate');
+
+            startDate = new Date(date.getFullYear(), date.getMonth(), date.getDate() - date.getDay() - 7);
+            endDate = new Date(date.getFullYear(), date.getMonth(), date.getDate() - date.getDay() - 1);
+
+            $('#weekpicker').datepicker("setDate", new Date(startDate));
+            $('#weekpicker').val(startDate.getDate() + '-' + (startDate.getMonth() + 1) + '-' + startDate.getFullYear() + ' - ' + endDate.getDate() + '-' + (endDate.getMonth() + 1) + '-' + endDate.getFullYear());
+
+            var start_date = moment(startDate);
+            var end_date = moment(endDate);
+
+            $.ajax({
+                type: "GET",
+                cache: false,
+                data: {
+                    start_date: start_date.format('DD-MM-YYYY'),
+                    end_date: end_date.format('DD-MM-YYYY')
+                },
+                url: '{% url 'filterProjectTimesheetsByWeek' %}',
+                success: function (resp) {
+                    $('#weekly_project_data').html('');
+                    $('#weekly_project_data').html(resp);
+                }
+            });
+            return false;
+        });
+
+        $('.week-next').on('click', function () {
+            var date = $('#weekpicker').datepicker('getDate');
+            startDate = new Date(date.getFullYear(), date.getMonth(), date.getDate() - date.getDay() + 7);
+            endDate = new Date(date.getFullYear(), date.getMonth(), date.getDate() - date.getDay() + 13);
+            $('#weekpicker').datepicker("setDate", new Date(startDate));
+            $('#weekpicker').val(startDate.getDate() + '-' + (startDate.getMonth() + 1) + '-' + startDate.getFullYear() + ' - ' + endDate.getDate() + '-' + (endDate.getMonth() + 1) + '-' + endDate.getFullYear());
+
+            var start_date = moment(startDate);
+            var end_date = moment(endDate);
+
+            $.ajax({
+                type: "GET",
+                cache: false,
+                data: {
+                    start_date: start_date.format('DD-MM-YYYY'),
+                    end_date: end_date.format('DD-MM-YYYY')
+                },
+                url: '{% url 'filterProjectTimesheetsByWeek' %}',
+                success: function (resp) {
+                    $('#weekly_project_data').html('');
+                    $('#weekly_project_data').html(resp);
+                }
+            });
+            return false;
+        });
+    });
+
+    $('#generateTimesheetProjectPDF').on('click', function () {
+        html2canvas($('.weekly_project_data_pane1')[0], {
+            onrendered: function (canvas) {
+                var data = canvas.toDataURL();
+                var docDefinition = {
+                    content: [{
+                        image: data,
+                        width: 500
+                    }]
+                };
+                pdfMake.createPdf(docDefinition).download("ProjectReport.pdf");
+            }
+        });
+    });
+
+
+</script>
+{% endblock %}

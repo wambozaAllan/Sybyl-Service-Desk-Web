@@ -1,0 +1,242 @@
+<div>
+        <input type="text" value="{{ project_id }}" style="display: none;">
+        <input type="text" value="{{ milestone_id }}" style="display: none;">
+    
+    <div class="card-body assigned-task">
+        <div class="row page-titles">
+            <div class="col-md-8 col-sm-12 align-self-center">
+                <h5 class="text-primary">TASK: {{ task }}</h3>
+            </div>
+            <div class="col-md-4 col-sm-12 align-self-center">
+                <ol class="breadcrumb">
+                    <li class="breadcrumb-item"><a href="#" onclick="functionSpecificTask( '{{ milestone_id }}', '{{project_id}}' )">Task List</a></li>
+                    <li class="breadcrumb-item active">Members</li>
+                </ol>
+            </div>
+        </div>
+        <div class="card-title">
+            <div class="row">
+                <div class="col-10">
+                    <h4 class="card-title">Assigned Members</h4>
+                </div>
+    
+                <div class="col-2">
+                    <a href="#" onclick="assignMember('{{ project_id }}', '{{ milestone_id}}', '{{ task.id }}')" class="btn btn-info pull-right">
+                            <i class="fa fa-fw fa-lg fa-plus"></i>Assign Member</a>
+                </div>
+    
+            </div>
+            
+        </div>
+        <div class="table-responsive">
+            <table class="table table-hover" id="table_assigned_tasks">
+                <thead>
+                    <tr>
+                        <th>#</th>
+                        <th>Name</th>
+                        <th class="text-center">Responsibility</th>
+                        <th class="text-center">Action</th>
+                    </tr>
+                </thead>
+    
+                <tbody>
+                    {% for assigned in assigned_members %}
+                    <tr>
+                        <td>{{ forloop.counter }}</td>
+                        <td>{{ assigned.member }}</td>
+                        <td class="text-center"><span class="badge badge-pill badge-success">{{ assigned.responsibility }}</span></td>
+                        <td class="text-center">
+                            <button onclick="deassignMember('{{ task.id }}', '{{project_id}}', '{{milestone_id}}', '{{assigned.member}}', '{{assigned.member.id}}' )"
+                                    class="btn btn-outline-danger btn-sm" type="button">
+                                <i title="Deassign Member" class="fa fa-remove"></i>
+                            </button>
+                        </td>
+                    </tr>
+                    {% endfor %}
+    
+                </tbody>
+            </table>
+        </div>
+    </div>
+    
+    </div>
+    
+    <script>
+        $('#table_assigned_tasks').DataTable();
+    
+        // returning list of tasks
+        function listTasks(project_id){
+            
+            urldata = "{% url 'listProjectTasks' %}";
+            $.ajax({
+                type: "GET",
+                cache: false,
+                data: {
+                    project_id: project_id
+                },
+                url: urldata,
+                success: function (resp) {
+                    $('.task-card').html(resp);
+                    $.ajax({
+                        type:"GET",
+                        cache: false,
+                        data:{
+                            project_id:project_id,
+                        },
+                        url: "{% url 'openTasks' %}",
+                        success: function(resp){      
+                            $('#openPane').html(resp);                                         
+                        }
+                    });
+                }
+            });
+        }
+
+        function functionSpecificTask(milestone_id, project_id) {
+            urlData = "{% url 'milestoneTasks' %}";
+            $.ajax({
+                type: "GET",
+                cache: false,
+                data: {
+                    milestone_id: milestone_id,
+                    project_id: project_id,
+                },
+                url: urlData,
+                success: function (resp) {
+                    $('.milestone-task').html(resp);
+                }
+            });
+        }
+    
+        function assignMember(project_id, milestone_id, task_id){
+            $.ajax({
+                type:"GET",
+                cache: false,
+                data:{
+                    project_id:project_id,
+                },
+                dataType: "json",
+                url: "{% url 'checkTeamMembers' %}",
+                success: function(data){      
+                    if(data.state == false){
+                        $.alert({
+                            type: 'blue',
+                            title: 'Alert!',
+                            content: 'Please add team members to the team first by clicking on Tab Team!',
+                        });
+                    }
+                    else{
+                        $.ajax({
+                            type:"GET",
+                            cache: false,
+                            data:{
+                                project_id:project_id,
+                                task_id: task_id
+                            },
+                            dataType: "json",
+                            url: "{% url 'checkAssignedTaskMembers' %}",
+                            success: function(data){      
+                                if(data.team_state == false){
+                                    $.alert({
+                                        type: 'blue',
+                                        title: 'Alert!',
+                                        content: 'All Team Members Have Been Assigned to this task. Please add more team members to the team to assign task by clicking on Tab Team!',
+                                    });
+                                }
+                                else{
+                                    urlData = "{% url 'assignTaskMembers' %}";
+                                    $.ajax({
+                                        type: "GET",
+                                        cache: false,
+                                        data: {
+                                            project_id:project_id,
+                                            milestone_id: milestone_id,
+                                            task_id: task_id
+                                        },
+                                        url: urlData,
+                                        success: function (resp) {
+                                            $.confirm({
+                                                title: '<h3>Assign Member</h3>',
+                                                content: '' + resp,
+                                                type: 'blue',
+                                                theme: 'material',
+                                                typeAnimated: true,
+                                                boxWidth: '90%',
+                                                useBootstrap: false,
+                                                closeIcon: true,
+                                                buttons: {
+                                                    close: {
+                                                        text: 'Close',
+                                                        btnClass: 'btn-gray close-dialog',
+                                                        action: function () {
+                                                            url = "{% url 'assignedTaskMembersMilestone' %}";
+                                                            $.ajax({
+                                                                url: url,
+                                                                type: "GET",
+                                                                cache: false,
+                                                                data:{
+                                                                    task_id: task_id,
+                                                                    project_id: project_id
+                                                                },
+                                                                success:function (resp) {
+                                                                    $('.task-milestone').html(resp);
+                                                                }
+                                                            });
+                                                        }
+                                                    }
+                                                }
+                                            });
+                                        }
+                                    });
+                                }
+                            }
+                        });    
+                    }
+                }
+            });
+        
+        }
+    
+        function deassignMember(task_id, project_id, milestone_id, membername, assigned_id){
+            urldata = "{% url 'deassignTaskMembersMilestone'%}";
+            $.confirm({
+                title: '<h4>Deassign Member: <strong class="text-danger">"' + membername + ' "</strong>! </h4>',
+                content: '',
+                type: 'red',
+                typeAnimated: true,
+                boxWidth: '40%',
+                useBootstrap: false,
+                theme: 'modern',
+                icon: 'fa fa-exclamation-circle',
+                buttons: {
+                    formSubmit: {
+                        text: 'Remove',
+                        btnClass: 'btn-red',
+                        action: function () {
+                            $.ajax({
+                                type: "GET",
+                                cache: false,
+                                data: {
+                                    task_id: task_id,
+                                    project_id: project_id,
+                                    milestone_id: milestone_id,
+                                    assigned_id: assigned_id
+                                },
+                                url: urldata,
+                                success: function (resp) {
+                                    $('.task-milestone').html(resp);
+                                }
+                            });
+                        }
+                    },
+                    close: {
+                        text: 'Cancel',
+                        btnClass: 'btn-gray',
+                        action: function () {
+                        }
+                    }
+                }
+            });
+        }
+    </script>
+    

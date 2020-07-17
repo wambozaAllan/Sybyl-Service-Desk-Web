@@ -1,0 +1,38 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block content %}
+<!-- Main wrapper  -->
+{% include 'header.html' %}
+{% include 'left-nav.html' %}
+
+<div id="main-wrapper">
+
+    <!-- Page wrapper  -->
+    <div class="page-wrapper">
+        <!-- Bread crumb -->
+        <div class="row page-titles">
+            <div class="col-md-5 align-self-center">
+                <h3 class="text-primary">Schedule Plan</h3>
+            </div>
+            <div class="col-md-7 align--selfcenter">
+                <ol class="breadcrumb">
+                    <li class="breadcrumb-item"><a href="javascript:void(0)">Home</a></li>
+                    <li class="breadcrumb-item active">Timesheet</li>
+                </ol>
+            </div>
+        </div>
+        <!-- Container fluid  -->
+        <div class="container-fluid">
+            <div class="p-5">
+                <div class="card">
+                    <div class="card-body p-0">
+                        <h6 class="">Schedule plan </h6>
+
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% endblock %}

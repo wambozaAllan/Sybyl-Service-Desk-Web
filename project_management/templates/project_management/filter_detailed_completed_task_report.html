@@ -1,0 +1,55 @@
+{% load humanize %}
+{% if timesheet_report %}
+<table id="" class=" table table-hover table-sm" cellspacing="0" width="100%">
+    <thead>
+        <tr>
+            <th>Name</th>
+            <th>Task</th>
+            <th>Duration</th>
+            <th>Time</th>
+            <th>Project</th>
+            <th>Milestone</th>
+            <th>Details</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for ii in timesheet_report %}
+            <tr class="">
+                {% if ii.name == "" %}
+                    <td class="font-weight-bold border-0">{{ ii.name }}</td>
+                {% else %}
+                    <td class="font-weight-bold">{{ ii.name |linebreaks}}  <span class="text-primary small">Total: ({{ii.total_dur}})</span></td>
+                {% endif %}
+                <td class="text-primary">{{ ii.task }}</td>
+                <td>{{ ii.duration }}</td>
+                <td>{{ ii.stime | time:"TIME_FORMAT"}} - {{ ii.etime | time:"TIME_FORMAT"}}</td>
+                <td>{{ ii.project }}</td>
+                <td>{{ ii.milestone }}</td>
+                <td>{{ ii.notes }}</td>
+            </tr>
+        {% endfor %}
+    </tbody>
+</table>
+{% else %}
+    <table id="" class=" table table-hover table-sm" cellspacing="0" width="100%">
+        <thead>
+            <tr>
+                <th>Name</th>
+                <th>Task</th>
+                <th>Duration</th>
+                <th>Time</th>
+                <th>Project</th>
+                <th>Milestone</th>
+                <th>Details</th>
+            </tr>
+        </thead>
+        <tbody></tbody>
+    </table><br>
+    <h6 style="padding-left: 50%;">No Records.</h6> 
+{% endif %}
+<input id="selected_date_23" value="{{selected_date}}" type="hidden"/>
+
+<script>
+    var sel_date1 = $('#selected_date_23').val();
+    $(".current_daily_pane").text(sel_date1);
+</script>

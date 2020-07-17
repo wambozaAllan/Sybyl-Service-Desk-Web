@@ -1,0 +1,27 @@
+<div class="table-responsive m-t-40">
+    <div class="dataTables_wrapper">
+        <table id="table-report" class="display nowrap table table-hover"
+        cellspacing="0" width="100%">
+            <thead>
+            <tr>
+                <th>Name</th>
+                <th>Project</th>
+                <th>Milestone</th>
+                <th>Status</th>
+            </tr>
+            </thead>
+            <tbody>
+                {%for task in tasks%}
+                <tr>
+                    <td>{{task.name}}</td>
+                    <td>{{task.project}}</td>
+                    <td>{{task.milestone}}</td>
+                    <td>{{task.status}}</td>
+                </tr>
+                {%endfor%}
+            </tbody>
+    </table>
+    </div>
+    
+</div>
+

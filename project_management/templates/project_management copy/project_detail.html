@@ -1,0 +1,702 @@
+{% extends 'base.html' %}
+
+{% load static %}
+
+{% block content %}
+
+<link href="http://maxcdn.bootstrapcdn.com/bootstrap/3.3.0/css/bootstrap.min.css" rel="stylesheet">
+
+<style type="text/css">
+    profile-pic {
+        position: relative;
+        display: inline-block;
+    }
+
+    .profile-pic:hover .edit {
+        display: block;
+    }
+
+    .edit {
+        padding-top: 7px;
+        padding-right: 7px;
+        position: absolute;
+        right: 0;
+        top: 0;
+        display: none;
+    }
+
+    .edit a {
+        color: #000;
+    }
+
+    /* .collapsible {
+        background-color: #777;
+        color: white;
+        cursor: pointer;
+        padding: 18px;
+        width: 100%;
+        border: none;
+        text-align: left;
+        outline: none;
+        font-size: 15px;
+    }
+
+    .active .collapsible:hover {
+        background-color: #555;
+    }
+
+    .collapsible:after {
+        content: '\002B';
+        color: white;
+        font-weight: bold;
+        float: right;
+        margin-left: 5px;
+    }
+
+.active:after {
+  content: "\2212";
+} */
+</style>
+<script src="http://maxcdn.bootstrapcdn.com/bootstrap/3.3.0/js/bootstrap.min.js"></script>
+
+
+<!-- Main wrapper  -->
+<div id="main-wrapper">
+    <!-- header header  -->
+    <div class="header">
+        <nav class="navbar top-navbar navbar-expand-md navbar-light">
+            <!-- Logo -->
+            <div class="navbar-header">
+                <a class="navbar-brand" href="index.html">
+                    <!-- Logo icon -->
+                    <b><img src="{% static 'template-static-files/images/logo.png' %}" alt="homepage" class="dark-logo" /></b>
+                    <!--End Logo icon -->
+                    <!-- Logo text -->
+                    <span>Project Issue Tracker</span>
+                </a>
+            </div>
+            <!-- End Logo -->
+            <div class="navbar-collapse">
+                <!-- toggle and nav items -->
+                <ul class="navbar-nav mr-auto mt-md-0">
+                    <!-- This is  -->
+                    <li class="nav-item"> <a class="nav-link nav-toggler hidden-md-up text-muted  " href="javascript:void(0)"><i
+                                class="mdi mdi-menu"></i></a> </li>
+                    <li class="nav-item m-l-10"> <a class="nav-link sidebartoggler hidden-sm-down text-muted  " href="javascript:void(0)"><i
+                                class="ti-menu"></i></a> </li>
+                    <!-- Messages -->
+                    <li class="nav-item dropdown mega-dropdown"> <a class="nav-link dropdown-toggle text-muted  " href="#"
+                            data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"><i class="fa fa-th-large"></i></a>
+                        <div class="dropdown-menu animated zoomIn">
+                            <ul class="mega-dropdown-menu row">
+
+                                <li class="col-lg-4 col-xlg-4 m-b-20">
+                                    <h4 class="m-b-20">Projects</h4>
+                                    <!-- List style -->
+                                    <ul class="list-style-none">
+                                        <li><a href="javascript:void(0)"><i class="fa fa-check text-success"></i>
+                                                Ongoing</a></li>
+                                        <li><a href="javascript:void(0)"><i class="fa fa-check text-success"></i>
+                                                Closed</a></li>
+                                        <li><a href="javascript:void(0)"><i class="fa fa-check text-success"></i> New</a></li>
+                                    </ul>
+                                </li>
+                                <li class="col-lg-4 col-xlg-4 m-b-20">
+                                    <h4 class="m-b-20">Milestones</h4>
+                                    <!-- List style -->
+                                    <ul class="list-style-none">
+                                        <li><a href="javascript:void(0)"><i class="fa fa-check text-success"></i>
+                                                Project Milestones</a></li>
+                                        <li><a href="javascript:void(0)"><i class="fa fa-check text-success"></i> New</a></li>
+                                    </ul>
+                                </li>
+                                <li class="col-lg-4 col-xlg-4 m-b-20">
+                                    <h4 class="m-b-20">Tasks</h4>
+                                    <!-- List style -->
+                                    <ul class="list-style-none">
+                                        <li><a href="javascript:void(0)"><i class="fa fa-check text-success"></i> This
+                                                Is Another Link</a></li>
+                                        <li><a href="javascript:void(0)"><i class="fa fa-check text-success"></i> This
+                                                Is Another Link</a></li>
+                                        <li><a href="javascript:void(0)"><i class="fa fa-check text-success"></i> This
+                                                Is Another Link</a></li>
+                                        <li><a href="javascript:void(0)"><i class="fa fa-check text-success"></i> This
+                                                Is Another Link</a></li>
+                                        <li><a href="javascript:void(0)"><i class="fa fa-check text-success"></i> This
+                                                Is Another Link</a></li>
+                                    </ul>
+                                </li>
+                            </ul>
+                        </div>
+                    </li>
+                    <!-- End Messages -->
+                </ul>
+                <!-- User profile and search -->
+                <ul class="navbar-nav my-lg-0">
+
+                    <!-- Search -->
+                    <li class="nav-item hidden-sm-down search-box"> <a class="nav-link hidden-sm-down text-muted  "
+                            href="javascript:void(0)"><i class="ti-search"></i></a>
+                        <form class="app-search">
+                            <input type="text" class="form-control" placeholder="Search here"> <a class="srh-btn"><i
+                                    class="ti-close"></i></a> </form>
+                    </li>
+                    <!-- Comment -->
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle text-muted text-muted  " href="#" data-toggle="dropdown"
+                            aria-haspopup="true" aria-expanded="false"> <i class="fa fa-bell"></i>
+                            <div class="notify"> <span class="heartbit"></span> <span class="point"></span> </div>
+                        </a>
+                        <div class="dropdown-menu dropdown-menu-right mailbox animated zoomIn">
+                            <ul>
+                                <li>
+                                    <div class="drop-title">Notifications</div>
+                                </li>
+                                <li>
+                                    <div class="message-center">
+                                        <!-- Message -->
+                                        <a href="#">
+                                            <div class="btn btn-danger btn-circle m-r-10"><i class="fa fa-link"></i></div>
+                                            <div class="mail-contnet">
+                                                <h5>This is title</h5> <span class="mail-desc">Just see the my new
+                                                    admin!</span> <span class="time">9:30 AM</span>
+                                            </div>
+                                        </a>
+                                        <!-- Message -->
+                                        <a href="#">
+                                            <div class="btn btn-success btn-circle m-r-10"><i class="ti-calendar"></i></div>
+                                            <div class="mail-contnet">
+                                                <h5>This is another title</h5> <span class="mail-desc">Just a reminder
+                                                    that you have event</span> <span class="time">9:10 AM</span>
+                                            </div>
+                                        </a>
+                                        <!-- Message -->
+                                        <a href="#">
+                                            <div class="btn btn-info btn-circle m-r-10"><i class="ti-settings"></i></div>
+                                            <div class="mail-contnet">
+                                                <h5>This is title</h5> <span class="mail-desc">You can customize this
+                                                    template as you want</span> <span class="time">9:08 AM</span>
+                                            </div>
+                                        </a>
+                                        <!-- Message -->
+                                        <a href="#">
+                                            <div class="btn btn-primary btn-circle m-r-10"><i class="ti-user"></i></div>
+                                            <div class="mail-contnet">
+                                                <h5>This is another title</h5> <span class="mail-desc">Just see the my
+                                                    admin!</span> <span class="time">9:02 AM</span>
+                                            </div>
+                                        </a>
+                                    </div>
+                                </li>
+                                <li>
+                                    <a class="nav-link text-center" href="javascript:void(0);"> <strong>Check all
+                                            notifications</strong> <i class="fa fa-angle-right"></i> </a>
+                                </li>
+                            </ul>
+                        </div>
+                    </li>
+                    <!-- End Comment -->
+                    <!-- Messages -->
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle text-muted  " href="#" id="2" data-toggle="dropdown"
+                            aria-haspopup="true" aria-expanded="false"> <i class="fa fa-envelope"></i>
+                            <div class="notify"> <span class="heartbit"></span> <span class="point"></span> </div>
+                        </a>
+                        <div class="dropdown-menu dropdown-menu-right mailbox animated zoomIn" aria-labelledby="2">
+                            <ul>
+                                <li>
+                                    <div class="drop-title">You have 4 new messages</div>
+                                </li>
+                                <li>
+                                    <div class="message-center">
+                                        <!-- Message -->
+                                        <a href="#">
+                                            <div class="user-img"> <img src="{% static 'template-static-files/images/users/5.jpg' %}"
+                                                    alt="user" class="img-circle"> <span class="profile-status online pull-right"></span>
+                                            </div>
+                                            <div class="mail-contnet">
+                                                <h5>Michael Qin</h5> <span class="mail-desc">Just see the my admin!</span>
+                                                <span class="time">9:30 AM</span>
+                                            </div>
+                                        </a>
+                                        <!-- Message -->
+                                        <a href="#">
+                                            <div class="user-img"> <img src="{% static 'template-static-files/images/users/2.jpg' %}"
+                                                    alt="user" class="img-circle"> <span class="profile-status busy pull-right"></span>
+                                            </div>
+                                            <div class="mail-contnet">
+                                                <h5>John Doe</h5> <span class="mail-desc">I've sung a song! See you at</span>
+                                                <span class="time">9:10 AM</span>
+                                            </div>
+                                        </a>
+                                        <!-- Message -->
+                                        <a href="#">
+                                            <div class="user-img"> <img src="{% static 'template-static-files/images/users/3.jpg' %}"
+                                                    alt="user" class="img-circle"> <span class="profile-status away pull-right"></span>
+                                            </div>
+                                            <div class="mail-contnet">
+                                                <h5>Mr. John</h5> <span class="mail-desc">I am a singer!</span> <span
+                                                    class="time">9:08 AM</span>
+                                            </div>
+                                        </a>
+                                        <!-- Message -->
+                                        <a href="#">
+                                            <div class="user-img"> <img src="{% static 'template-static-files/images/users/4.jpg' %}"
+                                                    alt="user" class="img-circle"> <span class="profile-status offline pull-right"></span>
+                                            </div>
+                                            <div class="mail-contnet">
+                                                <h5>Michael Qin</h5> <span class="mail-desc">Just see the my admin!</span>
+                                                <span class="time">9:02 AM</span>
+                                            </div>
+                                        </a>
+                                    </div>
+                                </li>
+                                <li>
+                                    <a class="nav-link text-center" href="javascript:void(0);"> <strong>See all Direct
+                                            Messages</strong> <i class="fa fa-angle-right"></i> </a>
+                                </li>
+                            </ul>
+                        </div>
+                    </li>
+                    <!-- End Messages -->
+                    <!-- Profile -->
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle text-muted  " href="#" data-toggle="dropdown" aria-haspopup="true"
+                            aria-expanded="false"><img src="{% static 'template-static-files/images/users/5.jpg' %}"
+                                alt="user" class="profile-pic" /></a>
+                        <div class="dropdown-menu dropdown-menu-right animated zoomIn">
+                            <ul class="dropdown-user">
+                                <li><a href="#"><i class="ti-user"></i> My Profile</a></li>
+                                <li><a href="#"><i class="ti-email"></i> Inbox</a></li>
+                                <li><a href="#"><i class="ti-settings"></i> Setting</a></li>
+                                <li><a href="#"><i class="fa fa-power-off"></i> Logout</a></li>
+                            </ul>
+                        </div>
+                    </li>
+                </ul>
+            </div>
+        </nav>
+    </div>
+    <!-- End header header -->
+    {% include 'left-nav.html' %}
+    <!-- Page wrapper  -->
+    <div class="page-wrapper">
+        <!-- Bread crumb -->
+        <div class="row page-titles">
+            <div class="col-md-12 align-self-center">
+                <div class="card-header bg-secondary profile-pic">
+                    <h4 class="m-b-0 text-white">{{ object.name }} </h4>
+                    <div class="edit">
+                        <a href="{% url 'update_project' object.id %}"><i class="fa fa-pencil fa-lg"></i></a></div>
+                    <small class="text-white">Created by {{ object.creator }} on {{ object.created_time }}</small>
+                    <hr />
+                </div>
+                <!-- <div class="row"> -->
+                <div class="col-lg-12">
+                    <div class="card">
+                        <div class="container">
+                            <ul class="nav nav-tabs">
+                                <li class="active"><a data-toggle="tab" href="#details">Project Details</a></li>
+                                <li><a data-toggle="tab" href="#milestones">Milestones</a></li>
+                                <li><a data-toggle="tab" href="#tasks">Tasks</a></li>
+                                <li><a data-toggle="tab" href="#incidents">Incidents</a></li>
+                            </ul>
+                        </div>
+
+                        <div class="card-body">
+
+                            <div class="tab-content">
+                                <div id="details" class="tab-pane fade in active">
+
+                                    <div class="row col-12 mt-2">
+                                        <div class="col-2">
+                                            <strong>Project ID</strong>
+                                        </div>
+                                        <div class="col-4">
+                                            {{ object.project_code }}
+                                        </div>
+
+                                        <div class="col-2">
+                                            <strong>Client</strong>
+                                        </div>
+                                        <div class="col-4">
+                                            {{ object.client }}
+                                        </div>
+                                    </div>
+
+                                    <div class="row col-12 mt-2">
+                                        <div class="col-2">
+                                            <strong>Vendor</strong>
+                                        </div>
+                                        <div class="col-4">
+                                            {{ object.vendor }}
+                                        </div>
+
+                                        <div class="col-2">
+                                            <strong>Status</strong>
+                                        </div>
+                                        <div class="col-4">
+                                            {{ object.project_status }}
+                                        </div>
+                                    </div>
+
+                                    <div class="row col-12 mt-2">
+                                        <div class="col-2">
+                                            <strong>Start Date</strong>
+                                        </div>
+                                        <div class="col-4">
+                                            {{ object.startdate }}
+                                        </div>
+                                        <div class="col-2">
+                                            <strong>Due Date</strong>
+                                        </div>
+                                        <div class="col-4">
+                                            {{ object.enddate }}
+                                        </div>
+                                    </div>
+
+                                    <div class="row col-12 mt-2">
+                                        <div class="col-2">
+                                            <strong>Project Manager</strong>
+                                        </div>
+                                        <div class="col-4">
+                                            {{ object.project_manager }}
+                                        </div>
+
+                                        <div class="col-2">
+                                            <strong>Owner</strong>
+                                        </div>
+                                        <div class="col-4">
+                                            {{ object.project_assignee }}
+                                        </div>
+                                    </div>
+
+                                    <div class="row col-12 mt-2">
+                                        <div class="col-2">
+                                            <strong>Cost</strong>
+                                        </div>
+                                        <div class="col-4">
+                                            ${{ object.estimated_cost }}
+                                        </div>
+                                        <div class="col-2">
+                                            <strong>Actual Cost</strong>
+                                        </div>
+                                        {% if object.final_cost %}
+                                        <div class="col-4">
+                                            ${{ object.final_cost }}
+                                        </div>
+                                        {% else %}
+                                        <div class="col-4">
+                                            -
+                                        </div>
+                                        {% endif %}
+                                    </div>
+
+                                    <div class="row col-12 mt-2">
+                                        <div class="col-2">
+                                            <strong>Progress</strong>
+                                        </div>
+                                        <div class="col-4">
+                                            {{ object.completion }}%
+                                        </div>
+
+                                        {% if object.end_date > object.time_now %}
+                                        <div class="col-2">
+                                            <strong>Time left</strong>
+                                        </div>
+                                        <div class="col-4">
+                                            {{ object.enddate|timeuntil:object.time_now }}
+                                        </div>
+                                        {% else %}
+                                        <div class="col-2">
+                                            <strong>Delayed by</strong>
+                                        </div>
+                                        <div class="col-4 text-warning">
+                                            {{ object.enddate|timesince }}
+                                        </div>
+                                        {% endif %}
+                                    </div>
+
+                                    <div class="row col-12 mt-2">
+                                        <div class="col-2">
+                                            <strong>Actual Enddate</strong>
+                                        </div>
+                                        {% if object.actual_enddate %}
+                                        <div class="col-4">
+                                            {{ object.actual_enddate }}
+                                        </div>
+                                        {% else %}
+                                        <div class="col-4">
+                                            -
+                                        </div>
+                                        {% endif %}
+
+                                        <div class="col-2">
+                                            <strong>Time Elapsed</strong>
+                                        </div>
+                                        <div class="col-4">
+                                            {{ object.startdate|timesince }}
+                                        </div>
+
+                                    </div>
+
+                                    <div class="row col-12 mt-2">
+                                        <div class="col-2">
+                                            <strong>Created Date</strong>
+                                        </div>
+                                        <div class="col-4">
+                                            {{ project.created_time }}
+                                        </div>
+                                        <div class="col-2">
+                                            <strong>Milestones</strong>
+                                        </div>
+                                        <div class="col-4">
+                                            <div class="progress-bar progress-bar-success progress-bar-striped wow animated progress-animated"
+                                                style="width: {{ project.completion }}%; height:20px;" role="progressbar">
+                                                {{ project.completion }}% ({{ project.milestone_count }})
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div class="row col-12 mt-2">
+                                        <div class="col-2">
+                                            <strong>Tasks</strong>
+                                        </div>
+                                        <div class="col-4">
+                                            <div class="progress-bar wow animated progress-animated" style="width: {{ project.task_completion }}%; height:20px;"
+                                                role="progressbar">
+                                                {{ project.task_completion }}% ({{ project.task_count }})
+                                            </div>
+                                        </div>
+                                        <div class="col-2">
+                                            <strong>Incidents</strong>
+                                        </div>
+                                        <div class="col-4">
+                                            {% if project.incident_completion > 0 %}
+                                            <div class="progress-bar progress-bar-primary progress-bar-striped wow animated progress-animated"
+                                                style="width: {{ project.incident_completion }}%; height:20px;" role="progressbar">
+                                                {{ project.incident_completion }}% ({{ project.incident_count }})
+                                            </div>
+                                            {% else %}
+                                            <div class="text-blue">
+                                                0% ({{ project.incident_count }})
+                                            </div>
+                                            {% endif %}
+
+                                        </div>
+                                    </div>
+                                    <br />
+                                    <hr />
+                                    <div class="row col-8 mt-2">
+                                        <div class="col-6">
+                                            <strong>Description</strong>
+                                        </div>
+                                    </div>
+
+                                    <div class="row col-12 mt-2">
+                                        <div class="col-12">
+                                            {{ object.description|safe }}
+                                        </div>
+                                    </div>
+                                    <hr />
+                                    <button class="collapsible">Attachments</button>
+                                    <div class="content">
+
+                                        <div class="card border-success mb-3" style="max-width: auto;">
+
+                                            <form id="form1" method="post" enctype="multipart/form-data" action="">
+                                                {% csrf_token %}
+                                                <div class="row">
+                                                    <div class="col-12">
+                                                        <div class="card-header bg-transparent border-success">Project
+                                                            Documents
+                                                            <input type="file" id="document" class="pull-right" style="display:none;" />
+                                                            <a href="{% url 'model_form_upload' %}" class="fa fa-plus pull-right"
+                                                                id="docupload"></a>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </form>
+
+                                            <div class="card-body text-success">
+                                                <p class="card-text">Proposal</p>
+                                                <p class="card-text">Contract</p>
+                                                <p class="card-text">Inception</p>
+                                                <p class="card-text">SRS</p>
+                                                <p class="card-text">SDD</p>
+                                                <p class="card-text">UAT</p>
+                                                <p class="card-text">PCC</p>
+                                            </div>
+                                            <div class="card-footer bg-transparent border-success">
+                                                <button type="button" class="btn btn-default">Download All</button>
+                                            </div>
+                                        </div>
+
+                                        <div class="card border-success mb-3" style="max-width: auto;">
+
+                                            <div class="card-header bg-transparent border-success">Other Project
+                                                Attachments</div>
+
+                                            <div class="card-body text-success">
+                                                <h5 class="card-title">Success card title</h5>
+                                                <p class="card-text">Some quick example text to build on the card
+                                                    title
+                                                    and
+                                                    make up the bulk of the card's content.</p>
+                                            </div>
+                                            <div class="card-footer bg-transparent border-success">Footer</div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div id="milestones" class="tab-pane fade">
+
+                                    <div class="table-responsive">
+                                        <table class="table">
+                                            <thead>
+                                                <tr>
+                                                    <th>Name</th>
+                                                    <th>Start Date</th>
+                                                    <th>End Date</th>
+                                                    <th>Status</th>
+                                                    <th>Progress</th>
+                                                </tr>
+                                            </thead>
+
+                                            <tbody>
+
+                                                {% for milestone in milestones %}
+
+                                                <tr>
+                                                    <td><a href="{% url 'milestone_details' milestone.pk %}">{{ milestone.name }}</a></td>
+                                                    <td>{{ milestone.startdate }}</td>
+                                                    <td>{{ milestone.status }}</td>
+                                                    <td>{{ milestone.completion }}% </td>
+                                                </tr>
+                                                {% empty %}
+                                                <tr>
+                                                    <td colspan="4">No milestones currently. <a href="{% url 'new_milestone' %}">Add
+                                                            the first milestone</a>.</td>
+                                                </tr>
+                                                {% endfor %}
+
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </div>
+
+                                <div id="tasks" class="tab-pane fade">
+                                    <div class="table-responsive">
+                                        <table class="table table-hover">
+                                            <thead>
+                                                <tr>
+                                                    <th>Name</th>
+                                                    <th>Start-Date</th>
+                                                    <th>Status</th>
+                                                </tr>
+                                            </thead>
+
+                                            <tbody>
+
+                                                {% for task in tasks %}
+
+                                                <tr>
+                                                    <td><a href="{% url 'task_details' task.pk %}">{{ task.name }}</a></td>
+                                                    <td>{{ task.end_date }}</td>
+                                                    <td>{{ task.status }}</td>
+                                                </tr>
+                                                {% empty %}
+                                                <tr>
+                                                    <td colspan="4">No Tasks currently. <a href="{% url 'new_task' %}">Add
+                                                            the first milestone</a>.</td>
+                                                </tr>
+                                                {% endfor %}
+                                            </tbody>
+                                        </table>
+                                    </div>
+
+                                </div>
+
+                                <div id="incidents" class="tab-pane fade">
+                                    <div class="table-responsive">
+                                        <table class="display nowrap table table-hover" cellspacing="0" width="100%">
+                                            <thead>
+                                                <tr>
+                                                    <th>Title</th>
+                                                    <th>Status</th>
+                                                    <th>Priority</th>
+                                                    <th>Action</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                {% for incident in incidents %}
+                                                <tr>
+                                                    <td>{{ incident.title }}</td>
+                                                    <td>{{ incident.status }}</td>
+                                                    <td>{{ incident.priority }}</td>
+                                                    <td><a href="{% url 'detailsIncident' incident.id %}">View</a>
+                                                        &nbsp; <a href="{% url 'updateIncident' incident.id %}">Update</a>
+                                                        &nbsp; <a href="#"><i class="mdi mdi-delete font-30 align-middle mr-2"></i></a></td>
+                                                </tr>
+                                                {% endfor %}
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <!-- </div> -->
+            </div>
+
+            <script>
+                $(document).ready(function () {
+                    $("#id_startdate").prop('type', 'date');
+                    $("#id_enddate").prop('type', 'date');
+                });
+
+                $(document).ready(function () {
+                    var url = $("#projectForm").attr("data-milestones-url");
+                    var projectId = $(this).val();
+                    $.ajax({
+                        url: url,
+                        data: {
+                            'project': projectId
+                        },
+                        success: function (data) {
+                            $("#docs").html(data);
+                        }
+                    });
+                });
+
+                $('#file').change(function () {
+                    $('#form1').submit();
+                });
+
+                var coll = document.getElementsByClassName("collapsible");
+                var i;
+
+                for (i = 0; i < coll.length; i++) {
+                    coll[i].addEventListener("click", function () {
+                        this.classList.toggle("active");
+                        var content = this.nextElementSibling;
+                        if (content.style.maxHeight) {
+                            content.style.maxHeight = null;
+                        } else {
+                            content.style.maxHeight = content.scrollHeight + "px";
+                        }
+                    });
+                }
+            </script>
+            <script src="http://code.jquery.com/jquery-1.11.1.min.js"></script>
+            <!-- <script src="https://code.jquery.com/jquery-3.3.1.min.js"></script> -->
+            {% include 'footer.html' %}
+            <!-- End PAge Content -->
+        </div>
+        <!-- End Container fluid  -->
+
+    </div>
+    <!-- End Page wrapper  -->
+</div>
+{% endblock %}

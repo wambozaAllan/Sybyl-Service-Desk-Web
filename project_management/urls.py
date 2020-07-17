@@ -258,4 +258,13 @@ urlpatterns = [
     path('checkTask/', views.check_task, name='checkTask'),
     path('assignRequests', views.assign_customer_request, name='assignRequests'),
     
+    path('dailyTimesheetRReport', views.timesheet_daily_report, name='dailyTimesheetRReport'),
+    path('filterDailyTimesheetRReport', views.filter_timesheet_daily_report, name='filterDailyTimesheetRReport'),
+    path('exportDailyTMReport', views.export_daily_tm_report, name='exportDailyTMReport'),
+    path('exportEmailDailyTMReport', views.export_and_send_email_daily_tm_report, name='exportEmailDailyTMReport'),
+    path('detailedTaskReport', views.detailed_task_report_pane, name='detailedTaskReport'),
+    path('filterDetailedTaskTimesheetRReport', views.filter_detailed_task_timesheet_report, name='filterDetailedTaskTimesheetRReport'),
+
+    path('exportTimesheetTaskReport', views.export_timesheet_task_report, name='exportTimesheetTaskReport'),
+    path('exportEmailTimesheetTaskReport', views.export_email_timesheet_task_report, name='exportEmailTimesheetTaskReport'),
 ]
