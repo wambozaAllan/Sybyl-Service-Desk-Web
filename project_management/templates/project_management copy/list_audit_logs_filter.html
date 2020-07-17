@@ -1,0 +1,71 @@
+<div id="chat-log2" class="profiletimeline">
+    {% if audit_logs %}
+        {% for logs in audit_logs %}
+        <div class="sl-item">
+            <div class="sl-left"><img src="../../media/staffbackground.jpg" alt="user" class="img-square"/></div>
+            <div class="sl-right">
+                <div>
+                    {% if logs.state == 'Task' %}
+                        {% if logs.history_type == '+' %}
+                            <span class="link"><span class="text-info">{{logs.created_by}}</span> added {{logs.state}} <span class="text-info"> '{{logs.name}}'</span></span>
+                        {% elif logs.history_type == '-' %}
+                            <span class="link"><span class="text-info">{{logs.created_by}} </span> deleted {{logs.state}} <span class="text-info"> '{{logs.name}}'</span> </span>
+                        {% else %}
+                            <span class="link"><span class="text-info">{{logs.created_by}} </span> updated {{logs.state}} <span class="text-info"> '{{logs.name}}'</span></span> 
+                        {% endif %}
+
+                        <div>
+                            <span class="sl-date text-info">{{logs.project}}</span> 
+                            <span class="sl-date">{{logs.history_date}}</span> 
+                        </div>
+                    {% elif logs.state == 'Incident' %}
+                        {% if logs.history_type == '+' %}
+                            <span class="link"><span class="text-info">{{logs.created_by}}</span> added {{logs.state}} <span class="text-info"> '{{logs.name}}'</span></span>
+                        {% elif logs.history_type == '-' %}
+                            <span class="link"><span class="text-info">{{logs.created_by}} </span> deleted {{logs.state}} <span class="text-info"> '{{logs.name}}'</span> </span>
+                        {% else %}
+                            <span class="link"><span class="text-info">{{logs.created_by}} </span> updated {{logs.state}} <span class="text-info"> '{{logs.name}}'</span></span> 
+                        {% endif %}
+
+                        <div>
+                            <span class="sl-date text-info">{{logs.project}}</span> 
+                            <span class="sl-date">{{logs.history_date}}</span> 
+                        </div>
+                    {% elif logs.state == 'Milestone' %}
+                        {% if logs.history_type == '+' %}
+                            <span class="link"><span class="text-info">{{logs.created_by}}</span> added {{logs.state}} <span class="text-info"> '{{logs.name}}'</span></span>
+                        {% elif logs.history_type == '-' %}
+                            <span class="link"><span class="text-info">{{logs.created_by}} </span> deleted {{logs.state}} <span class="text-info"> '{{logs.name}}'</span> </span>
+                        {% else %}
+                            <span class="link"><span class="text-info">{{logs.created_by}} </span> updated {{logs.state}} <span class="text-info"> '{{logs.name}}'</span></span> 
+                        {% endif %}
+                            <div>
+                                <span class="sl-date text-info">{{logs.project}}</span> 
+                                <span class="sl-date">{{logs.history_date}}</span> 
+                            </div>   
+                    {% else %}
+                        {% if logs.history_type == '+' %}
+                            <span class="link"><span class="text-info">{{logs.created_by}}</span> added {{logs.state}} <span class="text-info"> '{{logs.name}}'</span></span>
+                        {% elif logs.history_type == '-' %}
+                            <span class="link">
+                                <span class="text-info">{{logs.created_by}} </span> deleted {{logs.state}} 
+                                <span class="text-info"> '{{logs.name}}'</span> 
+                            </span>
+                        {% else %}
+                            <span class="link"><span class="text-info">{{logs.created_by}}                                  
+                                </span> updated {{logs.state}} <span class="text-info"> '{{logs.name}}'</span>
+                            </span> 
+                        {% endif %}
+                            <div>
+                                <span class="sl-date">{{logs.history_date}}</span> 
+                            </div> 
+                    {% endif %}
+                </div>
+            </div>
+            <hr>
+        </div>
+        {% endfor %}
+    {% else %}
+        <h3><span class="text-info">No Data Found</span></h3> 
+    {% endif %}
+</div>

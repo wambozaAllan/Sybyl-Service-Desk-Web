@@ -1,0 +1,63 @@
+{% load crispy_forms_tags %}
+<div class="card-body">
+    <div class="basic-form">
+        <form class="form-horizontal" action="{% url 'addPriority' %}" method="post" enctype="multipart/form-data" autocomplete="off">
+            {% csrf_token %}
+            <div class="row col-12">
+                <div class="col-6">
+                    {{ form.name|as_crispy_field }}
+                    <medium id="validate_priority_name" class="text-muted hidden">
+                        <font color="red">
+                            Priority Already Exits!
+                        </font>
+                    </medium>
+                </div>
+                <div class="col-6">{{ form.description|as_crispy_field }}</div>
+                <div class="col-6">{{ form.color|as_crispy_field }}</div>
+            </div>
+            <div class="">
+                <div class="col-md-12">
+                    <button id="btnAddPriority" class="btn btn-success pull-right">
+                        <i class="fa fa-fw fa-lg fa-save"></i>Add Priority
+                    </button>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+<script>
+    $(document).ready(function() {
+        jscolor.installByClassName("jscolor");
+    });
+
+    $('#id_color').addClass('form-control');
+    $("#id_color").addClass("jscolor");
+
+    $('#id_color').attr( 'readOnly' , 'true' );
+
+    $("#id_name").attr("placeholder", "Enter Priority Name");
+    $("#id_description").attr("placeholder", "Enter Description");
+
+    $('#id_name').on('input', function () {
+        var priority_name = $(this).val();
+
+        $.ajax({
+            url: '{% url 'validatePriorityName' %}',
+            data: {
+                'priorityname': priority_name
+            },
+            dataType: 'json',
+            success: function (data) {
+                if (data.is_taken) {
+                    $("#validate_priority_name").show();
+                    document.getElementById('id_name').style.borderColor = "red";
+                    document.getElementById("btnAddPriority").disabled = true;
+                } else {
+                    $("#validate_domain_name").hide();
+                    document.getElementById('id_name').style.borderColor = "#e7e7e7";
+                    document.getElementById("btnAddPriority").disabled = false;
+                }
+            }
+        });
+    });
+</script>

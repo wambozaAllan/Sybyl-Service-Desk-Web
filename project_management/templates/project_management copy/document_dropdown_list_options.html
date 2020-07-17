@@ -1,0 +1,12 @@
+<!--option value="">---------</option-->
+<ul>
+    {% for obj in documents %}
+      <li>
+        <a href="{{ obj.document.url }}">{{ obj.description }}</a>
+        <!--small>(Uploaded at: {{ obj.uploaded_at }})</small-->
+      </li>
+      {% empty %}
+      <li>No Documents to show</li>
+  </ul>
+
+{% endfor %}

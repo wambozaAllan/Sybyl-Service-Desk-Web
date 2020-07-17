@@ -1,0 +1,27 @@
+<div class="table-responsive">
+    <table id="resubbmited_tm_table" class="display nowrap table table-hover" cellspacing="0" width="100%">
+        <thead>
+            <tr>
+                <th>#</th>
+                <th>Date Resubmitted</th>
+                <th>Resubmitted By</th>
+                <th>Comment</th>
+            </tr>
+        </thead>
+        <tbody>
+
+        {% for tm in timesheet_list %}
+            <tr>
+                <td>{{ forloop.counter }}</td>
+                <td>{{ tm.date_resubmitted}}</td>
+                <td>{{tm.resubmitted_by}}</td>
+                <td>{{tm.comment}}</td>
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+</div>
+    
+<script>
+    $('#resubbmited_tm_table').DataTable();
+</script>

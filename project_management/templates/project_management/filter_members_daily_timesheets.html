@@ -1,0 +1,27 @@
+{% load humanize %}
+
+<table id="table_timesheets_report1" class="table table-hover table-sm">
+    <thead class="">
+        <tr>
+            <th>#</th>
+            <th>Name</th>
+            <th>Duration</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for tm in timesheet_report %}
+        <tr class="">
+            <td>{{ forloop.counter }}</td>
+            <td>{{ tm.label }}</td>
+            <td>{{ tm.value }}</td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+<input id="selected_date_22" value="{{selected_date}}" type="hidden"/>
+
+<script>
+    $('#table_timesheets_report1').DataTable();
+    var sel_date1 = $('#selected_date_22').val();
+    $(".current_daily_pane").text(sel_date1);
+</script>
