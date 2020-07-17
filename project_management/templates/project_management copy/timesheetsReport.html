@@ -1,0 +1,197 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block content %}
+    <div>
+        <!-- Main wrapper  -->
+        <div id="main-wrapper">
+            {% include 'header.html' %}
+            
+            {% include 'left-nav.html' %}
+            <!-- Page wrapper  -->
+            <div class="page-wrapper">
+                <!-- Bread crumb -->
+                <div class="row page-titles">
+                    <div class="col-md-5 align-self-center">
+                        <h3 class="text-primary">Timesheet Analysis</h3>
+                    </div>
+                    <div class="col-md-7 align-self-center">
+                        <ol class="breadcrumb">
+                            <li class="breadcrumb-item"><a href="javascript:void(0)">Home</a></li>
+                            <li class="breadcrumb-item active">Timesheet</li>
+                        </ol>
+                    </div>
+                </div>
+                <!-- Container fluid  -->
+                <div class="container-fluid">
+                    <div class="p-5">
+                        <div class="card">
+                            <div class="card-body p-0">
+                            <div id="calendar"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <script>
+
+        (function () {    
+            'use strict';
+            jQuery(function() {
+
+                $.ajax({
+                    type: 'GET',
+                    data: {},
+                    url: '{% url 'userGeneralTimesheetReport'%}',
+                    success: function (data) {
+                        var res = JSON.parse(JSON.stringify(data.tm));
+                        if (res !== '' && res.length > 0) {
+
+                            jQuery('#calendar').fullCalendar({
+                                themeSystem: 'bootstrap4',
+                                // emphasizes business hours
+                                businessHours: false,
+                                defaultView: 'month',
+                                // event dragging & resizing
+                                editable: true,
+                                // header
+                                header: {
+                                    left: 'title',
+                                    center: 'month,agendaWeek,agendaDay',
+                                    right: 'today prev,next'
+                                },
+                                events: res,
+                                eventRender: function(event, element) {
+                                    if(event.icon){
+                                        element.find(".fc-title").prepend("<i class='fa fa-"+event.icon+"'></i>");
+                                    }
+                                },
+                                dayClick: function(date, jsEvent, view) {
+                                    $.ajax({
+                                        type: "GET",
+                                        cache: false,
+                                        data: {
+                                            log_date: date.format()
+                                        },
+                                        url: '{% url 'addTimesheetOnCalender'%}',
+                                        success: function (resp) {
+                                            $.confirm({
+                                                title: 'Add Timesheet!',
+                                                content: '' + resp,
+                                                type: 'blue',
+                                                typeAnimated: true,
+                                                boxWidth: '55%',
+                                                useBootstrap: false,
+                                                closeIcon: true,
+                                                buttons: {
+                                                    formSubmit: {
+                                                        text: 'close',
+                                                        btnClass: 'btn-gray close-dialog',
+                                                        action: function () {
+                                                            
+                                                        }
+                                                    },
+                                                },
+                                                onContentReady: function () {}
+                                            });
+                                        }
+                                    });
+                                },
+                                eventClick: function(event, jsEvent, view) {
+                                    $.ajax({
+                                        type: "GET",
+                                        cache: false,
+                                        data: {
+                                            timesheet_id: event.id
+                                        },
+                                        url: '{% url 'calenderTimesheetView'%}',
+                                        success: function (resp) {
+                                            $.confirm({
+                                                title: 'Timesheet Details!',
+                                                content: '' + resp,
+                                                type: 'blue',
+                                                typeAnimated: true,
+                                                boxWidth: '70%',
+                                                useBootstrap: false,
+                                                closeIcon: true,
+                                                buttons: {
+                                                    formSubmit: {
+                                                        text: 'close',
+                                                        btnClass: 'btn-gray close-dialog',
+                                                        action: function () {
+                                                            
+                                                        }
+                                                    },
+                                                },
+                                                onContentReady: function () {}
+                                            });
+                                        }
+                                    });
+                                },
+                            }); 
+                        }else{
+                            jQuery('#calendar').fullCalendar({
+                                themeSystem: 'bootstrap4',
+                                // emphasizes business hours
+                                businessHours: false,
+                                defaultView: 'month',
+                                // event dragging & resizing
+                                editable: true,
+                                // header
+                                header: {
+                                    left: 'title',
+                                    center: 'month,agendaWeek,agendaDay',
+                                    right: 'today prev,next'
+                                },
+                                events: [],
+                                eventRender: function(event, element) {
+                                    if(event.icon){
+                                        element.find(".fc-title").prepend("<i class='fa fa-"+event.icon+"'></i>");
+                                    }
+                                },
+                                dayClick: function() {
+                                    $.ajax({
+                                        type: "GET",
+                                        cache: false,
+                                        data: {
+                                            log_date: date.format()
+                                        },
+                                        url: '{% url 'addTimesheetOnCalender'%}',
+                                        success: function (resp) {
+                                            $.confirm({
+                                                title: 'Add Timesheet!',
+                                                content: '' + resp,
+                                                type: 'blue',
+                                                typeAnimated: true,
+                                                boxWidth: '55%',
+                                                useBootstrap: false,
+                                                closeIcon: true,
+                                                buttons: {
+                                                    formSubmit: {
+                                                        text: 'close',
+                                                        btnClass: 'btn-gray close-dialog',
+                                                        action: function () {
+                                                            
+                                                        }
+                                                    },
+                                                },
+                                                onContentReady: function () {}
+                                            });
+                                        }
+                                    });
+                                },
+                                eventClick: function(event, jsEvent, view) {
+                                    
+                                },
+                            });
+                        }                   
+                    }
+                });
+            });
+        
+        })(jQuery);
+    </script>
+
+{% endblock %}
+

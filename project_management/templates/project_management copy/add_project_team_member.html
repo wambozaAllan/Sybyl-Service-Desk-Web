@@ -1,0 +1,157 @@
+{% load crispy_forms_tags %}
+<div>
+    <input type="text" value="{{project_id}}" style="display: none;" id='id_project'/>
+</div>
+<div class="card-body">
+    <div class="basic-form">
+        <form class="form-horizontal" method='GET' id="teamForm">
+            {% csrf_token %}
+
+            <div class="row col-12">
+                <div class="col-md-12 col-sm-12">
+                    <label class="col-form-label  requiredField">Project Team<span
+                        class="asteriskField">*</span></label>
+                    <div class="" >
+                        <input type="text" value="{{team_name}}" id='id_project_team' class="form-control" name="member"/>
+                        <input type="text" value="{{team_id}}" id='id_project_team_id' class="form-control" name="member" style="display: none;"/>
+                    </div> 
+                </div>
+                <br>
+                <div class="col-md-12 col-sm-12">
+                    <label class="col-form-label  requiredField">Member<span
+                        class="asteriskField">*</span></label>
+                    <div class="">
+                        <select id='id_member' required class="select form-control" name="member"></select>
+                    </div> 
+                </div>
+                <br>
+                
+                <br>
+                <div class="col-12" style="display: none;">
+                        <input id="id_project" type="hidden" value="{{ project_id }}"/>
+                        <input id="team_id" type="hidden" value="{{ team_id }}"/>
+                        <input id="project_name" type="hidden" value="{{ project_name }}"/>
+                        <input id="team_name" type="hidden" value="{{ team_name }}"/>
+                </div>
+            </div>
+            <br>
+            <div class="col-md-6">
+                <button id="id_btnAddProjectMember" class="col-md-12 col-sm-12 btn btn-success" >
+                    <i class="fa fa-fw fa-lg fa-save"></i>Add Member
+                </button>
+            </div>
+            
+
+        </form>
+    </div>
+</div>
+
+<script>
+    
+    $('#id_project_team').attr( 'readOnly' , 'true' );
+
+    // member  
+    $('#id_member').html("");  
+    $('#id_member').attr('data-live-search', "true"); 
+    $('#id_member').selectpicker({
+        size: 3
+    });
+
+  
+    // on load function for project team addition
+    $(function(){
+        var projectTeam = $('#id_project_team_id').val();
+
+        $.ajax({
+            url: '{% url 'validateProjectTeamAssigned' %}',
+
+            data: {
+               project_team: projectTeam
+            },
+            dataType: 'json',
+            success: function (data) {
+
+                let newData = JSON.parse(data.users);
+                
+                let actual = '';
+                $("#id_member").html("");
+                $("#id_member").prepend('<option value=""> -----Select Member----- </option>');
+                for(i=0; i<newData.length; i++){
+                    actual = newData[i];
+                    
+                    $('#id_member').append('<option value="' + actual["pk"] + '">' + actual["fields"]["first_name"] + " " + actual["fields"]["last_name"] + '</option>');
+                    $("#id_member").selectpicker('refresh');
+                }
+        
+            }
+        });
+    });
+
+    $('#teamForm').on('submit', function(){
+        event.preventDefault();
+        saveMember();
+    })
+
+
+    // adding chosen member to team
+    function saveMember(){
+        let project_id = $('#id_project').val();
+        let team_id = $('#id_project_team_id').val();
+        let member = $('#id_member').val();
+        let teamname = $('#id_project_team').val();
+
+        if (member != ""){
+            $.ajax({
+                url: "{% url 'saveTeamMember' %}",
+                data: {
+                    project_id: project_id,
+                    project_team: team_id,
+                    member: member, 
+                },
+                cache:false,
+                dataType: 'json',
+                success: function (response_data) {
+                    $('.close-dialog').click();
+                    if (response_data.state === true){
+                        urldata = "{% url 'adminDetailProjectTeamMembers'%}";
+                        $.ajax({
+                            type: "GET",
+                            cache: false,
+                            data: {
+                                tid: team_id,
+                                teamName: teamname
+                            },
+                            url: urldata,
+                            success: function (resp) {
+                                $('.list-all-teams').html(resp);
+                            }
+                        });
+                        $.confirm({
+                            title: "Success",
+                            content: 'Member: ' +response_data.name + " " + response_data.success,
+                            type: 'blue',
+                            typeAnimated: true,
+                            boxWidth: '35%',
+                            useBootstrap: false,
+                            closeIcon: true,
+                                buttons: {
+                                    formSubmit: {
+                                        text: 'OK',
+                                        btnClass: 'btn-blue',
+                                        action: function () {
+                                               
+                                        }
+                                    }
+                                }
+                        }); 
+                    }
+                    
+                        
+                }
+            });
+        }
+            
+           
+    }
+
+</script>

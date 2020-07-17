@@ -1,0 +1,139 @@
+<div>
+    <input type="text" value="{{ project_id }}" style="display: none" id="id_project">
+    <input type="text" value="{{ project_name }}" style="display: none">
+</div>
+
+
+<div class="card-body milestone-task">
+    <a href="#" onclick="addMilestone('{{ project_id}}', '{{ project_name }}')" class="btn btn-info pull-right">
+        <i class="fa fa-fw fa-lg fa-plus"></i>Add Milestones
+    </a>
+    <ul class="nav nav-tabs customtab" role="tablist">
+        <li class="nav-item open-nav" onclick="loadURL('{% url 'openMilestones'%}', 'project_id={{ project_id }}', 'open-milestones', 'GET');"> <a class="nav-link active open-nav" data-toggle="tab" href="#openMilestonePane" role="tab"><span class="hidden-sm-up"><i class="ti-home"></i></span> <span class="hidden-xs-down">Open <span id="count_open_milestones" class="label label-rounded label-info">{{open_count}}</span></span></a></li>
+        <li class="nav-item onhold-nav" onclick="loadURL('{% url 'onholdMilestones'%}', 'project_id={{ project_id }}', 'on-hold-milestones', 'GET');"> <a class="nav-link onhold-nav" data-toggle="tab" href="#onholdMilestonePane" role="tab"><span class="hidden-sm-up"><i class="ti-user"></i></span> <span class="hidden-xs-down">Onhold <span id="count_onhold_milestones" class="label label-rounded" style="background-color: #FFA500;">{{onhold_count}}</span></span></a></li>
+        <li class="nav-item terminated-nav" onclick="loadURL('{% url 'terminatedMilestones'%}', 'project_id={{ project_id }}', 'terminated-milestones', 'GET');"> <a class="nav-link terminated-nav" data-toggle="tab" href="#terminatedMilestonePane" role="tab"><span class="hidden-sm-up"><i class="ti-email"></i></span> <span class="hidden-xs-down">Terminated <span id="count_terminated_milestones" class="label label-rounded label-danger">{{terminated_count}}</span></span></a></li>
+        <li class="nav-item completed-nav" onclick="loadURL('{% url 'completedMilestones'%}', 'project_id={{ project_id }}', 'completed-milestones', 'GET');"> <a class="nav-link completed-nav" data-toggle="tab" href="#completedMilestonePane" role="tab"><span class="hidden-sm-up"><i class="ti-email"></i></span> <span class="hidden-xs-down">Completed <span id="count_completed_milestones" class="label label-rounded" style="background-color: #44c548;">{{completed_count}}</span></span></a></li>
+        
+    </ul>
+    <div class="tab-content">
+        <div class="tab-pane active" id="openMilestonePane" role="tabpanel">
+            <div class="card-body milestone-card">
+                <div class="open-milestones"></div>    
+            </div>  
+        </div>
+        <div class="tab-pane" id="onholdMilestonePane" role="tabpanel">
+            <div class="on-hold-milestones"></div>
+        </div>
+        <div class="tab-pane" id="terminatedMilestonePane" role="tabpanel">
+            <div class="terminated-milestones"></div>
+        </div>
+        <div class="tab-pane" id="completedMilestonePane" role="tabpanel">
+            <div class="completed-milestones"></div>
+        </div>
+    </div>  
+</div>
+
+<script>
+    $('#table_open_milestones').DataTable();
+    $('#table_tasks').DataTable();
+
+    $(document).ready(function(){
+        var project_id = $("#id_project").val();
+
+        $.ajax({
+            type:"GET",
+            cache: false,
+            data:{
+                project_id:project_id,
+            },
+            url: "{% url 'openMilestones' %}",
+            success: function(resp){      
+                $('#openMilestonePane').html(resp);                                         
+            }
+        });
+    });
+
+    function functionSpecificTask(milestone_id, project_id) {
+        urlData = "{% url 'milestoneTasks' %}";
+        $.ajax({
+            type: "GET",
+            cache: false,
+            data: {
+                milestone_id: milestone_id,
+                project_id: project_id,
+            },
+            url: urlData,
+            success: function (resp) {
+                $('.milestone-task').html(resp);
+            }
+        });
+    }
+
+    function addMilestone(project_id, project_name) {
+        urldata = "{% url 'populateMilestone' %}";
+        $.ajax({
+            type: "GET",
+            cache: false,
+            data: {
+                project_id: project_id,
+                project_name: project_name
+            },
+            url: urldata,
+            success: function (resp) {
+                $.confirm({
+                    title: '<h3>Add Milestone</h3>',
+                    content: '' + resp,
+                    type: 'blue',
+                    theme: 'material',
+                    typeAnimated: true,
+                    boxWidth: '60%',
+                    useBootstrap: false,
+                    closeIcon: true,
+                    buttons: {
+                        close: {
+                            text: 'Close',
+                            btnClass: 'btn-gray close-dialog',
+                            action: function () {
+                            }
+                        }
+                    }
+                });
+            }
+        });
+    }
+
+    function detailsMilestone(milestone_id, milestone_name) {
+
+        url = "{% url 'detailsProjectMilestone' 999%}".replace(999, milestone_id);
+        $.ajax({
+            url: url,
+            type: "GET",
+            cache: false,
+            data: {
+                milestone_id: milestone_id,
+                milestone_name: milestone_name,
+            },
+            success: function (resp) {
+                $.confirm({
+                    title: '<h3>Details Milestone: <strong>'+ milestone_name + '</strong></h3>',
+                    content: '' + resp,
+                    type: 'blue',
+                    theme: 'material',
+                    typeAnimated: true,
+                    boxWidth: '70%',
+                    useBootstrap: false,
+                    closeIcon: true,
+                    buttons: {
+                        close: {
+                            text: 'Close',
+                            btnClass: 'btn-gray',
+                            action: function () {
+                            }
+                        }
+                    }
+                });
+            }
+        });
+    }
+
+</script>

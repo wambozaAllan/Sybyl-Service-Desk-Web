@@ -1,0 +1,71 @@
+<div class="table-responsive">
+    <table id="table_pending_appr2" class="display nowrap table table-hover" cellspacing="0" width="100%">
+        <thead>
+            <tr>
+                <th>#</th>
+                <th>Name</th>
+                <th>Log Date</th>
+                <th>Duration</th>
+                <th>Date Submitted</th>
+                <th class="text-center">Resubmissions</th>
+                <th class="text-center">More Details</th>
+            </tr>
+            </thead>
+        <tbody>
+
+        {% for tm in timesheet_list %}
+            <tr>
+                {% if tm.timesheet_type == "request_type" %}
+                    <td>{{ forloop.counter }}</td>
+                    <td><a href="#" onclick="functionViewRequestDetails({{ tm.task_id }}, '{{tm.name}}', {{tm.sla_id}}, '{{tm.sla_name}}')" title="View Request Details!" class="text-info font-weight-bold">{{ tm.name | truncatechars:17 }}</a></td>
+                    <td>{{ tm.log_day| date:"D, d M, Y" }}</td>
+                    <td class="text-info">{{tm.duration}}</td>
+                    <td>{{tm.date_submitted| date:"d-m-y"}}</td>
+                    {% if tm.get_resubmission_count == 0 %}
+                        <td class="text-center">
+                            None
+                        </td>
+                    {% else %}
+                        <td class="text-center">
+                            <span class="label label-rounded label-success">
+                                <a href="#" style="color: #fff" onclick="functionViewResubmissions({{tm.tm_id}})">{{tm.get_resubmission_count}} </a>
+                            </span>
+                        </td>   
+                    {% endif %}
+                    <td  class="text-center">
+                        <button onclick="functionViewTimesheetDescRequest('{{ tm.name }}', '{{ tm.notes }}', '{{  tm.start_time  | date:'H:i A' }} - {{ tm.end_time  | date:'H:i A' }}', '{{tm.created_time | date:"D, d M, Y"}}')" class="btn btn-outline-success btn-sm" type="button">
+                                <i title="View Timesheet Description" class="fa fa-dedent"></i>
+                        </button> &nbsp;
+                    </td>
+                {% else %}
+                    <td>{{ forloop.counter }}</td>
+                    <td><a href="#" onclick="functionViewTaskDetails({{ tm.task_id }})" title="View Task Details!" class="text-info font-weight-bold">{{ tm.name | truncatechars:17 }}</a></td>
+                    <td>{{ tm.log_day| date:"D, d M, Y" }}</td>
+                    <td class="text-info">{{tm.duration}}</td>
+                    <td>{{tm.date_submitted| date:"d-m-y"}}</td>
+                    {% if tm.get_resubmission_count == 0 %}
+                        <td class="text-center">
+                            None
+                        </td>
+                    {% else %}
+                        <td class="text-center">
+                            <span class="label label-rounded label-success">
+                                <a href="#" style="color: #fff" onclick="functionViewResubmissions({{tm.id}})">{{tm.get_resubmission_count}} </a>
+                            </span>
+                        </td>   
+                    {% endif %}
+                    <td  class="text-center">
+                        <button onclick="functionViewTimesheetDesc('{{ tm.name }}', '{{ tm.notes }}', '{{  tm.start_time  | date:'H:i A' }} - {{ tm.end_time  | date:'H:i A' }}', '{{tm.created_time | date:"D, d M, Y"}}')" class="btn btn-outline-success btn-sm" type="button">
+                                <i title="View Timesheet Description" class="fa fa-dedent"></i>
+                        </button> &nbsp;
+                    </td>
+                {% endif %}
+
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+</div>
+<script>
+    $('#table_pending_appr2').DataTable();
+</script>

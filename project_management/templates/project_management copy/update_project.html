@@ -1,0 +1,332 @@
+{% extends 'base.html' %}
+{% load static %}
+{% load crispy_forms_tags %}
+{% block content %}
+    <!-- Main wrapper  -->
+    <div id="main-wrapper" class="main-wrapper">
+        {% include 'header.html' %}
+        {% include 'left-nav.html' %}
+        <!-- Page wrapper  -->
+        <div class="page-wrapper">
+            <!-- Bread crumb -->
+            <div class="row page-titles">
+                <div class="col-md-5 align-self-center">
+                    <h3 class="text-primary">Projects</h3></div>
+                <div class="col-md-7 align-self-center">
+                    <ol class="breadcrumb">
+                        <li class="breadcrumb-item"><a href="javascript:void(0)">Home</a></li>
+                        <li class="breadcrumb-item"><a href="{% url 'listProjects' %}">Project List</a></li>
+                        <li class="breadcrumb-item active">Update Project</li>
+                    </ol>
+                </div>
+            </div>
+            <!-- End Bread crumb -->
+            <!-- Container fluid  -->
+            <div class="container-fluid">
+                <!-- Start Page Content -->
+                <div class="row">
+                    <div class="col-12">
+                        <div class="card">
+                            <div class="card-title">
+                                <div class="card-header bg-secondary">
+                                    <h4 class="m-b-0 text-white">Project Update</h4>
+                                </div>
+                            </div>
+                            <div class="card-body">
+                                <form class="form-horizontal" action="{% url 'updateProject' project.id %}" method="post"
+                                      enctype="multipart/form-data">
+                                    {% csrf_token %}
+                                    <div class="row">
+                                        <div class="col-md-6 col-sm-12">
+                                            {{ form.name|as_crispy_field }}
+                                            <medium id="validate_project_name" class="text-muted hidden">
+                                                <font color="red">
+                                                    Project Name Already Exists!
+                                                </font>
+                                            </medium>
+                                        </div>
+                                        <div class="col-md-6 col-sm-12 ">
+                                            {{ form.company|as_crispy_field }}
+                                        </div>
+                                    </div>
+
+                                    <div class="row">
+                                        <div class="col-md-6 col-sm-12">
+                                            {{ form.estimated_start_date|as_crispy_field }}
+                                            <medium id="start_date" class="text-muted hidden">
+                                                <font color="red">
+                                                    Start date has to be less or equal to end date
+                                                </font>
+                                            </medium>
+                                        </div>
+                                        
+                                        <div class="col-md-6 col-sm-12">
+                                            {{ form.estimated_end_date|as_crispy_field }}
+                                            <medium id="end_date" class="text-muted hidden">
+                                                <font color="red">
+                                                    End date has to be greater or equal to start date
+                                                </font>
+                                            </medium>
+                                        </div>
+    
+                                    </div>
+
+                                    <div class="row">
+                                        <div class="col-md-6 col-sm-12">
+                                            {{ form.actual_start_date|as_crispy_field }}
+                                            <medium id="actual_start" class="text-muted hidden">
+                                                <font color="red">
+                                                    Start date has to be less or equal to end date
+                                                </font>
+                                            </medium>
+                                        </div>
+                                        <div class="col-md-6 col-sm-12">
+                                            {{ form.actual_end_date|as_crispy_field }}
+                                            <medium id="actual_end" class="text-muted hidden">
+                                                <font color="red">
+                                                    End date has to be greater or equal to start date
+                                                </font>
+                                            </medium>
+                                        </div>
+
+                                        <div class="col-md-6 col-sm-12">
+                                            {{ form.final_cost|as_crispy_field }}
+                                        </div>
+
+                                        <div class="col-md-6 col-sm-12">
+                                            {{ form.project_code|as_crispy_field }}
+                                        </div>
+                                        <div class="col-md-6 col-sm-12">
+                                            {{ form.project_status|as_crispy_field }}
+                                        </div>
+                                        <div class="col-md-6 col-sm-12">
+                                            {{ form.logo|as_crispy_field }}
+                                        </div>
+                                    </div>
+
+                                    <div class="row">
+                                        <div class="col-md-12 col-sm-12">
+                                            {{ form.description|as_crispy_field }}
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="row pull-right ">
+                                        <div class="col-6" style="margin-right: -6%;">
+                                            <a href="{% url 'listProjects' %}" class="btn btn-inverse col-12" >Cancel</a>
+                                        </div>
+                                        <div class="col-6">
+                                            <button id="btnUpdateProject" class="btn btn-success">
+                                                <i class="fa fa-fw fa-lg fa-save"></i>Update
+                                            </button>
+                                        </div>
+                                        
+                                    </div>
+                                    
+
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                {% include 'footer.html' %}
+            </div>
+        </div>
+    </div>
+
+<style>
+    /* remove increment and decrement arrow from number */
+    input[type="number"] {
+    -webkit-appearance: textfield;
+        -moz-appearance: textfield;
+            appearance: textfield;
+    }
+    input[type=number]::-webkit-inner-spin-button, 
+    input[type=number]::-webkit-outer-spin-button { 
+    -webkit-appearance: none;
+    }
+</style>
+
+<script>
+    $(document).ready(function(){
+        $('#id_company').attr('multiple', "multiple");
+        $('#id_company').attr('data-live-search', "true");
+        $('#id_company').selectpicker({
+            size: 2,
+        });
+
+        $("#id_estimated_start_date").attr("placeholder", "mm/dd/yyyy");
+        $("#id_estimated_end_date").attr("placeholder", "mm/dd/yyyy");
+        $("#id_actual_start_date").attr("placeholder", "mm/dd/yyyy");
+        $("#id_actual_end_date").attr("placeholder", "mm/dd/yyyy");
+
+        $("#div_id_company").removeClass("form-group");
+
+        $('#id_estimated_start_date').datepicker({
+            format: "mm/dd/yyyy",
+            autoclose: true,
+            clearBtn: true
+        });
+
+        $('#id_estimated_end_date').datepicker({
+            format: "mm/dd/yyyy",
+            autoclose: true,
+            clearBtn: true
+        });
+
+        $('#id_actual_start_date').datepicker({
+            format: "mm/dd/yyyy",
+            autoclose: true,
+            clearBtn: true
+        });
+
+        $('#id_actual_end_date').datepicker({
+            format: "mm/dd/yyyy",
+            autoclose: true,
+            clearBtn: true
+        });
+
+        // estimated end date
+        $('#id_estimated_end_date').on('focus', function(){
+            var date = $(this).blur();
+        });
+        
+        $('#id_estimated_end_date').on('change', function(){
+            var startDate= document.getElementById('id_estimated_start_date').value;
+            var endDate= document.getElementById('id_estimated_end_date').value;
+
+            var sDate = new Date(startDate);
+            var eDate = new Date(endDate);
+
+            if(startDate != '' && endDate != '' && sDate > eDate){
+                document.getElementById("btnUpdateProject").disabled = true;
+                document.getElementById('id_estimated_end_date').style.borderColor = "red";
+                $('#end_date').show();
+            }
+            else{
+                document.getElementById("btnUpdateProject").disabled = false;
+                document.getElementById('id_estimated_end_date').style.borderColor = "";
+                document.getElementById('id_estimated_start_date').style.borderColor = "";
+                $('#end_date').hide();
+                $('#start_date').hide();
+            }
+        });
+
+        // estimated start date
+        $('#id_estimated_start_date').on('focus', function(){
+            var date = $(this).blur();
+        });
+
+        $('#id_estimated_start_date').on('change', function(){
+            var startDate= document.getElementById('id_estimated_start_date').value;
+            var endDate= document.getElementById('id_estimated_end_date').value;
+
+            var sDate = new Date(startDate);
+            var eDate = new Date(endDate);
+
+            if(startDate != '' && endDate != '' && sDate > eDate){
+                document.getElementById("btnUpdateProject").disabled = true;
+                document.getElementById('id_estimated_start_date').style.borderColor = "red";
+                $('#start_date').show();
+            }
+            else{
+                document.getElementById("btnUpdateProject").disabled = false;
+                document.getElementById('id_estimated_start_date').style.borderColor = "";
+                document.getElementById('id_estimated_end_date').style.borderColor = "";
+                $('#start_date').hide();
+                $('#end_date').hide();
+            }
+        });
+
+        // actual end date
+
+        $('#id_actual_end_date').on('focus', function(){
+            var date = $(this).blur();
+        });
+
+        $('#id_actual_end_date').on('change', function(){
+            var startDate= document.getElementById('id_actual_start_date').value;
+            var endDate= document.getElementById('id_actual_end_date').value;
+
+            var sDate = new Date(startDate);
+            var eDate = new Date(endDate);
+
+            if(startDate != '' && endDate != '' && sDate > eDate){
+                document.getElementById("btnUpdateProject").disabled = true;
+                document.getElementById('id_actual_end_date').style.borderColor = "red";
+                $('#actual_end').show();
+            }
+            else{
+                document.getElementById("btnUpdateProject").disabled = false;
+                document.getElementById('id_actual_end_date').style.borderColor = "";
+                document.getElementById('id_actual_start_date').style.borderColor = "";
+                $('#actual_end').hide();
+                $('#actual_start').hide();
+
+            }
+        });
+
+        // actual start date
+        $('#id_actual_start_date').on('focus', function(){
+            var date = $(this).blur();
+        });
+
+        $('#id_actual_start_date').on('change', function(){
+            var startDate= document.getElementById('id_actual_start_date').value;
+            var endDate= document.getElementById('id_actual_end_date').value;
+
+            var sDate = new Date(startDate);
+            var eDate = new Date(endDate);
+
+            if(startDate != '' && endDate != '' && sDate > eDate){
+                document.getElementById("btnUpdateProject").disabled = true;
+                document.getElementById('id_actual_start_date').style.borderColor = "red";
+                $('#actual_start').show();
+            }
+            else{
+                document.getElementById("btnUpdateProject").disabled = false;
+                document.getElementById('id_actual_start_date').style.borderColor = "";
+                document.getElementById('id_actual_end_date').style.borderColor = "";
+                $('#actual_start').hide();
+                $('#actual_end').hide();
+            }
+        });
+
+        // final cost
+        $('#id_final_cost').attr('placeholder', '0');
+
+        $("#id_final_cost").attr('autocomplete', 'off');
+
+        $("#id_final_cost").keypress(function(event) {
+            if(event.which != 0){
+                return /\d/.test(String.fromCharCode(event.keyCode));
+            }
+
+        });
+
+        // status attribute 
+        $('#id_project_status').removeAttr('multiple', "");
+        $('#id_project_status').attr('data-live-search', "true");
+        $('#id_project_status').selectpicker({
+            size: 3,
+        });
+
+        // company attribute
+        // $("#id_company").prop("selectedIndex", -1);
+        $('#id_company').attr('multiple', "multiple");
+        $('#id_company').attr('data-live-search', "true");
+        $('#id_company').selectpicker({
+            size: 2,
+        });
+
+        $("#div_id_project_status").removeClass("form-group");
+
+
+        // PROJECT NAME 
+        $("#id_name").attr('autocomplete', 'off');
+
+        $("#id_project_code").attr('autocomplete', 'off');
+
+    })
+</script>
+{% endblock %}
+
