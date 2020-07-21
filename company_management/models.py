@@ -10,7 +10,6 @@ class CompanyDomain(models.Model):
     description = models.CharField(max_length=255, blank=True, null=True)
     created_time = models.DateTimeField(auto_now_add=True)
     modified_time = models.DateTimeField(auto_now=True)
-    history = HistoricalRecords()
 
     def get_companies_count(self):
         return Company.objects.filter(domain=self).count()

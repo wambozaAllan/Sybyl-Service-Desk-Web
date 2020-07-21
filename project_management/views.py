@@ -8537,8 +8537,8 @@ def filter_detailed_task_timesheet_report(request):
                     task_id_1 = task_detail.task_id
                     task_name = Task.objects.get(id=task_id_1).name
                     tm_dict_mem['task'] = task_name
-                    project_det = Task.objects.get(id=task_id_1)
-                    milestone_det = Task.objects.get(id=task_id_1)
+                    project_det = Task.objects.get(id=task_id_1).project
+                    milestone_det = Task.objects.get(id=task_id_1).milestone
                     tm_dict_mem['project'] = project_det
                     tm_dict_mem['milestone'] = milestone_det
                 else: 
@@ -8638,8 +8638,8 @@ def export_timesheet_task_report(request):
                     task_id_1 = task_detail.task_id
                     task_name = Task.objects.get(id=task_id_1).name
                     tm_dict_mem['task'] = task_name
-                    project_det = Task.objects.get(id=task_id_1)
-                    milestone_det = Task.objects.get(id=task_id_1)
+                    project_det = Task.objects.get(id=task_id_1).project
+                    milestone_det = Task.objects.get(id=task_id_1).milestone
                     tm_dict_mem['project'] = project_det
                     tm_dict_mem['milestone'] = milestone_det
                 else: 
@@ -8746,8 +8746,8 @@ def export_email_timesheet_task_report(request):
                     task_id_1 = task_detail.task_id
                     task_name = Task.objects.get(id=task_id_1).name
                     tm_dict_mem['task'] = task_name
-                    project_det = Task.objects.get(id=task_id_1)
-                    milestone_det = Task.objects.get(id=task_id_1)
+                    project_det = Task.objects.get(id=task_id_1).project
+                    milestone_det = Task.objects.get(id=task_id_1).milestone
                     tm_dict_mem['project'] = project_det
                     tm_dict_mem['milestone'] = milestone_det
                 else: 
@@ -8815,11 +8815,11 @@ def export_email_timesheet_task_report(request):
 
     msg = render_to_string('project_management/email_template_timesheet_report.html', context22)
 
-    email_address = 'gracebabiryek@gmail.com'
+    email_address = ['gigi@sybyl.com', 'babirye.grace@sybyl.com', 'ampumuza.amon@sybyl.com', 'jerry.vijayan@sybyl.com', 'chepkurui.job@sybyl.com', 'wamboza.allan@sybyl.com', 'david.kaggulire@sybyl.com', 'jeremiah.kerman@sybyl.com', 'sajin.mathew@sybyl.com']
     subject, from_email, to = 'SYBYL', 'from@example.com', email_address
     text_content = 'SERVICE DESK.'
     html_content = msg
-    msg = EmailMultiAlternatives(subject, text_content, from_email, [to])
+    msg = EmailMultiAlternatives(subject, text_content, from_email, cc=email_address)
     msg.attach('TimesheetReport.xls', excelfile.getvalue(), 'application/ms-excel')
     msg.attach_alternative(html_content, "text/html")
     msg.send()
