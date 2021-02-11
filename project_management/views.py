@@ -4053,6 +4053,7 @@ def all_companies_filter_auditlogs(request):
     return HttpResponse(template.render(context, request))
 
 
+@login_required
 def daily_timesheets_pane(request):
     uid = request.user.id
     company_id = request.session['company_id']
@@ -8242,6 +8243,7 @@ def check_task(request):
         return JsonResponse(response_data)
 
 
+@login_required
 def manager_view_customer_requests(request):
     template = loader.get_template('project_management/customer_assign_pane.html')
 
@@ -8319,7 +8321,7 @@ def filter_timesheet_daily_report(request):
 
     dept_members_exist = User.objects.filter(company_id=company_id, department_id=department_id).exists()
     if dept_members_exist == True:
-        dept_members = User.objects.filter(company_id=company_id, department_id=department_id)
+        dept_members = User.objects.filter(company_id=company_id, department_id=department_id, is_active=True)
         all_member_tms = []
         for mem in dept_members:
             sum_duration = 0
@@ -8351,7 +8353,7 @@ def export_daily_tm_report(request):
 
     dept_members_exist = User.objects.filter(company_id=company_id, department_id=department_id).exists()
     if dept_members_exist == True:
-        dept_members = User.objects.filter(company_id=company_id, department_id=department_id)
+        dept_members = User.objects.filter(company_id=company_id, department_id=department_id, is_active=True)
         all_member_tms = []
         for mem in dept_members:
             sum_duration = 0
@@ -8411,7 +8413,7 @@ def export_and_send_email_daily_tm_report(request):
 
     dept_members_exist = User.objects.filter(company_id=company_id, department_id=department_id).exists()
     if dept_members_exist == True:
-        dept_members = User.objects.filter(company_id=company_id, department_id=department_id)
+        dept_members = User.objects.filter(company_id=company_id, department_id=department_id, is_active=True)
         all_member_tms = []
         for mem in dept_members:
             sum_duration = 0
@@ -8507,7 +8509,7 @@ def filter_detailed_task_timesheet_report(request):
 
     dept_members_exist = User.objects.filter(company_id=company_id, department_id=department_id).exists()
     if dept_members_exist == True:
-        dept_members = User.objects.filter(company_id=company_id, department_id=department_id)
+        dept_members = User.objects.filter(company_id=company_id, department_id=department_id, is_active=True)
         all_mem_gen_list = []
         
         for mem in dept_members:
@@ -8606,7 +8608,54 @@ def export_timesheet_task_report(request):
 
     dept_members_exist = User.objects.filter(company_id=company_id, department_id=department_id).exists()
     if dept_members_exist == True:
-        dept_members = User.objects.filter(company_id=company_id, department_id=department_id)
+        # return timesheet summary
+        dept_members = User.objects.filter(company_id=company_id, department_id=department_id, is_active=True)
+        all_member_tms = []
+        for member in dept_members:
+            sum_duration = 0
+            new_dict = {}
+            new_dict['label'] = member.first_name + " " + (member.last_name)
+            duration = Timesheet.objects.filter(log_day=selected_date, project_team_member_id=member.id, company_id=company_id)
+            for ii in duration:
+                sum_duration = sum_duration + ii.durationsec()
+            new_dict['value'] = compute_duration(sum_duration)
+            all_member_tms.append(new_dict)
+        
+        font_style = xlwt.XFStyle()
+        font_style.font.bold = True
+
+        title_style = xlwt.XFStyle()
+        title_style.font.bold = True
+        title_style.font.height = 270
+        title_style.font.width = 270
+
+        ws = wb.add_sheet("Summary")
+        ws.write(0, 1, "TimeSheet Summary ", title_style)
+
+        row_num = 2
+
+        columns = [(u"Name", 5000), (u"Duration", 5000)]
+
+        for col_num in range(len(columns)):
+            ws.write(row_num, col_num, columns[col_num][0], font_style)
+            # set column width
+            ws.col(col_num).width = columns[col_num][1]
+
+        font_style = xlwt.XFStyle()
+        font_style.alignment.wrap = 1
+
+        for obj in all_member_tms:
+            row_num += 1
+
+            row = [
+                obj['label'],
+                obj['value'],
+            ]
+
+            for col_num in range(len(row)):
+                ws.write(row_num, col_num, str(row[col_num]), font_style)
+    	
+        # return timesheet individual time
         all_mem_gen_list = []
         
         for mem in dept_members:
@@ -8698,6 +8747,7 @@ def export_timesheet_task_report(request):
         return response
     else:
         all_mem_gen_list = ''
+        all_member_tms = ''
         return response
 
 
@@ -8714,7 +8764,54 @@ def export_email_timesheet_task_report(request):
     
     dept_members_exist = User.objects.filter(company_id=company_id, department_id=department_id).exists()
     if dept_members_exist == True:
-        dept_members = User.objects.filter(company_id=company_id, department_id=department_id)
+        # return timesheet summary
+        dept_members = User.objects.filter(company_id=company_id, department_id=department_id, is_active=True)
+        all_member_tms = []
+        for member in dept_members:
+            sum_duration = 0
+            new_dict = {}
+            new_dict['label'] = member.first_name + " " + (member.last_name)
+            duration = Timesheet.objects.filter(log_day=selected_date, project_team_member_id=member.id, company_id=company_id)
+            for ii in duration:
+                sum_duration = sum_duration + ii.durationsec()
+            new_dict['value'] = compute_duration(sum_duration)
+            all_member_tms.append(new_dict)
+        
+        font_style = xlwt.XFStyle()
+        font_style.font.bold = True
+
+        title_style = xlwt.XFStyle()
+        title_style.font.bold = True
+        title_style.font.height = 270
+        title_style.font.width = 270
+
+        ws = wb.add_sheet("Summary")
+        ws.write(0, 1, "TimeSheet Summary ", title_style)
+
+        row_num = 2
+
+        columns = [(u"Name", 5000), (u"Duration", 5000)]
+
+        for col_num in range(len(columns)):
+            ws.write(row_num, col_num, columns[col_num][0], font_style)
+            # set column width
+            ws.col(col_num).width = columns[col_num][1]
+
+        font_style = xlwt.XFStyle()
+        font_style.alignment.wrap = 1
+
+        for obj in all_member_tms:
+            row_num += 1
+
+            row = [
+                obj['label'],
+                obj['value'],
+            ]
+
+            for col_num in range(len(row)):
+                ws.write(row_num, col_num, str(row[col_num]), font_style)
+    	
+        # return individual timesheets
         all_mem_gen_list = []
         
         for mem in dept_members:
@@ -8805,6 +8902,7 @@ def export_email_timesheet_task_report(request):
         wb.save(excelfile)
     else:
         all_mem_gen_list = ''
+        all_member_tms = ''
 
     selected_date2 = datetime.datetime.strptime(selected_date2, '%d-%m-%Y').strftime("%A, %d. %B %Y")
 
@@ -8819,7 +8917,7 @@ def export_email_timesheet_task_report(request):
     subject, from_email, to = 'SYBYL', 'from@example.com', email_address
     text_content = 'SERVICE DESK.'
     html_content = msg
-    msg = EmailMultiAlternatives(subject, text_content, from_email, to=['gigi@sybyl.com'], cc=email_address)
+    msg = EmailMultiAlternatives(subject, text_content, from_email, to=['gigi@sybyl.com', 'sanjeev@sybyl.com'], cc=email_address)
     msg.attach('TimesheetReport.xls', excelfile.getvalue(), 'application/ms-excel')
     msg.attach_alternative(html_content, "text/html")
     msg.send()
