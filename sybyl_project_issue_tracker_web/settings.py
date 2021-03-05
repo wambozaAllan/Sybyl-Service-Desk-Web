@@ -24,7 +24,7 @@ SECRET_KEY = 'w1naia8kdgsc2ryk5#ft^d@g$056^h^d#dey)k!cksq$&3a-jm'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['*']
 
 # Application definition
 
@@ -123,7 +123,7 @@ DATABASES = {
         'ENGINE': 'django.db.backends.mysql',
         'NAME': 'sybyl_service_desk_db',
         'USER': 'root',
-        'PASSWORD': '',
+        'PASSWORD': 'roots',
         'HOST': '127.0.0.1',
         'PORT': '3306',
     }
@@ -170,7 +170,7 @@ PROJECT_DIR = os.path.dirname(os.path.abspath(__file__))
 STATIC_ROOT = os.path.join(PROJECT_DIR, 'static')
 
 STATIC_URL = '/static/'
-
+STATICFILES_STORAGE = 'django.contrib.staticfiles.storage.StaticFilesStorage'
 STATICFILES_DIRS = (
     os.path.join(BASE_DIR, 'static'),
 )

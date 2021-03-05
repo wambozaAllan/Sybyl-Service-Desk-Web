@@ -17,7 +17,7 @@
             {% if unsubmited_req_list %}
                 <span class="pull-right row col-12">
                     <form class="form"><a onclick="functionCheckAllReq()" href="#"><input type="checkbox" class="select-all-check1 text-info" id="select_all_requests"/></a> Select All 
-                        <button onclick="functionFowardRequest();" style="margin-right: -32%;" id="" class="btn btn-info pull-right">
+                        <button onclick="functionFowardRequest()" style="margin-right: -32%;" id="" class="btn btn-info pull-right">
                             <span class=""><i class="fa fa-fw fa-send"></i> Foward Requests</span>
                         </button>
                     </form> 
@@ -262,7 +262,7 @@
                         text: 'Close',
                         btnClass: 'btn-gray',
                         action: function () {
-
+                            
                         }
                     }
                 }
