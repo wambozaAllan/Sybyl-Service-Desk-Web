@@ -8533,28 +8533,30 @@ def filter_detailed_task_timesheet_report(request):
                 tm_dict_mem['stime'] = tm_list.start_time
                 tm_dict_mem['etime'] = tm_list.end_time
                             
-                if tm_list.timesheet_category == "TIMESHEET":
+                if TaskTimesheetExtend.objects.filter(timesheet_id=tm_list.id).exists():
+                    if tm_list.timesheet_category == "TIMESHEET" :
 
-                    task_detail = TaskTimesheetExtend.objects.get(timesheet_id=tm_list.id)
-                    task_id_1 = task_detail.task_id
-                    task_name = Task.objects.get(id=task_id_1).name
-                    tm_dict_mem['task'] = task_name
-                    project_det = Task.objects.get(id=task_id_1).project
-                    milestone_det = Task.objects.get(id=task_id_1).milestone
-                    tm_dict_mem['project'] = project_det
-                    tm_dict_mem['milestone'] = milestone_det
-                else: 
-                    request_detail = RequestTimesheetExtend.objects.get(timesheet_id=tm_list.id)
-                    req_id = request_detail.customer_request_id
-                    req_name = CustomerRequest.objects.get(id=req_id).name
-                    tm_dict_mem['task'] = req_name
+                        task_detail = TaskTimesheetExtend.objects.get(timesheet_id=tm_list.id)
+                        task_id_1 = task_detail.task_id
+                        
+                        task_name = Task.objects.get(id=task_id_1).name
+                        tm_dict_mem['task'] = task_name
+                        project_det = Task.objects.get(id=task_id_1).project
+                        milestone_det = Task.objects.get(id=task_id_1).milestone
+                        tm_dict_mem['project'] = project_det
+                        tm_dict_mem['milestone'] = milestone_det
+                    else: 
+                        request_detail = RequestTimesheetExtend.objects.get(timesheet_id=tm_list.id)
+                        req_id = request_detail.customer_request_id
+                        req_name = CustomerRequest.objects.get(id=req_id).name
+                        tm_dict_mem['task'] = req_name
 
-                    cust_req = CustomerRequest.objects.get(id=req_id)
-                    milestone_det = "Customer Request"
-                    tm_dict_mem['project'] = cust_req
-                    tm_dict_mem['milestone'] = milestone_det
+                        cust_req = CustomerRequest.objects.get(id=req_id)
+                        milestone_det = "Customer Request"
+                        tm_dict_mem['project'] = cust_req
+                        tm_dict_mem['milestone'] = milestone_det
 
-                all_member_tasks.append(tm_dict_mem)
+                    all_member_tasks.append(tm_dict_mem)
             new_dict['timesheets'] = all_member_tasks
             all_mem_gen_list.append(new_dict)
                         
