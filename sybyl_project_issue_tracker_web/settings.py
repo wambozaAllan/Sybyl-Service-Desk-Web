@@ -12,6 +12,11 @@ https://docs.djangoproject.com/en/dev/ref/settings/
 
 import os
 
+import environ
+# Initialise environment variables
+env = environ.Env()
+environ.Env.read_env()
+
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
@@ -183,8 +188,8 @@ AUTH_USER_MODEL = 'user_management.User'
 EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
 EMAIL_USE_TLS = True
 EMAIL_HOST = 'smtp.gmail.com'
-EMAIL_HOST_USER = 'softdev.sybyl@gmail.com'
-EMAIL_HOST_PASSWORD = 'Admin@123.'
+EMAIL_HOST_USER = env('HOST_USER')
+EMAIL_HOST_PASSWORD = env('HOST_PASS')
 EMAIL_PORT = 587
 
 

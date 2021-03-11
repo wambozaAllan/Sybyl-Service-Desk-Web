@@ -1,5 +1,6 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml">
+{% load static %}
 <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
     <meta name="viewport" content="width=device-width"/>
@@ -14,10 +15,9 @@
                 <tr>
                     <td class="">
 
-                        <p>Dear Gigi,</p>
-						<p>Kindly receive the Daily Timesheets for all the resources in : <strong class="text-primary">{{department}}</strong>
-                        <p>Log Day: <strong>{{selected_date}}</strong></p>
-                        <p>Thanks and Regards</p>
+                        <p style="font-size:14px;">Dear Gigi,</p></br></br>
+						<p style="font-size:13px;">Kindly receive the Daily Timesheets for the resources in the <strong class="text-primary">{{department}} Department.</strong> The attachment also includes the summary of the total time/hours logged by each resource.</p>
+                        <p style="font-size:13px;">Log Day: <strong>{{selected_date}}</strong></p>
                     </td>
                 </tr>
             </table>
@@ -31,8 +31,10 @@
             <table>
                 <tr>
                     <td class="content footer">
-                        <p><a href="#">Sybyl Limited</a>, Plot1A, Kafu Road</p>
-                        <p><a href="mailto:">P.O Box 7585, Kampala, Ug</a> | <a href="#">Tel: +256 414305400</a></p>
+                        <p><strong>Kind Regards</strong></p>
+                        <p><strong>SYBYL Service Desk</strong></p>
+                        <p><strong>Software Department</strong></p>                
+                    </td></br>
                     </td>
                 </tr>
             </table>
