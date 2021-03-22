@@ -20,3 +20,5 @@ channels-redis==2.4.0
 django-background-tasks
 django-simple-history
 reportlab
+
+django-environ

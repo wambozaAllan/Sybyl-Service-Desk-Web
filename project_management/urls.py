@@ -267,4 +267,7 @@ urlpatterns = [
 
     path('exportTimesheetTaskReport', views.export_timesheet_task_report, name='exportTimesheetTaskReport'),
     path('exportEmailTimesheetTaskReport', views.export_email_timesheet_task_report, name='exportEmailTimesheetTaskReport'),
+
+    path('timesheetDefaulterList', views.timesheet_defaulter_list, name='timesheetDefaulterList'),
+    path('sendTimesheetEmailReminder', views.send_timesheet_email_reminder, name='sendTimesheetEmailReminder'),
 ]

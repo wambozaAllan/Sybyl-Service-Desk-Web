@@ -1,43 +1,66 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml">
+{% load static %}
+
 <head>
-    <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
-    <meta name="viewport" content="width=device-width"/>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <meta name="viewport" content="width=device-width" />
 </head>
+
 <body>
-<table class="body-wrap">
-    <tr>
-        <td class="container">
+    <table class="body-wrap">
+        <tr>
+            <td class="container">
 
-            <!-- Message start -->
-            <table>
-                <tr>
-                    <td class="">
+                <!-- Message start -->
+                <table>
+                    <tr>
+                        <td class="">
 
-                        <p>Dear Gigi,</p>
-						<p>Kindly receive the Daily Project Update for all the resources in : <strong class="text-primary">{{department}}</strong>
-                        <p>Log Day: <strong>{{selected_date}}</strong></p>
-                        <p>Thanks and Regards</p>
-                    </td>
-                </tr>
-            </table>
+                            <p style="font-size:14px;">Dear Gigi,</p></br></br>
+                            <p style="font-size:13px;">Kindly receive the Daily Timesheets for the resources in the
+                                <strong class="text-primary">{{department}} Department.</strong> <br/>A summary of the total Hours logged by each resource is given in the table below and an attachment that
+                                includes details of each resourse's timesheet tasks.</p>
+                            <p style="font-size:13px;">Log Day: <strong>{{selected_date}}</strong></p>
+                        </td>
+                    </tr>
+                </table></br>
 
-        </td>
+                <table style="padding: 10px; border: 1px solid black; border-collapse: collapse;" id="" width="50%">
+                    <thead>
+                        <tr>
+                            <th style="padding: 4px; border: 1px solid black; border-collapse: collapse;">Name</th>
+                            <th style="padding: 4px; border: 1px solid black; border-collapse: collapse;">Duration</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {%for dur in mem_duration%}
+                        <tr>
+                            <td style="padding: 4px; border: 1px solid black; border-collapse: collapse;">{{dur.label}}</td>
+                            <td style="padding: 4px; border: 1px solid black; border-collapse: collapse;">{{dur.value}}</td>
+                        </tr>
+                        {%endfor%}
+                    </tbody>
+                </table>
+            </td>
+        </tr>
+        <tr>
+            <td class="container">
+
+                <!-- Message start -->
+                <table>
+                    <tr>
+                        <td class="content footer">
+                            <p><strong>Kind Regards</strong></p>
+                            <p><strong>SYBYL Service Desk</strong></p>
+                            <p><strong>{{department}} Department</strong></p>
+                        </td></br>
+            </td>
+        </tr>
+    </table>
+    </td>
     </tr>
-    <tr>
-        <td class="container">
-
-            <!-- Message start -->
-            <table>
-                <tr>
-                    <td class="content footer">
-                        <p><a href="#">Sybyl Limited</a>, Plot1A, Kafu Road</p>
-                        <p><a href="mailto:">P.O Box 7585, Kampala, Ug</a> | <a href="#">Tel: +256 414305400</a></p>
-                    </td>
-                </tr>
-            </table>
-        </td>
-    </tr>
-</table>
+    </table>
 </body>
+
 </html>
