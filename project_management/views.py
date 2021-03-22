@@ -44,6 +44,7 @@ from reportlab.lib import colors
 from django.core.mail import EmailMultiAlternatives
 from django.template.loader import render_to_string
 from background_task import background
+from django.contrib.auth import hashers
 
 
 # Custom Views
@@ -8459,10 +8460,9 @@ def export_and_send_email_daily_tm_report(request):
     wb.save(excelfile)
 
     selected_date2 = datetime.datetime.strptime(selected_date2, '%d-%m-%Y').strftime("%A, %d. %B %Y")
-
     context22 = {
         'selected_date': selected_date2,
-        'department': request.session['department']
+        'department': request.session['department'],
     }
 
     msg = render_to_string('project_management/email_template_timesheet_report.html', context22)
@@ -8478,7 +8478,7 @@ def export_and_send_email_daily_tm_report(request):
 
     context1 = {
         'timesheet_report': all_member_tms,
-        'selected_date': selected_date2
+        'selected_date': selected_date2,
     }
 
     template = loader.get_template('project_management/filter_members_daily_timesheets.html')
@@ -8907,10 +8907,11 @@ def export_email_timesheet_task_report(request):
         all_member_tms = ''
 
     selected_date2 = datetime.datetime.strptime(selected_date2, '%d-%m-%Y').strftime("%A, %d. %B %Y")
-
+  
     context22 = {
         'selected_date': selected_date2,
-        'department': request.session['department']
+        'department': request.session['department'],
+        'mem_duration': all_member_tms,
     }
 
     msg = render_to_string('project_management/email_template_timesheet_report.html', context22)
@@ -8926,11 +8927,98 @@ def export_email_timesheet_task_report(request):
 
     context1 = {
         'timesheet_report': all_mem_gen_list,
-        'selected_date': selected_date2
+        'selected_date': selected_date2,
     }
 
     template = loader.get_template('project_management/filter_detailed_completed_task_report.html')
     return HttpResponse(template.render(context1, request))
+
+
+def timesheet_defaulter_list(request):
+    company_id = request.session['company_id']
+    department_id = request.session['department_id']
+    selected_date = request.GET.get('selected_date')
+    selected_date2 = request.GET.get('selected_date')
+    defaulter_state = False
+
+    selected_date = datetime.datetime.strptime(selected_date, '%d-%m-%Y')
+    selected_date2 = datetime.datetime.strptime(selected_date2, '%d-%m-%Y').strftime("%A, %d. %B %Y")
+
+    dept_members_exist = User.objects.filter(company_id=company_id, department_id=department_id).exists()
+    if dept_members_exist == True:
+        dept_members = User.objects.filter(company_id=company_id, department_id=department_id, is_active=True)
+        all_mem_gen_list = []
+        
+        for mem in dept_members:
+            sum_duration = 0
+            new_dict = {}
+            all_member_tasks = []
+            individual_tms = {}
+            new_dict['mid'] = mem.email
+            new_dict['label'] = mem.first_name + " " + (mem.last_name)
+            member_tms = Timesheet.objects.filter(log_day=selected_date, project_team_member_id=mem.id, company_id=company_id)
+            for duration in member_tms:
+                sum_duration = sum_duration + duration.durationsec()
+            new_dict['total_dur'] = compute_duration(sum_duration)
+            
+            # IF Member timesheets total hours are below 3 hrs [10800]
+            if sum_duration < 10800:
+                all_mem_gen_list.append(new_dict)
+
+    else:
+        all_mem_gen_list = ''
+
+    if len(all_mem_gen_list) == 0: 
+        defaulter_state = False
+    else: 
+        defaulter_state = True
+
+    response_data = {
+        'timesheet_report': all_mem_gen_list,
+        "defaulter_state": defaulter_state
+    }
+
+    return JsonResponse(response_data)
+
+
+def send_timesheet_email_reminder(request):
+    company_id = request.session['company_id']
+    department_id = request.session['department_id']
+    defaulter_data = request.GET.get('dataArray1')
+    defaulter_data = json.loads(defaulter_data)
+
+    selected_date = request.GET.get('id_selected_day_002')
+    selected_date2 = request.GET.get('id_selected_day_002')
+    selected_date = datetime.datetime.strptime(selected_date, '%d-%m-%Y')
+    
+    selected_date2 = datetime.datetime.strptime(selected_date2, '%d-%m-%Y').strftime("%A, %d. %B %Y")
+    current_date = date.today().strftime("%A, %d. %B %Y")
+    
+    for defaulter in defaulter_data:
+        context22 = {
+            'selected_date': selected_date2,
+            'department': request.session['department'],
+            'current_date': current_date,
+            'name': defaulter['label'],
+            'total_time': defaulter['total_dur']
+        }
+
+        msg1 = render_to_string('project_management/email_template_timesheet_remainder.html', context22)
+
+        email_address = [defaulter['mid']]
+        subject, from_email, to = 'Timesheet Remainder', 'from@example.com', email_address
+        text_content = 'Timesheet Reminder'
+        html_content = msg1
+        msg1 = EmailMultiAlternatives(subject, text_content, from_email, to=[defaulter['mid']], cc=email_address)
+        msg1.attach_alternative(html_content, "text/html")
+        msg1.send()
+        
+
+    response_data = {
+        'status': True,
+    }
+
+    return JsonResponse(response_data)
 
 
 # @background(schedule=10)

@@ -11,6 +11,13 @@ https://docs.djangoproject.com/en/dev/ref/settings/
 """
 
 import os
+import environ
+
+
+# Initialise environment variables
+env = environ.Env()
+environ.Env.read_env()
+
 
 import environ
 # Initialise environment variables
@@ -128,7 +135,7 @@ DATABASES = {
         'ENGINE': 'django.db.backends.mysql',
         'NAME': 'sybyl_service_desk_db',
         'USER': 'root',
-        'PASSWORD': '',
+        'PASSWORD': 'roots',
         'HOST': '127.0.0.1',
         'PORT': '3306',
     }
@@ -175,7 +182,7 @@ PROJECT_DIR = os.path.dirname(os.path.abspath(__file__))
 STATIC_ROOT = os.path.join(PROJECT_DIR, 'static')
 
 STATIC_URL = '/static/'
-
+STATICFILES_STORAGE = 'django.contrib.staticfiles.storage.StaticFilesStorage'
 STATICFILES_DIRS = (
     os.path.join(BASE_DIR, 'static'),
 )

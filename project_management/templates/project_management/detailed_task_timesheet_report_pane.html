@@ -30,29 +30,40 @@
             <div class="card">
                 <div class="card-body">
                     <div id="" class="row">
-                        
-                            <div class="col-4">
-                                <h3 style="margin-top: 4%;" class="text-info current_daily_pane">{{today_date }}</h3>
-                            </div>
-                            <div class="col-8">
-                                <form  method="POST" action="{% url 'exportTimesheetTaskReport' %}" enctype="multipart/form-data" id="toPrint">
-                                    {% csrf_token %}
-                                    <div class="form-group pull-right col-">
-                                        <label>Filter by Date</label>
-                                        <input onkeypress="return false;" type="text" name="id_selected_day_002" class="form-control dateinput" placeholder="dd-mm-yyyy" id="id_selected_day_002" value="{{today_date}}">
-                                    </div>
 
-                                    
-                                    
-                                    <button type="submit" style="margin-top: 5%; margin-right: 3%;" id="" class="btn btn-info pull-right col-3">
-                                        <i class="fa fa-file-excel-o"></i> Export
-                                    </button>
+                        <div class="col-3">
+                            <h3 style="margin-top: 4%;" class="text-info current_daily_pane">{{today_date }}</h3>
+                        </div>
+                        <div class="col-9">
+                            <form method="POST" action="{% url 'exportTimesheetTaskReport' %}"
+                                enctype="multipart/form-data" id="toPrint">
+                                {% csrf_token %}
+                                <div class="form-group pull-right">
+                                    <label>Filter by Date</label>
+                                    <input onkeypress="return false;" style="margin-top: 4%;" type="text"
+                                        name="id_selected_day_002" class="form-control dateinput input-sm"
+                                        placeholder="dd-mm-yyyy" id="id_selected_day_002" value="{{today_date}}">
+                                </div>
 
-                                </form>
-                                <button type="submit" style="margin-top: 5%; margin-right: 3%;" id="" onclick="exportAndEmailSend02()" class="btn btn-info pull-right col-3">
-                                    <i class="fa fa-file-excel-o"></i> Export and Email <i class="fa fa-envelope"></i>
+
+
+                                <button type="submit" style="margin-top: 5%; margin-right: 3%;" id=""
+                                    class="btn btn-info btn-sm pull-right col-2">
+                                    <i class="fa fa-file-excel-o"></i> Export
                                 </button>
-                            </div>
+
+                            </form>
+
+                            <button type="submit" style="margin-top: 5%; margin-right: 3%;" id=""
+                                onclick="exportAndEmailSend02()" class="btn btn-info btn-sm pull-right col-2">
+                                <i class="fa fa-file-excel-o"></i> Export & Email <i class="fa fa-envelope"></i>
+                            </button>
+
+                            <button type="submit" style="margin-top: 5%; margin-right: 3%;" id=""
+                                onclick="sendTimesheetRemainder()" class="btn btn-info btn-sm pull-right col-2">
+                                <i class="fa fa-file-excel-o"></i> Remainder <i class="fa fa-bell"></i>
+                            </button>
+                        </div>
                     </div>
                     <div id="dailytimesheet-report002"></div>
                 </div>
@@ -63,7 +74,7 @@
 
 <script>
     var selected_date1 = $('#id_selected_day_002').val();
-        
+
     urldata = "{% url 'filterDetailedTaskTimesheetRReport'%}";
     $.ajax({
         type: 'GET',
@@ -80,11 +91,11 @@
         format: "dd-mm-yyyy",
         autoclose: true,
         clearBtn: true,
-        endDate : new Date()
+        endDate: new Date()
     }).on('changeDate', function (selected) {
         $('#dailytimesheet-report002').html('<i class="fa fa-spinner fa-spin fa-5x" style="align-content: center;margin-left: 50%;"></i>');
         var selected_date = $('#id_selected_day_002').val();
-        
+
         urldata1 = "{% url 'filterDetailedTaskTimesheetRReport'%}";
         $.ajax({
             type: 'GET',
@@ -97,8 +108,8 @@
             }
         });
     });
-    
-    function exportAndEmailSend02(){
+
+    function exportAndEmailSend02() {
         $.confirm({
             title: '<h3 class="font-weight-bold">Confirm Email Send!</h3>',
             content: '<h5>Send Detailed Timesheet Report to Resources in this department! <br> <strong>That is: Gigi, Sanjeev, Grace, Dickson, Jerry, Job, Allan, David, Jeremiah, Matthew, Nickson</strong></h5>',
@@ -155,6 +166,107 @@
             }
         });
     }
-    
+
+    function sendTimesheetRemainder() {
+        var selected_date09 = $('#id_selected_day_002').val();
+        urldata1 = "{% url 'timesheetDefaulterList'%}";
+        $.ajax({
+            type: 'GET',
+            data: {
+                selected_date: selected_date09
+            },
+            url: urldata1,
+            success: function (resp) {
+                var status1 = resp.defaulter_state
+
+                if (status1 == true) {
+                    var defaulters = [];
+                    var dataArray1 = resp.timesheet_report;
+                    dataArray1.forEach(function (item) {
+                        defaulters.push(item.label + ": " + item.total_dur);
+                    });
+                    defaulters = defaulters.toString();
+                    defaulters = defaulters.split(",").join("<br />")
+
+                    $.confirm({
+                        title: '<h3 class="font-weight-bold">Confirm Email Send!</h3>',
+                        content: '<h5>The following Resources have <strong>Pending Timesheets!</strong> <br> <strong><br/><span class="text-info">' + defaulters + '</span></strong></h5>',
+                        type: 'orange',
+                        typeAnimated: true,
+                        boxWidth: '40%',
+                        useBootstrap: false,
+                        icon: 'fa fa-bell',
+                        closeIcon: true,
+                        buttons: {
+                            formSubmit: {
+                                text: 'Send Reminder',
+                                btnClass: 'btn-green',
+                                action: function () {
+                                    urldata2 = "{% url 'sendTimesheetEmailReminder'%}";
+                                    $.ajax({
+                                        type: 'GET',
+                                        data: {
+                                            id_selected_day_002: selected_date09,
+                                            dataArray1: JSON.stringify(dataArray1)
+                                        },
+                                        url: urldata2,
+                                        success: function (resp) {
+                                            $.confirm({
+                                                title: '<h3>Success!</h3>',
+                                                content: 'Email Successfully Sent to Resources with Pending Timesheets!',
+                                                type: 'blue',
+                                                typeAnimated: true,
+                                                useBootstrap: false,
+                                                closeIcon: true,
+                                                boxWidth: '30%',
+                                                icon: 'fa fa-check',
+                                                buttons: {
+                                                    close: {
+                                                        text: 'Close',
+                                                        btnClass: 'btn-gray',
+                                                        action: function () {
+
+                                                        }
+                                                    }
+                                                }
+                                            });
+                                        }
+                                    });
+                                }
+                            },
+                            close: {
+                                text: 'Cancel',
+                                btnClass: 'btn-gray',
+                                action: function () {
+                                }
+                            }
+                        }
+                    });
+                } else {
+                    $.confirm({
+                        title: '<h3>Note!</h3>',
+                        content: 'No Timesheet defaulters!',
+                        type: 'blue',
+                        typeAnimated: true,
+                        useBootstrap: false,
+                        closeIcon: true,
+                        boxWidth: '30%',
+                        icon: 'fa fa-exclamation',
+                        buttons: {
+                            close: {
+                                text: 'Close',
+                                btnClass: 'btn-gray',
+                                action: function () {
+
+                                }
+                            }
+                        }
+                    });
+                }
+            }
+        });
+
+    }
+
 </script>
 {% endblock %}
