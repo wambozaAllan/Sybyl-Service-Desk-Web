@@ -27,3 +27,5 @@ media/attachments/
 chat/__pycache__/
 core/__pycache__/
 venvf/
+sybyl_project_issue_tracker_web/.env
+project_management/__pycache__/
