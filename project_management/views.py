@@ -9006,7 +9006,7 @@ def send_timesheet_email_reminder(request):
         msg1 = render_to_string('project_management/email_template_timesheet_remainder.html', context22)
 
         email_address = [defaulter['mid']]
-        subject, from_email, to = 'Timesheet Remainder', 'from@example.com', email_address
+        subject, from_email, to = 'Timesheet Reminder', 'from@example.com', email_address
         text_content = 'Timesheet Reminder'
         html_content = msg1
         msg1 = EmailMultiAlternatives(subject, text_content, from_email, to=[defaulter['mid']], cc=email_address)
