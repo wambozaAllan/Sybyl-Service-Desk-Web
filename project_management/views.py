@@ -9005,7 +9005,7 @@ def send_timesheet_email_reminder(request):
 
         msg1 = render_to_string('project_management/email_template_timesheet_remainder.html', context22)
 
-        email_address = [defaulter['mid']]
+        email_address = ['ampumuza.amon@sybyl.com']
         subject, from_email, to = 'Timesheet Reminder', 'from@example.com', email_address
         text_content = 'Timesheet Reminder'
         html_content = msg1
