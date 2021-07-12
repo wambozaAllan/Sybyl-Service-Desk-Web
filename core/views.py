@@ -141,7 +141,7 @@ def home(request):
     }
     datasource['data'] = []
 
-    for key in Project.objects.all():
+    for key in Project.objects.filter(is_active=True):
         data = {}
         data['label'] = key.name
         data['value'] = key.completion

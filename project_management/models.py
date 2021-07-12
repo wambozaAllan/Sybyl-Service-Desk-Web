@@ -64,6 +64,7 @@ class Project(models.Model):
     created_time = models.DateTimeField(auto_now_add=True)
     modified_time = models.DateTimeField(auto_now=True)
     created_by = models.ForeignKey(User, null=True, blank=True, on_delete=models.SET_NULL)
+    is_active = models.BooleanField(default=True)
     history = HistoricalRecords()
 
     def __str__(self):

@@ -3280,7 +3280,7 @@ def list_projects(request):
 
 class UpdateProject(UpdateView):
     model = Project
-    fields = ['name', 'project_status', 'company', 'project_code', 'final_cost', 'estimated_start_date', 'estimated_end_date', 'actual_start_date', 'actual_end_date', 'description', 'logo']
+    fields = ['name', 'project_status', 'company', 'project_code', 'final_cost', 'estimated_start_date', 'estimated_end_date', 'actual_start_date', 'actual_end_date', 'description', 'logo', 'is_active']
     template_name = 'project_management/update_project.html'
     success_url = reverse_lazy('listProjects')
 
@@ -9005,11 +9005,10 @@ def send_timesheet_email_reminder(request):
 
         msg1 = render_to_string('project_management/email_template_timesheet_remainder.html', context22)
 
-        email_address = ['ampumuza.amon@sybyl.com']
-        subject, from_email, to = 'Timesheet Reminder', 'from@example.com', email_address
+        subject, from_email = 'Timesheet Reminder', 'from@example.com'
         text_content = 'Timesheet Reminder'
         html_content = msg1
-        msg1 = EmailMultiAlternatives(subject, text_content, from_email, to=[defaulter['mid']], cc=email_address)
+        msg1 = EmailMultiAlternatives(subject, text_content, from_email, to=[defaulter['mid']])
         msg1.attach_alternative(html_content, "text/html")
         msg1.send()
         
