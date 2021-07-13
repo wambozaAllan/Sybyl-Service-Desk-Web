@@ -3280,7 +3280,7 @@ def list_projects(request):
 
 class UpdateProject(UpdateView):
     model = Project
-    fields = ['name', 'project_status', 'company', 'project_code', 'final_cost', 'estimated_start_date', 'estimated_end_date', 'actual_start_date', 'actual_end_date', 'description', 'logo']
+    fields = ['name', 'project_status', 'company', 'project_code', 'final_cost', 'estimated_start_date', 'estimated_end_date', 'actual_start_date', 'actual_end_date', 'description', 'logo', 'is_active']
     template_name = 'project_management/update_project.html'
     success_url = reverse_lazy('listProjects')
 
@@ -8769,7 +8769,9 @@ def export_email_timesheet_task_report(request):
         # return timesheet summary
         dept_members = User.objects.filter(company_id=company_id, department_id=department_id, is_active=True)
         all_member_tms = []
+        dept_emails = []
         for member in dept_members:
+            dept_emails.append(member.email)  
             sum_duration = 0
             new_dict = {}
             new_dict['label'] = member.first_name + " " + (member.last_name)
@@ -8916,11 +8918,12 @@ def export_email_timesheet_task_report(request):
 
     msg = render_to_string('project_management/email_template_timesheet_report.html', context22)
 
-    email_address = ['babirye.grace@sybyl.com', 'ampumuza.amon@sybyl.com', 'jerry.vijayan@sybyl.com', 'chepkurui.job@sybyl.com', 'wamboza.allan@sybyl.com', 'david.kaggulire@sybyl.com', 'jeremiah.kerman@sybyl.com', 'sajin.mathew@sybyl.com', 'atwine.nickson@sybyl.com']
-    subject, from_email, to = 'Daily Timesheets for Resources', 'from@example.com', email_address
+    # email_address = ['babirye.grace@sybyl.com', 'ampumuza.amon@sybyl.com', 'jerry.vijayan@sybyl.com', 'chepkurui.job@sybyl.com', 'wamboza.allan@sybyl.com', 'david.kaggulire@sybyl.com', 'jeremiah.kerman@sybyl.com', 'sajin.mathew@sybyl.com', 'atwine.nickson@sybyl.com']
+    subject, from_email, to = 'Daily Timesheets for Resources', 'from@example.com', dept_emails
     text_content = 'SERVICE DESK.'
     html_content = msg
-    msg = EmailMultiAlternatives(subject, text_content, from_email, to=['gigi@sybyl.com', 'sanjeev@sybyl.com'], cc=email_address)
+    # msg = EmailMultiAlternatives(subject, text_content, from_email, to=['gigi@sybyl.com', 'sanjeev@sybyl.com'], cc=email_address)
+    msg = EmailMultiAlternatives(subject, text_content, from_email, to=['ampumuza.amon@sybyl.com'], cc=dept_emails)
     msg.attach('TimesheetReport.xls', excelfile.getvalue(), 'application/ms-excel')
     msg.attach_alternative(html_content, "text/html")
     msg.send()
@@ -9005,11 +9008,10 @@ def send_timesheet_email_reminder(request):
 
         msg1 = render_to_string('project_management/email_template_timesheet_remainder.html', context22)
 
-        email_address = [defaulter['mid']]
-        subject, from_email, to = 'Timesheet Remainder', 'from@example.com', email_address
+        subject, from_email = 'Timesheet Reminder', 'from@example.com'
         text_content = 'Timesheet Reminder'
         html_content = msg1
-        msg1 = EmailMultiAlternatives(subject, text_content, from_email, to=[defaulter['mid']], cc=email_address)
+        msg1 = EmailMultiAlternatives(subject, text_content, from_email, to=[defaulter['mid']])
         msg1.attach_alternative(html_content, "text/html")
         msg1.send()
         

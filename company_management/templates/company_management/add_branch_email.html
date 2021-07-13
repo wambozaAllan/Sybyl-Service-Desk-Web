@@ -1,67 +1,84 @@
-{% extends 'base.html' %}
-{% load static %}
 {% load crispy_forms_tags %}
-{% block content %}
-<!-- Main wrapper  -->
-<div id="main-wrapper">
-	{% include 'header.html' %}
-	{% include 'left-nav.html' %}
-	<!-- Page wrapper  -->
-	<div class="page-wrapper">
-		<!-- Bread crumb -->
-		<div class="row page-titles">
-			<div class="col-md-5 align-self-center">
-				<h3 class="text-primary">Dashboard</h3>
-			</div>
-			<div class="col-md-7 align-self-center">
-				<ol class="breadcrumb">
-					<li class="breadcrumb-item"><a href="javascript:void(0)">Home</a></li>
-					<li class="breadcrumb-item active">Add Branch Emails</li>
-				</ol>
-			</div>
-		</div>
-		<!-- End Bread crumb -->
-		<!-- Container fluid  -->
-		<div class="container-fluid">
-			<!-- Start Page Content -->
-			<div class="row">
-				<div class="col-12">
-					<div class="card">
-						<div class="card-title">
-							<h4>Add Branch Emails</h4>
-						</div>
-						<div class="card-body">
-							<div class="basic-form">
-								<form method="post">
-									{% csrf_token %}
-									<div class="row">
-										<div class="col-4">{{ form.branch | as_crispy_field }}</div>
-										<div class="col-4">{{ form.email_address|as_crispy_field }}</div>
-										<div class="col-4">{{ form.secondary_email | as_crispy_field }}</div>
 
-									</div>
-									<div class="row">
-										<div class="col-5"></div>
-										<div class="col-1">
-											<a href="{% url 'listBranchEmails' %}" class="btn btn-inverse">Cancel</a>
-										</div>
-										<div class="col-1">
-											<button type="submit" class="btn btn-success">Add Email(s)</button>
-										</div>
-									</div>
-								</form>
-							</div>
-						</div>
+<div class="col-md-12">	
+	<div class="card-body">
+		<div class="basic-form">
+			<form method="post">
+				{% csrf_token %}
+				<div class="row">
+					<div class="col-md-12">{{ form.branch | as_crispy_field }}</div>
+				</div>
+				<div class="row">
+					<div class="col-md-12">{{ form.email_address|as_crispy_field }}</div>
+				</div>
+				<div class="row">
+					<div class="col-md-12">{{ form.secondary_email | as_crispy_field }}</div>
+				</div>
+				<div class="row">
+					<div class="col-md-6">
+						<button type="submit" class="col-md-6 btn btn-success">Add Email</button>
 					</div>
 				</div>
-			</div>
-			{% include 'footer.html' %}
-			<!-- End Page Content -->
+			</form>
 		</div>
-		<!-- End Container fluid  -->
-
 	</div>
-	<!-- End Page wrapper  -->
 </div>
-{% endblock %}
 
+<script>
+	$("#id_email_address").prop('required',true);
+
+	function IsEmail(emailInput) {
+		var regex = /^([a-zA-Z0-9_\.\-\+])+\@(([a-zA-Z0-9\-])+\.)+([a-zA-Z0-9]{2,4})+$/;
+		if(!regex.test(emailInput)) {
+			return false;
+		}else{
+			return true;
+		}
+	}
+
+	$('#id_email_address').on('input', function () {
+		document.getElementById('id_email_address').style.borderColor = "";
+		document.getElementById("btn-submit-branch").disabled = false;
+		$("#validate_email").hide();
+		$("#invalid_email").hide();
+		$("#id_email_address").attr('autocomplete', 'off');
+
+		var email_address = $(this).val();
+
+		if (email_address == ""){
+			document.getElementById('id_email_address').style.borderColor = "";
+			document.getElementById("btn-submit-branch").disabled = false;
+			$("#validate_email").hide();
+			$("#invalid_email").hide();
+		}else{
+			if(IsEmail(email_address)){
+				$.ajax({
+					url: "{% url 'validateEmail' %}",
+					data: {
+						'email_address': email_address,
+					},
+					dataType: 'json',
+					success: function (data) {
+						if (data.is_taken) {
+							$("#validate_email").show();
+							document.getElementById('id_email_address').style.borderColor = "red";
+							document.getElementById("btn-submit-branch").disabled = true;
+						} 
+						else {
+							$("#validate_email").hide();
+							document.getElementById('id_email_address').style.borderColor = "";
+							document.getElementById("btn-submit-branch").disabled = false;
+						}
+					}
+				});
+			}
+			else{
+				$("#invalid_email").show();
+				document.getElementById('id_email_address').style.borderColor = "red";
+				document.getElementById("btn-submit-branch").disabled = true;
+			}
+
+		}
+		
+	});
+</script>

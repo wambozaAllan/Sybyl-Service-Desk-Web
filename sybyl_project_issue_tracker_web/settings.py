@@ -136,7 +136,7 @@ DATABASES = {
         'ENGINE': 'django.db.backends.mysql',
         'NAME': 'sybyl_service_desk_db',
         'USER': 'root',
-        'PASSWORD': 'roots',
+        'PASSWORD': '',
         'HOST': '127.0.0.1',
         'PORT': '3306',
     }

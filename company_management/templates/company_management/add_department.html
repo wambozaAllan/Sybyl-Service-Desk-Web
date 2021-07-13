@@ -1,64 +1,78 @@
-{% extends 'base.html' %}
-{% load static %}
 {% load crispy_forms_tags %}
-{% block content %}
-<!-- Main wrapper  -->
-<div id="main-wrapper">
-	{% include 'header.html' %}
-	{% include 'left-nav.html' %}
-	<!-- Page wrapper  -->
-	<div class="page-wrapper">
-		<!-- Bread crumb -->
-		<div class="row page-titles">
-			<div class="col-md-5 align-self-center">
-				<h3 class="text-primary">Dashboard</h3>
-			</div>
-			<div class="col-md-7 align-self-center">
-				<ol class="breadcrumb">
-					<li class="breadcrumb-item"><a href="javascript:void(0)">Home</a></li>
-					<li class="breadcrumb-item active">Add Department</li>
-				</ol>
-			</div>
-		</div>
-		<!-- End Bread crumb -->
-		<!-- Container fluid  -->
-		<div class="container-fluid">
-			<!-- Start Page Content -->
-			<div class="row">
-				<div class="col-12">
-					<div class="card">
-						<div class="card-title">
-							<h4>Add Department</h4>
-						</div>
-						<div class="card-body">
-							<div class="basic-form">
-								<form method="post">
-									{% csrf_token %}
-									<div class="row">
-										<div class="col-4">{{ form.name|as_crispy_field }}</div>
-										<div class="col-4">{{ form.company|as_crispy_field }}</div>
-									</div>
-									<div class="row">
-										<div class="col-4"></div>
-										<div class="col-1">
-											<a href="{% url 'listDepartments' %}" class="btn btn-inverse">Cancel</a>
-										</div>
-										<div class="col-1">
-											<button type="submit" class="btn btn-success">Add Department</button>
-										</div>
-									</div>
-								</form>
-							</div>
-						</div>
+
+<div class="col-12">
+	<div class="card-body">
+		<div class="basic-form">
+			<form method="post" action="{% url 'addDepartment' %}">
+				{% csrf_token %}
+				<div class="row">
+					<div class="col-md-12">
+						{{ form.name|as_crispy_field }}
+						<medium id="validate_department_name" class="text-muted hidden">
+							<font color="red">
+								Department Name Already Exists!
+							</font>
+						</medium>
+					</div>
+					<div class="col-md-12">{{ form.company|as_crispy_field }}</div>
+				</div>
+				<br>
+				<div class="row">
+					<div class="col-1">
+						<button type="submit" class="btn btn-success btn-submit">Add Department</button>
 					</div>
 				</div>
-			</div>
-			{% include 'footer.html' %}
-			<!-- End Page Content -->
+			</form>
 		</div>
-		<!-- End Container fluid  -->
-
 	</div>
-	<!-- End Page wrapper  -->
 </div>
-{% endblock %}
+
+<script>
+	$("#div_id_company").removeClass('form-group');
+
+	$('#id_company').attr('autocomplete', 'off');
+	$('#id_company').removeAttr('multiple', "");
+	$('#id_company').attr('data-live-search', 'true');
+	$('#id_company').selectpicker({
+		size: 3,
+	});
+
+	$("#id_name").attr('autocomplete', 'off');
+
+	$('#id_name').on('input', function () {
+		document.getElementById('id_name').style.borderColor = "";
+		document.getElementById("btn-submit").disabled = false;
+		$("#validate_department_name").hide();
+		
+
+		var dept_name = $(this).val();
+
+		if (dept_name == ""){
+			document.getElementById('id_name').style.borderColor = "";
+			document.getElementById("btn-submit").disabled = false;
+			$("#validate_department_name").hide();
+		}else{
+			$.ajax({
+				url: "{% url 'validateDepartment' %}",
+				data: {
+					'dept_name': dept_name,
+				},
+				dataType: 'json',
+				success: function (data) {
+					if (data.is_taken) {
+						$("#validate_department_name").show();
+						document.getElementById('id_name').style.borderColor = "red";
+						document.getElementById("btn-submit").disabled = true;
+					} 
+					else {
+						$("#validate_department_name").hide();
+						document.getElementById('id_name').style.borderColor = "";
+						document.getElementById("btn-submit").disabled = false;
+					}
+				}
+			});
+
+		}
+		
+	});
+</script>

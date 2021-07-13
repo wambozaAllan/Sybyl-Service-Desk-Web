@@ -27,9 +27,15 @@
                     <div class="card">
                         <div class="card-body">
                             <h4 class="card-title">Branch Emails</h4>
+                            <div class="row">
+                                <div class="col-md-12">
+                                    <button id="" class="btn btn-info pull-right" onclick="functAddEmail();">
+                                        <i class="fa fa-fw fa-lg fa-plus"></i>Add Branch Email
+                                    </button>
+                                </div>
+                            </div>
                             <h6 class="card-subtitle">Export data to Copy, CSV, Excel, PDF & Print</h6>
                             <div class="table-responsive">
-                                {% if branch_emails %}
                                 <table class="display nowrap table table-hover" cellspacing="0" width="100%" id="listEmails">
                                     <thead>
                                         <tr>
@@ -48,26 +54,19 @@
                                               <td>{{ branch.email_address }}</td>
                                               <td>{{ branch.secondary_email }}</td>
                                               <td>
-                                                <a href="{% url 'detailBranchEmails' branch.id %}">View</a> &nbsp;
-                                                <a href="{% url 'updateBranchEmails' branch.id %}">Update</a> &nbsp;
-                                                <a href="#"><i class="mdi mdi-delete font-30 align-middle mr-2"></i></a>
+                                                <button onclick="functDetailEmail({{ branch.id }}, '{{ branch.name }}')"  id="" class="btn btn-outline-success btn-sm" type="button">
+                                                    <i title="View Branch Details" class="fa fa-dedent"></i>
+                                                </button>
+                                                <button onclick="functUpdateEmail({{ branch.id }}, '{{ branch.name }}')"  id="" class="btn btn-outline-success btn-sm" type="button">
+                                                    </i><i title="Edit Branch" class="fa fa-edit"></i>
+                                                </button>
                                               </td>
                                           </tr>
 										{% endfor %}
                                     </tbody>
                                 </table>
-                                {% else %}
-                                    <h5><span class="text-muted text-center"
-                                        style="padding: 24%; font-size: 107%;"><strong>No Emails Created</strong></span>
-                                    </h5>
-                                {% endif %}
                             </div>
-                            <br />
-							<div class="row">
-								<div class="col-1">
-									<a href="{% url 'addBranchEmails' %}" class="btn btn-success">Add Branch Emails</a>
-								</div>
-							</div>
+                            
                         </div>
                     </div>
             {% include 'footer.html' %}
@@ -77,5 +76,101 @@
 
     </div>
     <!-- End Page wrapper  -->
+    <script>
+        function functAddEmail(){
+            urldata = "{% url 'addBranchEmails' %}";
+            
+            $.ajax({
+                type: 'GET',
+                cache: false,
+                data: {},
+                url: urldata,
+                success: function (resp) {
+                    $.confirm({
+                        title: '<h3>Add Branch Email</h3>',
+                        content: '' + resp,
+                        type: 'blue',
+                        theme: 'material',
+                        typeAnimated: true,
+                        boxWidth: '60%',
+                        useBootstrap: false,
+                        closeIcon: true,
+                        buttons: {
+                            close: {
+                                text: 'Close',
+                                btnClass: 'btn-gray',
+                                action: function () {
+                                }
+                            }
+                        }
+                    });
+                }
+            });     
+        }
+
+        $("#id_email_address").attr('autocomplete', 'off');
+
+        function functDetailEmail(emailid, branchname) {
+            urldata = "{% url 'detailBranchEmails' 999%}".replace(999, emailid);
+            $.ajax({
+                type: "GET",
+                cache: false,
+                data: {
+                    emailid: emailid
+                },
+                url: urldata,
+                success: function (resp) {
+                    $.confirm({
+                        title: '<h3>Email Details for Branch: <strong class="text-info">' + branchname + ' </strong></h3>',
+                        content: '' + resp,
+                        type: 'blue',
+                        typeAnimated: true,
+                        boxWidth: '50%',
+                        useBootstrap: false,
+                        closeIcon: true,
+                        buttons: {
+                            close: {
+                                text: 'Close',
+                                btnClass: 'btn-gray close-dialog',
+                                action: function () {
+                                }
+                            }
+                        }
+                    });
+                }
+            });
+        }
+
+        function functUpdateEmail(emailid, branchname) {
+            urldata = "{% url 'updateBranchEmails' 999%}".replace(999, emailid);
+            $.ajax({
+                type: "GET",
+                cache: false,
+                data: {
+                    emailid: emailid
+                },
+                url: urldata,
+                success: function (resp) {
+                    $.confirm({
+                        title: '<h3>Update Branch Email: <strong class="text-info">' + branchname + ' </strong></h3>',
+                        content: '' + resp,
+                        type: 'blue',
+                        typeAnimated: true,
+                        boxWidth: '50%',
+                        useBootstrap: false,
+                        closeIcon: true,
+                        buttons: {
+                            close: {
+                                text: 'Close',
+                                btnClass: 'btn-gray close-dialog',
+                                action: function () {
+                                }
+                            }
+                        }
+                    });
+                }
+            });
+        }
+    </script>
 </div>
 {% endblock %}
