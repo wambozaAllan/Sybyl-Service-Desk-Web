@@ -58,7 +58,11 @@
                                             <td>{{ userdetails.first_name|title }} {{ userdetails.last_name |title}}
                                             </td>
                                             <td>{{ userdetails.gender }}</td>
-                                            <td>{{ userdetails.department }}</td>
+                                            {% if userdetails.is_dept_head %}
+                                                <td>{{ userdetails.department }} / Dept Head</td>
+                                            {% else %}
+                                                <td>{{ userdetails.department }}</td>
+                                            {% endif %}
                                             {% if userdetails.is_active %}
                                                 <td class="text-center"><span
                                                         class="badge badge-success"><strong>Active</strong></span>

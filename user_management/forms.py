@@ -17,7 +17,7 @@ class UserForm(forms.ModelForm):
         model = User
         fields = ('first_name', 'last_name', 'gender', 'company'
                   , 'branch', 'department', 'groups'
-                  , 'username', 'password', 'email', 'is_superuser', 'is_staff', 'is_active', 'city', 'nationality', 'postal_code', 'address', 'secondary_email')
+                  , 'username', 'password', 'email', 'is_superuser', 'is_staff', 'is_active', 'city', 'nationality', 'postal_code', 'address', 'secondary_email', 'is_dept_head')
         widgets = {'password': forms.PasswordInput()}
 
 
@@ -26,7 +26,7 @@ class CustomUserChangeForm(UserChangeForm):
         model = User
         fields = ['first_name', 'last_name', 'gender', 'company'
             , 'branch', 'department', 'groups'
-            , 'username', 'password', 'email', 'is_superuser', 'is_staff', 'is_active', ]
+            , 'username', 'password', 'email', 'is_superuser', 'is_staff', 'is_active', 'is_dept_head',]
 
 
 class GroupExtendForm(forms.ModelForm):
