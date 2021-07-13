@@ -8923,7 +8923,7 @@ def export_email_timesheet_task_report(request):
     text_content = 'SERVICE DESK.'
     html_content = msg
     # msg = EmailMultiAlternatives(subject, text_content, from_email, to=['gigi@sybyl.com', 'sanjeev@sybyl.com'], cc=email_address)
-    msg = EmailMultiAlternatives(subject, text_content, from_email, to=['dkaggulire@gmail.com'], cc=dept_emails)
+    msg = EmailMultiAlternatives(subject, text_content, from_email, to=['ampumuza.amon@sybyl.com'], cc=dept_emails)
     msg.attach('TimesheetReport.xls', excelfile.getvalue(), 'application/ms-excel')
     msg.attach_alternative(html_content, "text/html")
     msg.send()
