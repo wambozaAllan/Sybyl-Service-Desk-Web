@@ -238,7 +238,12 @@ urlpatterns = [
     path('saveRequestupdate/', views.save_customer_request_update, name='saveRequestupdate'),
     path('viewCustomerRequest/<int:pk>/', views.ViewCustomerRequest.as_view(), name='viewCustomerRequest'),
     path('deleteCustomerRequest', views.delete_customer_request, name='deleteCustomerRequest'),
-    path('addManageCustomerRequest/', views.add_manage_customer_request, name="addManageCustomerRequest"),
+    path('manageCustomerRequest/', views.manage_customer_request_pane, name="manageCustomerRequest"),
+    path('changeRequestState/', views.change_customer_request_state, name="changeRequestState"),
+    path('saveUpdateCustomerRequestState/', views.save_update_customer_request_state, name="saveUpdateCustomerRequestState"),
+    path('loadCustomerRequestActivities/', views.load_customer_request_activities, name="loadCustomerRequestActivities"),
+    path('addNewCustomerRequestActivity/', views.add_customer_request_activity, name="addNewCustomerRequestActivity"),
+    path('saveCustomerRequestActivity/', views.save_customer_request_activity, name="saveCustomerRequestActivity"),
 
     path('listIssueTypes', views.issue_type_home, name="listIssueTypes"),
     path('updateIssueType/<int:pk>/', views.UpdateIssueType.as_view(), name='updateIssueType'),

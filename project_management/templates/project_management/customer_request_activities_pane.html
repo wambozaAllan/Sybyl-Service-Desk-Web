@@ -1,0 +1,80 @@
+{% load humanize %}
+
+<div class="row">
+    <div class="col-md-12">
+        <button id="" class="btn btn-info pull-right" onclick="functAddCustomerActivity('{{cr_id}}', '{{cr_name}}', '{{cr_code}}')">
+            <i class="fa fa-fw fa-lg fa-plus"></i>Add Activity
+        </button>
+    </div>
+</div>
+
+<div class="card ">
+    <div class="table-responsive" >
+        <table id="table_customer_sla" class="display nowrap table table-hover"
+                cellspacing="0"
+                width="100%">
+            <thead>
+            <tr>
+                <th>#</th>
+                <th>Activity</th>
+                <th>Activity Date</th>
+                <th>Start Time</th>
+                <th>End Time</th>
+                <th>Description</th>
+                <th>Added By</th>
+                <th>Date Added</th>
+            </tr>
+            </thead>
+            <tbody>
+                {% for act in cr_activities %}
+                <tr>
+                    <td>{{ forloop.counter }}</td>
+                    <td>{{ act.name }}</td>
+                    <td>{{ act.activity_date | date:"D, d M, Y" }}</td>
+                    <td>{{ act.start_time | time:"TIME_FORMAT" }}</td>
+                    <td>{{ act.end_time | time:"TIME_FORMAT" }}</td>
+                    <td>{{act.description}}</td>
+                    <td>{{act.added_by}}</td>
+                    <td>{{act.datetime_added}}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<script>
+    function functAddCustomerActivity(cr_id, cr_name, code) {
+        urldata = "{% url 'addNewCustomerRequestActivity'%}";
+        $.ajax({
+            type: "GET",
+            cache: false,
+            data: {
+                cr_id: cr_id,
+                cr_name: cr_name,
+                cr_code: code
+            },
+            url: urldata,
+            success: function (resp) {
+                $.confirm({
+                    title: '<h3>Add Activity</h3>',
+                    content: '' + resp,
+                    type: 'blue',
+                    typeAnimated: true,
+                    boxWidth: '65%',
+                    useBootstrap: false,
+                    closeIcon: true,
+                    buttons: {
+                        close: {
+                            text: 'Cancel',
+                            btnClass: 'btn-gray close-dialog',
+                            action: function () {
+                                
+                            }
+                        }
+                    }
+                });
+            }
+        });
+    }
+</script>

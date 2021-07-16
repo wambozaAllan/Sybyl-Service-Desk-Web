@@ -1,0 +1,96 @@
+<h4 >
+    <div class="col-12 row">
+        <div class="col-1">
+            <i class="fa fa-ticket fa-lg"></i>
+        </div>
+    
+        <div class="col-9">
+            <span class="col-form-label font-weight-bold text-secondary">Request Code:  <medium class="text-info">{{request.ticket_code}}</medium></span></br>
+            <span class="col-form-label font-weight-bold text-secondary">Customer Request: </span><span class="small">{{request.name}}</span></br>
+            <span class="font-weight-bold small">SLA Contract: </span><span class="small">{{request.sla.name}}</span></br>
+            <span class="font-weight-bold small">Issue Type: </span><span class="small">{{request.issue_type}}</span>
+        </div>
+    
+        <div class="col-2">
+            <div class="col-md-12">
+                <button id="" class="btn btn-info pull-left" onclick="changeCRState('{{request.id}}', '{{ request.name }}', '{{request.state}}');">
+                    <i class="fa fa-fw fa-lg fa-plus"></i>Update Status
+                </button>
+            </div>
+        </div>
+    </div>
+</h4>
+
+<h4 class="col-12 row">
+    <div class="col-1">
+        <i class="fa fa-sort fa-lg"></i>
+    </div>
+
+    <div class="col-11">
+        <span class="col-form-label font-weight-bold text-secondary">Priority:  <small>{{request.priority}} <i style="color: {{request.priority.color}};" class="fa fa-circle"></i></small></span>
+    </div>
+</h4>
+
+<h4 class="col-12 row">
+    <div class="col-1">
+        <i class="fa fa-bars fa-lg"></i>
+    </div>
+
+    <div class="col-11">
+        <span class="col-form-label font-weight-bold text-secondary">Description</span></br>
+        {% if desc == 1  %}
+            <small>{{request.description}}</small>
+        {% else %}
+            <small class="text-secondary">No Description.</small>
+        {% endif %}
+    </div>
+</h4>
+
+<h4 class="col-12 row">
+    <div class="col-1">
+        <i class="fa fa-user-circle fa-lg"></i>
+    </div>
+
+    <div class="col-11">
+        <span class="col-form-label font-weight-bold text-secondary">{{request.creator}}</span><small> added this request</small></br>
+        <small>Date Added: <span class="text-info">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; {{request.created_time}}</span></small><br>
+        <small>Last Update: <span class="text-info">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{{request.modified_time}}</span></small><br>
+        <small>Date Assigned: <span class="text-info">&nbsp;&nbsp;{{request.date_assigned}}</span></small><br>
+        <small>Assigned By: <span class="text-info">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{{request.assigned_by}}</span></small>
+    </div>
+</h4>
+
+<script>
+    function changeCRState(id, CR_name, state) {
+        urldata = "{% url 'changeRequestState'%}";
+        $.ajax({
+            type: "GET",
+            cache: false,
+            data: {
+                'cr_id': id,
+                'cr_name': CR_name,
+                'state': state
+            },
+            url: urldata,
+            success: function (resp) {
+                $.confirm({
+                    title: '<h3>Change State</h3>',
+                    content: '' + resp,
+                    type: 'blue',
+                    typeAnimated: true,
+                    boxWidth: '40%',
+                    useBootstrap: false,
+                    closeIcon: true,
+                    buttons: {
+                        close: {
+                            text: 'Cancel',
+                            btnClass: 'btn-gray',
+                            action: function () {
+                            }
+                        }
+                    }
+                });
+            }
+        });
+    }
+</script>

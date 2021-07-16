@@ -576,7 +576,7 @@ class CustomerRequest(models.Model):
     ticket_code = models.CharField(max_length=255)
     priority = models.ForeignKey(Priority, on_delete=models.CASCADE)
     sla = models.ForeignKey(ServiceLevelAgreement, on_delete=models.CASCADE)
-    STATUS_CHOICES = (("OPEN", "OPEN"), ("CLOSED", "CLOSED"), ("ONHOLD", "ONHOLD"), ("CANCELED", "CANCELED"))
+    STATUS_CHOICES = (("OPEN", "OPEN"), ("COMPLETED", "COMPLETED"), ("ONHOLD", "ONHOLD"), ("CANCELED", "CANCELED"))
     status = models.CharField(max_length=50, choices=STATUS_CHOICES, default="OPEN")
     assigned_by = models.ForeignKey(User, related_name="assigned_by", on_delete=models.CASCADE, blank=True, null=True)
     assigned_member = models.ManyToManyField(User, related_name="assigned_member")
@@ -595,6 +595,17 @@ class CustomerRequest(models.Model):
 class Trackstatus(models.Model):
     customerrequest = models.ForeignKey(CustomerRequest, on_delete=models.CASCADE)
     request_status = models.CharField(max_length=100)
+    datetime_added = models.DateTimeField(auto_now_add=True)
+    added_by = models.ForeignKey(User, on_delete=models.CASCADE)
+
+
+class CustomerRequestActivity(models.Model):
+    name = models.CharField(max_length=255)
+    customerrequest = models.ForeignKey(CustomerRequest, on_delete=models.CASCADE)
+    activity_date = models.DateField()
+    start_time = models.TimeField()
+    end_time = models.TimeField()
+    description = RichTextField(null=True, blank=True)
     datetime_added = models.DateTimeField(auto_now_add=True)
     added_by = models.ForeignKey(User, on_delete=models.CASCADE)
 

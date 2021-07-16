@@ -51,6 +51,15 @@
 .pointCard {
     cursor: pointer;
 }
+
+.modal-title {
+    display: inline-block;
+    width: 300px;
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    margin-bottom: -7px;
+}
 </style>
 
 {% load humanize %}
@@ -59,7 +68,7 @@
 
 	<div class="list">
 
-		<h3 class="list-title">Open <i class="fa fa-circle color-primary pull-right"></i></h3>
+		<h3 class="list-title">Open <span class="badge badge-pill badge-primary">{{open_req_list.count}}</span><i class="fa fa-circle color-primary pull-right"></i></h3>
 
 		<ul class="list-items">
             
@@ -88,7 +97,7 @@
 
 	<div class="list">
 
-		<h3 class="list-title">Pending <i class="fa fa-circle color-warning pull-right"></i></h3>
+		<h3 class="list-title">Pending <span class="badge badge-pill badge-primary">{{pending_reg_list.count}}</span> <i class="fa fa-circle color-warning pull-right"></i></h3>
         
 		<ul class="list-items">
 			{% if pending_reg_list %}
@@ -99,9 +108,8 @@
                         <p>{{req2.name}}</p>
                         <div class='task__stats'>
                             <span><time datetime="2021-11-24T20:00:00"><i class="fa fa-flag fa-lg"></i> {{req2.created_time | date:"d M, Y"}}</time></span>
-                            <span><i class="fa fa-edit fa-lg color-primary pull-right"></i></span>
-                            <span><i class="fa fa-list-alt fa-lg color-primary pull-right"></i></span>
-                            <span><i class="fa fa-users"></i> 2</span>
+                            <span><i class="fa fa-users"></i> {{req2.assigned_member.count}}</span>
+                            <span><i class="fa fa-clock-o"></i> 3:00HRS</span>
                         </div>
                     </div>
                 </a>
@@ -115,12 +123,19 @@
 
 	<div class="list">
 
-		<h3 class="list-title">Completed <i class="fa fa-circle color-success pull-right"></i></h3>
+		<h3 class="list-title">Completed <span class="badge badge-pill badge-primary">{{completed_reg_list.count}}</span><i class="fa fa-circle color-success pull-right"></i></h3>
 
 		<ul class="list-items">
 			{% if completed_reg_list %}
                 {% for req3 in completed_reg_list %}
-                    <li>{{req3.name}}</li>
+                    <div class='task' draggable='true'>
+                        <div class='task__tags'><span class='badge badge-pill badge-primary'>{{req3.issue_type}}</span><button class='task__options'><i class="fa fa-ellipsis-h"></i></button></div>
+                        <p>{{req3.name}}</p>
+                        <div class='task__stats'>
+                            <span><time datetime="2021-11-24T20:00:00"><i class="fa fa-flag fa-lg"></i> {{req3.created_time}}</time></span>
+                            <span><a href="#"><i class="fa fa-list-alt fa-lg color-primary pull-right" onclick="functViewOpenRequest({{req3.id}}, '{{req3.name}}', {{req3.sla_id}}, '{{req3.sla.name}}')"></i></a></span>
+                        </div>
+                    </div>
                 {% endfor %}
             {% else %}
                 <span class="">No Completed Requests</span>
@@ -131,15 +146,45 @@
     
     <div class="list">
 
-		<h3 class="list-title">Cancelled <i class="fa fa-circle color-danger pull-right"></i></h3>
+		<h3 class="list-title">Canceled <span class="badge badge-pill badge-primary">{{cancelled_reg_list.count}}</span><i class="fa fa-circle color-danger pull-right"></i></h3>
 
 		<ul class="list-items">
 			{% if cancelled_reg_list %}
                 {% for req4 in cancelled_reg_list %}
-                    <li>{{req4.name}}</li>
+                    <div class='task' draggable='true'>
+                        <div class='task__tags'><span class='badge badge-pill badge-primary'>{{req4.issue_type}}</span><button class='task__options'><i class="fa fa-ellipsis-h"></i></button></div>
+                        <p>{{req4.name}}</p>
+                        <div class='task__stats'>
+                            <span><time datetime="2021-11-24T20:00:00"><i class="fa fa-flag fa-lg"></i> {{req4.created_time}}</time></span>
+                            <span><a href="#"><i class="fa fa-list-alt fa-lg color-primary pull-right" onclick="functViewOpenRequest({{req4.id}}, '{{req4.name}}', {{req4.sla_id}}, '{{req4.sla.name}}')"></i></a></span>
+                        </div>
+                    </div>
                 {% endfor %}
             {% else %}
                 <span class="">No Cancelled Requests</span>
+            {% endif %}
+		</ul>
+
+	</div>
+
+    <div class="list">
+
+		<h3 class="list-title">On Hold <span class="badge badge-pill badge-primary">{{onhold_reg_list.count}}</span><i class="fa fa-circle color-danger pull-right"></i></h3>
+
+		<ul class="list-items">
+			{% if onhold_reg_list %}
+                {% for req5 in onhold_reg_list %}
+                    <div class='task' draggable='true'>
+                        <div class='task__tags'><span class='badge badge-pill badge-primary'>{{req5.issue_type}}</span><button class='task__options'><i class="fa fa-ellipsis-h"></i></button></div>
+                        <p>{{req5.name}}</p>
+                        <div class='task__stats'>
+                            <span><time datetime="2021-11-24T20:00:00"><i class="fa fa-flag fa-lg"></i> {{req5.created_time}}</time></span>
+                            <span><a href="#"><i class="fa fa-list-alt fa-lg color-primary pull-right" onclick="functViewOpenRequest({{req5.id}}, '{{req5.name}}', {{req5.sla_id}}, '{{req5.sla.name}}')"></i></a></span>
+                        </div>
+                    </div>
+                {% endfor %}
+            {% else %}
+                <span class="">No On Hold Requests</span>
             {% endif %}
 		</ul>
 
@@ -154,7 +199,7 @@
         <div>
             <div id="head">
                 <a href="#close" title="Close" class="close2">X</a>
-                <h5 class="modalDialog-title font-weight-bold">Manage Customer Request</h5>
+                <h5 class="modalDialog-title font-weight-bold">Manage Customer Request : <div class="color-primary modal-title" id="customer-request-selected"></div></h5>
             </div>
             <hr>
 
@@ -325,18 +370,17 @@
     }
 
     function functionManagePendingCustomerRequest(id, CR_name) {
-        urldata = "{% url 'addManageCustomerRequest'%}";
+        urldata = "{% url 'manageCustomerRequest'%}";
         $.ajax({
             type: "GET",
             cache: false,
             data: {
-                id : id,
-                CR_name: CR_name
+                cr_id : id,
             },
             url: urldata,
             success: function (resp) {
                 $('#dialog_customer_request').html(resp);
-
+                $('#customer-request-selected').html(CR_name);
                 window.location = '#customerRequestModalDialog';
                 initDialog('modalDialog2');
             }

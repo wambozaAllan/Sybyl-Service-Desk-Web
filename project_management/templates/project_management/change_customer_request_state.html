@@ -1,0 +1,108 @@
+<div id="save-user-pane">
+    <div class="row col-12">
+        <div class="col-6">
+            <div class="form-group">
+                <label class="col-form-label requiredField">Customer Request<span class="asteriskField">*</span></label>
+                <div class="">
+                    <input id="cr_name" type="text" name="" class="textinput textInput form-control" disabled value="{{ cr_name }}" />
+                </div>
+            </div>
+        </div>
+
+        <div class="col-6">
+            <div id="div_id_status" class="form-group">
+                <label for="id_gender" class="col-form-label  requiredField">
+                    Status
+                    <span class="asteriskField">*</span>
+                </label>
+            
+                <div class="">
+                    <select name="status" class="select form-control" id="id_status">
+                        <option value="PENDING" selected="">PENDING</option> 
+                        <option value="COMPLETED">COMPLETED</option>
+                        <option value="ONHOLD">ONHOLD</option>
+                        <option value="CANCELED">CANCELED</option>
+                    </select>  
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="">
+        <div class="col-md-12" style="margin-top: 2%;">
+            <button id="btnUpdateCRStatus" class="btn btn-success pull-right col-12">
+                <span class="btn-save"><i class="fa fa-fw fa-lg fa-save"></i>Update</span>
+            </button>
+        </div>
+    </div>
+</div>
+
+<script>
+    $('#btnUpdateCRStatus').click(function () {
+        var cr_status = $('#id_status').val();
+        var cr_name = $('#cr_name').val();
+        var cr_id = '{{cr_id}}';
+        
+        if(cr_status == 'PENDING'){
+            $.confirm({
+                title: '<h3>Alert!</h3>',
+                content: 'Please Select new state you want to move the Customer Request to!',
+                type: 'orange',
+                typeAnimated: true,
+                useBootstrap: false,
+                closeIcon: true,
+                boxWidth: '30%',
+                icon: 'fa fa-warning',
+                buttons: {
+                    close: {
+                        text: 'Close',
+                        btnClass: 'btn-gray',
+                        action: function () {
+
+                        }
+                    }
+                }
+            });
+        } else{
+            $.confirm({
+                title: '<h4 class="font-weight-bold">Confirm Customer Request State Update!</h4>',
+                content: '<h4>Move <b class="text-info">'+ cr_name +'</b> From <span class="text-info">PENDING</span> to <span class="text-info">'+cr_status+' </span>! </h4>',
+                type: 'green',
+                typeAnimated: true,
+                boxWidth: '35%',
+                useBootstrap: false,
+                icon: 'fa fa-warning',
+                closeIcon: true,
+                buttons: {
+                    formSubmit: {
+                        text: 'Send',
+                        btnClass: 'btn-green',
+                        action: function () {
+                            urldata = "{% url 'saveUpdateCustomerRequestState'%}";
+
+                            $.ajax({
+                                type: 'GET',
+                                data: {
+                                    cr_status: cr_status,
+                                    cr_id: cr_id
+                                },
+                                url: urldata,
+                                success: function (resp) {
+                                    window.location = '#close';
+                                    $('.cust-request-pane').html(resp);
+                                }
+                            });
+                        }
+                    },
+                    close: {
+                        text: 'Cancel',
+                        btnClass: 'btn-gray',
+                        action: function () {
+                        }
+                    }
+                }
+            });
+        }
+        
+    });
+</script>
