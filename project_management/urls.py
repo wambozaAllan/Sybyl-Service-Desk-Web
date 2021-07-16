@@ -238,8 +238,13 @@ urlpatterns = [
     path('saveRequestupdate/', views.save_customer_request_update, name='saveRequestupdate'),
     path('viewCustomerRequest/<int:pk>/', views.ViewCustomerRequest.as_view(), name='viewCustomerRequest'),
     path('deleteCustomerRequest', views.delete_customer_request, name='deleteCustomerRequest'),
-    path('fowardRequests', views.foward_customer_requests, name='fowardRequests'),
-    path('manageCustomerViewRequests/', views.manager_view_customer_requests, name="manageCustomerViewRequests"),
+    path('addManageCustomerRequest/', views.add_manage_customer_request, name="addManageCustomerRequest"),
+
+    path('listIssueTypes', views.issue_type_home, name="listIssueTypes"),
+    path('updateIssueType/<int:pk>/', views.UpdateIssueType.as_view(), name='updateIssueType'),
+    path('addIssueType/', views.AddIssueType.as_view(), name='addIssueType'),
+    path('validateIssueType', views.validate_issuetype, name='validateIssueType'),
+    path('deleteIssueType/<int:pk>', views.DeleteIssueType.as_view(), name="deleteIssueType"),
     
     path('SLAsByCustomer', views.fetch_SLAs_by_customer, name='SLAsByCustomer'),
     path('requestsBySLA', views.fetch_requests_by_sla, name='requestsBySLA'),
@@ -257,6 +262,7 @@ urlpatterns = [
     path('listCustomerSLAs/', views.list_customer_sla, name='listCustomerSLAs'),
     path('checkTask/', views.check_task, name='checkTask'),
     path('assignRequests', views.assign_customer_request, name='assignRequests'),
+    path('saveAssignedCustomerRequests', views.save_assigned_customerrequests, name='saveAssignedCustomerRequests'),
     
     path('dailyTimesheetRReport', views.timesheet_daily_report, name='dailyTimesheetRReport'),
     path('filterDailyTimesheetRReport', views.filter_timesheet_daily_report, name='filterDailyTimesheetRReport'),

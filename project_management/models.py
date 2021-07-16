@@ -557,22 +557,35 @@ class ProjectCode(models.Model):
         db_table = 'project_code'
 
 
+class IssueType(models.Model):
+    name  = models.CharField(max_length=250)
+    description     = models.CharField(max_length=255, blank=True)
+    created_time    = models.DateTimeField(auto_now_add=True)
+    modified_time   = models.DateTimeField(auto_now=True)
+
+    def get_customer_req_count(self):
+        return CustomerRequest.objects.filter(issue_type=self).count()
+
+    def __str__(self):
+        return self.name
+
+
 class CustomerRequest(models.Model):
     name = models.CharField(max_length=100)
     description = models.CharField(max_length=255, null=True, blank=True)
     ticket_code = models.CharField(max_length=255)
     priority = models.ForeignKey(Priority, on_delete=models.CASCADE)
     sla = models.ForeignKey(ServiceLevelAgreement, on_delete=models.CASCADE)
-    status = models.ManyToManyField(Status, through='Trackstatus')
-    assigned_by = models.ForeignKey(ProjectTeamMember, related_name="assigned_by", on_delete=models.CASCADE, blank=True, null=True)
-    assigned_member = models.ManyToManyField(ProjectTeamMember, related_name="assigned_member")
+    STATUS_CHOICES = (("OPEN", "OPEN"), ("CLOSED", "CLOSED"), ("ONHOLD", "ONHOLD"), ("CANCELED", "CANCELED"))
+    status = models.CharField(max_length=50, choices=STATUS_CHOICES, default="OPEN")
+    assigned_by = models.ForeignKey(User, related_name="assigned_by", on_delete=models.CASCADE, blank=True, null=True)
+    assigned_member = models.ManyToManyField(User, related_name="assigned_member")
+    date_assigned = models.DateTimeField(blank=True, null=True)
     creator = models.ForeignKey(User, on_delete=models.CASCADE, related_name='creator')
     created_time = models.DateTimeField(auto_now_add=True)
     modified_time = models.DateTimeField(auto_now=True)
-    fowarded_by = models.ForeignKey(User, on_delete=models.CASCADE, related_name='fowarded_by', blank=True, null=True)
-    date_submitted = models.DateTimeField(blank=True, null=True)
-    client_request_status = models.CharField(max_length=100, default='NOTSUBMITTED')
-    status_current_flag = models.CharField(max_length=100, default='OPEN')
+    client_request_status = models.CharField(max_length=100, default='OPEN')
+    issue_type = models.ForeignKey(IssueType, on_delete=models.CASCADE)
     history = HistoricalRecords()
     
     def __str__(self):
@@ -581,7 +594,7 @@ class CustomerRequest(models.Model):
 
 class Trackstatus(models.Model):
     customerrequest = models.ForeignKey(CustomerRequest, on_delete=models.CASCADE)
-    request_status = models.ForeignKey(Status, on_delete=models.CASCADE)
+    request_status = models.CharField(max_length=100)
     datetime_added = models.DateTimeField(auto_now_add=True)
     added_by = models.ForeignKey(User, on_delete=models.CASCADE)
 
@@ -594,3 +607,4 @@ class TaskTimesheetExtend(models.Model):
 class RequestTimesheetExtend(models.Model):
     timesheet = models.OneToOneField(Timesheet, on_delete=models.CASCADE)
     customer_request = models.ForeignKey(CustomerRequest, on_delete=models.CASCADE)
+

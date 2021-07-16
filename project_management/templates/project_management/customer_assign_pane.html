@@ -34,13 +34,6 @@
                 <div class="card" style="margin-top: -2%;">
                     <div class="card-body">
                         <h4 class="card-title">Requests</h4>
-                        <div class="row">
-                            <div class="col-md-12">
-                                <button id="" class="btn btn-info pull-right" onclick="functAddCustomerRequest();">
-                                    <i class="fa fa-fw fa-lg fa-plus"></i>Add Request
-                                </button>
-                            </div>
-                        </div>
 
                         <div class="cust-request-pane">
                             {% include "project_management/list_customer_manager_requests.html" %}
@@ -53,35 +46,7 @@
 </div>
 
 <script>
-    function functAddCustomerRequest() {
-        urldata = "{% url 'addCustomerRequest'%}";
-        $.ajax({
-            type: "GET",
-            cache: false,
-            data: {},
-            url: urldata,
-            success: function (resp) {
-                $.confirm({
-                    title: '<h3>Add Customer Request</h3>',
-                    content: '' + resp,
-                    type: 'blue',
-                    typeAnimated: true,
-                    boxWidth: '65%',
-                    useBootstrap: false,
-                    closeIcon: true,
-                    buttons: {
-                        close: {
-                            text: 'Cancel',
-                            btnClass: 'btn-gray close-dialog',
-                            action: function () {
-                                
-                            }
-                        }
-                    }
-                });
-            }
-        });
-    }
+    
 </script>
 {% endblock %}
 

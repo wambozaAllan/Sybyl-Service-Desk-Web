@@ -1,6 +1,6 @@
 from django import forms
 from django.db import models
-from .models import Project, Milestone, Task, ProjectDocument, Priority, Status, ProjectTeamMember, ProjectTeam, Incident, IncidentComment, CustomerRequest
+from .models import Project, Milestone, Task, ProjectDocument, Priority, Status, ProjectTeamMember, ProjectTeam, Incident, IncidentComment, CustomerRequest, IssueType
 from company_management.models import Company
 from crispy_forms.helper import FormHelper
 from crispy_forms.layout import Submit
@@ -180,5 +180,11 @@ class ProjectTeamForm(forms.ModelForm):
 class CustomerRequestForm(forms.ModelForm):
     class Meta:
         model = CustomerRequest
-        fields = ('name', 'ticket_code','description', 'priority', 'sla', 'status',)
+        fields = ('name', 'ticket_code','description', 'priority', 'sla', 'status', 'issue_type')
         
+
+class IssueTypeForm(forms.ModelForm):
+    class Meta:
+        model = IssueType
+        fields = ('name', 'description',)
+
