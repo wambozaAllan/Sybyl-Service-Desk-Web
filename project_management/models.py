@@ -578,9 +578,8 @@ class CustomerRequest(models.Model):
     sla = models.ForeignKey(ServiceLevelAgreement, on_delete=models.CASCADE)
     STATUS_CHOICES = (("OPEN", "OPEN"), ("COMPLETED", "COMPLETED"), ("ONHOLD", "ONHOLD"), ("CANCELED", "CANCELED"))
     status = models.CharField(max_length=50, choices=STATUS_CHOICES, default="OPEN")
-    assigned_by = models.ForeignKey(User, related_name="assigned_by", on_delete=models.CASCADE, blank=True, null=True)
-    assigned_member = models.ManyToManyField(User, related_name="assigned_member")
-    date_assigned = models.DateTimeField(blank=True, null=True)
+    # have put through fields coz there are 2 fields ref same foreign table hence need to specify which fields make up the 2 m2m
+    assigned_member = models.ManyToManyField(User, through='CustomerRequestTeamMembers', through_fields=('customerrequest', 'assigned_member'))
     creator = models.ForeignKey(User, on_delete=models.CASCADE, related_name='creator')
     created_time = models.DateTimeField(auto_now_add=True)
     modified_time = models.DateTimeField(auto_now=True)
@@ -590,6 +589,12 @@ class CustomerRequest(models.Model):
     
     def __str__(self):
         return self.name
+
+class CustomerRequestTeamMembers(models.Model):
+    customerrequest = models.ForeignKey(CustomerRequest, on_delete=models.CASCADE)
+    assigned_member = models.ForeignKey(User, on_delete=models.CASCADE, related_name='assigned_member')
+    date_assigned = models.DateTimeField(auto_now_add=True)
+    assigned_by = models.ForeignKey(User, on_delete=models.CASCADE, related_name='assigned_by')
 
 
 class Trackstatus(models.Model):
@@ -608,6 +613,15 @@ class CustomerRequestActivity(models.Model):
     description = RichTextField(null=True, blank=True)
     datetime_added = models.DateTimeField(auto_now_add=True)
     added_by = models.ForeignKey(User, on_delete=models.CASCADE)
+
+    def durationsec(self):
+        start = self.start_time
+        end = self.end_time
+        start_sec= (start.hour*60+start.minute)*60+start.second
+        end_sec= (end.hour*60+end.minute)*60+end.second
+        delta = end_sec-start_sec
+        
+        return delta
 
 
 class TaskTimesheetExtend(models.Model):

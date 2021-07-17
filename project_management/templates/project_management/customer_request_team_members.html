@@ -1,0 +1,144 @@
+{% load humanize %}
+
+<div class="row">
+    <div class="col-md-12">
+        <button id="" class="btn btn-info pull-right" onclick="functAddCRMember('{{cr_id}}', '{{cr_name}}', '{{cr_code}}')">
+            <i class="fa fa-fw fa-lg fa-plus"></i>Add Member
+        </button>
+    </div>
+</div>
+
+<div class="card ">
+    <div class="table-responsive" >
+        <table id="table_customer_sla" class="display nowrap table table-hover"
+                cellspacing="0"
+                width="100%">
+            <thead>
+            <tr>
+                <th>#</th>
+                <th>Name</th>
+                <th>Assigned By</th>
+                <th>Date Assigned</th>
+                <th class="text-center">Remove</th>
+            </tr>
+            </thead>
+            <tbody>
+                {% for mem in cr_members %}
+                <tr>
+                    <td>{{ forloop.counter }}</td>
+                    <td>{{ mem.assigned_member }}</td>
+                    <td>{{ mem.assigned_by }}</td>
+                    <td>{{ mem.date_assigned | date:"D, d M, Y" }}</td>
+                    <td class="text-center">
+                        <button onclick="functRemoveCRMember('{{mem.assigned_member}}', '{{mem.id}}', '{{cr_name}}', '{{cr_id}}', {{cr_members.count}}, '{{cr_code}}')" class="btn btn-outline-danger btn-sm" type="button">
+                            <i title="Delete Timesheet" class="fa fa-remove"></i>
+                        </button>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<script>
+    function functAddCRMember(cr_id, cr_name, code) {
+        urldata = "{% url 'addCustomerRequestMember'%}";
+        $.ajax({
+            type: "GET",
+            cache: false,
+            data: {
+                cr_id: cr_id,
+                cr_name: cr_name,
+                cr_code: code
+            },
+            url: urldata,
+            success: function (resp) {
+                $.confirm({
+                    title: '<h3>Attach New Member</h3>',
+                    content: '' + resp,
+                    type: 'blue',
+                    typeAnimated: true,
+                    boxWidth: '40%',
+                    useBootstrap: false,
+                    closeIcon: true,
+                    buttons: {
+                        close: {
+                            text: 'Cancel',
+                            btnClass: 'btn-gray close-dialog',
+                            action: function () {
+                                
+                            }
+                        }
+                    }
+                });
+            }
+        });
+    }
+
+    function functRemoveCRMember(assigned_member, assigned_id, cr_name, cr_id, mem_count, cr_code) {
+        if(mem_count < 2){
+            $.confirm({
+                title: '<h3>Alert: Can not Dessign!</h3>',
+                content: 'Pending Customer Request should have atleast one Engineer Assigned to it!',
+                type: 'orange',
+                typeAnimated: true,
+                useBootstrap: false,
+                closeIcon: true,
+                boxWidth: '30%',
+                icon: 'fa fa-warning',
+                buttons: {
+                    close: {
+                        text: 'Close',
+                        btnClass: 'btn-gray',
+                        action: function () {
+
+                        }
+                    }
+                }
+            });
+        } else{
+            urldata = "{% url 'deleteCustomerRequestEngineer'%}";
+            $.confirm({
+                title: '<h3 class="font-weight-bold">Delete Request!</h3>',
+                content: '<h4>Remove Member: <span class="text-info">'+ assigned_member +'</span></h4>',
+                type: 'red',
+                typeAnimated: true,
+                boxWidth: '40%',
+                useBootstrap: false,
+                theme: 'modern',
+                icon: 'fa fa-exclamation-circle',
+                closeIcon: true,
+                buttons: {
+                    formSubmit: {
+                        text: 'Remove',
+                        btnClass: 'btn-red',
+                        action: function () {
+                            $.ajax({
+                                type: "GET",
+                                cache: false,
+                                data: {
+                                    assigned_id: assigned_id,
+                                    cr_name: cr_name,
+                                    cr_id: cr_id,
+                                    cr_code: cr_code
+                                },
+                                url: urldata,
+                                success: function (resp) {
+                                    $('.close-dialog').click();
+                                    $('.customer_request_team_members').html(resp);
+                                }
+                            });
+                        }
+                    },
+                    close: {
+                        text: 'Cancel',
+                        btnClass: 'btn-gray',
+                        action: function () {
+                        }
+                    }
+                }
+            });
+        }
+    }
+</script>

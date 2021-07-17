@@ -244,12 +244,19 @@ urlpatterns = [
     path('loadCustomerRequestActivities/', views.load_customer_request_activities, name="loadCustomerRequestActivities"),
     path('addNewCustomerRequestActivity/', views.add_customer_request_activity, name="addNewCustomerRequestActivity"),
     path('saveCustomerRequestActivity/', views.save_customer_request_activity, name="saveCustomerRequestActivity"),
+    path('loadCustomerRequestTeam/', views.load_customer_request_team_members, name="loadCustomerRequestTeam"),
+    path('deleteCustomerRequestEngineer', views.delete_customer_request_engineer, name='deleteCustomerRequestEngineer'),
+    path('addCustomerRequestMember', views.add_customer_request_member, name='addCustomerRequestMember'),
+    path('customeRequestReload', views.customer_request_reload, name='customeRequestReload'),
 
     path('listIssueTypes', views.issue_type_home, name="listIssueTypes"),
     path('updateIssueType/<int:pk>/', views.UpdateIssueType.as_view(), name='updateIssueType'),
     path('addIssueType/', views.AddIssueType.as_view(), name='addIssueType'),
     path('validateIssueType', views.validate_issuetype, name='validateIssueType'),
     path('deleteIssueType/<int:pk>', views.DeleteIssueType.as_view(), name="deleteIssueType"),
+    path('assignRequests', views.assign_customer_request, name='assignRequests'),
+    path('saveAssignedCustomerRequests', views.save_assigned_customerrequests, name='saveAssignedCustomerRequests'),
+    path('saveAssignedEngineer', views.save_assigned_engineer, name='saveAssignedEngineer'),
     
     path('SLAsByCustomer', views.fetch_SLAs_by_customer, name='SLAsByCustomer'),
     path('requestsBySLA', views.fetch_requests_by_sla, name='requestsBySLA'),
@@ -266,8 +273,6 @@ urlpatterns = [
     path('listCustomerServiceRequests/', views.list_customer_service_requests, name='listCustomerServiceRequests'),
     path('listCustomerSLAs/', views.list_customer_sla, name='listCustomerSLAs'),
     path('checkTask/', views.check_task, name='checkTask'),
-    path('assignRequests', views.assign_customer_request, name='assignRequests'),
-    path('saveAssignedCustomerRequests', views.save_assigned_customerrequests, name='saveAssignedCustomerRequests'),
     
     path('dailyTimesheetRReport', views.timesheet_daily_report, name='dailyTimesheetRReport'),
     path('filterDailyTimesheetRReport', views.filter_timesheet_daily_report, name='filterDailyTimesheetRReport'),

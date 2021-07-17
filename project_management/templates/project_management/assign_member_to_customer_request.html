@@ -1,0 +1,114 @@
+{% load crispy_forms_tags %} {% csrf_token %}
+<div class="row col-12">
+    <div class="col-12">
+        <label class="col-form-label  requiredField">Request Name</label>
+        <input type="text" value="{{ cr_name }}" class="form-control" id="id_name" disabled/>
+        <input type="text" value="{{ cr_id }}" class="form-control" id="id_request2" style="display: none;"/>
+    </div>
+</div>
+
+<div class="row col-12">
+    <div class="col-md-12">
+        <div id="div_id_project_member2" class="form-group">
+            <label for="id_project_member2" class="col-form-label requiredField">Assign To<span class="asteriskField">*</span>
+            </label>                    
+            <div class="">
+                <select name="projectmember" class="select form-control assigned" id="id_project_member2" multiple="multiple">
+                    <option value="" disabled>--Assign--</option>
+                    {% for mem2 in members %}
+                        <option value="{{mem2.id}}">{{mem2.name}}</option>
+                    {% endfor %}
+                </select>
+                
+            </div>
+        </div>
+    </div>
+
+</div>
+<br>
+
+<div class="row col-12">
+    <div class="col-md-12">
+        <button id="btnAssignCustomerRequest2" class="btn btn-success pull-right col-12">
+            <span class="btn-save-request"><i class="fa fa-fw fa-lg fa-save"></i>Submit</span>
+        </button>
+    </div>
+</div>
+    
+
+<script>
+
+    $('#id_project_member2').attr('data-live-search', "true"); 
+    $('#id_project_member2').selectpicker({
+        size: 3
+    });
+
+    $("#div_id_project_member2").removeClass("form-group");
+
+    $(".assigned").on('change', function(){
+        if ( $('option:selected', this).val() == 0 ){
+            $('.assigned').css({ "border": '2px solid #00635a' });     
+        }
+        else if ($(this).val() > 0) {
+            $('.assigned').css({ "border": '' }); 
+        }
+    }); 
+
+   $('#btnAssignCustomerRequest2').click(function () { 
+        var cr_name = '{{cr_name}}';
+        var cr_id ='{{cr_id}}';
+        var cr_code = '{{cr_code}}';
+
+        var project_member = $('#id_project_member2').val();
+        var selectednumbers = [];
+        $('#id_project_member2 :selected').each(function(i, selected) {
+            selectednumbers[i] = $(selected).val();
+        });
+        var assigned_to = selectednumbers;
+
+        if (project_member < 0) {
+            if (project_member < 0) {
+                $('#id_ticket_code').css({ "border": '2px solid #00635a' });
+            }
+
+        } else {
+            console.log(assigned_to);
+            document.getElementById('btnAssignCustomerRequest2').disabled = true;
+            urlData11 = "{% url 'saveAssignedEngineer' %}";
+            $.ajax({
+                type: "GET",
+                cache: false,
+                data: {
+                    cr_name: cr_name,
+                    project_members: JSON.stringify(selectednumbers),
+                    cr_id: cr_id,
+                    cr_code: cr_code
+                },
+                url: urlData11,
+                success: function (resp) {
+                    $.confirm({
+                        title: 'Success!',
+                        content: 'Member Assigned Successfully',
+                        type: 'green',
+                        boxWidth: '30%',
+                        useBootstrap: false,
+                        typeAnimated: true,
+                        buttons: {
+                            ok: function () {
+
+                            }
+                        }
+                    });
+                    $('.close-dialog').click();
+                    $('.customer_request_team_members').html(resp);
+                }
+            });
+        }
+    });
+
+    $('#id_project_member2').on('input', function () {
+        $('#id_project_member2').css({ "border": '' });
+    });
+
+   
+</script>

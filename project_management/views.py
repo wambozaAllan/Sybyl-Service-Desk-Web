@@ -24,7 +24,7 @@ from .forms import MilestoneForm
 
 from django.contrib.auth.decorators import user_passes_test, permission_required, login_required
 
-from .models import Project, Milestone, Task, ProjectDocument, Incident, Priority, Status, ProjectTeam, ProjectTeamMember, ProjectForumMessages, ProjectForum, ProjectForumMessageReplies, IncidentComment, IncidentComment, Timesheet, ResubmittedTimesheet, ProjectCode, CustomerRequest, Trackstatus, TaskTimesheetExtend, RequestTimesheetExtend, IssueType, CustomerRequestActivity
+from .models import Project, Milestone, Task, ProjectDocument, Incident, Priority, Status, ProjectTeam, ProjectTeamMember, ProjectForumMessages, ProjectForum, ProjectForumMessageReplies, IncidentComment, IncidentComment, Timesheet, ResubmittedTimesheet, ProjectCode, CustomerRequest, Trackstatus, TaskTimesheetExtend, RequestTimesheetExtend, IssueType, CustomerRequestActivity, CustomerRequestTeamMembers
 from user_management.models import User
 from company_management.models import Company, CompanyCategory, CompanyDomain, Department, ServiceLevelAgreement
 from .forms import CreateProjectForm, MilestoneForm, TaskForm, DocumentForm, ProjectUpdateForm, MilestoneUpdateForm, ProjectForm, IncidentForm, ProjectTeamForm
@@ -7862,7 +7862,7 @@ def save_customer_request_activity(request):
        "cr_name": cr_name,
        "cr_id": cr_id,
        "cr_code": cr_code,
-       "cr_activities": cr_activities
+       "cr_members": cr_activities
     }
 
     return HttpResponse(template.render(context, request))
@@ -7883,6 +7883,24 @@ def load_customer_request_activities(request):
     }
     
     return HttpResponse(template.render(context, request))
+
+
+def load_customer_request_team_members(request):
+    req_name = request.GET.get('req_name')
+    cr_id = request.GET.get('cr_id')
+    cr_code = request.GET.get('cr_code')
+
+    cr_team = CustomerRequestTeamMembers.objects.filter(customerrequest_id=int(cr_id))
+    template = loader.get_template('project_management/customer_request_team_members.html')
+    context = {
+       "cr_name": req_name,
+       "cr_id": cr_id,
+       "cr_code": cr_code,
+       "cr_members": cr_team,
+    }
+    
+    return HttpResponse(template.render(context, request))
+
 
 def save_update_customer_request_state(request):
     cr_status = request.GET.get('cr_status')
@@ -8129,6 +8147,84 @@ def delete_customer_request(request):
 
     return HttpResponse(template.render(context, request))
 
+
+def customer_request_reload(request):
+    template = loader.get_template('project_management/list_customer_requests.html')
+    
+    open_req_list = CustomerRequest.objects.filter(client_request_status="OPEN")
+    pending_reg_list = CustomerRequest.objects.filter(client_request_status='PENDING')
+    completed_reg_list = CustomerRequest.objects.filter(client_request_status='COMPLETED')
+    cancelled_reg_list = CustomerRequest.objects.filter(client_request_status='CANCELED')
+    onhold_reg_list = CustomerRequest.objects.filter(client_request_status='ONHOLD')
+
+    context = {
+        'open_req_list': open_req_list,
+        'pending_reg_list': pending_reg_list,
+        'completed_reg_list': completed_reg_list,
+        'cancelled_reg_list': cancelled_reg_list,
+        'onhold_reg_list': onhold_reg_list
+    }
+
+    return HttpResponse(template.render(context, request))
+
+
+def delete_customer_request_engineer(request):
+    assigned_id = request.GET.get('assigned_id')
+    cr_id = request.GET.get('cr_id')
+    cr_code = request.GET.get('cr_code')
+    cr_name = request.GET.get('cr_name')
+    
+    CustomerRequestTeamMembers.objects.filter(id=int(assigned_id)).delete()
+    cr_team = CustomerRequestTeamMembers.objects.filter(customerrequest_id=int(cr_id))
+    template = loader.get_template('project_management/customer_request_team_members.html')
+    context = {
+       "cr_name": cr_name,
+       "cr_id": cr_id,
+       "cr_code": cr_code,
+       "cr_members": cr_team,
+    }
+
+    return HttpResponse(template.render(context, request))
+
+
+def add_customer_request_member(request):
+    cr_id = request.GET.get('cr_id')
+    cr_code = request.GET.get('cr_code')
+    cr_name = request.GET.get('cr_name')
+    
+    pendingTeam = []
+
+    department_id = request.session['department_id']
+    
+    setAssigned = set()
+    assiged_dept_users = CustomerRequestTeamMembers.objects.filter(customerrequest_id=int(cr_id)).values('assigned_member_id')
+    for setA in assiged_dept_users:
+        setAssigned.add(setA['assigned_member_id'])
+
+    setAll = set()
+    all_dept_users = User.objects.filter(department_id=department_id).values('id')
+    for setb in all_dept_users:
+        setAll.add(setb['id'])
+
+    pending_team = setAll.difference(setAssigned)
+    
+    if len(pending_team) != 0:
+        for tm in pending_team: 
+            new_dict_pend = {}
+            user_obj = User.objects.get(id=tm)
+            new_dict_pend['id'] = user_obj.pk
+            new_dict_pend['name'] = user_obj.first_name + ' ' + user_obj.last_name
+            pendingTeam.append(new_dict_pend)
+
+    template = loader.get_template('project_management/assign_member_to_customer_request.html')
+    context = {
+       "cr_name": cr_name,
+       "cr_id": cr_id,
+       "cr_code": cr_code,
+       "members": pendingTeam,
+    }
+
+    return HttpResponse(template.render(context, request))
 
 def issue_type_home(request):
     template = loader.get_template('project_management/issue_types_pane.html')
@@ -8433,14 +8529,12 @@ def save_assigned_customerrequests(request):
 
     json_data = json.loads(project_members)
     
-    CustomerRequest.objects.filter(pk=int(customer_request_id)).update(client_request_status='PENDING', date_assigned=datetime.date.today(), assigned_by_id=uid, status='PENDING')
+    CustomerRequest.objects.filter(pk=int(customer_request_id)).update(client_request_status='PENDING', status='PENDING')
     
     Trackstatus.objects.create(customerrequest_id=int(customer_request_id), request_status="PENDING", added_by_id=uid)
     
     for mem in json_data:
-        customer_req_obj = CustomerRequest.objects.get(id=int(customer_request_id))
-        assignee = User.objects.get(id=int(mem))
-        customer_req_obj.assigned_member.add(assignee)
+        CustomerRequestTeamMembers.objects.create(customerrequest_id=int(customer_request_id), assigned_member_id=int(mem), date_assigned=datetime.date.today(), assigned_by_id=uid)
 
     template = loader.get_template('project_management/list_customer_requests.html')
     
@@ -8456,6 +8550,30 @@ def save_assigned_customerrequests(request):
         'completed_reg_list': completed_reg_list,
         'cancelled_reg_list': cancelled_reg_list,
         'onhold_reg_list': onhold_reg_list
+    }
+    
+    return HttpResponse(template.render(context, request))
+
+
+def save_assigned_engineer(request):
+    cr_name = request.GET.get('cr_name')
+    customer_request_id = request.GET.get('cr_id')
+    cr_code = request.GET.get('cr_code')
+    project_members = request.GET.get('project_members')
+    uid = request.user.id
+
+    json_data = json.loads(project_members)
+
+    for mem in json_data:
+        CustomerRequestTeamMembers.objects.create(customerrequest_id=int(customer_request_id), assigned_member_id=int(mem), date_assigned=datetime.date.today(), assigned_by_id=uid)
+
+    cr_team = CustomerRequestTeamMembers.objects.filter(customerrequest_id=int(customer_request_id))
+    template = loader.get_template('project_management/customer_request_team_members.html')
+    context = {
+       "cr_name": cr_name,
+       "cr_id": customer_request_id,
+       "cr_code": cr_code,
+       "cr_members": cr_team,
     }
     
     return HttpResponse(template.render(context, request))

@@ -109,7 +109,6 @@
                         <div class='task__stats'>
                             <span><time datetime="2021-11-24T20:00:00"><i class="fa fa-flag fa-lg"></i> {{req2.created_time | date:"d M, Y"}}</time></span>
                             <span><i class="fa fa-users"></i> {{req2.assigned_member.count}}</span>
-                            <span><i class="fa fa-clock-o"></i> 3:00HRS</span>
                         </div>
                     </div>
                 </a>
@@ -198,7 +197,7 @@
     <div id="customerRequestModalDialog" class="modalDialog">
         <div>
             <div id="head">
-                <a href="#close" title="Close" class="close2">X</a>
+                <a onclick="functionReloadCustomerRequests()" href="#close" title="Close" class="close2">X</a>
                 <h5 class="modalDialog-title font-weight-bold">Manage Customer Request : <div class="color-primary modal-title" id="customer-request-selected"></div></h5>
             </div>
             <hr>
@@ -383,6 +382,19 @@
                 $('#customer-request-selected').html(CR_name);
                 window.location = '#customerRequestModalDialog';
                 initDialog('modalDialog2');
+            }
+        });
+    }
+
+    function functionReloadCustomerRequests(id, CR_name) {
+        urldata = "{% url 'customeRequestReload' %}";
+        $.ajax({
+            type: 'GET',
+            data: {},
+            url: urldata,
+            success: function (rep) {
+                $('.cust-request-pane').html('');
+                $('.cust-request-pane').html(rep);
             }
         });
     }
