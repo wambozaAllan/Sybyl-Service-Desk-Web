@@ -10,6 +10,7 @@ from django.shortcuts import redirect
 from django.contrib.auth.hashers import make_password
 from django.template.loader import render_to_string
 from django.core.mail import EmailMultiAlternatives
+from django.contrib.auth.mixins import LoginRequiredMixin
 
 from .forms import CompanyForm, DepartmentForm, BranchForm, BranchContactForm, BranchEmailForm
 
@@ -232,6 +233,12 @@ class UpdateDepartment(UpdateView):
     template_name = 'company_management/update_department.html'
     success_url = reverse_lazy('listDepartments')
 
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        deptid = int(self.request.GET['deptid'])
+        context['deptid'] = deptid
+        return context
+
 
 # creating branch
 def create_branch(request):
@@ -266,7 +273,7 @@ def create_branch(request):
 
 
 # All Branch list view
-class ListBranches(generic.ListView):
+class ListBranches(LoginRequiredMixin, generic.ListView):
     template_name = 'company_management/list_branches.html'
     context_object_name = 'all_branches'
 
@@ -282,47 +289,17 @@ class DetailsBranch(generic.DetailView):
 
 
 # update branch
-# class UpdateBranch(UpdateView):
-#     model = Branch
-#     fields = ['name', 'company', 'location']
-#     template_name = 'company_management/update_branch.html'
-#     success_url = reverse_lazy('listBranches')
+class UpdateBranch(UpdateView):
+    model = Branch
+    fields = ['name', 'company', 'location']
+    template_name = 'company_management/update_branch.html'
+    success_url = reverse_lazy('listBranches')
 
-
-def branch_update(request, pk):
-    if request.method == 'POST':
-        contact_form = BranchContactForm(request.POST)
-        email_form = BranchEmailForm(request.POST)
-
-        form = request.POST.copy()
-        phone_number = form.get('phone_number')
-        email_address = form.get('email_address')
-
-        branch = get_object_or_404(Branch, pk=pk)
-
-        branch_form = BranchForm(request.POST, instance=branch)
-        if branch_form.is_valid():
-            branch_obj = branch_form.save()
-            branch_id = Branch.objects.get(pk=branch_obj.id)
-
-            if branch_obj:
-                contact = BranchPhoneContact(branch_id=branch_id.id, phone_number=phone_number)
-                email = BranchEmailAddresses(branch_id=branch_id.id, email_address=email_address)
-                contact.save()
-                email.save()
-
-            return redirect('listBranches')
-
-    else:
-        branch_form = BranchForm()
-        contact_form = BranchContactForm()
-        email_form = BranchEmailForm()
-
-    return render(request, 'company_management/update_branch.html', {
-        'branch_form': branch_form,
-        'contact_form': contact_form,
-        'email_form': email_form,
-    })
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        branchid = int(self.request.GET['branchid'])
+        context['branchid'] = branchid
+        return context
 
 
 # BRANCH PHONE CONTACTS
@@ -356,6 +333,12 @@ class UpdateBranchContacts(UpdateView):
     template_name = 'company_management/update_branch_contact.html'
     success_url = reverse_lazy('listBranchContacts')
 
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        contactid = int(self.request.GET['contactid'])
+        context['contactid'] = contactid
+        return context
+
 
 # BRANCH EMAIL CONTACTS
 class AddBranchEmails(CreateView):
@@ -387,6 +370,12 @@ class UpdateBranchEmails(UpdateView):
     fields = ['email_address', 'secondary_email', 'branch']
     template_name = 'company_management/update_branch_email.html'
     success_url = reverse_lazy('listBranchEmails')
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        emailid = int(self.request.GET['emailid'])
+        context['emailid'] = emailid
+        return context
 
 
 def fetch_domain_list(request):
@@ -517,7 +506,9 @@ class AddCustomer(CreateView):
     
 def list_customers(request):
     """Return list of customers"""
-    all_customers = Company.objects.filter(category_id=1)
+    category_value = CompanyCategory.objects.get(category_value="client")
+    category_id = category_value.id
+    all_customers = Company.objects.filter(category_id=category_id)
     template = loader.get_template('company_management/list_customers.html')
     context = {
         'all_customers': all_customers
@@ -535,7 +526,7 @@ def add_customer(request):
 
 
 def return_client_company(request):
-    client = CompanyCategory.objects.filter(id=1)
+    client = CompanyCategory.objects.filter(category_value="client")
 
     data = {
         'clients': serializers.serialize("json", client),
@@ -563,7 +554,9 @@ def save_customer(request):
         save_company = Company(name=company_name, category_id=int(category), description=description, owner=owner, parent=parent)
     save_company.save()
 
-    all_customers = Company.objects.filter(category_id=1)
+    category_value = CompanyCategory.objects.get(category_value="client")
+    category_id = category_value.id
+    all_customers = Company.objects.filter(category_id=category_id)
     template = loader.get_template('company_management/list_customers.html')
     context = {
         'all_customers': all_customers,
@@ -657,3 +650,24 @@ class DetailCustomer(DetailView):
         company_id = self.kwargs['pk']
         context['company_id'] = company_id
         return context
+
+
+def validateEmail(request):
+    email_address = request.GET.get('email_address', None)
+
+    data = {
+        'is_taken': BranchEmailAddresses.objects.filter(email_address=email_address).exists()
+    }
+
+    return JsonResponse(data)
+
+
+def validateDepartment(request):
+    department = request.GET.get('dept_name', None)
+    print(department)
+
+    data = {
+        'is_taken': Department.objects.filter(name=department).exists()
+    }
+
+    return JsonResponse(data)

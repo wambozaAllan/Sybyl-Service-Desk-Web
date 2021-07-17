@@ -1,72 +1,174 @@
-{% extends 'base.html' %}
-{% load static %}
 {% load crispy_forms_tags %}
-{% block content %}
-<!-- Main wrapper  -->
-<div id="main-wrapper">
-	{% include 'header.html' %}
-	{% include 'left-nav.html' %}
-	<!-- Page wrapper  -->
-	<div class="page-wrapper">
-		<!-- Bread crumb -->
-		<div class="row page-titles">
-			<div class="col-md-5 align-self-center">
-				<h3 class="text-primary">Dashboard</h3>
-			</div>
-			<div class="col-md-7 align-self-center">
-				<ol class="breadcrumb">
-					<li class="breadcrumb-item"><a href="javascript:void(0)">Home</a></li>
-					<li class="breadcrumb-item active">Update Branch Phone Contact</li>
-				</ol>
-			</div>
-		</div>
-		<!-- End Bread crumb -->
-		<!-- Container fluid  -->
-		<div class="container-fluid">
-			<!-- Start Page Content -->
-			<div class="row">
-				<div class="col-12">
-					<div class="card">
-						<div class="card-title">
-							<h4>Update Branch Phone Contact</h4>
-						</div>
-						<div class="card-body">
-							<div class="basic-form">
-								<form method="post">
-									{% csrf_token %}
-									<div class="row">
-										<div class="col-4">{{ form.branch | as_crispy_field }}</div>
-										<div class="col-4">
-											{{ form.phone_number|as_crispy_field }}
-											<small ><strong><font id="phoneMsg" color="red"></font></strong></small>
-										</div>
-										<div class="col-4">
-											{{ form.secondary_number|as_crispy_field }}
-											<small ><strong><font id="secondaryMsg" color="red"></font></strong></small>
-										</div>
 
-									</div>
-									<div class="row">
-										<div class="col-4"></div>
-										<div class="col-1">
-											<a href="{% url 'listBranchContacts' %}" class="btn btn-inverse">Cancel</a>
-										</div>
-										<div class="col-1">
-											<button type="submit" id="btn-contact" value="Update" class="btn btn-success">Update Branch Contact</button>
-										</div>
-									</div>
-								</form>
-							</div>
-						</div>
+<div class="col-12">
+	<div class="card-body">
+		<div class="basic-form">
+			<form method="post" action="{% url 'updateBranchContacts' contactid %}">
+				{% csrf_token %}
+				<div class="row">
+					<div class="col-md-12">{{ form.branch | as_crispy_field }}</div>
+				</div>
+				<div class="row">
+					<div class="col-md-12">
+						{{ form.phone_number|as_crispy_field }}
+						<small ><strong><font id="phoneMsg" color="red"></font></strong></small>
 					</div>
 				</div>
-			</div>
-			{% include 'footer.html' %}
-			<!-- End Page Content -->
+				<div class="row">
+					<div class="col-md-12">
+						{{ form.secondary_number|as_crispy_field }}
+						<small ><strong><font id="secondaryMsg" color="red"></font></strong></small>
+					</div>
+				</div>
+				
+				<div class="row">
+					<div class="col-md-6">
+						<button type="submit" id="btn-contact" value="Update" class="btn btn-success">Update Branch Contact</button>
+					</div>
+				</div>
+			</form>
 		</div>
-		<!-- End Container fluid  -->
-
 	</div>
-	<!-- End Page wrapper  -->
 </div>
-{% endblock %}
+
+<script>
+	
+	$('#phoneMsg').text('');
+
+	$('validMsg').text('');
+
+	$('#secondaryMsg').text('');
+
+	$("#id_phone_number").keypress(function(event) {
+		return /\d/.test(String.fromCharCode(event.keyCode));
+	});
+
+	$("#id_secondary_number").keypress(function(event) {
+		return /\d/.test(String.fromCharCode(event.keyCode));
+	});
+
+	$("#id_location").keypress(function(event) {
+		return /\D/.test(String.fromCharCode(event.keyCode));
+	});
+
+	$("#id_name").keypress(function(event) {
+		return /\D/.test(String.fromCharCode(event.keyCode));
+	});
+
+
+	var phoneFinalVar;
+	var secondaryFinalVar;
+	var input = document.querySelector("#id_phone_number");
+	var secondaryInput = document.querySelector("#id_secondary_number");
+
+	var iti = window.intlTelInput(input, {
+		autoPlaceholder: "polite",
+		separateDialCode: true,
+		initialCountry: 'UG',
+		placeholderNumberType: 'MOBILE',
+		preferredCountries: ["ug", 'ke', 'tz', 'rw'],
+		utilsScript: "utils.js",
+
+	});
+
+	var secondary = window.intlTelInput(secondaryInput, {
+		autoPlaceholder: "polite",
+		separateDialCode: true,
+		initialCountry: 'UG',
+		placeholderNumberType: 'MOBILE',
+		preferredCountries: ["ug", 'ke', 'tz', 'rw'],
+		utilsScript: "utils.js",
+
+	});
+
+	var errorMap = ["Invalid number", "Invalid country code", "Too short", "Too long"];
+
+	$("#id_phone_number").on('input', function(){
+		if (input.value.trim()) {
+			if (iti.isValidNumber()) {
+				$('#phoneMsg').text('');
+				$('#phoneMsg').text('Valid');
+				$("#phoneMsg").css("color", "green");
+
+				$('#validMsg').text('');
+				$('#validMsg').text('Valid');
+				$('#validMsg').css("color", "green");
+
+				phoneFinalVar = iti.getNumber();
+				document.getElementById("btn-contact").disabled = false;
+
+			}
+			else {
+				var errorCode = iti.getValidationError();
+				$('#phoneMsg').text('');
+				$('#phoneMsg').text(errorMap[errorCode]);
+				$("#phoneMsg").css("color", "red");
+
+				$('#validMsg').text('');
+				$('#validMsg').text(errorMap[errorCode]);
+				$('#validMsg').css("color", "red");
+
+				document.getElementById("btn-contact").disabled = true;
+			}
+		}
+
+	});
+
+	$("#id_secondary_number").on('input', function(){
+		if (secondaryInput.value.trim()) {
+			if (secondary.isValidNumber()) {
+				$('#secondaryMsg').text('');
+				$('#secondaryMsg').text('Valid');
+				$("#secondaryMsg").css("color", "green");
+
+				secondaryFinalVar = secondary.getNumber();
+
+				document.getElementById("btn-contact").disabled = false;
+
+			}
+			else {
+				var errorCode = secondary.getValidationError();
+				$('#secondaryMsg').text('');
+				$('#secondaryMsg').text(errorMap[errorCode]);
+				$("#secondaryMsg").css("color", "red");
+				document.getElementById("btn-contact").disabled = true;
+			}
+		}
+
+		});
+
+		// saving values to database
+		$('#btn-contact').on('click', function(){
+
+			if (secondaryInput.value.trim()) {
+				if (secondary.isValidNumber()) {
+					$('#secondaryMsg').text('');
+					$('#secondaryMsg').text('Valid');
+					$("#secondaryMsg").css("color", "green");
+
+					secondaryFinalVar = secondary.getNumber();
+				}
+			}
+
+			if (input.value.trim()) {
+				if (iti.isValidNumber()) {
+					$('#phoneMsg').text('');
+					$('#phoneMsg').text('Valid');
+					$("#phoneMsg").css("color", "green");
+
+					$('#validMsg').text('');
+					$('#validMsg').text('Valid');
+					$('#validMsg').css("color", "green");
+
+					phoneFinalVar = iti.getNumber();
+				}
+			}	
+
+			if(input && secondaryInput){
+				$("#id_phone_number").val(phoneFinalVar);
+				$("#id_secondary_number").val(secondaryFinalVar)
+			}
+			
+		});
+
+</script>

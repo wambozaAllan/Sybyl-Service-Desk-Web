@@ -59,50 +59,57 @@ class Login(LoginView):
         form = LoginForm()
         username = request.POST['username']
         password = request.POST['password']
-        user_exists = User.objects.get(username=username)
-        if user_exists is not None:
-            if user_exists.last_login is not None:
-                user_login_state = True
-            else:
-                user_login_state = False
-        # Authenticate user
-        user = authenticate(username=username, password=password)
-        if user is not None:
-            if user.is_active:
-                # Create user session
-                login(request, user)
 
-                if user.user_type == "clientuser":
-                    request.session['pk'] = user.pk
-                    request.session['username'] = username
-                    request.session['first_name'] = user.first_name
-                    request.session['last_name'] = user.last_name
-                    request.session['company'] = user.company.name
-                    request.session['company_id'] = user.company.id
-                    if user_login_state:
-                        return redirect("/projectManagement/customerRequests/")
-                    else:
-                        User.objects.filter(id=user.pk).update(last_login=None)
-                        return render(request, 'core/change_password.html', {'user_name': username, 'user_id': user.pk})
+        user_in_db = User.objects.filter(username=username).exists()
 
+        if user_in_db == True:
+            user_exists = User.objects.get(username=username)
+            if user_exists is not None:
+                if user_exists.last_login is not None:
+                    user_login_state = True
                 else:
-                    # Other sessions
-                    request.session['pk'] = user.pk
-                    request.session['username'] = username
-                    request.session['first_name'] = user.first_name
-                    request.session['last_name'] = user.last_name
-                    request.session['company'] = user.company.name
-                    request.session['company_id'] = user.company.id
-                    request.session['branch'] = user.branch.name
-                    request.session['department'] = user.department.name
-                    request.session['department_id'] = user.department.id
-                    if user_login_state:
-                        return redirect("/home/")
-                    else:
-                        User.objects.filter(id=user.pk).update(last_login=None)
-                        return render(request, 'core/change_password.html', {'user_name': username, 'user_id': user.pk})
-            return render(request, self.template_name, {'form': form})
+                    user_login_state = False
+            # Authenticate user
+            user = authenticate(username=username, password=password)
+            if user is not None:
+                if user.is_active:
+                    # Create user session
+                    login(request, user)
 
+                    if user.user_type == "clientuser":
+                        request.session['pk'] = user.pk
+                        request.session['username'] = username
+                        request.session['first_name'] = user.first_name
+                        request.session['last_name'] = user.last_name
+                        request.session['company'] = user.company.name
+                        request.session['company_id'] = user.company.id
+                        if user_login_state:
+                            return redirect("/projectManagement/customerRequests/")
+                        else:
+                            User.objects.filter(id=user.pk).update(last_login=None)
+                            return render(request, 'core/change_password.html', {'user_name': username, 'user_id': user.pk})
+
+                    else:
+                        # Other sessions
+                        request.session['pk'] = user.pk
+                        request.session['username'] = username
+                        request.session['first_name'] = user.first_name
+                        request.session['last_name'] = user.last_name
+                        request.session['company'] = user.company.name
+                        request.session['company_id'] = user.company.id
+                        request.session['branch'] = user.branch.name
+                        request.session['department'] = user.department.name
+                        request.session['department_id'] = user.department.id
+                        if user_login_state:
+                            return redirect("/home/")
+                        else:
+                            User.objects.filter(id=user.pk).update(last_login=None)
+                            return render(request, 'core/change_password.html', {'user_name': username, 'user_id': user.pk})
+                return render(request, self.template_name, {'form': form})
+            else:
+                return render(request, self.template_name, {'form': form}) 
+        else:
+            return render(request, self.template_name, {'form': form}) 
 
 @login_required()
 def logout_view(request):
@@ -141,7 +148,7 @@ def home(request):
     }
     datasource['data'] = []
 
-    for key in Project.objects.all():
+    for key in Project.objects.filter(is_active=True):
         data = {}
         data['label'] = key.name
         data['value'] = key.completion

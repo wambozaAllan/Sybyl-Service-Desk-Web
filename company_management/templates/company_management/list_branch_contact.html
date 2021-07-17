@@ -27,6 +27,13 @@
                     <div class="card">
                         <div class="card-body">
                             <h4 class="card-title">Branch Phone Contacts</h4>
+                            <div class="row">
+                                <div class="col-md-12">
+                                    <button id="" class="btn btn-info pull-right" onclick="functAddContact();">
+                                        <i class="fa fa-fw fa-lg fa-plus"></i>Add Branch Contact
+                                    </button>
+                                </div>
+                            </div>
                             <h6 class="card-subtitle">Export data to Copy, CSV, Excel, PDF & Print</h6>
                             <div class="table-responsive">
                                 {% if branch_phone_contacts %}
@@ -48,9 +55,12 @@
                                               <td>{{ branch.phone_number }}</td>
                                               <td>{{ branch.secondary_number }}</td>
                                               <td>
-                                                <a href="{% url 'detailBranchContacts' branch.id %}">View</a> &nbsp;
-                                                <a href="{% url 'updateBranchContacts' branch.id %}">Update</a> &nbsp;
-                                                <a href="#"><i class="mdi mdi-delete font-30 align-middle mr-2"></i></a>
+                                                <button onclick="functDetailContacts({{ branch.id }}, '{{ branch.branch }}')"  id="" class="btn btn-outline-success btn-sm" type="button">
+                                                    <i title="View Branch Details" class="fa fa-dedent"></i>
+                                                </button>
+                                                <button onclick="functUpdateContacts({{ branch.id }}, '{{ branch.branch }}')"  id="" class="btn btn-outline-success btn-sm" type="button">
+                                                    </i><i title="Edit Branch" class="fa fa-edit"></i>
+                                                </button>
                                               </td>
                                           </tr>
 										{% endfor %}
@@ -62,12 +72,6 @@
                                     </h5>
                                 {% endif %}
                             </div>
-                            <br />
-							<div class="row">
-								<div class="col-1">
-									<a href="{% url 'addBranchContacts' %}" class="btn btn-success">Add Branch Contact</a>
-								</div>
-							</div>
                         </div>
                     </div>
             {% include 'footer.html' %}
@@ -77,5 +81,100 @@
 
     </div>
     <!-- End Page wrapper  -->
+
+    <script>
+        function functAddContact(){
+            urldata = "{% url 'addBranchContacts' %}";
+            
+            $.ajax({
+                type: 'GET',
+                cache: false,
+                data: {},
+                url: urldata,
+                success: function (resp) {
+                    $.confirm({
+                        title: '<h3>Add Branch Contact</h3>',
+                        content: '' + resp,
+                        type: 'blue',
+                        theme: 'material',
+                        typeAnimated: true,
+                        boxWidth: '40%',
+                        useBootstrap: false,
+                        closeIcon: true,
+                        buttons: {
+                            close: {
+                                text: 'Close',
+                                btnClass: 'btn-gray',
+                                action: function () {
+                                }
+                            }
+                        }
+                    });
+                }
+            });     
+        }
+
+        function functDetailContacts(contactid, branchname) {
+            urldata = "{% url 'detailBranchContacts' 999%}".replace(999, contactid);
+            $.ajax({
+                type: "GET",
+                cache: false,
+                data: {
+                    contactid: contactid
+                },
+                url: urldata,
+                success: function (resp) {
+                    $.confirm({
+                        title: '<h3>Contact Details for Branch: <strong class="text-info">' + branchname + ' </strong></h3>',
+                        content: '' + resp,
+                        type: 'blue',
+                        typeAnimated: true,
+                        boxWidth: '50%',
+                        useBootstrap: false,
+                        closeIcon: true,
+                        buttons: {
+                            close: {
+                                text: 'Close',
+                                btnClass: 'btn-gray close-dialog',
+                                action: function () {
+                                }
+                            }
+                        }
+                    });
+                }
+            });
+        }
+
+        function functUpdateContacts(contactid, branchname) {
+            urldata = "{% url 'updateBranchContacts' 999%}".replace(999, contactid);
+            $.ajax({
+                type: "GET",
+                cache: false,
+                data: {
+                    contactid: contactid
+                },
+                url: urldata,
+                success: function (resp) {
+                    $.confirm({
+                        title: '<h3>Update Branch Contact for: <strong class="text-info">' + branchname + ' </strong></h3>',
+                        content: '' + resp,
+                        type: 'blue',
+                        typeAnimated: true,
+                        boxWidth: '40%',
+                        useBootstrap: false,
+                        closeIcon: true,
+                        buttons: {
+                            close: {
+                                text: 'Close',
+                                btnClass: 'btn-gray close-dialog',
+                                action: function () {
+                                }
+                            }
+                        }
+                    });
+                }
+            });
+        }
+    </script>
 </div>
 {% endblock %}
