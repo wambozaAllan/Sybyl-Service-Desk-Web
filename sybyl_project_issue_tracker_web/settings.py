@@ -133,7 +133,7 @@ WSGI_APPLICATION = 'sybyl_project_issue_tracker_web.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.mysql',
-        'NAME': 'sybyl_service_desk_db',
+        'NAME': 'sit',
         'USER': 'root',
         'PASSWORD': '',
         'HOST': '127.0.0.1',
