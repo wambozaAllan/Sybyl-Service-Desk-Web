@@ -8916,11 +8916,11 @@ def export_email_timesheet_task_report(request):
 
     msg = render_to_string('project_management/email_template_timesheet_report.html', context22)
 
-    email_address = ['babirye.grace@sybyl.com', 'ampumuza.amon@sybyl.com', 'jerry.vijayan@sybyl.com', 'chepkurui.job@sybyl.com', 'wamboza.allan@sybyl.com', 'david.kaggulire@sybyl.com', 'jeremiah.kerman@sybyl.com', 'sajin.mathew@sybyl.com', 'atwine.nickson@sybyl.com']
+    email_address = ['dkaggulire@gmail.com']
     subject, from_email, to = 'Daily Timesheets for Resources', 'from@example.com', email_address
     text_content = 'SERVICE DESK.'
     html_content = msg
-    msg = EmailMultiAlternatives(subject, text_content, from_email, to=['gigi@sybyl.com', 'sanjeev@sybyl.com'], cc=email_address)
+    msg = EmailMultiAlternatives(subject, text_content, from_email, to=['dkaggulire@outlook.com'], cc=email_address)
     msg.attach('TimesheetReport.xls', excelfile.getvalue(), 'application/ms-excel')
     msg.attach_alternative(html_content, "text/html")
     msg.send()
@@ -9005,7 +9005,7 @@ def send_timesheet_email_reminder(request):
 
         msg1 = render_to_string('project_management/email_template_timesheet_remainder.html', context22)
 
-        email_address = ['ampumuza.amon@sybyl.com']
+        email_address = ['dkaggulire@@outlook.com']
         subject, from_email, to = 'Timesheet Reminder', 'from@example.com', email_address
         text_content = 'Timesheet Reminder'
         html_content = msg1
