@@ -506,7 +506,9 @@ class AddCustomer(CreateView):
     
 def list_customers(request):
     """Return list of customers"""
-    all_customers = Company.objects.filter(category_id=1)
+    category_value = CompanyCategory.objects.get(category_value="client")
+    category_id = category_value.id
+    all_customers = Company.objects.filter(category_id=category_id)
     template = loader.get_template('company_management/list_customers.html')
     context = {
         'all_customers': all_customers
@@ -524,7 +526,7 @@ def add_customer(request):
 
 
 def return_client_company(request):
-    client = CompanyCategory.objects.filter(id=1)
+    client = CompanyCategory.objects.filter(category_value="client")
 
     data = {
         'clients': serializers.serialize("json", client),
@@ -552,7 +554,9 @@ def save_customer(request):
         save_company = Company(name=company_name, category_id=int(category), description=description, owner=owner, parent=parent)
     save_company.save()
 
-    all_customers = Company.objects.filter(category_id=1)
+    category_value = CompanyCategory.objects.get(category_value="client")
+    category_id = category_value.id
+    all_customers = Company.objects.filter(category_id=category_id)
     template = loader.get_template('company_management/list_customers.html')
     context = {
         'all_customers': all_customers,
