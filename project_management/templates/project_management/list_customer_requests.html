@@ -2,37 +2,92 @@
 :root {
     font-size: 70%;
 }
+
+.task {
+	 cursor: move;
+	 background-color: var(--white);
+	 padding: 1rem;
+	 border-radius: 8px;
+	 width: 100%;
+	 box-shadow: rgba(99, 99, 99, 0.1) 0px 2px 8px 0px;
+	 margin-bottom: 1rem;
+}
+ .task:hover {
+	 box-shadow: rgba(99, 99, 99, 0.3) 0px 2px 8px 0px;
+	 border-color: rgba(162, 179, 207, .2) !important;
+}
+ .task p {
+	 font-size: 15px;
+	 margin: 1.2rem 0;
+}
+ .task__tag {
+	 border-radius: 100px;
+	 padding: 2px 13px;
+	 font-size: 12px;
+}
+ .task__tags {
+	 width: 100%;
+	 display: flex;
+	 align-items: center;
+	 justify-content: space-between;
+     font-size: 117%;
+}
+ .task__options {
+	 background: transparent;
+	 border: 0;
+	 color: var(--light-grey);
+	 font-size: 17px;
+}
+ .task__stats {
+	 position: relative;
+	 width: 100%;
+	 color: var(--light-grey);
+	 font-size: 12px;
+}
+ .task__stats span:not(:last-of-type) {
+	 margin-right: 0.5rem;
+}
+
+.pointCard {
+    cursor: pointer;
+}
+
+.modal-title {
+    display: inline-block;
+    width: 300px;
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    margin-bottom: -7px;
+}
 </style>
 
-</br>
+{% load humanize %}
 <!-- Lists container -->
-<section class="lists-container">
+<section class="lists-container" style="margin-top: 1%">
 
 	<div class="list">
 
-		<h3 class="list-title">Open <i class="fa fa-circle color-primary pull-right"></i></h3>
+		<h3 class="list-title">Open <span class="badge badge-pill badge-primary">{{open_req_list.count}}</span><i class="fa fa-circle color-primary pull-right"></i></h3>
 
 		<ul class="list-items">
             
-            {% if unsubmited_req_list %}
-                <span class="pull-right row col-12">
-                    <form class="form"><a onclick="functionCheckAllReq()" href="#"><input type="checkbox" class="select-all-check1 text-info" id="select_all_requests"/></a> Select All 
-                        <button onclick="functionFowardRequest()" style="margin-right: -32%;" id="" class="btn btn-info pull-right">
-                            <span class=""><i class="fa fa-fw fa-send"></i> Foward Requests</span>
-                        </button>
-                    </form> 
-                </span>
-                {% for req in unsubmited_req_list %}
-                    <li>
-                        <span class="pull-right">
-                            <form class="form">
-                                <input style="margin-top: -7%;" type="checkbox" id="itemcheckboxx{{req.id}}" onclick="functionManageCustReq({{req.id}})" class="request-checkbox1" name="rowSelectCheckBox1"/>
-                                <i style="margin-top: -3%;" class="fa fa-trash fa-lg color-danger pull-right" onclick="functionDeleteCustomerRequest({{ req.id }}, '{{ req.name }}', '{{ req.ticket_code }}')"></i>
-                                <i style="margin-top: 0%;" class="fa fa-edit fa-lg color-primary pull-right" onclick="functEditOpenRequest({{req.id}}, '{{req.name}}', {{req.sla_id}}, '{{req.sla.name}}')"></i>
-                            </form>
-                        </span>
-                        {{req.name}}
-                    </li>
+            {% if open_req_list %}
+                
+                {% for req in open_req_list %}
+
+                <div class='task' draggable='true'>
+                    <div class='task__tags'><span class='badge badge-pill badge-primary'>{{req.issue_type}}</span><button class='task__options'><i class="fa fa-ellipsis-h"></i></button></div>
+                    <p>{{req.name}}</p>
+                    <div class='task__stats'>
+                        <span><time datetime="2021-11-24T20:00:00"><i class="fa fa-flag fa-lg"></i> {{req.created_time}}</time></span>
+                        <span><a href="#"><i class="fa fa-fw fa-send fa-lg color-primary pull-right" onclick="functAssignOpenRequest({{req.id}}, '{{req.name}}', {{req.sla_id}}, '{{req.sla.name}}')"></i></a></span>
+                        <span><a href="#"><i class="fa fa-trash fa-lg color-danger pull-right" onclick="functionDeleteCustomerRequest({{ req.id }}, '{{ req.name }}', '{{ req.ticket_code }}')"></i></a></span>
+                        <span><a href="#"><i class="fa fa-edit fa-lg color-primary pull-right" onclick="functEditOpenRequest({{req.id}}, '{{req.name}}', {{req.sla_id}}, '{{req.sla.name}}', '{{req.status}}')"></i></a></span>
+                        <span><a href="#"><i class="fa fa-list-alt fa-lg color-primary pull-right" onclick="functViewOpenRequest({{req.id}}, '{{req.name}}', {{req.sla_id}}, '{{req.sla.name}}')"></i></a></span>
+                    </div>
+                </div>
+
                 {% endfor %}
             {% else %}
                 <span>No Open Requests.</span>
@@ -42,12 +97,22 @@
 
 	<div class="list">
 
-		<h3 class="list-title">Pending <i class="fa fa-circle color-warning pull-right"></i></h3>
-
+		<h3 class="list-title">Pending <span class="badge badge-pill badge-primary">{{pending_reg_list.count}}</span> <i class="fa fa-circle color-warning pull-right"></i></h3>
+        
 		<ul class="list-items">
-			{% if submited_req_list %}
-                {% for req2 in submited_req_list %}
-                    <li onclick="functViewOpenRequest({{req2.id}}, '{{req2.name}}', {{req2.sla_id}}, '{{req2.sla.name}}')">{{req2.name}}</li>
+			{% if pending_reg_list %}
+                {% for req2 in pending_reg_list %}
+                <a href="#" onclick="functionManagePendingCustomerRequest({{req2.id}}, '{{req2.name}}')">
+                    <div class='task pointCard' draggable='true'>
+                        <div class='task__tags'><span class='badge badge-pill badge-primary'>{{req2.issue_type}}</span><button class='task__options'><i class="fa fa-ellipsis-h"></i></button></div>
+                        <p>{{req2.name}}</p>
+                        <div class='task__stats'>
+                            <span><time datetime="2021-11-24T20:00:00"><i class="fa fa-flag fa-lg"></i> {{req2.created_time | date:"d M, Y"}}</time></span>
+                            <span><i class="fa fa-users"></i> {{req2.assigned_member.count}}</span>
+                        </div>
+                    </div>
+                </a>
+                
                 {% endfor %}
             {% else %}
                 <span>No Pendding Requests</span>
@@ -57,15 +122,22 @@
 
 	<div class="list">
 
-		<h3 class="list-title">Completed <i class="fa fa-circle color-success pull-right"></i></h3>
+		<h3 class="list-title">Completed <span class="badge badge-pill badge-primary">{{completed_reg_list.count}}</span><i class="fa fa-circle color-success pull-right"></i></h3>
 
 		<ul class="list-items">
 			{% if completed_reg_list %}
                 {% for req3 in completed_reg_list %}
-                    <li>{{req3.name}}</li>
+                    <div class='task' draggable='true'>
+                        <div class='task__tags'><span class='badge badge-pill badge-primary'>{{req3.issue_type}}</span><button class='task__options'><i class="fa fa-ellipsis-h"></i></button></div>
+                        <p>{{req3.name}}</p>
+                        <div class='task__stats'>
+                            <span><time datetime="2021-11-24T20:00:00"><i class="fa fa-flag fa-lg"></i> {{req3.created_time}}</time></span>
+                            <span><a href="#"><i class="fa fa-list-alt fa-lg color-primary pull-right" onclick="functViewOpenRequest({{req3.id}}, '{{req3.name}}', {{req3.sla_id}}, '{{req3.sla.name}}')"></i></a></span>
+                        </div>
+                    </div>
                 {% endfor %}
             {% else %}
-                <span class="">No Completed Requests</span> 
+                <span class="">No Completed Requests</span>
             {% endif %}
 		</ul>
 
@@ -73,12 +145,19 @@
     
     <div class="list">
 
-		<h3 class="list-title">Cancelled <i class="fa fa-circle color-danger pull-right"></i></h3>
+		<h3 class="list-title">Canceled <span class="badge badge-pill badge-primary">{{cancelled_reg_list.count}}</span><i class="fa fa-circle color-danger pull-right"></i></h3>
 
 		<ul class="list-items">
 			{% if cancelled_reg_list %}
                 {% for req4 in cancelled_reg_list %}
-                    <li>{{req4.name}}</li>
+                    <div class='task' draggable='true'>
+                        <div class='task__tags'><span class='badge badge-pill badge-primary'>{{req4.issue_type}}</span><button class='task__options'><i class="fa fa-ellipsis-h"></i></button></div>
+                        <p>{{req4.name}}</p>
+                        <div class='task__stats'>
+                            <span><time datetime="2021-11-24T20:00:00"><i class="fa fa-flag fa-lg"></i> {{req4.created_time}}</time></span>
+                            <span><a href="#"><i class="fa fa-list-alt fa-lg color-primary pull-right" onclick="functViewOpenRequest({{req4.id}}, '{{req4.name}}', {{req4.sla_id}}, '{{req4.sla.name}}')"></i></a></span>
+                        </div>
+                    </div>
                 {% endfor %}
             {% else %}
                 <span class="">No Cancelled Requests</span>
@@ -87,16 +166,62 @@
 
 	</div>
 
+    <div class="list">
+
+		<h3 class="list-title">On Hold <span class="badge badge-pill badge-primary">{{onhold_reg_list.count}}</span><i class="fa fa-circle color-danger pull-right"></i></h3>
+
+		<ul class="list-items">
+			{% if onhold_reg_list %}
+                {% for req5 in onhold_reg_list %}
+                    <div class='task' draggable='true'>
+                        <div class='task__tags'><span class='badge badge-pill badge-primary'>{{req5.issue_type}}</span><button class='task__options'><i class="fa fa-ellipsis-h"></i></button></div>
+                        <p>{{req5.name}}</p>
+                        <div class='task__stats'>
+                            <span><time datetime="2021-11-24T20:00:00"><i class="fa fa-flag fa-lg"></i> {{req5.created_time}}</time></span>
+                            <span><a href="#"><i class="fa fa-list-alt fa-lg color-primary pull-right" onclick="functViewOpenRequest({{req5.id}}, '{{req5.name}}', {{req5.sla_id}}, '{{req5.sla.name}}')"></i></a></span>
+                        </div>
+                    </div>
+                {% endfor %}
+            {% else %}
+                <span class="">No On Hold Requests</span>
+            {% endif %}
+		</ul>
+
+	</div>
+
 </section>
 
+
+<!-- The Modal -->
+<div class="">
+    <div id="customerRequestModalDialog" class="modalDialog">
+        <div>
+            <div id="head">
+                <a onclick="functionReloadCustomerRequests()" href="#close" title="Close" class="close2">X</a>
+                <h5 class="modalDialog-title font-weight-bold">Manage Customer Request : <div class="color-primary modal-title" id="customer-request-selected"></div></h5>
+            </div>
+            <hr>
+
+            <div class="modal-body">
+                <div class="scrollbar-modal1">
+                    <div id="dialog_customer_request">
+
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- END The Modal -->
+
+
 <script>
-    var checkrequestset = new Set();
     var listCustomerRequest = [];
 
     $(".request-checkbox1").prop('checked', false);
     $(".select-all-check1").prop('checked', false);
 
-    function functEditOpenRequest(req_id, req_name, sla_id, sla_name) {
+    function functEditOpenRequest(req_id, req_name, sla_id, sla_name, status) {
         urldata = "{% url 'updateCustomerRequest' 999%}".replace(999, req_id);
         $.ajax({
             type: "GET",
@@ -104,7 +229,8 @@
             data: {
                 req_name: req_name, 
                 sla_id: sla_id,
-                sla_name: sla_name
+                sla_name: sla_name,
+                status: status
             },
             url: urldata,
             success: function (resp) {
@@ -165,109 +291,39 @@
         });
     }
 
-    function functionCheckAllReq(){
-        var selectAllCheckbox=document.getElementById("select_all_requests");
-        if(selectAllCheckbox.checked==true){
-            var checkboxes =  document.getElementsByName("rowSelectCheckBox1");
-            for(var i=0, n=checkboxes.length;i<n;i++) {
-                checkboxes[i].checked = true;
-                var requestid2 = (checkboxes[i].id).slice(13);
-                if (!checkrequestset.has(parseInt(requestid2))) {
-                    checkrequestset.add(parseInt(requestid2));
-                }
-            }
-        }else {
-            var checkboxes =  document.getElementsByName("rowSelectCheckBox1");
-            for(var i=0, n=checkboxes.length;i<n;i++) {
-                checkboxes[i].checked = false;
-                var requestid2 = (checkboxes[i].id).slice(13);
-                if (checkrequestset.has(parseInt(requestid2))) {
-                    checkrequestset.delete(parseInt(requestid2));
-                }
-            }
-        }
-    }
-
-    function functionManageCustReq(requestid) {
-        var checkBox = document.getElementById("itemcheckboxx" + requestid);
-        if (checkBox.checked === true) {
-            if (!checkrequestset.has(requestid)) {
-                checkrequestset.add(requestid);
-            }
-        }else{
-            $(".select-all-check1").prop('checked', false);
-            if (checkrequestset.has(requestid)) {
-                checkrequestset.delete(requestid);
-            }
-        }
-    }
-
-    function functionFowardRequest(){
-        if (checkrequestset.size !== 0) {
-
-            $.confirm({
-                title: '<h3 class="font-weight-bold">Confirm Request(s) Submission!</h3>',
-                content: '<h4>Foward: <b class="text-info">'+ checkrequestset.size +'</b> Request(s)!</h4>',
-                type: 'green',
-                typeAnimated: true,
-                boxWidth: '40%',
-                useBootstrap: false,
-                icon: 'fa fa-warning',
-                closeIcon: true,
-                buttons: {
-                    formSubmit: {
-                        text: 'Foward',
-                        btnClass: 'btn-green',
-                        action: function () {
-                            urldata = "{% url 'fowardRequests'%}";
-
-                            for (const k of checkrequestset) {
-                                listCustomerRequest.push({req: k});
+    function functAssignOpenRequest(req_id, req_name, sla_id, sla_name) {
+        urldata = "{% url 'assignRequests' %}";
+        $.ajax({
+            type: "GET",
+            cache: false,
+            data: {
+                req_id:req_id,
+                req_name: req_name, 
+                sla_id: sla_id,
+                sla_name: sla_name
+            },
+            url: urldata,
+            success: function (resp) {
+                $.confirm({
+                    title: '<h3>Assign Request: <strong class="text-info">' + req_name + ' </strong> <span class=""> <i class="fa fa-trash fa-sm text-danger"></i></span></h3>',
+                    content: '' + resp,
+                    type: 'blue',
+                    typeAnimated: true,
+                    boxWidth: '40%',
+                    height: '60%',
+                    useBootstrap: false,
+                    closeIcon: true,
+                    buttons: {
+                        close: {
+                            text: 'Close',
+                            btnClass: 'btn-gray close-dialog',
+                            action: function () {
                             }
-
-                            $.ajax({
-                                type: 'GET',
-                                data: {
-                                    listCustomerRequest: JSON.stringify(listCustomerRequest),
-                                },
-                                url: urldata,
-                                success: function (resp) {
-                                    checkrequestset = new Set();
-                                    listCustomerRequest = [];
-                                    $('.cust-request-pane').html(resp);
-                                }
-                            });
-                        }
-                    },
-                    close: {
-                        text: 'Cancel',
-                        btnClass: 'btn-gray',
-                        action: function () {
                         }
                     }
-                }
-            });
-        } else {
-            $.confirm({
-                title: '<h3>Alert!</h3>',
-                content: 'Please Tick Requests you want to Foward!',
-                type: 'orange',
-                typeAnimated: true,
-                useBootstrap: false,
-                closeIcon: true,
-                boxWidth: '30%',
-                icon: 'fa fa-warning',
-                buttons: {
-                    close: {
-                        text: 'Close',
-                        btnClass: 'btn-gray',
-                        action: function () {
-                            
-                        }
-                    }
-                }
-            });
-        }
+                });
+            }
+        });
     }
 
     function functionDeleteCustomerRequest(req_id, req_name, ticket_code){
@@ -311,5 +367,37 @@
             }
         });
     }
+
+    function functionManagePendingCustomerRequest(id, CR_name) {
+        urldata = "{% url 'manageCustomerRequest'%}";
+        $.ajax({
+            type: "GET",
+            cache: false,
+            data: {
+                cr_id : id,
+            },
+            url: urldata,
+            success: function (resp) {
+                $('#dialog_customer_request').html(resp);
+                $('#customer-request-selected').html(CR_name);
+                window.location = '#customerRequestModalDialog';
+                initDialog('modalDialog2');
+            }
+        });
+    }
+
+    function functionReloadCustomerRequests(id, CR_name) {
+        urldata = "{% url 'customeRequestReload' %}";
+        $.ajax({
+            type: 'GET',
+            data: {},
+            url: urldata,
+            success: function (rep) {
+                $('.cust-request-pane').html('');
+                $('.cust-request-pane').html(rep);
+            }
+        });
+    }
+
 </script>
 

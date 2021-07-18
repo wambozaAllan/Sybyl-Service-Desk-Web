@@ -1,0 +1,68 @@
+
+<ul class="nav nav-tabs" role="tablist">
+    <li class="nav-item"> <a class="nav-link active tab-tm-1" data-toggle="tab" href="#customer_request_home_tab" role="tab"><span class="hidden-sm-up"><i class="ti-home"></i></span> <span class="hidden-xs-down">Details</span></a></li>
+    <li class="nav-item" onclick="functionLoadCustomerRequestActivities('{{request.name}}', '{{request.id}}', '{{request.ticket_code}}')"> <a class="nav-link tab-tm-2" data-toggle="tab" href="#customer_requests_activities" role="tab"><span class="hidden-sm-up"><i class="fa fa-share"></i></span> <span class="hidden-xs-down">Activities</span></a> </li>
+    <li class="nav-item" onclick="functionLoadCustomerRequestTeam('{{request.name}}', '{{request.id}}', '{{request.ticket_code}}')"> <a class="nav-link tab-tm-3" data-toggle="tab" href="#customer_request_engineers" role="tab"><span class="hidden-sm-up"><i class="ti-email"></i></span> <span class="hidden-xs-down">Team</span></a> </li>
+</ul>
+
+<!-- Tab panes -->
+<div class="tab-content tabcontent-border tab-content-1" style="padding-left: 1%; padding-right: 1%;">
+    <div class="tab-pane active" id="customer_request_home_tab" role="tabpanel">
+        <div class="">
+            <div class="card col-12 row">  
+                {% include "project_management/view_selected_customer_request.html" %}
+            </div> 
+        </div>
+    
+    </div>
+
+    <div class="tab-pane p-10" id="customer_requests_activities" role="tabpanel">
+        <!-- Customer Request Activities -->
+        <div class="customer_request_activities_pane">  
+            Customer Request Activities
+        </div>                                        
+    </div>
+
+    <div class="tab-pane p-10" id="customer_request_engineers" role="tabpanel">
+        <div class="customer_request_team_members">  
+            Customer Request Team
+        </div> 
+        
+    </div>
+</div>
+
+<script>
+    function functionLoadCustomerRequestActivities(req_name, id, code) {
+        urldata = "{% url 'loadCustomerRequestActivities'%}";
+        $.ajax({
+            type: 'GET',
+            data: {
+                req_name: req_name,
+                cr_id: id,
+                cr_code: code,
+            },
+            url: urldata,
+            success: function (rep) {
+                $('.customer_request_activities_pane').html('');
+                $('.customer_request_activities_pane').html(rep);
+            }
+        });
+    }
+
+    function functionLoadCustomerRequestTeam(req_name, id, code) {
+        urldata = "{% url 'loadCustomerRequestTeam'%}";
+        $.ajax({
+            type: 'GET',
+            data: {
+                req_name: req_name,
+                cr_id: id,
+                cr_code: code,
+            },
+            url: urldata,
+            success: function (rep) {
+                $('.customer_request_team_members').html('');
+                $('.customer_request_team_members').html(rep);
+            }
+        });
+    }
+</script>

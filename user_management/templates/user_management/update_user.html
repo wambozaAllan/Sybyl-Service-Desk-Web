@@ -119,8 +119,11 @@
                             </div>
 
                             <div class="row">
-                                <div class="col-4">
+                                <div class="col-2">
                                     {{ form.is_active|as_crispy_field }}
+                                </div>
+                                <div class="col-2">
+                                    {{ form.is_dept_head|as_crispy_field }}
                                 </div>
 
                                 <div class="col-4">
@@ -181,6 +184,13 @@
             is_superuser = 0;
         }
 
+        var is_dept_head;
+        if (document.getElementById('id_is_dept_head').checked) {
+            is_dept_head = 1;
+        } else {
+            is_dept_head = 0;
+        }
+
         if (first_name < 1 || last_name < 1 || gender < 1 || username < 1 || id_branch < 1 || id_department < 1 || email < 1) {
             if (first_name < 1) {
                 $('#id_first_name').css({ "border": '2px solid #00635a' });
@@ -223,7 +233,8 @@
                     branch: id_branch,
                     department: id_department,
                     status: status,
-                    is_superuser: is_superuser
+                    is_superuser: is_superuser,
+                    is_dept_head: is_dept_head
                 };
 
                 urldata = "{% url 'saveUserUpdate'%}";

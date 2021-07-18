@@ -1,0 +1,177 @@
+{% load static %}
+{% block content %}
+<style>
+    .daterangepicker {
+        z-index: 999999999999999999;
+    }
+</style>
+
+<script type="text/javascript" src="{% static 'template-static-files/javascript/moment.js' %}"></script>
+<script type="text/javascript" src="{% static 'template-static-files/javascript/daterangepicker.js' %}"></script>
+
+
+<div class="" id="save-user-pane">
+    <div class="row col-12">
+        <div class="col-6 form-group">
+            <label class="col-form-label requiredField">Customer Request<span class="asteriskField">*</span></label>
+            <div class="">
+                <input id="customer_request_id" type="text" name="" class="textinput textInput form-control" disabled value="{{cr_code}} - {{ cr_name }}" />
+            </div>
+        </div>
+    
+        <div id="div_id_log_day" class="col-6 form-group">
+            <label for="id_log_day_act" class="col-form-label requiredField">Log Date<span class="asteriskField">*</span>
+            </label>                    
+            <div class="">
+                <input onkeypress="return false;" type="text" name="id_log_day_act" class="dateinput form-control" id="id_log_day_act" placeholder="dd-mm-yyyy" autocomplete="off">
+            </div>
+        </div>
+
+    </div>
+
+    <div class="row col-12">
+        <div class="col-6 form-group">
+            <label class="col-form-label requiredField">Activity Name<span class="asteriskField">*</span></label>
+            <div class="">
+                <input autocomplete="off" id="activity_id" type="text" name="" class="textinput textInput form-control" value="" />
+            </div>
+        </div>
+
+        <div id="div_id_workedtime_act" class="col-6 form-group">
+            <label for="id_workedtime_act" class="col-form-label requiredField">Worked Time<span class="asteriskField">*  | Duration: <big class="text-info font-weight-bold hide" id="time_duration_a"></big></span>
+            </label>                    
+            <div class="">
+                <input autocomplete="off"  onkeypress="return false;" style="box-shadow: none; font-family: 'Poppins', sans-serif; display: block; height: calc(2.25rem + 2px); padding: .375rem .75rem; padding-left: 0.75rem; font-size: 1rem; line-height: 1.5; color: #495057; background-color: #fff; background-clip: padding-box; border: 1px solid #ced4da; border-top-color: rgb(206, 212, 218); border-right-color: rgb(206, 212, 218); border-bottom-color: rgb(206, 212, 218); border-left-color: rgb(206, 212, 218); border-radius: .25rem; transition: border-color .15s ease-in-out,box-shadow .15s ease-in-out; flex: 1 1 auto; width: 100%; margin-bottom: 0; margin-top: 2%" class="daterange" name="datefilter" id="id_workedtime_act" type="text" />
+            </div>
+        </div>
+    
+    </div>
+</div>
+
+<div class="row col-md-12">
+    <div class="col-6 form-group">
+        <label class=" control-label">Description</label>
+        <div class="">
+            <textarea id="activity_desc" class="form-control" placeholder="Description"></textarea>
+        </div>
+    </div>
+    
+    <div class="col-6">
+        <button id="btnUpdateCRStatus" class="btn btn-success pull-right col-12" style="margin-top: 7%;">
+            <span class="btn-save"><i class="fa fa-fw fa-lg fa-save"></i>Save</span>
+        </button>
+    </div>
+    
+</div>
+
+<script>
+    $('#id_log_day_act').datepicker({
+        format: "dd-mm-yyyy",
+        autoclose: true,
+        clearBtn: true,
+        endDate : new Date()
+    });
+
+    $("#time_duration_a" ).hide();
+
+    $('input[name="datefilter"]').daterangepicker({
+        timePicker: true,
+        timePickerIncrement: 1,
+        timePickerSeconds: false,
+        locale: {
+            format: 'h:mm A'
+        }
+    }).on('show.daterangepicker', function (ev, picker) {
+        picker.container.find(".calendar-table").hide();
+    }).on('change.daterangepicker', function (ev, picker) {
+        durationCalculating_act();
+    });
+    durationCalculating_act();
+
+    $('#id_log_day_act').on('change', function () {
+        $('#id_log_day_act').css({ "border": '1px solid #ced4da' });
+    });
+
+    $('#activity_id').on('input', function () {
+        $('#activity_id').css({ "border": '1px solid #ced4da' });
+    });
+
+    $('#btnUpdateCRStatus').click(function () { 
+        var id_log_day = $('#id_log_day_act').val();
+        var activity_name = $('#activity_id').val();
+        var activity_desc = $('#activity_desc').val();
+        var cr_id = '{{cr_id}}';
+        var cr_name = '{{cr_name}}';
+        var cr_code = '{{cr_code}}';
+
+        var id_workedtime = $('#id_workedtime_act').val();
+        var worked_time_ranges = id_workedtime.split(" - ");
+        var start_time = worked_time_ranges[0];
+        var end_time = worked_time_ranges[1];
+
+        if (id_log_day < 1 || activity_name < 1) {
+            if (id_log_day < 1) {
+                $('#id_log_day_act').css({ "border": '2px solid #00635a' });
+            }
+
+            if (activity_name < 1) {
+                $('#activity_id').css({ "border": '2px solid #00635a' });
+            }
+
+        } else {
+            document.getElementById("btnUpdateCRStatus").disabled=true;
+            data3 = {
+                id_log_day: id_log_day,
+                activity_name: activity_name,
+                start_time: start_time,
+                end_time: end_time,
+                activity_desc: activity_desc,
+                cr_id : cr_id,
+                cr_code: cr_code,
+                cr_name: cr_name
+            };
+            url_data = "{% url 'saveCustomerRequestActivity'%}";
+            $.ajax({
+                type: "GET",
+                cache: false,
+                data: data3,
+                url: url_data,
+                success: function (resp) {
+                    $('.customer_request_activities_pane').html(resp);
+                    $('.customer_request_activities_pane').html(resp);
+                    document.getElementById("btnUpdateCRStatus").disabled=true;
+                    $('.close-dialog').click();
+                }
+            });
+        }
+    });
+
+    function durationCalculating_act(){
+        var id_workedtime_act = $('#id_workedtime_act').val();
+        var worked_time_ranges = id_workedtime_act.split(" - ");
+        
+        var time1 = worked_time_ranges[0];
+        var time2 = worked_time_ranges[1];
+
+        var startDate = new Date("January 1, 1970 " + time1);
+        var endDate = new Date("January 1, 1970 " + time2);
+        
+        var timeDiff = Math.abs(startDate - endDate);
+
+        var hh = Math.floor(timeDiff / 1000 / 60 / 60);
+        if(hh < 10) {
+            hh = '0' + hh;
+        }
+        timeDiff -= hh * 1000 * 60 * 60;
+        var mm = Math.floor(timeDiff / 1000 / 60);
+        if(mm < 10) {
+            mm = '0' + mm;
+        }
+
+        var hourDiff = hh + ":" + mm;
+
+        $("#time_duration_a" ).show();
+        $("#time_duration_a").text(hourDiff);
+    }
+</script>
+{% endblock %}

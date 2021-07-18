@@ -34,6 +34,7 @@ class User(AbstractBaseUser, PermissionsMixin):
     address = models.CharField(max_length=255, null=True, blank=True)
     secondary_email = models.EmailField(blank=True, null=True)
     user_type = models.CharField(max_length=100, null=True, blank=True)
+    is_dept_head = models.BooleanField(default=False)
 
     objects = UserManager()
 

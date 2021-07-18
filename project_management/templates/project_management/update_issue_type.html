@@ -1,0 +1,50 @@
+{% load crispy_forms_tags %}
+<div class="card-body">
+    <div class="basic-form">
+        <form class="form-horizontal" action="{% url 'updateIssueType' iss_type_id %}" method="post" enctype="multipart/form-data">
+            {% csrf_token %}
+            <div class="row col-12">
+                <div class="col-6">
+                    {{ form.name|as_crispy_field }}
+                    <small id="validate_issue_type_name22" class="text-muted hidden">
+                        <font color="red">
+                           Can't Update. Issue Type Already Exits!
+                        </font>
+                    </small>
+                </div>
+                <div class="col-6">{{ form.description|as_crispy_field }}</div>
+            </div>
+            <div class="">
+                <div class="col-md-12">
+                    <button id="btnAddIssueType2" class="btn btn-success pull-right">
+                        <i class="fa fa-fw fa-lg fa-save"></i>Update Issue Type
+                    </button>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+<script>
+    $('#id_name').on('input', function () {
+        var type__name = $(this).val();
+
+        $.ajax({
+            url: '{% url 'validateIssueType' %}',
+            data: {
+                'name': type__name
+            },
+            dataType: 'json',
+            success: function (data) {
+                if (data.is_taken) {
+                    $("#validate_issue_type_name2").show();
+                    document.getElementById('id_name').style.borderColor = "red";
+                    document.getElementById("btnAddIssueType2").disabled = true;
+                } else {
+                    $("#validate_issue_type_name2").hide();
+                    document.getElementById('id_name').style.borderColor = "#e7e7e7";
+                    document.getElementById("btnAddIssueType2").disabled = false;
+                }
+            }
+        });
+    });
+</script>

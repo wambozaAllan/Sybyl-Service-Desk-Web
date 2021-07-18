@@ -1,0 +1,53 @@
+{% load crispy_forms_tags %}
+<div class="card-body">
+    <div class="basic-form">
+        <form class="form-horizontal" action="{% url 'addIssueType' %}" method="post" enctype="multipart/form-data" autocomplete="off">
+            {% csrf_token %}
+            <div class="row col-12">
+                <div class="col-6">
+                    {{ form.name|as_crispy_field }}
+                    <medium id="validate_issue_type_name" class="text-muted hidden">
+                        <font color="red">
+                            Issue Type Already Exits!
+                        </font>
+                    </medium>
+                </div>
+                <div class="col-6">{{ form.description|as_crispy_field }}</div>
+            </div>
+            <div class="">
+                <div class="col-md-12">
+                    <button id="btnAddIssueType" class="btn btn-success pull-right">
+                        <i class="fa fa-fw fa-lg fa-save"></i>Add Issue Type
+                    </button>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+<script>
+    $("#id_name").attr("placeholder", "Issue Type Name");
+    $("#id_description").attr("placeholder", "Enter Description");
+
+    $('#id_name').on('input', function () {
+        var type__name = $(this).val();
+
+        $.ajax({
+            url: '{% url 'validateIssueType' %}',
+            data: {
+                'name': type__name
+            },
+            dataType: 'json',
+            success: function (data) {
+                if (data.is_taken) {
+                    $("#validate_issue_type_name").show();
+                    document.getElementById('id_name').style.borderColor = "red";
+                    document.getElementById("btnAddIssueType").disabled = true;
+                } else {
+                    $("#validate_issue_type_name").hide();
+                    document.getElementById('id_name').style.borderColor = "#e7e7e7";
+                    document.getElementById("btnAddIssueType").disabled = false;
+                }
+            }
+        });
+    });
+</script>

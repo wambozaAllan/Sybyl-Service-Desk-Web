@@ -4,7 +4,10 @@
     </div>
 
     <div class="col-11">
-        <span class="col-form-label font-weight-bold text-secondary">Ticket:  <medium class="text-info">{{request.ticket_code}}</medium></span>
+        <span class="col-form-label font-weight-bold text-secondary">Code:  <medium class="text-info">{{request.ticket_code}}</medium></span></br>
+        <span class="font-weight-bold small">SLA Contract: </span><span class="small">{{request.name}}</span></br>
+        <span class="font-weight-bold small">Customer Request: </span><span class="small">{{request.sla.name}}</span></br>
+        <span class="font-weight-bold small">Issue Type: </span><span class="small">{{request.issue_type}}</span>
     </div>
 </h4>
 
@@ -41,8 +44,6 @@
     <div class="col-11">
         <span class="col-form-label font-weight-bold text-secondary">{{request.creator}}</span><small> added this request</small></br>
         <small>Date Added: <span class="text-info">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; {{request.created_time}}</span></small><br>
-        <small>Last Update: <span class="text-info">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{{request.modified_time}}</span></small><br>
-        <small>Fowarded By: <span class="text-info">&nbsp;&nbsp;&nbsp;{{request.fowarded_by}}</span></small><br>
-        <small>Date Fowarded: <span class="text-info">{{request.date_submitted}}</span></small>
+        <small>Last Update: <span class="text-info">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{{request.modified_time}}</span></small>
     </div>
 </h4>

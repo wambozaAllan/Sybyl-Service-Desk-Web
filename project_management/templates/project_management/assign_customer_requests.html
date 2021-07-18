@@ -1,7 +1,7 @@
 <div id="assign-request-pane">
     {% load crispy_forms_tags %} {% csrf_token %}
     <div class="row col-12">
-        <div class="col-12"">
+        <div class="col-12">
             <label class="col-form-label  requiredField">Request Name</label>
             <input type="text" value="{{ req_name }}" class="form-control" id="id_name" disabled/>
             <input type="text" value="{{ req_id }}" class="form-control" id="id_request" style="display: none;"/>
@@ -20,6 +20,7 @@
                             <option value="{{user.id}}">{{user.first_name}} {{user.first_name}}</option>
                         {% endfor %}
                     </select>
+                    
                 </div>
             </div>
         </div>
@@ -58,15 +59,14 @@
 
    $('#btnAssignCustomerRequest').click(function () { 
         var request_name = $('#id_name').val();
+        var request_id = $('#id_request').val();
 
         var project_member = $('#id_project_member').val();
         var selectednumbers = [];
         $('#id_project_member :selected').each(function(i, selected) {
             selectednumbers[i] = $(selected).val();
         });
-        var assigned_to = JSON.stringify(selectednumbers);
-        console.log(assigned_to+" we are here");
-
+        var assigned_to = selectednumbers;
 
         if (request_name < 1 || project_member < 0) {
             if (request_name < 1) {
@@ -79,12 +79,33 @@
 
         } else {
             document.getElementById('btnAssignCustomerRequest').disabled = true;
-            data3 = {
-                request_name: request_name,
-                project_member: assigned_to,
-            };
-            
-            
+            urlData11 = "{% url 'saveAssignedCustomerRequests' %}";
+            $.ajax({
+                type: "GET",
+                cache: false,
+                data: {
+                    customer_request_id: request_id,
+                    project_members: JSON.stringify(selectednumbers),
+                },
+                url: urlData11,
+                success: function (resp) {
+                    $.confirm({
+                        title: 'Success!',
+                        content: 'Customer Request Successfully Assigned',
+                        type: 'green',
+                        boxWidth: '30%',
+                        useBootstrap: false,
+                        typeAnimated: true,
+                        buttons: {
+                            ok: function () {
+
+                            }
+                        }
+                    });
+                    $('.close-dialog').click();
+                    $('.cust-request-pane').html(resp);
+                }
+            });
         }
     });
 

@@ -46,9 +46,10 @@ def user_createview(request):
     password = make_password(random_password)
     created_by = request.user.id
     company = request.session['company_id']
+    is_dept_head = request.GET.get('is_dept_head')
 
     obj = User(first_name=first_name.title(), last_name=last_name.title(), gender=gender, company_id=company,
-               branch_id=branch, department_id=department, username=username, user_type="normaluser",
+               branch_id=branch, department_id=department, username=username, user_type="normaluser", is_dept_head=is_dept_head,
                password=password, created_by=created_by, email=email)
     obj.save()
 
@@ -112,7 +113,7 @@ def update_resend_user_email(request):
 class AddUser(CreateView):
     model = User
     fields = ['first_name', 'last_name',
-              'gender', 'username', 'email', 'password']
+              'gender', 'username', 'email', 'password', 'is_dept_head']
 
     template_name = 'user_management/add_user.html'
     success_url = reverse_lazy('listUsers')
@@ -191,7 +192,7 @@ class DetailsUser(DetailView):
 class UpdateUser(UpdateView):
     model = User
     fields = ['first_name', 'last_name', 'gender', 'company', 'department', 'groups',
-              'branch', 'username', 'password', 'email', 'is_superuser', 'is_staff', 'is_active']
+              'branch', 'username', 'password', 'email', 'is_superuser', 'is_staff', 'is_active', 'is_dept_head']
 
     template_name = 'user_management/update_user.html'
     success_url = reverse_lazy('listUsers')
@@ -238,10 +239,11 @@ def save_system_user_update(request):
     active = request.GET.get('status')
     company = request.GET.get('company')
     super_user_status = request.GET.get('is_superuser')
+    is_dept_head = request.GET.get('is_dept_head')
 
     User.objects.filter(pk=int(uid)).update(first_name=first_name.title(), last_name=last_name.title(), gender=gender,
                                             branch_id=branch, department_id=department, username=username, email=email,
-                                            is_active=int(active), company_id=company, is_superuser=int(super_user_status))
+                                            is_active=int(active), company_id=company, is_superuser=int(super_user_status), is_dept_head=int(is_dept_head))
     
     if group is not "":
         user_id1 = User.objects.get(id=int(uid))
