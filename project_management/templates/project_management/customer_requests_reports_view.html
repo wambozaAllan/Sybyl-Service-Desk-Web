@@ -1,0 +1,119 @@
+{% load static %}
+<div class="row col-12">
+    <!-- Pie Chart -->
+    <div class="card col-md-4">
+        <div class="panel">
+            <div class="panel-heading">
+                <div class="panel-title">
+                    <h4 class="font-weight-bolder">Stage Wise</h4>
+                </div>
+            </div>
+            <div class="panel-body">
+                <canvas id="pieChart"></canvas>
+            </div>
+        </div>
+    </div>
+    <div class="col-1"></div>
+
+    <!-- Single Bar Chart -->
+    <div class="card col-md-7">
+        <div class="panel">
+            <div class="panel-heading">
+                <div class="panel-title">
+                    <h4>Stage Wise</h4>
+                </div>
+            </div>
+            <div class="panel-body">
+                <canvas id="singelBarChart"></canvas>
+            </div>
+        </div>
+    </div>
+
+</div>   
+
+
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+    //pie chart
+    var ctx = document.getElementById("pieChart");
+    ctx.height = 300;
+    $.ajax({
+        url: '{% url 'customerRequestSetData' %}',
+        data: {},
+        dataType: 'json',
+        success: function (data) {
+
+            var myChart = new Chart(ctx, {
+                type: 'pie',
+                data: {
+                    datasets: [{
+                        data: data.cr_data,
+                        backgroundColor: [
+                            "rgba(92, 184, 92, 1)",
+                            "rgba(240, 173, 78, 1)",
+                            "rgba(2, 117, 216, 1)",
+                            "rgba(91, 192 ,222, 1)",
+                            "rgba(217, 83, 79, 1)"
+                        ],
+                        hoverBackgroundColor: [
+                            "rgba(92, 184, 92, 1)",
+                            "rgba(240, 173, 78, 1)",
+                            "rgba(2, 117, 216, 1)",
+                            "rgba(91, 192, 222, 1)",
+                            "rgba(217, 83, 79, 1)"
+                        ]
+
+                    }],
+                    labels: [
+                        "COMPLETED",
+                        "PENDING",
+                        "OPEN",
+                        "ONHOLD",
+                        "CANCELED"
+                    ]
+                },
+                options: {
+                    responsive: true
+                }
+            });
+        }
+    });
+
+    // single bar chart
+    var ctx2 = document.getElementById("singelBarChart");
+    ctx2.height = 150;
+    $.ajax({
+        url: '{% url 'customerRequestSetData' %}',
+        data: {},
+        dataType: 'json',
+        success: function (data) {
+            
+            var myChart = new Chart(ctx2, {
+                type: 'bar',
+                data: {
+                    labels: ["COMPLETED", "PENDING", "OPEN", "ONHOLD", "CANCELED"],
+                    datasets: [
+                        {
+                            label: "Customer Requests by Status",
+                            data: data.cr_data,
+                            borderColor: "rgba(0, 123, 255, 0.9)",
+                            borderWidth: "0",
+                            backgroundColor: "rgba(0, 123, 255, 0.5)"
+                        }
+                    ]
+                },
+                options: {
+                    scales: {
+                        yAxes: [{
+                            ticks: {
+                                beginAtZero: true
+                            }
+                        }]
+                    }
+                }
+            });
+        }
+    });
+
+</script>

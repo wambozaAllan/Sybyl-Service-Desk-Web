@@ -4,7 +4,7 @@ from django.db import models
 from django.conf import settings
 from django.utils import timezone
 
-from company_management.models import Company, ServiceLevelAgreement
+from company_management.models import Company, Department, ServiceLevelAgreement
 from user_management.models import User, UserTeamMember
 
 from ckeditor.fields import RichTextField
@@ -585,6 +585,7 @@ class CustomerRequest(models.Model):
     modified_time = models.DateTimeField(auto_now=True)
     client_request_status = models.CharField(max_length=100, default='OPEN')
     issue_type = models.ForeignKey(IssueType, on_delete=models.CASCADE)
+    department = models.ForeignKey(Department, on_delete=models.CASCADE)
     history = HistoricalRecords()
     
     def __str__(self):

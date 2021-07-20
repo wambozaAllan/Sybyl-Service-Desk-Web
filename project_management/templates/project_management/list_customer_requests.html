@@ -80,7 +80,7 @@
                     <div class='task__tags'><span class='badge badge-pill badge-primary'>{{req.issue_type}}</span><button class='task__options'><i class="fa fa-ellipsis-h"></i></button></div>
                     <p>{{req.name}}</p>
                     <div class='task__stats'>
-                        <span><time datetime="2021-11-24T20:00:00"><i class="fa fa-flag fa-lg"></i> {{req.created_time}}</time></span>
+                        <span><time datetime="2021-11-24T20:00:00"><i class="fa fa-flag fa-lg"></i>{{ req.created_time | date:"D, d M, Y" }} </time></span>
                         <span><a href="#"><i class="fa fa-fw fa-send fa-lg color-primary pull-right" onclick="functAssignOpenRequest({{req.id}}, '{{req.name}}', {{req.sla_id}}, '{{req.sla.name}}')"></i></a></span>
                         <span><a href="#"><i class="fa fa-trash fa-lg color-danger pull-right" onclick="functionDeleteCustomerRequest({{ req.id }}, '{{ req.name }}', '{{ req.ticket_code }}')"></i></a></span>
                         <span><a href="#"><i class="fa fa-edit fa-lg color-primary pull-right" onclick="functEditOpenRequest({{req.id}}, '{{req.name}}', {{req.sla_id}}, '{{req.sla.name}}', '{{req.status}}')"></i></a></span>
@@ -168,7 +168,7 @@
 
     <div class="list">
 
-		<h3 class="list-title">On Hold <span class="badge badge-pill badge-primary">{{onhold_reg_list.count}}</span><i class="fa fa-circle color-danger pull-right"></i></h3>
+		<h3 class="list-title">On Hold <span class="badge badge-pill badge-primary">{{onhold_reg_list.count}}</span><i class="fa fa-circle color-info pull-right"></i></h3>
 
 		<ul class="list-items">
 			{% if onhold_reg_list %}
