@@ -4368,7 +4368,7 @@ def update_timesheet(request):
         client_list = Company.objects.filter(category__category_value='CLIENT', parent=company_id)
         sla_list = ServiceLevelAgreement.objects.filter(customer_id=curr_customer_id)
 
-        list_sla_requests = CustomerRequest.objects.filter(sla_id=int(sla_id), assigned_member=id_user_dept)
+        list_sla_requests = CustomerRequest.objects.filter(sla_id=int(sla_id), assigned_member__assigned_member=id_user_dept)
         
         template = loader.get_template('project_management/update_timesheet_request.html')
         context = {
@@ -4447,7 +4447,7 @@ def update_timesheet_paginator(request):
         client_list = Company.objects.filter(Q(category__category_value='CLIENT'), ~Q(id = curr_customer_id), Q(parent=company_id))
         sla_list = ServiceLevelAgreement.objects.filter(Q(customer_id=curr_customer_id), ~Q(id = sla_id))
 
-        list_sla_requests = CustomerRequest.objects.filter(Q(sla_id=int(sla_id)), Q(assigned_member=id_user_dept), ~Q(id = task_id))
+        list_sla_requests = CustomerRequest.objects.filter(Q(sla_id=int(sla_id)), Q(assigned_member__assigned_member=id_user_dept), ~Q(id = task_id))
         
         template = loader.get_template('project_management/update_timesheet_requests_paginator_view.html')
         context = {
@@ -4526,7 +4526,7 @@ def resubmit_timesheet(request):
         client_list = Company.objects.filter(category__category_value='CLIENT', parent=company_id)
         sla_list = ServiceLevelAgreement.objects.filter(customer_id=curr_customer_id)
 
-        list_sla_requests = CustomerRequest.objects.filter(sla_id=int(sla_id), assigned_member=id_user_dept)
+        list_sla_requests = CustomerRequest.objects.filter(sla_id=int(sla_id), assigned_member__assigned_member=id_user_dept)
         
         template = loader.get_template('project_management/resubmit_request_timesheet.html')
         context = {
@@ -4605,7 +4605,7 @@ def paginator_resubmit_timesheet(request):
         client_list = Company.objects.filter(category__category_value='CLIENT', parent=company_id)
         sla_list = ServiceLevelAgreement.objects.filter(customer_id=curr_customer_id)
 
-        list_sla_requests = CustomerRequest.objects.filter(sla_id=int(sla_id), assigned_member=id_user_dept)
+        list_sla_requests = CustomerRequest.objects.filter(sla_id=int(sla_id), assigned_member__assigned_member=id_user_dept)
         
         template = loader.get_template('project_management/paginator_resubmit_request_timesheet.html')
         context = {
@@ -7762,19 +7762,20 @@ def append_zero(number):
 
 
 def customer_request_home(request):
+    department_id = request.session['department_id']
     template = loader.get_template('project_management/customer_request_pane.html')
 
     # newly created requests
-    open_req_list = CustomerRequest.objects.filter(client_request_status="OPEN")
+    open_req_list = CustomerRequest.objects.filter(client_request_status="OPEN", department_id=department_id)
     
     # assigned requests to enginners but not yet resolved
-    pending_reg_list = CustomerRequest.objects.filter(client_request_status='PENDING')
+    pending_reg_list = CustomerRequest.objects.filter(client_request_status='PENDING', department_id=department_id)
 
     # resolved CRs
-    completed_reg_list = CustomerRequest.objects.filter(client_request_status='COMPLETED')
+    completed_reg_list = CustomerRequest.objects.filter(client_request_status='COMPLETED', department_id=department_id)
 
-    cancelled_reg_list = CustomerRequest.objects.filter(client_request_status='CANCELED')
-    onhold_reg_list = CustomerRequest.objects.filter(client_request_status='ONHOLD')
+    cancelled_reg_list = CustomerRequest.objects.filter(client_request_status='CANCELED', department_id=department_id)
+    onhold_reg_list = CustomerRequest.objects.filter(client_request_status='ONHOLD', department_id=department_id)
 
     context = {
         'open_req_list': open_req_list,
@@ -7782,6 +7783,37 @@ def customer_request_home(request):
         'completed_reg_list': completed_reg_list,
         'cancelled_reg_list': cancelled_reg_list,
         'onhold_reg_list': onhold_reg_list
+    }
+    
+    return HttpResponse(template.render(context, request))
+
+
+def customer_request_set_data(request):
+    department_id = request.session['department_id']
+    cr_data = []
+    open_req_list = CustomerRequest.objects.filter(client_request_status="OPEN", department_id=department_id).count()
+    pending_reg_list = CustomerRequest.objects.filter(client_request_status='PENDING', department_id=department_id).count()
+    completed_reg_list = CustomerRequest.objects.filter(client_request_status='COMPLETED', department_id=department_id).count()
+    cancelled_reg_list = CustomerRequest.objects.filter(client_request_status='CANCELED', department_id=department_id).count()
+    onhold_reg_list = CustomerRequest.objects.filter(client_request_status='ONHOLD', department_id=department_id).count()
+    cr_data.append(open_req_list)
+    cr_data.append(pending_reg_list)
+    cr_data.append(completed_reg_list)
+    cr_data.append(cancelled_reg_list)
+    cr_data.append(onhold_reg_list)
+
+    data = {
+        'cr_data': cr_data
+    }
+    return JsonResponse(data)
+
+
+def customer_requests_reports_home(request):
+    template = loader.get_template('project_management/customer_request_reports_pane.html')
+
+    
+    context = {
+       
     }
     
     return HttpResponse(template.render(context, request))
@@ -7855,6 +7887,8 @@ def save_customer_request_activity(request):
     if new_timesheet_id2 != "":
         RequestTimesheetExtend.objects.create(timesheet_id=new_timesheet_id2, customer_request_id=int(cr_id))
 
+    # to add a customer request activity, you must be an assigned member
+    check_if_assigned_member = CustomerRequestTeamMembers.objects.filter(customerrequest_id=int(cr_id), assigned_member_id=user_id).exists()
 
     cr_activities = CustomerRequestActivity.objects.filter(customerrequest_id=int(cr_id))
     template = loader.get_template('project_management/customer_request_activities_pane.html')
@@ -7862,7 +7896,8 @@ def save_customer_request_activity(request):
        "cr_name": cr_name,
        "cr_id": cr_id,
        "cr_code": cr_code,
-       "cr_members": cr_activities
+       "cr_activities": cr_activities,
+       "check_if_assigned_member": check_if_assigned_member
     }
 
     return HttpResponse(template.render(context, request))
@@ -7872,6 +7907,10 @@ def load_customer_request_activities(request):
     req_name = request.GET.get('req_name')
     cr_id = request.GET.get('cr_id')
     cr_code = request.GET.get('cr_code')
+    user_id = request.user.id
+
+    # to add a customer request activity, you must be an assigned member
+    check_if_assigned_member = CustomerRequestTeamMembers.objects.filter(customerrequest_id=int(cr_id), assigned_member_id=user_id).exists()
 
     cr_activities = CustomerRequestActivity.objects.filter(customerrequest_id=int(cr_id))
     template = loader.get_template('project_management/customer_request_activities_pane.html')
@@ -7879,7 +7918,8 @@ def load_customer_request_activities(request):
        "cr_name": req_name,
        "cr_id": cr_id,
        "cr_code": cr_code,
-       "cr_activities": cr_activities
+       "cr_activities": cr_activities,
+       "check_if_assigned_member": check_if_assigned_member
     }
     
     return HttpResponse(template.render(context, request))
@@ -7889,6 +7929,10 @@ def load_customer_request_team_members(request):
     req_name = request.GET.get('req_name')
     cr_id = request.GET.get('cr_id')
     cr_code = request.GET.get('cr_code')
+    user_id = request.user.id
+
+    # to add a customer request team member, you must be an assigned member
+    check_if_assigned_member = CustomerRequestTeamMembers.objects.filter(customerrequest_id=int(cr_id), assigned_member_id=user_id).exists()
 
     cr_team = CustomerRequestTeamMembers.objects.filter(customerrequest_id=int(cr_id))
     template = loader.get_template('project_management/customer_request_team_members.html')
@@ -7897,6 +7941,7 @@ def load_customer_request_team_members(request):
        "cr_id": cr_id,
        "cr_code": cr_code,
        "cr_members": cr_team,
+       "check_if_assigned_member": check_if_assigned_member
     }
     
     return HttpResponse(template.render(context, request))
@@ -7906,6 +7951,7 @@ def save_update_customer_request_state(request):
     cr_status = request.GET.get('cr_status')
     cr_id = request.GET.get('cr_id')
     user_id = request.user.id
+    department_id = request.session['department_id']
 
     Trackstatus.objects.create(customerrequest_id=int(cr_id), request_status=cr_status, added_by_id=user_id)
 
@@ -7913,11 +7959,11 @@ def save_update_customer_request_state(request):
     
     template = loader.get_template('project_management/list_customer_requests.html')
     
-    open_req_list = CustomerRequest.objects.filter(client_request_status="OPEN")
-    pending_reg_list = CustomerRequest.objects.filter(client_request_status='PENDING')
-    completed_reg_list = CustomerRequest.objects.filter(client_request_status='COMPLETED')
-    cancelled_reg_list = CustomerRequest.objects.filter(client_request_status='CANCELED')
-    onhold_reg_list = CustomerRequest.objects.filter(client_request_status='ONHOLD')
+    open_req_list = CustomerRequest.objects.filter(client_request_status="OPEN", department_id=department_id)
+    pending_reg_list = CustomerRequest.objects.filter(client_request_status='PENDING', department_id=department_id)
+    completed_reg_list = CustomerRequest.objects.filter(client_request_status='COMPLETED', department_id=department_id)
+    cancelled_reg_list = CustomerRequest.objects.filter(client_request_status='CANCELED', department_id=department_id)
+    onhold_reg_list = CustomerRequest.objects.filter(client_request_status='ONHOLD', department_id=department_id)
 
     context = {
         'open_req_list': open_req_list,
@@ -8022,8 +8068,9 @@ def save_customer_request(request):
     id_priority = int(request.GET.get('id_priority'))
     id_issue_type = int(request.GET.get('id_issue_type'))
     user_id = request.user.id
+    department_id = request.session['department_id']
 
-    obj = CustomerRequest(name=request_name, ticket_code=id_ticket_code, description=id_description, priority_id=id_priority, sla_id=id_customer_sla, creator_id=user_id, created_time=datetime.date.today(), modified_time=datetime.date.today(), client_request_status='OPEN', issue_type_id=id_issue_type)
+    obj = CustomerRequest(name=request_name, ticket_code=id_ticket_code, description=id_description, priority_id=id_priority, sla_id=id_customer_sla, creator_id=user_id, created_time=datetime.date.today(), modified_time=datetime.date.today(), client_request_status='OPEN', issue_type_id=id_issue_type, department_id=department_id)
     obj.save()
 
     customer_req_id = obj.id
@@ -8080,6 +8127,7 @@ def save_customer_request_update(request):
     id_priority = int(request.GET.get('id_priority'))
     id_issue_type = int(request.GET.get('id_issue_type'))
     prev_status = request.GET.get('prev_status')
+    department_id = request.session['department_id']
 
     user_id = request.user.id
     cr_status = request.GET.get('id_status')
@@ -8091,11 +8139,11 @@ def save_customer_request_update(request):
     
     template = loader.get_template('project_management/list_customer_requests.html')
     
-    open_req_list = CustomerRequest.objects.filter(client_request_status="OPEN")
-    pending_reg_list = CustomerRequest.objects.filter(client_request_status='PENDING')
-    completed_reg_list = CustomerRequest.objects.filter(client_request_status='COMPLETED')
-    cancelled_reg_list = CustomerRequest.objects.filter(client_request_status='CANCELED')
-    onhold_reg_list = CustomerRequest.objects.filter(client_request_status='ONHOLD')
+    open_req_list = CustomerRequest.objects.filter(client_request_status="OPEN", department_id=department_id)
+    pending_reg_list = CustomerRequest.objects.filter(client_request_status='PENDING', department_id=department_id)
+    completed_reg_list = CustomerRequest.objects.filter(client_request_status='COMPLETED', department_id=department_id)
+    cancelled_reg_list = CustomerRequest.objects.filter(client_request_status='CANCELED', department_id=department_id)
+    onhold_reg_list = CustomerRequest.objects.filter(client_request_status='ONHOLD', department_id=department_id)
 
     context = {
         'open_req_list': open_req_list,
@@ -8125,17 +8173,18 @@ class ViewCustomerRequest(DetailView):
 
 def delete_customer_request(request):
     req_id = request.GET.get('req_id')
+    department_id = request.session['department_id']
     
     Trackstatus.objects.filter(customerrequest_id=int(req_id)).delete()
     CustomerRequest.objects.filter(id=int(req_id)).delete()
 
     template = loader.get_template('project_management/list_customer_requests.html')
     
-    open_req_list = CustomerRequest.objects.filter(client_request_status="OPEN")
-    pending_reg_list = CustomerRequest.objects.filter(client_request_status='PENDING')
-    completed_reg_list = CustomerRequest.objects.filter(client_request_status='COMPLETED')
-    cancelled_reg_list = CustomerRequest.objects.filter(client_request_status='CANCELED')
-    onhold_reg_list = CustomerRequest.objects.filter(client_request_status='ONHOLD')
+    open_req_list = CustomerRequest.objects.filter(client_request_status="OPEN", department_id=department_id)
+    pending_reg_list = CustomerRequest.objects.filter(client_request_status='PENDING', department_id=department_id)
+    completed_reg_list = CustomerRequest.objects.filter(client_request_status='COMPLETED', department_id=department_id)
+    cancelled_reg_list = CustomerRequest.objects.filter(client_request_status='CANCELED', department_id=department_id)
+    onhold_reg_list = CustomerRequest.objects.filter(client_request_status='ONHOLD', department_id=department_id)
 
     context = {
         'open_req_list': open_req_list,
@@ -8173,6 +8222,10 @@ def delete_customer_request_engineer(request):
     cr_id = request.GET.get('cr_id')
     cr_code = request.GET.get('cr_code')
     cr_name = request.GET.get('cr_name')
+    user_id = request.user.id
+
+    # to add a customer request team member, you must be an assigned member
+    check_if_assigned_member = CustomerRequestTeamMembers.objects.filter(customerrequest_id=int(cr_id), assigned_member_id=user_id).exists()
     
     CustomerRequestTeamMembers.objects.filter(id=int(assigned_id)).delete()
     cr_team = CustomerRequestTeamMembers.objects.filter(customerrequest_id=int(cr_id))
@@ -8182,6 +8235,7 @@ def delete_customer_request_engineer(request):
        "cr_id": cr_id,
        "cr_code": cr_code,
        "cr_members": cr_team,
+       "check_if_assigned_member": check_if_assigned_member
     }
 
     return HttpResponse(template.render(context, request))
@@ -8459,7 +8513,7 @@ def fetch_requests_by_sla(request):
     id_sla_contract = request.GET.get('id_sla_contract')
     id_user = int(request.GET.get('id_user_dept01'))
   
-    list_sla_requests = CustomerRequest.objects.filter(sla_id=int(id_sla_contract), assigned_member=id_user)
+    list_sla_requests = CustomerRequest.objects.filter(sla_id=int(id_sla_contract), assigned_member__assigned_member=id_user)
     data = {
         'req': serializers.serialize("json", list_sla_requests)
     }
@@ -8526,6 +8580,7 @@ def save_assigned_customerrequests(request):
     customer_request_id = request.GET.get('customer_request_id')
     project_members = request.GET.get('project_members')
     uid = request.user.id
+    department_id = request.session['department_id']
 
     json_data = json.loads(project_members)
     
@@ -8538,11 +8593,11 @@ def save_assigned_customerrequests(request):
 
     template = loader.get_template('project_management/list_customer_requests.html')
     
-    open_req_list = CustomerRequest.objects.filter(client_request_status="OPEN")
-    pending_reg_list = CustomerRequest.objects.filter(client_request_status='PENDING')
-    completed_reg_list = CustomerRequest.objects.filter(client_request_status='COMPLETED')
-    cancelled_reg_list = CustomerRequest.objects.filter(client_request_status='CANCELED')
-    onhold_reg_list = CustomerRequest.objects.filter(client_request_status='ONHOLD')
+    open_req_list = CustomerRequest.objects.filter(client_request_status="OPEN", department_id=department_id)
+    pending_reg_list = CustomerRequest.objects.filter(client_request_status='PENDING', department_id=department_id)
+    completed_reg_list = CustomerRequest.objects.filter(client_request_status='COMPLETED', department_id=department_id)
+    cancelled_reg_list = CustomerRequest.objects.filter(client_request_status='CANCELED', department_id=department_id)
+    onhold_reg_list = CustomerRequest.objects.filter(client_request_status='ONHOLD', department_id=department_id)
 
     context = {
         'open_req_list': open_req_list,
@@ -8567,6 +8622,9 @@ def save_assigned_engineer(request):
     for mem in json_data:
         CustomerRequestTeamMembers.objects.create(customerrequest_id=int(customer_request_id), assigned_member_id=int(mem), date_assigned=datetime.date.today(), assigned_by_id=uid)
 
+    # to add a customer request team member, you must be an assigned member
+    check_if_assigned_member = CustomerRequestTeamMembers.objects.filter(customerrequest_id=int(cr_id), assigned_member_id=user_id).exists()
+
     cr_team = CustomerRequestTeamMembers.objects.filter(customerrequest_id=int(customer_request_id))
     template = loader.get_template('project_management/customer_request_team_members.html')
     context = {
@@ -8574,6 +8632,7 @@ def save_assigned_engineer(request):
        "cr_id": customer_request_id,
        "cr_code": cr_code,
        "cr_members": cr_team,
+       "check_if_assigned_member": check_if_assigned_member
     }
     
     return HttpResponse(template.render(context, request))

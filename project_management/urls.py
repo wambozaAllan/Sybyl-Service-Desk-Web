@@ -232,6 +232,7 @@ urlpatterns = [
     path('selectMembersByProject', views.fetch_members_by_project, name='selectMembersByProject'),
 
     path('customerRequests/', views.customer_request_home, name="customerRequests"),
+    path('customerRequestsReports/', views.customer_requests_reports_home, name="customerRequestsReports"),
     path('addCustomerRequest/', views.AddCustomerRequest.as_view(), name="addCustomerRequest"),
     path('saveCustomerRequest/', views.save_customer_request, name='saveCustomerRequest'),
     path('updateCustomerRequest/<int:pk>/', views.UpdateCustomerRequest.as_view(), name='updateCustomerRequest'),
@@ -257,6 +258,7 @@ urlpatterns = [
     path('assignRequests', views.assign_customer_request, name='assignRequests'),
     path('saveAssignedCustomerRequests', views.save_assigned_customerrequests, name='saveAssignedCustomerRequests'),
     path('saveAssignedEngineer', views.save_assigned_engineer, name='saveAssignedEngineer'),
+    path('customerRequestSetData', views.customer_request_set_data, name='customerRequestSetData'),
     
     path('SLAsByCustomer', views.fetch_SLAs_by_customer, name='SLAsByCustomer'),
     path('requestsBySLA', views.fetch_requests_by_sla, name='requestsBySLA'),

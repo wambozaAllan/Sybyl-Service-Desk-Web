@@ -1,12 +1,15 @@
 {% load humanize %}
-
-<div class="row">
-    <div class="col-md-12">
-        <button id="" class="btn btn-info pull-right" onclick="functAddCustomerActivity('{{cr_id}}', '{{cr_name}}', '{{cr_code}}')">
-            <i class="fa fa-fw fa-lg fa-plus"></i>Add Activity
-        </button>
+<!-- you cant add Activity if you are not assigned to that request -->
+{% if check_if_assigned_member %}
+    <div class="row">
+        <div class="col-md-12">
+            <button id="" class="btn btn-info pull-right" onclick="functAddCustomerActivity('{{cr_id}}', '{{cr_name}}', '{{cr_code}}')">
+                <i class="fa fa-fw fa-lg fa-plus"></i>Add Activity
+            </button>
+        </div>
     </div>
-</div>
+{%endif%}
+
 
 <div class="card ">
     <div class="table-responsive" >
