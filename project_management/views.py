@@ -7896,7 +7896,7 @@ def save_customer_request_activity(request):
        "cr_name": cr_name,
        "cr_id": cr_id,
        "cr_code": cr_code,
-       "cr_members": cr_activities,
+       "cr_activities": cr_activities,
        "check_if_assigned_member": check_if_assigned_member
     }
 
