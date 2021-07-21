@@ -58,7 +58,7 @@ INSTALLED_APPS = [
     'background_task',
     'simple_history',
     'django.contrib.humanize',
-    'doj',
+    # 'doj',
 ]
 
 CKEDITOR_CONFIGS = {
