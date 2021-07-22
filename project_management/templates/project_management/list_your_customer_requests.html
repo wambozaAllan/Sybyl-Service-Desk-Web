@@ -1,0 +1,439 @@
+<style>
+    :root {
+        font-size: 70%;
+    }
+
+    .task {
+        cursor: move;
+        background-color: var(--white);
+        padding: 1rem;
+        border-radius: 8px;
+        width: 100%;
+        box-shadow: rgba(99, 99, 99, 0.1) 0px 2px 8px 0px;
+        margin-bottom: 1rem;
+    }
+
+    .task:hover {
+        box-shadow: rgba(99, 99, 99, 0.3) 0px 2px 8px 0px;
+        border-color: rgba(162, 179, 207, .2) !important;
+    }
+
+    .task p {
+        font-size: 15px;
+        margin: 1.2rem 0;
+    }
+
+    .task__tag {
+        border-radius: 100px;
+        padding: 2px 13px;
+        font-size: 12px;
+    }
+
+    .task__tags {
+        width: 100%;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        font-size: 117%;
+    }
+
+    .task__options {
+        background: transparent;
+        border: 0;
+        color: var(--light-grey);
+        font-size: 17px;
+    }
+
+    .task__stats {
+        position: relative;
+        width: 100%;
+        color: var(--light-grey);
+        font-size: 12px;
+    }
+
+    .task__stats span:not(:last-of-type) {
+        margin-right: 0.5rem;
+    }
+
+    .pointCard {
+        cursor: pointer;
+    }
+
+    .modal-title {
+        display: inline-block;
+        width: 300px;
+        overflow: hidden;
+        white-space: nowrap;
+        text-overflow: ellipsis;
+        margin-bottom: -7px;
+    }
+</style>
+
+{% load humanize %}
+<!-- Lists container -->
+<section class="lists-container" style="margin-top: 1%">
+
+    <div class="list">
+
+        <h3 class="list-title">Open <span class="badge badge-pill badge-primary">{{open_req_list.count}}</span><i
+                class="fa fa-circle color-primary pull-right"></i></h3>
+
+        <ul class="list-items">
+
+            {% if open_req_list %}
+
+            {% for reqy in open_req_list %}
+
+            <div class='task' draggable='true'>
+                <div class='task__tags'><span class='badge badge-pill badge-primary'>{{reqy.issue_type}}</span><button
+                        class='task__options'><i class="fa fa-ellipsis-h"></i></button></div>
+                <p>{{reqy.name}}</p>
+                <div class='task__stats'>
+                    <span><time datetime="2021-11-24T20:00:00"><i class="fa fa-flag fa-lg"></i>{{ reqy.created_time | date:"D, d M, Y" }} </time></span>
+                    <span><a href="#"><i class="fa fa-fw fa-send fa-lg color-primary pull-right"
+                                onclick="functAssignOpenRequest2({{reqy.id}}, '{{reqy.name}}', {{reqy.sla_id}}, '{{reqy.sla.name}}')"></i></a></span>
+                    <span><a href="#"><i class="fa fa-trash fa-lg color-danger pull-right"
+                                onclick="functionDeleteCustomerRequest2({{ reqy.id }}, '{{ reqy.name }}', '{{ reqy.ticket_code }}')"></i></a></span>
+                    <span><a href="#"><i class="fa fa-edit fa-lg color-primary pull-right"
+                                onclick="functEditOpenRequest2({{reqy.id}}, '{{reqy.name}}', {{reqy.sla_id}}, '{{reqy.sla.name}}', '{{reqy.status}}')"></i></a></span>
+                    <span><a href="#"><i class="fa fa-list-alt fa-lg color-primary pull-right"
+                                onclick="functViewOpenRequest2({{reqy.id}}, '{{reqy.name}}', {{reqy.sla_id}}, '{{reqy.sla.name}}')"></i></a></span>
+                </div>
+            </div>
+
+            {% endfor %}
+            {% else %}
+            <span>No Open Requests.</span>
+            {% endif %}
+        </ul>
+    </div>
+
+    <div class="list">
+
+        <h3 class="list-title">Pending <span class="badge badge-pill badge-primary">{{pending_reg_list.count}}</span> <i
+                class="fa fa-circle color-warning pull-right"></i></h3>
+
+        <ul class="list-items">
+            {% if pending_reg_list %}
+            {% for reqy2 in pending_reg_list %}
+            <a href="#" onclick="functionManagePendingCustomerRequest2({{reqy2.id}}, '{{reqy2.name}}')">
+                <div class='task pointCard' draggable='true'>
+                    <div class='task__tags'><span
+                            class='badge badge-pill badge-primary'>{{reqy2.issue_type}}</span><button
+                            class='task__options'><i class="fa fa-ellipsis-h"></i></button></div>
+                    <p>{{reqy2.name}}</p>
+                    <div class='task__stats'>
+                        <span><time datetime="2021-11-24T20:00:00"><i class="fa fa-flag fa-lg"></i> {{reqy2.created_time | date:"d M, Y"}}</time></span>
+                        <span><i class="fa fa-users"></i> {{reqy2.assigned_member.count}}</span>
+                    </div>
+                </div>
+            </a>
+
+            {% endfor %}
+            {% else %}
+            <span>No Pendding Requests</span>
+            {% endif %}
+        </ul>
+    </div>
+
+    <div class="list">
+
+        <h3 class="list-title">Completed <span
+                class="badge badge-pill badge-primary">{{completed_reg_list.count}}</span><i
+                class="fa fa-circle color-success pull-right"></i></h3>
+
+        <ul class="list-items">
+            {% if completed_reg_list %}
+            {% for reqy3 in completed_reg_list %}
+            <div class='task' draggable='true'>
+                <div class='task__tags'><span class='badge badge-pill badge-primary'>{{reqy3.issue_type}}</span><button
+                        class='task__options'><i class="fa fa-ellipsis-h"></i></button></div>
+                <p>{{reqy3.name}}</p>
+                <div class='task__stats'>
+                    <span><time datetime="2021-11-24T20:00:00"><i class="fa fa-flag fa-lg"></i>
+                            {{reqy3.created_time}}</time></span>
+                    <span><a href="#"><i class="fa fa-list-alt fa-lg color-primary pull-right"
+                                onclick="functViewOpenRequest2({{reqy3.id}}, '{{reqy3.name}}', {{reqy3.sla_id}}, '{{reqy3.sla.name}}')"></i></a></span>
+                </div>
+            </div>
+            {% endfor %}
+            {% else %}
+            <span class="">No Completed Requests</span>
+            {% endif %}
+        </ul>
+
+    </div>
+
+    <div class="list">
+
+        <h3 class="list-title">Canceled <span
+                class="badge badge-pill badge-primary">{{cancelled_reg_list.count}}</span><i
+                class="fa fa-circle color-danger pull-right"></i></h3>
+
+        <ul class="list-items">
+            {% if cancelled_reg_list %}
+            {% for reqy4 in cancelled_reg_list %}
+            <div class='task' draggable='true'>
+                <div class='task__tags'><span class='badge badge-pill badge-primary'>{{reqy4.issue_type}}</span><button
+                        class='task__options'><i class="fa fa-ellipsis-h"></i></button></div>
+                <p>{{reqy4.name}}</p>
+                <div class='task__stats'>
+                    <span><time datetime="2021-11-24T20:00:00"><i class="fa fa-flag fa-lg"></i>
+                            {{reqy4.created_time}}</time></span>
+                    <span><a href="#"><i class="fa fa-list-alt fa-lg color-primary pull-right"
+                                onclick="functViewOpenRequest2({{reqy4.id}}, '{{reqy4.name}}', {{reqy4.sla_id}}, '{{reqy4.sla.name}}')"></i></a></span>
+                </div>
+            </div>
+            {% endfor %}
+            {% else %}
+            <span class="">No Cancelled Requests</span>
+            {% endif %}
+        </ul>
+
+    </div>
+
+    <div class="list">
+
+        <h3 class="list-title">On Hold <span class="badge badge-pill badge-primary">{{onhold_reg_list.count}}</span><i
+                class="fa fa-circle color-info pull-right"></i></h3>
+
+        <ul class="list-items">
+            {% if onhold_reg_list %}
+            {% for reqy5 in onhold_reg_list %}
+            <div class='task' draggable='true'>
+                <div class='task__tags'><span class='badge badge-pill badge-primary'>{{reqy5.issue_type}}</span><button
+                        class='task__options'><i class="fa fa-ellipsis-h"></i></button></div>
+                <p>{{reqy5.name}}</p>
+                <div class='task__stats'>
+                    <span><time datetime="2021-11-24T20:00:00"><i class="fa fa-flag fa-lg"></i>
+                            {{reqy5.created_time}}</time></span>
+                    <span><a href="#"><i class="fa fa-list-alt fa-lg color-primary pull-right"
+                                onclick="functViewOpenRequest2({{reqy5.id}}, '{{reqy5.name}}', {{reqy5.sla_id}}, '{{reqy5.sla.name}}')"></i></a></span>
+                </div>
+            </div>
+            {% endfor %}
+            {% else %}
+            <span class="">No On Hold Requests</span>
+            {% endif %}
+        </ul>
+
+    </div>
+
+</section>
+
+
+<!-- The Modal -->
+<div class="">
+    <div id="customerRequestModalDialog2" class="modalDialog">
+        <div>
+            <div id="head">
+                <a onclick="functionReloadCustomerRequests2()" href="#close" title="Close" class="close2">X</a>
+                <h5 class="modalDialog-title font-weight-bold">Manage Customer Request : <div
+                        class="color-primary modal-title" id="customer-request-selected"></div>
+                </h5>
+            </div>
+            <hr>
+
+            <div class="modal-body">
+                <div class="scrollbar-modal1">
+                    <div id="dialog_customer_request2">
+
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- END The Modal -->
+
+
+<script>
+    var listCustomerRequest = [];
+    $(".request-checkbox1").prop('checked', false);
+    $(".select-all-check1").prop('checked', false);
+
+    function functEditOpenRequest2(req_id, req_name, sla_id, sla_name, status) {
+        urldata = "{% url 'updateCustomerRequest' 999%}".replace(999, req_id);
+        $.ajax({
+            type: "GET",
+            cache: false,
+            data: {
+                req_name: req_name,
+                sla_id: sla_id,
+                sla_name: sla_name,
+                status: status
+            },
+            url: urldata,
+            success: function (resp) {
+                $.confirm({
+                    title: '<h3>Edit Request: <strong class="text-info">' + req_name + ' </strong> <span class=""> <i class="fa fa-trash fa-sm text-danger"></i></span></h3>',
+                    content: '' + resp,
+                    type: 'blue',
+                    typeAnimated: true,
+                    boxWidth: '60%',
+                    useBootstrap: false,
+                    closeIcon: true,
+                    buttons: {
+                        close: {
+                            text: 'Close',
+                            btnClass: 'btn-gray close-dialog',
+                            action: function () {
+                            }
+                        }
+                    }
+                });
+            }
+        });
+    }
+
+    function functViewOpenRequest2(req_id, req_name, sla_id, sla_name) {
+        urldata = "{% url 'viewCustomerRequest' 999%}".replace(999, req_id);
+        $.ajax({
+            type: "GET",
+            cache: false,
+            data: {
+                req_name: req_name,
+                sla_id: sla_id,
+                sla_name: sla_name
+            },
+            url: urldata,
+            success: function (resp) {
+                $.confirm({
+                    title: '<h3>' + req_name + '</h3>',
+                    content: '' + resp,
+                    typeAnimated: true,
+                    type: 'dark',
+                    boxWidth: '40%',
+                    useBootstrap: false,
+                    closeIcon: true,
+                    icon: 'fa fa-credit-card',
+                    closeIcon: true,
+                    closeIconClass: 'fa fa-close',
+                    buttons: {
+                        close: {
+                            text: 'Close',
+                            btnClass: 'btn-gray close-dialog',
+                            action: function () {
+                            }
+                        }
+                    }
+                });
+            }
+        });
+    }
+
+    function functAssignOpenRequest2(req_id, req_name, sla_id, sla_name) {
+        urldata = "{% url 'assignRequests' %}";
+        $.ajax({
+            type: "GET",
+            cache: false,
+            data: {
+                req_id: req_id,
+                req_name: req_name,
+                sla_id: sla_id,
+                sla_name: sla_name
+            },
+            url: urldata,
+            success: function (resp) {
+                $.confirm({
+                    title: '<h3>Assign Request: <strong class="text-info">' + req_name + ' </strong> <span class=""> <i class="fa fa-trash fa-sm text-danger"></i></span></h3>',
+                    content: '' + resp,
+                    type: 'blue',
+                    typeAnimated: true,
+                    boxWidth: '40%',
+                    height: '60%',
+                    useBootstrap: false,
+                    closeIcon: true,
+                    buttons: {
+                        close: {
+                            text: 'Close',
+                            btnClass: 'btn-gray close-dialog',
+                            action: function () {
+                            }
+                        }
+                    }
+                });
+            }
+        });
+    }
+
+    function functionDeleteCustomerRequest2(req_id, req_name, ticket_code) {
+        urldata = "{% url 'deleteCustomerRequest'%}";
+        $.confirm({
+            title: '<h3 class="font-weight-bold">Delete Request!</h3>',
+            content: '<h4>Request: <span class="text-info">' + req_name + '</span></h4>' +
+                '<h4>Ticket Code: <span class="text-info">' + ticket_code + '</span></h4>',
+            type: 'red',
+            typeAnimated: true,
+            boxWidth: '40%',
+            useBootstrap: false,
+            theme: 'modern',
+            icon: 'fa fa-exclamation-circle',
+            closeIcon: true,
+            buttons: {
+                formSubmit: {
+                    text: 'Remove',
+                    btnClass: 'btn-red',
+                    action: function () {
+                        var dataToggle = $("#toggle-event").prop('checked');
+                        $.ajax({
+                            type: "GET",
+                            cache: false,
+                            data: {
+                                req_id: req_id,
+                                dataToggle: dataToggle
+                            },
+                            url: urldata,
+                            success: function (resp) {
+                                $('.close-dialog').click();
+                                if(dataToggle){
+                                    $('.cust-request-pane').html(resp);
+                                }else{
+                                    $('.cust-request-pane-yours').html(resp);
+                                }
+                            }
+                        });
+                    }
+                },
+                close: {
+                    text: 'Cancel',
+                    btnClass: 'btn-gray',
+                    action: function () {
+                    }
+                }
+            }
+        });
+    }
+
+    function functionManagePendingCustomerRequest2(id, CR_name) {
+        urldata = "{% url 'manageCustomerRequest'%}";
+        $.ajax({
+            type: "GET",
+            cache: false,
+            data: {
+                cr_id: id,
+            },
+            url: urldata,
+            success: function (resp) {
+                $('#dialog_customer_request2').html(resp);
+                $('#customer-request-selected').html(CR_name);
+                window.location = '#customerRequestModalDialog2';
+                initDialog('modalDialog');
+            }
+        });
+    }
+
+    function functionReloadCustomerRequests2(id, CR_name) {
+        urldata = "{% url 'customerRequestLoadYourRequests' %}";
+        $.ajax({
+            type: 'GET',
+            data: {},
+            url: urldata,
+            success: function (rep) {
+                $('.cust-request-pane-yours').html('');
+                $('.cust-request-pane-yours').html(rep);
+            }
+        });
+    }
+
+</script>

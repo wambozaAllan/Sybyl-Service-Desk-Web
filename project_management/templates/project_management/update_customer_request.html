@@ -112,17 +112,32 @@
                  prev_status: id_prev_status,
                  id_issue_type: id_issue_type,
              };
-             url_data = "{% url 'saveRequestupdate'%}";
-             $.ajax({
-                 type: "GET",
-                 cache: false,
-                 data: data3,
-                 url: url_data,
-                 success: function (resp) {
-                     $('.close-dialog').click();
-                     $('.cust-request-pane').html(resp);
-                 }
-             });
+            var dataToggle = $("#toggle-event").prop('checked');
+            if(dataToggle){
+                url_data = "{% url 'saveRequestupdate'%}";
+                $.ajax({
+                    type: "GET",
+                    cache: false,
+                    data: data3,
+                    url: url_data,
+                    success: function (resp) {
+                        $('.close-dialog').click();
+                        $('.cust-request-pane').html(resp);
+                    }
+                });
+            }else{
+                url_data = "{% url 'saveYourRequestupdate'%}";
+                $.ajax({
+                    type: "GET",
+                    cache: false,
+                    data: data3,
+                    url: url_data,
+                    success: function (resp) {
+                        $('.close-dialog').click();
+                        $('.cust-request-pane-yours').html(resp);
+                    }
+                });
+            }
          }
      });
  
