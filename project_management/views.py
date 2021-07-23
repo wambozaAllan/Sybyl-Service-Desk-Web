@@ -9463,9 +9463,9 @@ def timesheet_defaulter_list(request):
     selected_date = datetime.datetime.strptime(selected_date, '%d-%m-%Y')
     selected_date2 = datetime.datetime.strptime(selected_date2, '%d-%m-%Y').strftime("%A, %d. %B %Y")
 
-    dept_members_exist = User.objects.filter(company_id=company_id, department_id=department_id).exists()
+    dept_members_exist = User.objects.filter(company_id=company_id, department_id=department_id, is_dept_head=False).exists()
     if dept_members_exist == True:
-        dept_members = User.objects.filter(company_id=company_id, department_id=department_id, is_active=True)
+        dept_members = User.objects.filter(company_id=company_id, department_id=department_id, is_active=True, is_dept_head=False)
         all_mem_gen_list = []
         
         for mem in dept_members:
