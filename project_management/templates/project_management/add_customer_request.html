@@ -78,7 +78,8 @@
         var id_priority = $('#id_priority').val();
         var id_status = $('#id_status').val();
         var id_issue_type = $('#id_issue_type').val();
-
+        var dataToggle = $("#toggle-event").prop('checked');
+        
         if (request_name < 1 || id_ticket_code < 1 || id_customer_sla < 1 || id_priority < 1 || id_status < 1 || id_issue_type < 1) {
             if (request_name < 1) {
                 $('#id_name').css({ "border": '2px solid #00635a' });
@@ -113,6 +114,7 @@
                 id_priority: id_priority,
                 id_status: id_status,
                 id_issue_type: id_issue_type,
+                dataToggle: dataToggle
             };
             url_data = "{% url 'saveCustomerRequest'%}";
             $.ajax({
@@ -122,7 +124,11 @@
                 url: url_data,
                 success: function (resp) {
                     $('.close-dialog').click();
-                    $('.cust-request-pane').html(resp);
+                    if(dataToggle){
+                        $('.cust-request-pane').html(resp);
+                    }else{
+                        $('.cust-request-pane-yours').html(resp);
+                    }
                 }
             });
         }

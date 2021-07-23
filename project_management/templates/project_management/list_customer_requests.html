@@ -344,11 +344,13 @@
                     text: 'Remove',
                     btnClass: 'btn-red',
                     action: function () {
+                        var dataToggle = $("#toggle-event").prop('checked');
                         $.ajax({
                             type: "GET",
                             cache: false,
                             data: {
-                                req_id: req_id
+                                req_id: req_id,
+                                dataToggle: dataToggle
                             },
                             url: urldata,
                             success: function (resp) {

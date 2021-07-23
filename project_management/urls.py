@@ -232,11 +232,13 @@ urlpatterns = [
     path('selectMembersByProject', views.fetch_members_by_project, name='selectMembersByProject'),
 
     path('customerRequests/', views.customer_request_home, name="customerRequests"),
+    path('searchCustomerRequests/', views.search_customerrequests, name="searchCustomerRequests"),
     path('customerRequestsReports/', views.customer_requests_reports_home, name="customerRequestsReports"),
     path('addCustomerRequest/', views.AddCustomerRequest.as_view(), name="addCustomerRequest"),
     path('saveCustomerRequest/', views.save_customer_request, name='saveCustomerRequest'),
     path('updateCustomerRequest/<int:pk>/', views.UpdateCustomerRequest.as_view(), name='updateCustomerRequest'),
     path('saveRequestupdate/', views.save_customer_request_update, name='saveRequestupdate'),
+    path('saveYourRequestupdate/', views.save_your_customer_request_update, name='saveYourRequestupdate'),
     path('viewCustomerRequest/<int:pk>/', views.ViewCustomerRequest.as_view(), name='viewCustomerRequest'),
     path('deleteCustomerRequest', views.delete_customer_request, name='deleteCustomerRequest'),
     path('manageCustomerRequest/', views.manage_customer_request_pane, name="manageCustomerRequest"),
@@ -249,6 +251,7 @@ urlpatterns = [
     path('deleteCustomerRequestEngineer', views.delete_customer_request_engineer, name='deleteCustomerRequestEngineer'),
     path('addCustomerRequestMember', views.add_customer_request_member, name='addCustomerRequestMember'),
     path('customeRequestReload', views.customer_request_reload, name='customeRequestReload'),
+    path('customerRequestLoadYourRequests', views.customer_request_load_your_requests, name='customerRequestLoadYourRequests'),
 
     path('listIssueTypes', views.issue_type_home, name="listIssueTypes"),
     path('updateIssueType/<int:pk>/', views.UpdateIssueType.as_view(), name='updateIssueType'),

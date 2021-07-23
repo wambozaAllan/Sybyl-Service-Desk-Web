@@ -15,7 +15,7 @@
                 </label>                    
                 <div class="">
                     <select name="projectmember" class="select form-control assigned" id="id_project_member" multiple="multiple">
-                        <option value="" disabled>--Assign--</option>
+                        <option value="" disabled></option>
                         {% for user in users %}
                             <option value="{{user.id}}">{{user.first_name}} {{user.first_name}}</option>
                         {% endfor %}
@@ -67,14 +67,14 @@
             selectednumbers[i] = $(selected).val();
         });
         var assigned_to = selectednumbers;
-
-        if (request_name < 1 || project_member < 0) {
+        var dataToggle = $("#toggle-event").prop('checked');
+        if (request_name < 1 || assigned_to == '' || project_member < 1) {
             if (request_name < 1) {
                 $('#id_name').css({ "border": '2px solid #00635a' });
             }
 
-            if (project_member < 0) {
-                $('#id_ticket_code').css({ "border": '2px solid #00635a' });
+            if (assigned_to == '' || project_member < 1) {
+                $('#div_id_project_member').css({ "color": '#FF0000' });
             }
 
         } else {
@@ -86,6 +86,7 @@
                 data: {
                     customer_request_id: request_id,
                     project_members: JSON.stringify(selectednumbers),
+                    dataToggle: dataToggle
                 },
                 url: urlData11,
                 success: function (resp) {
@@ -103,7 +104,11 @@
                         }
                     });
                     $('.close-dialog').click();
-                    $('.cust-request-pane').html(resp);
+                    if(dataToggle){
+                        $('.cust-request-pane').html(resp);
+                    }else{
+                        $('.cust-request-pane-yours').html(resp);
+                    }
                 }
             });
         }
@@ -113,9 +118,9 @@
         $('#id_name').css({ "border": '1px solid #ced4da' });
     });
 
-    $('#id_project_member').on('input', function () {
-        $('#id_project_member').css({ "border": '' });
+    $('#id_project_member').change(function () {
+        $('#id_project_member').css({ "border": '1px solid #ced4da' });
+        $('#div_id_project_member').css({ "color": '#67757c' });
     });
-
    
 </script>

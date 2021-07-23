@@ -7764,7 +7764,7 @@ def append_zero(number):
 def customer_request_home(request):
     department_id = request.session['department_id']
     template = loader.get_template('project_management/customer_request_pane.html')
-
+    
     # newly created requests
     open_req_list = CustomerRequest.objects.filter(client_request_status="OPEN", department_id=department_id)
     
@@ -7787,6 +7787,46 @@ def customer_request_home(request):
     
     return HttpResponse(template.render(context, request))
 
+def search_customerrequests(request):
+    dataToggle = request.GET.get('dataToggle')
+    user_id = request.user.id
+    department_id = request.session['department_id']
+    search_value = request.GET.get('searchValue')
+
+    if dataToggle == 'true':
+        template = loader.get_template('project_management/list_customer_requests.html')
+        
+        open_req_list = CustomerRequest.objects.filter(Q(name__icontains=search_value), Q(client_request_status="OPEN"), Q(department_id=department_id))
+        pending_reg_list = CustomerRequest.objects.filter(Q(name__icontains=search_value), Q(client_request_status='PENDING'), Q(department_id=department_id))
+        completed_reg_list = CustomerRequest.objects.filter(Q(name__icontains=search_value), Q(client_request_status='COMPLETED'), Q(department_id=department_id))
+        cancelled_reg_list = CustomerRequest.objects.filter(Q(name__icontains=search_value), Q(client_request_status='CANCELED'), Q(department_id=department_id))
+        onhold_reg_list = CustomerRequest.objects.filter(Q(name__icontains=search_value), Q(client_request_status='ONHOLD'), Q(department_id=department_id))
+
+        context = {
+            'open_req_list': open_req_list,
+            'pending_reg_list': pending_reg_list,
+            'completed_reg_list': completed_reg_list,
+            'cancelled_reg_list': cancelled_reg_list,
+            'onhold_reg_list': onhold_reg_list
+        }
+    if dataToggle == 'false':
+        template = loader.get_template('project_management/list_your_customer_requests.html')
+
+        open_req_list = CustomerRequest.objects.filter(Q(name__icontains=search_value), Q(client_request_status="OPEN"), Q(creator_id=user_id, department_id=department_id))
+        pending_reg_list = CustomerRequest.objects.filter(Q(name__icontains=search_value), Q(client_request_status='PENDING'), Q(assigned_member=user_id), Q(department_id=department_id))
+        completed_reg_list = CustomerRequest.objects.filter(Q(name__icontains=search_value), Q(client_request_status='COMPLETED'), Q(trackstatus__request_status="COMPLETED"), Q(trackstatus__added_by_id=user_id), Q(department_id=department_id))
+        cancelled_reg_list = CustomerRequest.objects.filter(Q(name__icontains=search_value), Q(client_request_status='CANCELED'), Q(trackstatus__request_status="CANCELED"), Q(trackstatus__added_by_id=user_id), Q(department_id=department_id))
+        onhold_reg_list = CustomerRequest.objects.filter(Q(name__icontains=search_value), Q(client_request_status='ONHOLD'), Q(trackstatus__request_status="ONHOLD"), Q(trackstatus__added_by_id=user_id), Q(department_id=department_id))
+
+        context = {
+            'open_req_list': open_req_list,
+            'pending_reg_list': pending_reg_list,
+            'completed_reg_list': completed_reg_list,
+            'cancelled_reg_list': cancelled_reg_list,
+            'onhold_reg_list': onhold_reg_list,
+        }
+
+    return HttpResponse(template.render(context, request))
 
 def customer_request_set_data(request):
     department_id = request.session['department_id']
@@ -7999,7 +8039,7 @@ def list_customer_projects(request):
         for val in new_project:
             new_list.append(val)
 
-    return HttpResponse(template.render(context, request))
+    return HttpResponse(template.render({}, request))
 
 
 def add_customer_projects(request):
@@ -8061,6 +8101,7 @@ class AddCustomerRequest(CreateView):
 
 
 def save_customer_request(request):
+    dataToggle = request.GET.get('dataToggle')
     request_name = request.GET.get('request_name')
     id_description = request.GET.get('id_description')
     id_ticket_code = request.GET.get('id_ticket_code')
@@ -8076,22 +8117,38 @@ def save_customer_request(request):
     customer_req_id = obj.id
     if customer_req_id != "":
         Trackstatus.objects.create(customerrequest_id=customer_req_id, request_status="OPEN", added_by_id=user_id)
- 
-    template = loader.get_template('project_management/list_customer_requests.html')
-    
-    open_req_list = CustomerRequest.objects.filter(client_request_status="OPEN")
-    pending_reg_list = CustomerRequest.objects.filter(client_request_status='PENDING')
-    completed_reg_list = CustomerRequest.objects.filter(client_request_status='COMPLETED')
-    cancelled_reg_list = CustomerRequest.objects.filter(client_request_status='CANCELED')
-    onhold_reg_list = CustomerRequest.objects.filter(client_request_status='ONHOLD')
+    if dataToggle == 'true':
+        template = loader.get_template('project_management/list_customer_requests.html')
+        
+        open_req_list = CustomerRequest.objects.filter(client_request_status="OPEN", department_id=department_id)
+        pending_reg_list = CustomerRequest.objects.filter(client_request_status='PENDING', department_id=department_id)
+        completed_reg_list = CustomerRequest.objects.filter(client_request_status='COMPLETED', department_id=department_id)
+        cancelled_reg_list = CustomerRequest.objects.filter(client_request_status='CANCELED', department_id=department_id)
+        onhold_reg_list = CustomerRequest.objects.filter(client_request_status='ONHOLD', department_id=department_id)
 
-    context = {
-        'open_req_list': open_req_list,
-        'pending_reg_list': pending_reg_list,
-        'completed_reg_list': completed_reg_list,
-        'cancelled_reg_list': cancelled_reg_list,
-        'onhold_reg_list': onhold_reg_list
-    }
+        context = {
+            'open_req_list': open_req_list,
+            'pending_reg_list': pending_reg_list,
+            'completed_reg_list': completed_reg_list,
+            'cancelled_reg_list': cancelled_reg_list,
+            'onhold_reg_list': onhold_reg_list
+        }
+    if dataToggle == 'false':
+        template = loader.get_template('project_management/list_your_customer_requests.html')
+
+        open_req_list = CustomerRequest.objects.filter(client_request_status="OPEN", creator_id=user_id, department_id=department_id)
+        pending_reg_list = CustomerRequest.objects.filter(client_request_status='PENDING', assigned_member=user_id, department_id=department_id)
+        completed_reg_list = CustomerRequest.objects.filter(client_request_status='COMPLETED', trackstatus__request_status="COMPLETED", trackstatus__added_by_id=user_id, department_id=department_id)
+        cancelled_reg_list = CustomerRequest.objects.filter(client_request_status='CANCELED', trackstatus__request_status="CANCELED", trackstatus__added_by_id=user_id, department_id=department_id)
+        onhold_reg_list = CustomerRequest.objects.filter(client_request_status='ONHOLD', trackstatus__request_status="ONHOLD", trackstatus__added_by_id=user_id, department_id=department_id)
+
+        context = {
+            'open_req_list': open_req_list,
+            'pending_reg_list': pending_reg_list,
+            'completed_reg_list': completed_reg_list,
+            'cancelled_reg_list': cancelled_reg_list,
+            'onhold_reg_list': onhold_reg_list
+        }
 
     return HttpResponse(template.render(context, request))
 
@@ -8154,6 +8211,44 @@ def save_customer_request_update(request):
     }
 
     return HttpResponse(template.render(context, request))
+
+
+def save_your_customer_request_update(request):
+    request_id = request.GET.get('request_id')
+    request_name = request.GET.get('request_name')
+    id_description = request.GET.get('id_description')
+    id_ticket_code = request.GET.get('id_ticket_code')
+    id_customer_sla = int(request.GET.get('id_customer_sla'))
+    id_priority = int(request.GET.get('id_priority'))
+    id_issue_type = int(request.GET.get('id_issue_type'))
+    prev_status = request.GET.get('prev_status')
+    department_id = request.session['department_id']
+
+    user_id = request.user.id
+    cr_status = request.GET.get('id_status')
+
+    if cr_status != prev_status:
+        Trackstatus.objects.create(customerrequest_id=int(request_id), request_status=cr_status, added_by_id=user_id)
+
+    CustomerRequest.objects.filter(pk=int(request_id)).update(name=request_name, ticket_code=id_ticket_code, description=id_description, priority_id=id_priority, sla_id=id_customer_sla, modified_time=datetime.date.today(), client_request_status=cr_status, issue_type_id=id_issue_type, status=cr_status)
+    
+    template = loader.get_template('project_management/list_your_customer_requests.html')
+    
+    open_req_list = CustomerRequest.objects.filter(client_request_status="OPEN", creator_id=user_id, department_id=department_id)
+    pending_reg_list = CustomerRequest.objects.filter(client_request_status='PENDING', assigned_member=user_id, department_id=department_id)
+    completed_reg_list = CustomerRequest.objects.filter(client_request_status='COMPLETED', trackstatus__request_status="COMPLETED", trackstatus__added_by_id=user_id, department_id=department_id)
+    cancelled_reg_list = CustomerRequest.objects.filter(client_request_status='CANCELED', trackstatus__request_status="CANCELED", trackstatus__added_by_id=user_id, department_id=department_id)
+    onhold_reg_list = CustomerRequest.objects.filter(client_request_status='ONHOLD', trackstatus__request_status="ONHOLD", trackstatus__added_by_id=user_id, department_id=department_id)
+
+    context = {
+        'open_req_list': open_req_list,
+        'pending_reg_list': pending_reg_list,
+        'completed_reg_list': completed_reg_list,
+        'cancelled_reg_list': cancelled_reg_list,
+        'onhold_reg_list': onhold_reg_list
+    }
+
+    return HttpResponse(template.render(context, request))
     
 
 class ViewCustomerRequest(DetailView):
@@ -8173,13 +8268,53 @@ class ViewCustomerRequest(DetailView):
 
 def delete_customer_request(request):
     req_id = request.GET.get('req_id')
+    dataToggle = request.GET.get('dataToggle')
     department_id = request.session['department_id']
+    user_id = request.user.id
     
     Trackstatus.objects.filter(customerrequest_id=int(req_id)).delete()
     CustomerRequest.objects.filter(id=int(req_id)).delete()
 
-    template = loader.get_template('project_management/list_customer_requests.html')
+    if dataToggle == 'true':
+        template = loader.get_template('project_management/list_customer_requests.html')
     
+        open_req_list = CustomerRequest.objects.filter(client_request_status="OPEN", department_id=department_id)
+        pending_reg_list = CustomerRequest.objects.filter(client_request_status='PENDING', department_id=department_id)
+        completed_reg_list = CustomerRequest.objects.filter(client_request_status='COMPLETED', department_id=department_id)
+        cancelled_reg_list = CustomerRequest.objects.filter(client_request_status='CANCELED', department_id=department_id)
+        onhold_reg_list = CustomerRequest.objects.filter(client_request_status='ONHOLD', department_id=department_id)
+
+        context = {
+            'open_req_list': open_req_list,
+            'pending_reg_list': pending_reg_list,
+            'completed_reg_list': completed_reg_list,
+            'cancelled_reg_list': cancelled_reg_list,
+            'onhold_reg_list': onhold_reg_list
+        }
+    if dataToggle == 'false':
+        template = loader.get_template('project_management/list_your_customer_requests.html')
+
+        open_req_list = CustomerRequest.objects.filter(client_request_status="OPEN", creator_id=user_id, department_id=department_id)
+        pending_reg_list = CustomerRequest.objects.filter(client_request_status='PENDING', assigned_member=user_id, department_id=department_id)
+        completed_reg_list = CustomerRequest.objects.filter(client_request_status='COMPLETED', trackstatus__request_status="COMPLETED", trackstatus__added_by_id=user_id, department_id=department_id)
+        cancelled_reg_list = CustomerRequest.objects.filter(client_request_status='CANCELED', trackstatus__request_status="CANCELED", trackstatus__added_by_id=user_id, department_id=department_id)
+        onhold_reg_list = CustomerRequest.objects.filter(client_request_status='ONHOLD', trackstatus__request_status="ONHOLD", trackstatus__added_by_id=user_id, department_id=department_id)
+
+        context = {
+            'open_req_list': open_req_list,
+            'pending_reg_list': pending_reg_list,
+            'completed_reg_list': completed_reg_list,
+            'cancelled_reg_list': cancelled_reg_list,
+            'onhold_reg_list': onhold_reg_list
+        }
+    
+    return HttpResponse(template.render(context, request))
+
+
+def customer_request_reload(request):
+    template = loader.get_template('project_management/list_customer_requests.html')
+    department_id = request.session['department_id']
+
     open_req_list = CustomerRequest.objects.filter(client_request_status="OPEN", department_id=department_id)
     pending_reg_list = CustomerRequest.objects.filter(client_request_status='PENDING', department_id=department_id)
     completed_reg_list = CustomerRequest.objects.filter(client_request_status='COMPLETED', department_id=department_id)
@@ -8197,14 +8332,16 @@ def delete_customer_request(request):
     return HttpResponse(template.render(context, request))
 
 
-def customer_request_reload(request):
-    template = loader.get_template('project_management/list_customer_requests.html')
+def customer_request_load_your_requests(request):
+    template = loader.get_template('project_management/list_your_customer_requests.html')
+    user_id = request.user.id
+    department_id = request.session['department_id']
     
-    open_req_list = CustomerRequest.objects.filter(client_request_status="OPEN")
-    pending_reg_list = CustomerRequest.objects.filter(client_request_status='PENDING')
-    completed_reg_list = CustomerRequest.objects.filter(client_request_status='COMPLETED')
-    cancelled_reg_list = CustomerRequest.objects.filter(client_request_status='CANCELED')
-    onhold_reg_list = CustomerRequest.objects.filter(client_request_status='ONHOLD')
+    open_req_list = CustomerRequest.objects.filter(client_request_status="OPEN", creator_id=user_id, department_id=department_id)
+    pending_reg_list = CustomerRequest.objects.filter(client_request_status='PENDING', assigned_member=user_id, department_id=department_id)
+    completed_reg_list = CustomerRequest.objects.filter(client_request_status='COMPLETED', trackstatus__request_status="COMPLETED", trackstatus__added_by_id=user_id, department_id=department_id)
+    cancelled_reg_list = CustomerRequest.objects.filter(client_request_status='CANCELED', trackstatus__request_status="CANCELED", trackstatus__added_by_id=user_id, department_id=department_id)
+    onhold_reg_list = CustomerRequest.objects.filter(client_request_status='ONHOLD', trackstatus__request_status="ONHOLD", trackstatus__added_by_id=user_id, department_id=department_id)
 
     context = {
         'open_req_list': open_req_list,
@@ -8560,6 +8697,7 @@ def check_task(request):
 def assign_customer_request(request):
     req_id = request.GET.get('req_id')
     req_name = request.GET.get('req_name')
+    req_name = request.GET.get('req_name')
 
     department_id = request.session['department_id']
 
@@ -8581,6 +8719,8 @@ def save_assigned_customerrequests(request):
     project_members = request.GET.get('project_members')
     uid = request.user.id
     department_id = request.session['department_id']
+    customer_request_id = request.GET.get('customer_request_id')
+    dataToggle = request.GET.get('dataToggle')
 
     json_data = json.loads(project_members)
     
@@ -8591,21 +8731,38 @@ def save_assigned_customerrequests(request):
     for mem in json_data:
         CustomerRequestTeamMembers.objects.create(customerrequest_id=int(customer_request_id), assigned_member_id=int(mem), date_assigned=datetime.date.today(), assigned_by_id=uid)
 
-    template = loader.get_template('project_management/list_customer_requests.html')
+    if dataToggle == 'true':
+        template = loader.get_template('project_management/list_customer_requests.html')
     
-    open_req_list = CustomerRequest.objects.filter(client_request_status="OPEN", department_id=department_id)
-    pending_reg_list = CustomerRequest.objects.filter(client_request_status='PENDING', department_id=department_id)
-    completed_reg_list = CustomerRequest.objects.filter(client_request_status='COMPLETED', department_id=department_id)
-    cancelled_reg_list = CustomerRequest.objects.filter(client_request_status='CANCELED', department_id=department_id)
-    onhold_reg_list = CustomerRequest.objects.filter(client_request_status='ONHOLD', department_id=department_id)
+        open_req_list = CustomerRequest.objects.filter(client_request_status="OPEN", department_id=department_id)
+        pending_reg_list = CustomerRequest.objects.filter(client_request_status='PENDING', department_id=department_id)
+        completed_reg_list = CustomerRequest.objects.filter(client_request_status='COMPLETED', department_id=department_id)
+        cancelled_reg_list = CustomerRequest.objects.filter(client_request_status='CANCELED', department_id=department_id)
+        onhold_reg_list = CustomerRequest.objects.filter(client_request_status='ONHOLD', department_id=department_id)
 
-    context = {
-        'open_req_list': open_req_list,
-        'pending_reg_list': pending_reg_list,
-        'completed_reg_list': completed_reg_list,
-        'cancelled_reg_list': cancelled_reg_list,
-        'onhold_reg_list': onhold_reg_list
-    }
+        context = {
+            'open_req_list': open_req_list,
+            'pending_reg_list': pending_reg_list,
+            'completed_reg_list': completed_reg_list,
+            'cancelled_reg_list': cancelled_reg_list,
+            'onhold_reg_list': onhold_reg_list
+        }
+    if dataToggle == 'false':
+        template = loader.get_template('project_management/list_your_customer_requests.html')
+
+        open_req_list = CustomerRequest.objects.filter(client_request_status="OPEN", creator_id=uid, department_id=department_id)
+        pending_reg_list = CustomerRequest.objects.filter(client_request_status='PENDING', assigned_member=uid, department_id=department_id)
+        completed_reg_list = CustomerRequest.objects.filter(client_request_status='COMPLETED', trackstatus__request_status="COMPLETED", trackstatus__added_by_id=uid, department_id=department_id)
+        cancelled_reg_list = CustomerRequest.objects.filter(client_request_status='CANCELED', trackstatus__request_status="CANCELED", trackstatus__added_by_id=uid, department_id=department_id)
+        onhold_reg_list = CustomerRequest.objects.filter(client_request_status='ONHOLD', trackstatus__request_status="ONHOLD", trackstatus__added_by_id=uid, department_id=department_id)
+
+        context = {
+            'open_req_list': open_req_list,
+            'pending_reg_list': pending_reg_list,
+            'completed_reg_list': completed_reg_list,
+            'cancelled_reg_list': cancelled_reg_list,
+            'onhold_reg_list': onhold_reg_list
+        }
     
     return HttpResponse(template.render(context, request))
 
