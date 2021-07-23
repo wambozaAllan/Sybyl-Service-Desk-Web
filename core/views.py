@@ -121,7 +121,15 @@ def logout_view(request):
 def home(request):
     permission_list = list(request.user.get_all_permissions())
 
-    total_projects = Project.objects.all().count()
+    total_projects = []
+    # returning projects under department
+    current_dept_projects = Project.department.through.objects.filter(department=request.session['department_id'])
+    
+    for v in current_dept_projects:
+        project = Project.objects.filter(id=v.project_id, is_active=True)
+        total_projects.append(project)
+    
+    total_projects = len(total_projects)
     total_clients = Company.objects.filter(category_id=2).count()
     total_vendors = Company.objects.filter(category_id=3).count()
     total_incidents = Incident.objects.all().count()
@@ -148,20 +156,29 @@ def home(request):
     }
     datasource['data'] = []
 
-    for key in Project.objects.filter(is_active=True):
-        data = {}
-        data['label'] = key.name
-        data['value'] = key.completion
-        datasource['data'].append(data)
+    dept_projects = []
+    # returning projects under department
+    current_dept = Project.department.through.objects.filter(department=request.session['department_id'])
+    
+    for v in current_dept:
+        project = Project.objects.filter(id=v.project_id, is_active=True)
+        dept_projects.append(project)
+
+    for dept in dept_projects:
+        for key in dept:
+            data = {}
+            data['label'] = key.name
+            data['value'] = key.completion
+            datasource['data'].append(data)
 
     colchart = FusionCharts("column2d", "ex1", "1045", "350", "projects-chart", "json", datasource)
 
     return render(request, 'core/home.html', {'all_permissions': permission_list, 'total_projects': total_projects,
-                                              'total_clients': total_clients, 'total_vendors': total_vendors,
-                                              'total_incidents': total_incidents,
-                                              'total_tasks': total_tasks,
-                                              'total_milestones': total_milestones,
-                                              'output': colchart.render()})
+                                            'total_clients': total_clients, 'total_vendors': total_vendors,
+                                            'total_incidents': total_incidents,
+                                            'total_tasks': total_tasks,
+                                            'total_milestones': total_milestones,
+                                            'output': colchart.render()})
 
 
 def save_new_password(request):

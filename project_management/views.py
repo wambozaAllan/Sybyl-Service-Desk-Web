@@ -3177,7 +3177,8 @@ def addProject(request):
             description = data.get('description')
             project_code = data.get('project_code')
             estimated_cost = data.get('estimated_cost')
-            company = data['company']
+            company = data.getlist('company')
+            department = data.getlist('department')
             logo = request.FILES.get('logo', None)
             start_date = data.get('estimated_start_date')
             end_date = data.get('estimated_end_date')
@@ -3246,6 +3247,9 @@ def addProject(request):
             project.save()
             for value in company:
                 p = project.company.add(value)
+
+            for dept in department:
+                d = project.department.add(dept)
                 
             return redirect('listProjects')
     else:

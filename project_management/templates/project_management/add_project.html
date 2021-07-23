@@ -38,6 +38,9 @@
                 </font>
             </medium>
         </div>
+        <div class="col-md-4 col-sm-12">
+            {{ project_form.department|as_crispy_field }}
+        </div>
     </div>
 
     <div class="row col-md-12 col-sm-12">
@@ -198,6 +201,12 @@
         
         return splitStr.join(' '); 
     }
+
+    $('#id_department').attr('multiple', "multiple");
+    $('#id_department').attr('data-live-search', "true");
+    $('#id_department').selectpicker({
+        size: 4,
+    });
  
 </script>
 
