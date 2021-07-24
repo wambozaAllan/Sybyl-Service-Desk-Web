@@ -123,10 +123,10 @@ def home(request):
 
     total_projects = []
     # returning projects under department
-    current_dept_projects = Project.department.through.objects.filter(department=request.session['department_id'])
+    current_dept_projects = Project.objects.filter(department=request.session['department_id'])
     
     for v in current_dept_projects:
-        project = Project.objects.filter(id=v.project_id, is_active=True)
+        project = Project.objects.filter(id=v.id, is_active=True)
         total_projects.append(project)
     
     total_projects = len(total_projects)
@@ -158,10 +158,10 @@ def home(request):
 
     dept_projects = []
     # returning projects under department
-    current_dept = Project.department.through.objects.filter(department=request.session['department_id'])
+    current_dept = Project.objects.filter(department=request.session['department_id'])
     
     for v in current_dept:
-        project = Project.objects.filter(id=v.project_id, is_active=True)
+        project = Project.objects.filter(id=v.id, is_active=True)
         dept_projects.append(project)
 
     for dept in dept_projects:
