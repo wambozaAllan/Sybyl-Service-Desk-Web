@@ -31,10 +31,10 @@
                 <div class="card-body">
                     <div id="" class="row">
 
-                        <div class="col-3">
-                            <h3 style="margin-top: 4%;" class="text-info current_daily_pane">{{today_date }}</h3>
+                        <div class="col-2">
+                            <h4 style="margin-top: 4%;" class="text-info current_daily_pane">{{today_date }}</h4>
                         </div>
-                        <div class="col-9">
+                        <div class="col-10">
                             <form method="POST" action="{% url 'exportTimesheetTaskReport' %}"
                                 enctype="multipart/form-data" id="toPrint">
                                 {% csrf_token %}
@@ -44,8 +44,6 @@
                                         name="id_selected_day_002" class="form-control dateinput input-sm"
                                         placeholder="dd-mm-yyyy" id="id_selected_day_002" value="{{today_date}}">
                                 </div>
-
-
 
                                 <button type="submit" style="margin-top: 5%; margin-right: 3%;" id=""
                                     class="btn btn-info btn-sm pull-right col-2">
@@ -63,6 +61,17 @@
                                 onclick="sendTimesheetRemainder()" class="btn btn-info btn-sm pull-right col-2">
                                 <i class="fa fa-file-excel-o"></i> Reminder <i class="fa fa-bell"></i>
                             </button>
+
+                            <div style="margin-top: 1%;">
+                                <label>Filter by Department</label>
+                                <select class="select form-control assigned col-2 input-sm" id="id_department">
+                                    <option value="{{department_id}}">{{department_name}}</option>
+                                    {% for dept in department_list %}
+                                        <option value="{{dept.id}}">{{dept.name}}</option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+                            
                         </div>
                     </div>
                     <div id="dailytimesheet-report002"></div>
@@ -74,12 +83,13 @@
 
 <script>
     var selected_date1 = $('#id_selected_day_002').val();
-
+    var id_department = $('#id_department').val();
     urldata = "{% url 'filterDetailedTaskTimesheetRReport'%}";
     $.ajax({
         type: 'GET',
         data: {
-            selected_date: selected_date1
+            selected_date: selected_date1,
+            id_department: id_department
         },
         url: urldata,
         success: function (resp) {
@@ -95,12 +105,13 @@
     }).on('changeDate', function (selected) {
         $('#dailytimesheet-report002').html('<i class="fa fa-spinner fa-spin fa-5x" style="align-content: center;margin-left: 50%;"></i>');
         var selected_date = $('#id_selected_day_002').val();
-
+        id_department = $('#id_department').val();
         urldata1 = "{% url 'filterDetailedTaskTimesheetRReport'%}";
         $.ajax({
             type: 'GET',
             data: {
-                selected_date: selected_date
+                selected_date: selected_date,
+                id_department: id_department
             },
             url: urldata1,
             success: function (resp) {
@@ -110,6 +121,7 @@
     });
 
     function exportAndEmailSend02() {
+        id_department = $('#id_department').val();
         $.confirm({
             title: '<h3 class="font-weight-bold">Confirm Email Send!</h3>',
             content: '<h5>Send Detailed Timesheet Report to Resources in this department!</h5>',
@@ -130,7 +142,8 @@
                         $.ajax({
                             type: 'GET',
                             data: {
-                                id_selected_day_002: selected_date3
+                                id_selected_day_002: selected_date3,
+                                id_department: id_department
                             },
                             url: urldata2,
                             success: function (resp) {
@@ -169,11 +182,13 @@
 
     function sendTimesheetRemainder() {
         var selected_date09 = $('#id_selected_day_002').val();
+        id_department = $('#id_department').val();
         urldata1 = "{% url 'timesheetDefaulterList'%}";
         $.ajax({
             type: 'GET',
             data: {
-                selected_date: selected_date09
+                selected_date: selected_date09,
+                id_department: id_department
             },
             url: urldata1,
             success: function (resp) {
@@ -207,7 +222,8 @@
                                         type: 'GET',
                                         data: {
                                             id_selected_day_002: selected_date09,
-                                            dataArray1: JSON.stringify(dataArray1)
+                                            dataArray1: JSON.stringify(dataArray1),
+                                            id_department: id_department
                                         },
                                         url: urldata2,
                                         success: function (resp) {

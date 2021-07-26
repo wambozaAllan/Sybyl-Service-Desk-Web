@@ -9004,10 +9004,20 @@ def detailed_task_report_pane(request):
     today_date = datetime.datetime.today().date()
     today_date = datetime.datetime.strptime(str(today_date), "%Y-%m-%d").strftime("%d-%m-%Y")
     default_date_date = datetime.datetime.strptime(today_date, '%d-%m-%Y').strftime("%A, %d. %B %Y")
+
+    company_id = request.session['company_id']
+    department_id = request.session['department_id']
+    department_name = request.session['department']
+
+    department_list = Department.objects.filter(Q(company=company_id) & ~Q(id=department_id))
+
     template = loader.get_template('project_management/detailed_task_timesheet_report_pane.html')
     context = {
         'today_date': today_date,
-        'selected_date': default_date_date
+        'selected_date': default_date_date,
+        'department_list': department_list,
+        'department_id': department_id,
+        'department_name': department_name
         }
 
     return HttpResponse(template.render(context, request))
@@ -9017,7 +9027,7 @@ def filter_detailed_task_timesheet_report(request):
     company_id = request.session['company_id']
     selected_date = request.GET.get('selected_date')
     selected_date2 = request.GET.get('selected_date')
-    department_id = request.session['department_id']
+    department_id = int(request.GET.get('id_department'))
 
     selected_date = datetime.datetime.strptime(selected_date, '%d-%m-%Y')
     selected_date2 = datetime.datetime.strptime(selected_date2, '%d-%m-%Y').strftime("%A, %d. %B %Y")
@@ -9271,7 +9281,7 @@ def export_timesheet_task_report(request):
 def export_email_timesheet_task_report(request):
     company_id = request.session['company_id']
     selected_date = request.GET.get('id_selected_day_002')
-    department_id = request.session['department_id']
+    department_id = int(request.GET.get('id_department'))
     selected_date2 = request.GET.get('id_selected_day_002')
     selected_date = datetime.datetime.strptime(selected_date, '%d-%m-%Y')
 
@@ -9459,7 +9469,7 @@ def export_email_timesheet_task_report(request):
 
 def timesheet_defaulter_list(request):
     company_id = request.session['company_id']
-    department_id = request.session['department_id']
+    department_id = int(request.GET.get('id_department'))
     selected_date = request.GET.get('selected_date')
     selected_date2 = request.GET.get('selected_date')
     defaulter_state = False
@@ -9506,7 +9516,7 @@ def timesheet_defaulter_list(request):
 
 def send_timesheet_email_reminder(request):
     company_id = request.session['company_id']
-    department_id = request.session['department_id']
+    department_id = int(request.GET.get('id_department'))
     defaulter_data = request.GET.get('dataArray1')
     defaulter_data = json.loads(defaulter_data)
 
