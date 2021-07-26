@@ -9284,6 +9284,7 @@ def export_email_timesheet_task_report(request):
     department_id = int(request.GET.get('id_department'))
     selected_date2 = request.GET.get('id_selected_day_002')
     selected_date = datetime.datetime.strptime(selected_date, '%d-%m-%Y')
+    department_name = Department.objects.get(id=department_id)
 
     excelfile = BytesIO()
 
@@ -9442,17 +9443,15 @@ def export_email_timesheet_task_report(request):
   
     context22 = {
         'selected_date': selected_date2,
-        'department': request.session['department'],
+        'department': department_name.name,
         'mem_duration': all_member_tms,
     }
 
     msg = render_to_string('project_management/email_template_timesheet_report.html', context22)
 
-    # email_address = ['babirye.grace@sybyl.com', 'ampumuza.amon@sybyl.com', 'jerry.vijayan@sybyl.com', 'chepkurui.job@sybyl.com', 'wamboza.allan@sybyl.com', 'david.kaggulire@sybyl.com', 'jeremiah.kerman@sybyl.com', 'sajin.mathew@sybyl.com', 'atwine.nickson@sybyl.com']
     subject, from_email, to = 'Daily Timesheets for Resources', 'from@example.com', dept_emails
     text_content = 'SERVICE DESK.'
     html_content = msg
-    # msg = EmailMultiAlternatives(subject, text_content, from_email, to=['gigi@sybyl.com', 'sanjeev@sybyl.com'], cc=email_address)
     msg = EmailMultiAlternatives(subject, text_content, from_email, to=dept_head_email, cc=dept_emails)
     msg.attach('TimesheetReport.xls', excelfile.getvalue(), 'application/ms-excel')
     msg.attach_alternative(html_content, "text/html")
