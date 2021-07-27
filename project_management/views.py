@@ -8784,7 +8784,7 @@ def save_assigned_engineer(request):
         CustomerRequestTeamMembers.objects.create(customerrequest_id=int(customer_request_id), assigned_member_id=int(mem), date_assigned=datetime.date.today(), assigned_by_id=uid)
 
     # to add a customer request team member, you must be an assigned member
-    check_if_assigned_member = CustomerRequestTeamMembers.objects.filter(customerrequest_id=int(cr_id), assigned_member_id=user_id).exists()
+    check_if_assigned_member = CustomerRequestTeamMembers.objects.filter(customerrequest_id=int(customer_request_id), assigned_member_id=uid).exists()
 
     cr_team = CustomerRequestTeamMembers.objects.filter(customerrequest_id=int(customer_request_id))
     template = loader.get_template('project_management/customer_request_team_members.html')

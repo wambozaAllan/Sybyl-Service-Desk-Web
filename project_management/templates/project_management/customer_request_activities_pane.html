@@ -23,6 +23,7 @@
                 <th>Activity Date</th>
                 <th>Start Time</th>
                 <th>End Time</th>
+                <th>Duration</th>
                 <th>Description</th>
                 <th>Added By</th>
                 <th>Date Added</th>
@@ -33,12 +34,13 @@
                 <tr>
                     <td>{{ forloop.counter }}</td>
                     <td>{{ act.name }}</td>
-                    <td>{{ act.activity_date | date:"D, d M, Y" }}</td>
+                    <td>{{ act.activity_date | date:"d M, Y" }}</td>
                     <td>{{ act.start_time | time:"TIME_FORMAT" }}</td>
                     <td>{{ act.end_time | time:"TIME_FORMAT" }}</td>
+                    <td>{{ act.duration}}</td>
                     <td>{{act.description}}</td>
                     <td>{{act.added_by}}</td>
-                    <td>{{act.datetime_added}}</td>
+                    <td>{{act.datetime_added | date:"d M, Y"}}</td>
                 </tr>
                 {% endfor %}
             </tbody>

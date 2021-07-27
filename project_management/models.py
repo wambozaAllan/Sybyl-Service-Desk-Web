@@ -11,6 +11,7 @@ from ckeditor.fields import RichTextField
 # color palette import
 from colorfield.fields import ColorField
 from simple_history.models import HistoricalRecords
+from django.db.models import Sum
 
 
 # PRIORITIES
@@ -592,6 +593,7 @@ class CustomerRequest(models.Model):
     def __str__(self):
         return self.name
 
+
 class CustomerRequestTeamMembers(models.Model):
     customerrequest = models.ForeignKey(CustomerRequest, on_delete=models.CASCADE)
     assigned_member = models.ForeignKey(User, on_delete=models.CASCADE, related_name='assigned_member')
@@ -624,6 +626,20 @@ class CustomerRequestActivity(models.Model):
         delta = end_sec-start_sec
         
         return delta
+
+    def duration(self):
+        start = self.start_time
+        end = self.end_time
+        start_sec= (start.hour*60+start.minute)*60+start.second
+        end_sec= (end.hour*60+end.minute)*60+end.second
+        delta = end_sec-start_sec
+        if delta >= 3600:
+            convert_srt = 'hr(s)'
+        elif delta <= 3599 and delta >= 60 :
+            convert_srt = 'min(s)'
+        else:
+            convert_srt = 'sec(s)'
+        return '{} {}'.format(str(timedelta(seconds=delta)), convert_srt)
 
 
 class TaskTimesheetExtend(models.Model):

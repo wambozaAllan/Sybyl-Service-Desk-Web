@@ -21,7 +21,7 @@
                 <th>Name</th>
                 <th>Assigned By</th>
                 <th>Date Assigned</th>
-                <th class="text-center">Remove</th>
+                <th class="text-center">Action</th>
             </tr>
             </thead>
             <tbody>
@@ -32,9 +32,11 @@
                     <td>{{ mem.assigned_by }}</td>
                     <td>{{ mem.date_assigned | date:"D, d M, Y" }}</td>
                     <td class="text-center">
-                        <button onclick="functRemoveCRMember('{{mem.assigned_member}}', '{{mem.id}}', '{{cr_name}}', '{{cr_id}}', {{cr_members.count}}, '{{cr_code}}')" class="btn btn-outline-danger btn-sm" type="button">
-                            <i title="Delete Timesheet" class="fa fa-remove"></i>
-                        </button>
+                        {% if check_if_assigned_member %}
+                            <button onclick="functRemoveCRMember('{{mem.assigned_member}}', '{{mem.id}}', '{{cr_name}}', '{{cr_id}}', {{cr_members.count}}, '{{cr_code}}')" class="btn btn-outline-danger btn-sm" type="button">
+                                <i title="Remove Member" class="fa fa-remove"></i>
+                            </button>
+                        {%endif%}
                     </td>
                 </tr>
                 {% endfor %}
