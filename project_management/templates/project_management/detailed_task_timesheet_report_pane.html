@@ -120,6 +120,24 @@
         });
     });
 
+    $('#id_department').change(function () {
+        $('#dailytimesheet-report002').html('<i class="fa fa-spinner fa-spin fa-5x" style="align-content: center;margin-left: 50%;"></i>');
+        var selected_date = $('#id_selected_day_002').val();
+        id_department = $('#id_department').val();
+        urldata3 = "{% url 'filterDetailedTaskTimesheetRReport'%}";
+        $.ajax({
+            type: 'GET',
+            data: {
+                selected_date: selected_date,
+                id_department: id_department
+            },
+            url: urldata3,
+            success: function (resp) {
+                $('#dailytimesheet-report002').html(resp);
+            }
+        });
+    });
+
     function exportAndEmailSend02() {
         id_department = $('#id_department').val();
         $.confirm({
