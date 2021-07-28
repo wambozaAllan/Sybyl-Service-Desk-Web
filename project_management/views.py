@@ -9070,7 +9070,9 @@ def filter_detailed_task_timesheet_report(request):
                         milestone_det = Task.objects.get(id=task_id_1).milestone
                         tm_dict_mem['project'] = project_det
                         tm_dict_mem['milestone'] = milestone_det
-                    else: 
+
+                if RequestTimesheetExtend.objects.filter(timesheet_id=tm_list.id).exists():
+                    if tm_list.timesheet_category == "REQUEST" :
                         request_detail = RequestTimesheetExtend.objects.get(timesheet_id=tm_list.id)
                         req_id = request_detail.customer_request_id
                         req_name = CustomerRequest.objects.get(id=req_id).name
@@ -9081,7 +9083,7 @@ def filter_detailed_task_timesheet_report(request):
                         tm_dict_mem['project'] = cust_req
                         tm_dict_mem['milestone'] = milestone_det
 
-                    all_member_tasks.append(tm_dict_mem)
+                all_member_tasks.append(tm_dict_mem)
             new_dict['timesheets'] = all_member_tasks
             all_mem_gen_list.append(new_dict)
                         
@@ -9124,8 +9126,8 @@ def filter_detailed_task_timesheet_report(request):
 
 def export_timesheet_task_report(request):
     company_id = request.session['company_id']
-    selected_date = request.POST.get('id_selected_day_002')
-    department_id = request.session['department_id']
+    selected_date = request.POST.get("id_selected_day")
+    department_id = request.POST.get('selected_dept_id')
 
     selected_date = datetime.datetime.strptime(selected_date, '%d-%m-%Y')
 

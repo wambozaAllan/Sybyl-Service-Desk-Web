@@ -38,11 +38,13 @@
                             <form method="POST" action="{% url 'exportTimesheetTaskReport' %}"
                                 enctype="multipart/form-data" id="toPrint">
                                 {% csrf_token %}
+                                <input class="hidden" type="text" id="selected_dept_id" name="selected_dept_id" value="">
                                 <div class="form-group pull-right">
                                     <label>Filter by Date</label>
                                     <input onkeypress="return false;" style="margin-top: 4%;" type="text"
-                                        name="id_selected_day_002" class="form-control dateinput input-sm"
+                                        name="id_selected_day" class="form-control dateinput input-sm"
                                         placeholder="dd-mm-yyyy" id="id_selected_day_002" value="{{today_date}}">
+
                                 </div>
 
                                 <button type="submit" style="margin-top: 5%; margin-right: 3%;" id=""
@@ -84,6 +86,7 @@
 <script>
     var selected_date1 = $('#id_selected_day_002').val();
     var id_department = $('#id_department').val();
+    $('#selected_dept_id').val(id_department);
     urldata = "{% url 'filterDetailedTaskTimesheetRReport'%}";
     $.ajax({
         type: 'GET',
@@ -106,6 +109,7 @@
         $('#dailytimesheet-report002').html('<i class="fa fa-spinner fa-spin fa-5x" style="align-content: center;margin-left: 50%;"></i>');
         var selected_date = $('#id_selected_day_002').val();
         id_department = $('#id_department').val();
+        $('#selected_dept_id').val(id_department);
         urldata1 = "{% url 'filterDetailedTaskTimesheetRReport'%}";
         $.ajax({
             type: 'GET',
@@ -114,6 +118,25 @@
                 id_department: id_department
             },
             url: urldata1,
+            success: function (resp) {
+                $('#dailytimesheet-report002').html(resp);
+            }
+        });
+    });
+
+    $('#id_department').change(function () {
+        $('#dailytimesheet-report002').html('<i class="fa fa-spinner fa-spin fa-5x" style="align-content: center;margin-left: 50%;"></i>');
+        var selected_date = $('#id_selected_day_002').val();
+        id_department = $('#id_department').val();
+        $('#selected_dept_id').val(id_department);
+        urldata3 = "{% url 'filterDetailedTaskTimesheetRReport'%}";
+        $.ajax({
+            type: 'GET',
+            data: {
+                selected_date: selected_date,
+                id_department: id_department
+            },
+            url: urldata3,
             success: function (resp) {
                 $('#dailytimesheet-report002').html(resp);
             }
