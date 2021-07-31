@@ -9445,10 +9445,14 @@ def export_email_timesheet_task_report(request):
 
     selected_date2 = datetime.datetime.strptime(selected_date2, '%d-%m-%Y').strftime("%A, %d. %B %Y")
   
+    # setting department names to front end
+    leaders = ', '.join(dept_head_name)
+    
     context22 = {
         'selected_date': selected_date2,
         'department': department_name.name,
         'mem_duration': all_member_tms,
+        'leaders': leaders
     }
 
     msg = render_to_string('project_management/email_template_timesheet_report.html', context22)
