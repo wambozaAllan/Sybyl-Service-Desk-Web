@@ -9,6 +9,7 @@ from django.urls import reverse_lazy
 from django.views import generic
 from django.contrib.auth.decorators import login_required
 from django.http import HttpResponseRedirect
+from django.views.decorators.csrf import csrf_exempt
 
 from .forms import LoginForm
 from user_management.forms import CustomUserCreationForm

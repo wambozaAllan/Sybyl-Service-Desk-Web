@@ -9138,7 +9138,7 @@ def export_timesheet_task_report(request):
     dept_members_exist = User.objects.filter(company_id=company_id, department_id=department_id).exists()
     if dept_members_exist == True:
         # return timesheet summary
-        dept_members = User.objects.filter(company_id=company_id, department_id=department_id, is_active=True)
+        dept_members = User.objects.filter(company_id=company_id, department_id=department_id, is_active=True, is_dept_head=False)
         all_member_tms = []
         for member in dept_members:
             sum_duration = 0
@@ -9296,9 +9296,11 @@ def export_email_timesheet_task_report(request):
     if dept_members_exist == True:
         # return timesheet summary
         dept_head_email = []
+        dept_head_name = []
         head_dept = User.objects.filter(company_id=company_id, department_id=department_id, is_active=True, is_dept_head=True)
         for leader in head_dept:
             dept_head_email.append(leader.email)
+            dept_head_name.append(leader.first_name)
 
         dept_members = User.objects.filter(company_id=company_id, department_id=department_id, is_active=True, is_dept_head=False)
         all_member_tms = []
