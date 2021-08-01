@@ -10,6 +10,7 @@ from django.views import generic
 from django.contrib.auth.decorators import login_required
 from django.http import HttpResponseRedirect
 from django.views.decorators.csrf import csrf_exempt
+from django.utils.decorators import method_decorator
 
 from .forms import LoginForm
 from user_management.forms import CustomUserCreationForm
@@ -55,6 +56,7 @@ class Login(LoginView):
         form = LoginForm()
         return render(request, self.template_name, {'form': form})
 
+    method_decorator(csrf_exempt)
     def post(self, request):
         user_login_state = False
         form = LoginForm()
@@ -118,7 +120,7 @@ def logout_view(request):
     return redirect("/login/")
 
 
-# @login_required()
+@login_required()
 def home(request):
     permission_list = list(request.user.get_all_permissions())
 
