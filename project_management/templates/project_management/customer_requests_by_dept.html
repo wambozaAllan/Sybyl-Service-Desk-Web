@@ -1,0 +1,145 @@
+{% extends 'base.html' %}
+{% load static %}
+{% load crispy_forms_tags %}
+{% block content %}
+<div>
+    <!-- Main wrapper  -->
+    <div id="main-wrapper">
+        {% include 'header.html' %}
+        {% include 'left-nav.html' %}
+        <!-- Page wrapper  -->
+        <div class="page-wrapper">
+            <!-- Bread crumb -->
+            <div class="row page-titles">
+                <div class="col-md-5 align-self-center">
+                    <h3 class="text-primary">Customer Requests</h3>
+                </div>
+                <div class="col-md-7 align-self-center">
+                    <ol class="breadcrumb">
+                        <li class="breadcrumb-item"><a href="javascript:void(0)">Home</a></li>
+                        <li class="breadcrumb-item active">Customer Requests</li>
+                    </ol>
+                </div>
+            </div>
+            <!-- End Bread crumb -->
+            <!-- Container fluid  -->
+            <div class="container-fluid">
+                <!-- Start Page Content -->
+                <div class="row">
+                    <div class="col-12">
+                        <div class="card">
+                            <div class="card-body">
+                                <div class="row col-12">
+                                    <h4 class="card-title col-3"> Service Requests: <span id="dept_name_id">{{dept_name}}</span> Department</h4>
+                                    <div style="margin-top: 1%;" class="col-9">
+                                        <label>Filter by Department</label>
+                                        <select class="select form-control assigned col-2 input-sm"
+                                            id="id_department0009">
+                                            <option value="{{dept_id}}">{{dept_name}}</option>
+                                            {% for dept2 in departments_list %}
+                                            <option value="{{dept2.id}}">{{dept2.name}}</option>
+                                            {% endfor %}
+                                        </select>
+                                    </div>
+                                </div>
+                                <div id="customer_request_dept_pane" class="table-responsive">
+                                    <table id="table_category" class="display nowrap table table-hover" cellspacing="0"
+                                        width="100%">
+                                        <thead>
+                                            <tr>
+                                                <th>#</th>
+                                                <th>Name</th>
+                                                <th class="">Ticket Code</th>
+                                                <th class="">Description</th>
+                                                <th class="">Priority</th>
+                                                <th class="">Status</th>
+                                                <th class="">Created By</th>
+                                                <th class="">Department</th>
+                                                <th class="text-center">Activities</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+
+                                            {% for cust_d in customer_reqs %}
+                                            <tr>
+                                                <td>{{ forloop.counter }}</td>
+                                                <td>{{ cust_d.name }}</td>
+                                                <td>{{ cust_d.ticket_code }}</td>
+                                                <td>{{ cust_d.description }}</td>
+                                                <td>{{ cust_d.Priority }}</td>
+                                                <td>{{ cust_d.status }}</td>
+                                                <td>{{ cust_d.creator }}</td>
+                                                <td>{{ cust_d.department }}</td>
+                                                <td class="text-center">
+                                                    <span class="label label-rounded label-success">
+                                                        <a href="#" style="color: #fff" onclick="viewDeptCRActivies({{ cust_d.id }})">{{cust_d.count_replies}} </a>
+                                                    </span>
+                                                </td>
+                                            </tr>
+                                            {% endfor %}
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                        {% include 'footer.html' %}
+                        <!-- End Page Content -->
+                    </div>
+                    <!-- End Container fluid  -->
+                </div>
+                <!-- End Page wrapper  -->
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    $('#id_department0009').change(function () {
+        var id_department = $('#id_department0009').val();
+        var dept_name = $('#id_department0009 :selected').text();
+        urldata4 = "{% url 'filterDeptCustomerRequests'%}";
+        $.ajax({
+            type: 'GET',
+            data: {
+                dept_id: id_department,
+            },
+            url: urldata4,
+            success: function (resp) {
+                $('#customer_request_dept_pane').html(resp);
+                $('#dept_name_id').text(dept_name);
+
+            }
+        });
+    });
+
+    function viewDeptCRActivies(cr_id) {
+        urldata = "{% url 'customerRequestActivitiesByDept'%}";
+        $.ajax({
+            type: "GET",
+            cache: false,
+            data: {cr_id : cr_id},
+            url: urldata,
+            success: function (resp) {
+                $.confirm({
+                    title: '<h3>View Customer Request Activities</h3>',
+                    content: '' + resp,
+                    type: 'blue',
+                    typeAnimated: true,
+                    boxWidth: '80%',
+                    useBootstrap: false,
+                    closeIcon: true,
+                    buttons: {
+                        close: {
+                            text: 'Close',
+                            btnClass: 'btn-gray',
+                            action: function () {
+                            }
+                        }
+                    }
+                });
+            }
+        });
+    }
+
+</script>
+{% endblock %}

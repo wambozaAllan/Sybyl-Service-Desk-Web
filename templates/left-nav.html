@@ -79,6 +79,13 @@
                                 <span class="hide-menu">Reports </span>
                             </a>
                         </li>
+                        {% if user.is_superuser%}
+                            <li onclick="">
+                                <a href="{% url 'customerRequestByDept' %}" aria-expanded="false"><i class="fa fa-bar-chart"></i>
+                                    <span class="hide-menu">Reports by Dept </span>
+                                </a>
+                            </li>
+                        {% endif %}
                     </ul>
                 </li>
                 {%if user.user_type is None or user.user_type == "normaluser"%}

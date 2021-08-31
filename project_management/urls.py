@@ -291,4 +291,8 @@ urlpatterns = [
 
     path('timesheetDefaulterList', views.timesheet_defaulter_list, name='timesheetDefaulterList'),
     path('sendTimesheetEmailReminder', views.send_timesheet_email_reminder, name='sendTimesheetEmailReminder'),
+
+    path('customerRequestByDept', views.customer_request_by_dept, name='customerRequestByDept'),
+    path('filterDeptCustomerRequests', views.filter_dept_customer_requests, name='filterDeptCustomerRequests'),
+    path('customerRequestActivitiesByDept', views.customer_request_activities_by_dept, name='customerRequestActivitiesByDept'),
 ]
