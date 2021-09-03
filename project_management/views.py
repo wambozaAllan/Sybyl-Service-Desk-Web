@@ -9560,6 +9560,43 @@ def send_timesheet_email_reminder(request):
     return JsonResponse(response_data)
 
 
+def customer_request_by_dept(request):
+    dept = request.session['department_id']
+    company_id = request.session['company_id']
+    cust_reqs = CustomerRequest.objects.filter(department_id=dept).annotate(count_replies=Count('customerrequestactivity'))
+    template = loader.get_template('project_management/customer_requests_by_dept.html')
+    context = {
+        'customer_reqs': cust_reqs,
+        'dept_id': request.session['department_id'],
+        'dept_name': request.session['department'],
+        'departments_list': Department.objects.filter(Q(company=company_id) & ~Q(id=dept))
+        }
+
+    return HttpResponse(template.render(context, request))
+
+
+def filter_dept_customer_requests(request):
+    dept = int(request.GET.get('dept_id'))
+    cust_list = CustomerRequest.objects.filter(department_id=dept).annotate(count_replies=Count('customerrequestactivity'))
+    template = loader.get_template('project_management/customer_requests_by_dept2.html')
+    context = {
+        'customer_reqs2': cust_list,
+    }
+
+    return HttpResponse(template.render(context, request))
+
+
+def customer_request_activities_by_dept(request):
+    customer_req_id = int(request.GET.get('cr_id'))
+    act_list = CustomerRequestActivity.objects.filter(customerrequest_id=customer_req_id)
+    template = loader.get_template('project_management/customer_request_activities_by_dept.html')
+    context = {
+        'cr_activities33': act_list,
+    }
+
+    return HttpResponse(template.render(context, request))
+
+
 # @background(schedule=10)
 # def notify_user():
 #     # lookup user by id and send them a message

@@ -1,0 +1,68 @@
+<table id="table_category" class="display nowrap table table-hover" cellspacing="0" width="100%">
+    <thead>
+        <tr>
+            <th>#</th>
+            <th>Name</th>
+            <th class="">Ticket Code</th>
+            <th class="">Description</th>
+            <th class="">Priority</th>
+            <th class="">Status</th>
+            <th class="">Created By</th>
+            <th class="">Department</th>
+            <th class="text-center">Action</th>
+        </tr>
+    </thead>
+    <tbody>
+
+        {% for cust_d2 in customer_reqs2 %}
+        <tr>
+            <td>{{ forloop.counter }}</td>
+            <td>{{ cust_d2.name }}</td>
+            <td>{{ cust_d2.ticket_code }}</td>
+            <td>{{ cust_d2.description }}</td>
+            <td>{{ cust_d2.Priority }}</td>
+            <td>{{ cust_d2.status }}</td>
+            <td>{{ cust_d2.creator }}</td>
+            <td>{{ cust_d2.department }}</td>
+            <td class="text-center">
+                <span class="label label-rounded label-success">
+                    <a href="#" style="color: #fff" onclick="viewDeptCRActivies2({{ cust_d2.id }})">{{cust_d2.count_replies}} </a>
+                </span>
+            </td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+
+
+<script>
+    function viewDeptCRActivies2(cr_id) {
+        urldata = "{% url 'customerRequestActivitiesByDept'%}";
+        $.ajax({
+            type: "GET",
+            cache: false,
+            data: {cr_id : cr_id},
+            url: urldata,
+            success: function (resp) {
+                $.confirm({
+                    title: '<h3>View Customer Request Activities</h3>',
+                    content: '' + resp,
+                    type: 'blue',
+                    typeAnimated: true,
+                    boxWidth: '80%',
+                    useBootstrap: false,
+                    closeIcon: true,
+                    buttons: {
+                        close: {
+                            text: 'Close',
+                            btnClass: 'btn-gray',
+                            action: function () {
+                            }
+                        }
+                    }
+                });
+            }
+        });
+    }
+
+</script>
